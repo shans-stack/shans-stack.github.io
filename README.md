@@ -1,4 +1,4 @@
-# Infra by Shan
+# Shan's Stack
 
 一步一步看懂 AI 数据基础设施。Step-by-step animated explainers for AI data infrastructure.
 
@@ -19,4 +19,4 @@ Every card has two modes: read (web) and present (press `P` or add `?present`).
 - Content comes only from public vendor documentation; each card cites its sources.
 - No vendor logos or official color schemes.
 - Static HTML, SVG and JS. No framework, no build step.
-- Hosted on GitHub Pages: https://infra-by-shan.github.io (noindex until reviewed).
+- Hosted on GitHub Pages: https://shans-stack.github.io (noindex until reviewed).
