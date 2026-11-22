@@ -73,7 +73,7 @@ function drawList(c){
     h+='<div class="mline" style="--lc:'+SS.lc(lid)+'"><h3><a href="'+SS.lineHref(mapId,lid)+'" data-line="'+lid+'">'+SS.sym(lid)+SS.esc(SS.lineName(lid))+'</a><small>'+ids.length+L(' 站',' stops')+'</small></h3><ol>';
     ids.forEach(function(id){
       var s=SS.stations[id],ls=SS.linesIn(id,mapId),x=ls.length>1,n=stops.indexOf(id);
-      var here=n>-1&&c.rt.at[n].line===lid,mark=topic&&SS.homeOf(id);
+      var here=n>-1&&c.rt.at[n].line===lid,mark=topic&&SS.inMap(id,'home');
       var tr=x?'<span class="tr">'+ls.filter(function(l){return l!==lid}).map(function(l){return SS.sym(l)}).join('')+'</span>':'';
       if(s.pair&&SS.inMap(s.pair,mapId))tr+='<span class="tr">'+L('另见','see also')+' '+SS.esc(SS.name(s.pair))+'</span>';
       if(mark)tr+='<span class="tr">↗ '+L('总图','main map')+'</span>';
@@ -166,7 +166,8 @@ function openPop(id,anchor,note){
   pop.innerHTML='<div class="pop-hd"><span class="pop-s">'+ls.map(function(l){return SS.sym(l)}).join('')+'</span><b>'+SS.esc(SS.title(id))+'</b><button type="button" class="x" data-close aria-label="'+L('关闭','Close')+'">✕</button></div>'+
     (note?'<p class="pop-n">'+SS.esc(note)+'</p>':'')+
     '<p class="pop-l">'+ls.map(function(l){return SS.esc(SS.lineName(l))+L('线','')}).join(L('、',', '))+' · '+SS.lvName(s.lv)+(s.st==='live'?'':' · '+L('整理中','In progress'))+'</p>'+
-    '<p class="pop-d">'+SS.esc(SS.desc(id,mapId))+'</p><p class="acts">'+acts+'</p>';
+    '<p class="pop-d">'+SS.esc(SS.desc(id,mapId))+'</p>'+(SS.links||[]).filter(function(k){return k.map===mapId&&(k.a===id||k.b===id)}).map(function(k){var o=k.a===id?k.b:k.a;
+      return '<p class="pop-k">'+L('连接：','Linked: ')+'<b>'+SS.esc(SS.title(o))+'</b>　'+SS.esc(SS.T(k.d))+'</p>'}).join('')+'<p class="acts">'+acts+'</p>';
   pop.hidden=false;
   var b=box.getBoundingClientRect(),r=anchor?anchor.getBoundingClientRect():{left:b.left+b.width/2,width:0,bottom:b.top+40,top:b.top};
   var w=pop.offsetWidth,left=Math.max(4,Math.min(b.width-w-4,r.left-b.left+r.width/2-w/2)),top=r.bottom-b.top+8;

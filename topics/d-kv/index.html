@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/d-kv.css?v=1d4ca5c2">
 <script>window.SS_ROOT='../../';</script>
@@ -68,10 +68,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/d-kv.js?v=2331d233"></script>
@@ -81,17 +81,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/490,480/764],
  "steps": [
   {
-   "s": [
-    "算出 KV",
-    "Computing KV"
-   ],
    "t": [
-    "推理先把提示词算成 KV Cache",
-    "Inference First Turns the Prompt into KV Cache"
+    "预填充计算 KV Cache",
+    "Prefill Computes the KV Cache"
    ],
    "d": [
     "GPU 先把整段提示词算一遍，得到一串 KV 块放在显存里，之后每生成一个字都要读它们。",
     "The GPU first works through the whole prompt and gets a run of KV blocks held in GPU memory; every token it generates afterwards reads them."
+   ],
+   "s": [
+    "预填充",
+    "Prefill"
    ],
    "b": [
     [
@@ -105,17 +105,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "被挤掉重算",
-    "Evicted, recomputed"
-   ],
    "t": [
-    "显存装不下，被挤掉的就要重算",
-    "When GPU Memory Runs Out, Evicted KV Has to Be Recomputed"
+    "显存缓存淘汰与前缀重算",
+    "GPU Cache Eviction and Prefix Recomputation"
    ],
    "d": [
-    "会话一多，显存放不下所有 KV，旧的被挤掉；同样的前缀再来一次，只能重新预填充。",
-    "With many sessions GPU memory cannot hold all the KV, so older blocks are evicted; when the same prefix comes back, prefill has to run again."
+    "显存容量限制可保留的 KV 数据量。后续请求找不到相同前缀的缓存时，需要重新预填充。",
+    "GPU memory limits the amount of resident KV data. A subsequent request must prefill again if it cannot find a cached copy of the same prefix."
+   ],
+   "s": [
+    "淘汰与重算",
+    "Eviction and Recomputation"
    ],
    "b": [
     [
@@ -129,17 +129,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "往下放一层",
-    "One tier down"
-   ],
    "t": [
-    "往下放一层：用读取代替重算",
-    "One Tier Down: Read Instead of Recompute"
+    "从卸载层恢复缓存",
+    "Cache Restoration from the Offload Tier"
    ],
    "d": [
     "冷一点的 KV 不扔，挪到主机内存或本地盘；要用时读回显存，比重算省。",
     "Cooler KV is not thrown away but moved to host memory or a local disk; reading it back into GPU memory when needed costs less than recomputing it."
+   ],
+   "s": [
+    "缓存卸载",
+    "Cache Offload"
    ],
    "b": [
     [
@@ -153,41 +153,41 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "共享层",
-    "Shared tier"
-   ],
    "t": [
-    "放进共享层：别的节点直接读",
-    "Into the Shared Tier: Other Nodes Read It Directly"
+    "共享缓存层支持跨节点复用",
+    "A Shared Cache Tier Supports Cross-Node Reuse"
    ],
    "d": [
     "节点 A 算出的 KV 写进共享存储，节点 B 遇到同样的前缀，直接从共享存储读回，不用重算。",
     "KV computed on node A is written to shared storage; when node B meets the same prefix, it reads the KV back from shared storage instead of recomputing it."
    ],
+   "s": [
+    "共享层",
+    "Shared tier"
+   ],
    "b": [
     [
-     "<p>把最下面一层换成整个集群共享的存储，同一份 KV 就能被任意 GPU 节点复用，而不是每个节点各自算、各自缓存一份。请求被调度到哪台机器都能命中，节点重启或扩缩容时 KV 也还在。</p>",
+     "<p>共享层使具有访问权限且缓存格式兼容的 GPU 节点能够复用同一份 KV。命中仍取决于缓存保留期、请求前缀和兼容性。</p>",
      "<p>这里要和 Prefill / Decode 分离区分开：那是同一个请求在两组 GPU 之间直接交接 KV，共享存储不是必经之路；共享层服务的是后续的请求和别的实例。两条路径可以同时存在。</p>"
     ],
     [
-     "<p>Make the bottom tier storage shared by the whole cluster, and the same KV can be reused by any GPU node instead of each node computing and caching its own copy. A request hits the cache whichever machine it is scheduled on, and the KV is still there when nodes restart or the cluster scales.</p>",
+     "<p>A shared tier lets GPU nodes reuse KV data when they have access and use a compatible cache format. Hits still depend on retention, request prefixes, and compatibility.</p>",
      "<p>Keep this apart from prefill/decode disaggregation, where one request hands its KV directly between two groups of GPUs and shared storage is not on the path. The shared tier serves later requests and other instances. The two paths can exist side by side.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "谁管什么",
-    "Who does what"
-   ],
    "t": [
-    "谁管什么：框架管存什么、在哪，存储管存和传",
-    "Who Does What: The Framework Decides What Is Kept and Where, Storage Keeps and Moves It"
+    "推理框架与存储的职责",
+    "Inference Framework and Storage Responsibilities"
    ],
    "d": [
     "推理框架记着哪段前缀的 KV 在哪、要不要存；存储只负责把这些块存好、快速传回 GPU。",
     "The inference framework keeps track of where each prefix's KV is and whether to keep it; storage only keeps the blocks safe and moves them back to the GPU quickly."
+   ],
+   "s": [
+    "组件职责",
+    "Component Responsibilities"
    ],
    "b": [
     [
@@ -201,17 +201,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "数据怎么走",
-    "The data path"
-   ],
    "t": [
-    "数据怎么走：GPU 显存直连存储",
-    "The Data Path: GPU Memory Straight to Storage"
+    "显存与存储之间的数据路径",
+    "Data Path Between GPU Memory and Storage"
    ],
    "d": [
     "KV 块经网卡在 GPU 显存和存储之间直接传，不在主机内存里中转；DDN 有共享文件系统和键值存储两种接法。",
     "KV blocks move directly between GPU memory and storage through the NIC, without a stop in host memory; DDN offers two ways in, a shared file system and a key-value store."
+   ],
+   "s": [
+    "数据路径",
+    "Data Path"
    ],
    "b": [
     [

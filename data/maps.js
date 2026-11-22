@@ -15,13 +15,13 @@ SS.maps = [
    lines:['a','m','d','c','n','s'], talk:'ai-basics',
    d:{zh:'六条主干线，只放通用概念。', en:'Six trunk lines, general concepts only.'}},
   {id:'vast', kind:'topic', href:'maps/vast/index.html', zh:'VAST', en:'VAST', st:'live', brand:'vast',
-   lines:['v-ai','v-aios','v-proto','v-red','v-prot','v-arch','v-deploy','v-hw'], talk:'vast-core',
+   lines:['v-ai','v-aios','v-proto','v-red','v-prot','v-media','v-arch','v-deploy','v-hw'], talk:'vast-core',
    d:{zh:'软件（AI OS）、硬件两条产品线，加五条技术线：访问协议、数据缩减、数据保护、架构和部署。', en:'Two product lines, software (the AI OS) and hardware, plus five technical lines: access protocols, data reduction, data protection, architecture and deployment.'}},
   {id:'ddn', kind:'topic', href:'maps/ddn/index.html', zh:'DDN', en:'DDN', st:'live', brand:'ddn',
-   lines:['d-ai','d-sw','d-proto','d-lay','d-dp','d-lus','d-inf','d-hw'], talk:'ddn-core',
+   lines:['d-ai','d-sw','d-proto','d-lay','d-dp','d-lus','d-inf','d-deploy','d-hw'], talk:'ddn-core',
    d:{zh:'软件、硬件两条产品线，加 EXAScaler 和 Infinia 等技术线：并行文件系统和数据平台各怎么工作。', en:'Two product lines for software and hardware, plus technical lines on EXAScaler and Infinia: how the parallel file system and the data platform each work.'}},
   {id:'weka', kind:'topic', href:'maps/weka/index.html', zh:'WEKA', en:'WEKA', st:'live', brand:'weka',
-   lines:['w-ai','w-sw','w-proto','w-data','w-arch','w-deploy','w-hw'], talk:'weka-core',
+   lines:['w-ai','w-sw','w-proto','w-data','w-prot','w-arch','w-deploy','w-hw'], talk:'weka-core',
    d:{zh:'软件、硬件两条产品线，加六条技术线：用户态的并行文件系统、访问协议、Kubernetes、快照和 KV Cache 卸载。', en:'Two product lines for software and hardware, plus six technical lines: a user-space parallel file system, access protocols, Kubernetes, snapshots and KV cache offload.'}},
   {id:'rafay', kind:'topic', href:'maps/rafay/index.html', zh:'Rafay', en:'Rafay', st:'live', brand:'rafay',
    lines:['r-ai','r-self','r-gov','r-cp','r-infra'], talk:'rafay-core',
@@ -45,3 +45,12 @@ SS.brands = {
   weka:   {name:'WEKA', src:'assets/brand/weka-logo-ink.svg', dark:'assets/brand/weka-logo-white.svg'},
   rafay:  {name:'Rafay', src:'assets/brand/rafay-logo-positive-trim.svg', dark:'assets/brand/rafay-logo-negative.svg'}
 };
+
+/* 站与站之间的虚线连接：两个不同的站，一个建在另一个之上（同一个东西停几条线用换乘胶囊，不用这里）。
+   字段：map 图 id；a、b 两站；d 弹窗里的一句说明。a 在 b 正上方同一列时，a 的站名写在线的上方，虚线竖直连到 b。 */
+SS.links = [
+  {map:'vast', a:'v-vec', b:'v-db', d:{zh:'向量检索是 VAST DataBase 自带的能力。', en:'Vector search is built into VAST DataBase.'}},
+  {map:'vast', a:'v-kv', b:'v-datastore', d:{zh:'KV Cache 卸载把推理的 KV Cache 存到 VAST DataStore 上。', en:'KV cache offload keeps inference KV cache on VAST DataStore.'}},
+  {map:'ddn', a:'d-kv', b:'d-inf', d:{zh:'DDN 的 KV Cache 共享层用 Infinia 存放 KV Cache。', en:'The DDN shared KV cache layer stores KV cache on Infinia.'}},
+  {map:'ddn', a:'d-hotnodes', b:'d-exa', d:{zh:'Hot Nodes 是 EXAScaler 在 GPU 节点本地盘上做缓存的功能。', en:'Hot Nodes is the EXAScaler feature that caches data on GPU nodes\' local drives.'}}
+];

@@ -10,7 +10,7 @@ SS.talks = [
   {id:'vast-core', map:'vast', zh:'VAST 核心架构', en:'VAST Core Architecture', min:20,
    stops:['v-dase','v-cnode','v-dbox','v-wec','v-ldc','v-scm','v-sim','v-mpath']},
   {id:'ddn-core', map:'ddn', zh:'DDN 怎么喂饱 GPU', en:'How DDN Keeps GPUs Fed', min:18,
-   stops:['d-exa','d-stripe','d-dom','d-hotpools','d-dcr','d-gds','d-kv']},
+   stops:['d-exa','d-stripe','d-dom','d-hotpools','d-dcr','gds','d-kv']},
   {id:'weka-core', map:'weka', zh:'WEKA 怎么工作', en:'How WEKA Works', min:18,
    stops:['w-nm','w-meta','w-dpdk','w-vfs','w-snap','w-s2o','w-pod','w-amg']},
   {id:'rafay-core', map:'rafay', zh:'Rafay 怎么把 GPU 变成 AI 云', en:'How Rafay Turns GPUs into an AI Cloud', min:16,

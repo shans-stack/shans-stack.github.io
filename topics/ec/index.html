@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/ec.css?v=7d96fef4">
 <script>window.SS_ROOT='../../';</script>
@@ -65,10 +65,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/ec.js?v=995e76da"></script>
@@ -78,17 +78,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/540],
  "steps": [
   {
-   "s": [
-    "坏盘是常事",
-    "Drives fail"
-   ],
    "t": [
-    "盘一多，坏盘是常事",
-    "With Enough Drives, Failures Are Routine"
+    "驱动器失效与数据保护",
+    "Drive Failures and Data Protection"
    ],
    "d": [
     "一块盘坏了，它上面的数据就没了，除非别处还有一份。",
     "When a drive fails, the data on it is gone, unless another copy exists somewhere else."
+   ],
+   "s": [
+    "驱动器故障",
+    "Drive Failures"
    ],
    "b": [
     [
@@ -102,17 +102,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "多存几份",
-    "Keep copies"
-   ],
    "t": [
-    "最直接的办法：多存几份",
-    "The Simplest Fix: Keep Several Copies"
+    "基于副本的数据保护",
+    "Replication-Based Data Protection"
    ],
    "d": [
     "每块数据复制三份放到三块盘上，坏两块仍不丢数据，但三块盘只装下一份数据。",
     "Each block is copied three times onto three drives. Two can fail without data loss, but three drives hold only one drive's worth of data."
+   ],
+   "s": [
+    "副本",
+    "Replication"
    ],
    "b": [
     [
@@ -126,17 +126,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "切块加校验",
-    "Split and add parity"
-   ],
    "t": [
-    "纠删码：切成几块，再算出几块校验",
-    "Erasure Coding: Split into Blocks, Then Compute Parity"
+    "条带中的数据块与校验块",
+    "Data and Parity Blocks in a Stripe"
    ],
    "d": [
     "把数据切成 8 块，再算出 2 块校验块，10 块分别放到 10 块盘上。",
     "Data is split into 8 blocks, 2 parity blocks are computed, and the 10 blocks go onto 10 drives."
+   ],
+   "s": [
+    "数据与校验",
+    "Data and Parity"
    ],
    "b": [
     [
@@ -150,17 +150,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "坏了算回来",
-    "Recompute the lost"
-   ],
    "t": [
-    "坏了就算回来",
-    "Lost Blocks Are Recomputed"
+    "利用剩余块恢复数据",
+    "Data Recovery from Surviving Blocks"
    ],
    "d": [
-    "坏掉的盘不超过校验块数，用剩下的块就能把丢掉的那几块算回来。",
-    "As long as no more drives fail than there are parity blocks, the remaining blocks can recompute the lost ones."
+    "编码允许的丢失块数未被超过时，可用仍可访问的块重建数据。",
+    "Data can be reconstructed from accessible blocks when the number of missing blocks is within the code’s tolerance."
+   ],
+   "s": [
+    "数据恢复",
+    "Data Recovery"
    ],
    "b": [
     [
@@ -174,41 +174,41 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "占多少盘",
-    "Drives used"
-   ],
    "t": [
-    "同样多的数据，占多少盘",
-    "The Same Data, How Many Drives"
+    "数据保护机制的容量开销",
+    "Capacity Overhead by Protection Method"
    ],
    "d": [
-    "写进同样多的数据，三副本的盘很快就满了，纠删码只多占一点。",
-    "Write the same amount of data: the drives fill up fast with three copies, while erasure coding takes only a little extra."
+    "对相同逻辑数据量，三副本与 8+2 纠删码的物理容量占用不同。",
+    "Three-way replication and 8+2 erasure coding use different amounts of physical capacity for the same logical data volume."
+   ],
+   "s": [
+    "容量开销",
+    "Capacity Overhead"
    ],
    "b": [
     [
-     "<p>把两种办法放在一起写同样多的数据：三副本每写 1 块就落 3 块；8+2 每写 8 块只多落 2 块校验。写入的数据一样多，占用的盘差距很大。这就是纠删码被称为「省空间」的原因，也是大容量存储默认用它的原因。</p>",
+     "<p>三副本为每个数据块保留三个副本。8+2 布局为八个数据块写入两个校验块，因此两者对相同逻辑数据量使用不同的物理容量。</p>",
      "<p>副本仍有适用场景：副本恢复快、写小块数据时不用计算。纠删码改动一个小块，要把同一条带的校验一起读出来、重算、再写回（读改写），所以有的系统小块数据和元数据用副本，大块数据用纠删码。</p>"
     ],
     [
-     "<p>Run the two approaches side by side with the same data: three copies land 3 blocks for every block written, while 8+2 lands only 2 extra parity blocks for every 8 written. The data written is the same, but the drives used differ by a wide margin. That is why erasure coding is said to save space, and why high-capacity storage uses it by default.</p>",
+     "<p>Three-way replication stores three copies of each data block. An 8+2 layout writes two parity blocks for eight data blocks, so the two layouts use different physical capacity for the same logical data volume.</p>",
      "<p>Copies still have their uses: they recover quickly and need no computation when writing small pieces of data. With erasure coding, changing one small block means reading the stripe's parity, recomputing it and writing it back (read-modify-write), so some systems use copies for small data and metadata and erasure coding for large data.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "条带宽窄",
-    "Stripe width"
-   ],
    "t": [
-    "条带越宽越省，重建也越重",
-    "Wider Stripes Save More, but Rebuilds Get Heavier"
+    "条带宽度、校验开销与重建读取量",
+    "Stripe Width, Parity Overhead, and Rebuild Reads"
    ],
    "d": [
     "从 8+2 换成 14+2，校验占的比例更小，但坏一块盘时重建要读的块更多。",
     "Going from 8+2 to 14+2 shrinks the share taken by parity, but rebuilding a failed drive means reading more blocks."
+   ],
+   "s": [
+    "条带宽窄",
+    "Stripe width"
    ],
    "b": [
     [

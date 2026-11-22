@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/lake.css?v=b5da52fd">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,11 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion&quot;&gt;Microsoft Azure Databricks: Medallion Architecture&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion">Microsoft Azure Databricks：原始层与整理层</a></li>
+      <li data-en="&lt;a href=&quot;https://parquet.apache.org/docs/file-format/&quot;&gt;Apache Parquet: File Format&lt;/a&gt;"><a href="https://parquet.apache.org/docs/file-format/">Apache Parquet 文件布局与按列读取</a></li>
+      <li data-en="&lt;a href=&quot;https://iceberg.apache.org/spec/&quot;&gt;Apache Iceberg Table Specification&lt;/a&gt;"><a href="https://iceberg.apache.org/spec/">Apache Iceberg 规范：表元数据、快照与提交</a></li>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/databricks/machine-learning/feature-store/train-models-with-feature-store&quot;&gt;Microsoft Azure Databricks: Train Models with Managed Features&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/databricks/machine-learning/feature-store/train-models-with-feature-store">Microsoft Azure Databricks：以表版本构建训练集</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html&quot;&gt;Amazon S3: Naming Objects&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html">Amazon S3：对象键、前缀与命名空间</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +68,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/lake.js?v=329560cd"></script>
@@ -86,10 +91,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>数据湖集中保存从不同来源取得的数据。以对象存储为底座时，日志文件和图像各自作为对象写入，并通过唯一的对象键定位。原始层保留来源数据，便于后续修正处理逻辑和重新生成下游结果。</p>"
+     "<p>数据湖可集中保存多种来源的数据。以 S3 通用存储桶为例，日志文件和图像可各自保存为对象，对象键在桶内唯一。原始层保留来源数据，为后续处理和重新生成下游结果提供输入。</p>"
     ],
     [
-     "<p>A data lake collects data from multiple sources. On object storage, log files and images are stored as separate objects and located by their unique object keys. The raw layer retains source data so downstream results can be regenerated when processing logic changes.</p>"
+     "<p>A data lake can store data from multiple sources. In an S3 general purpose bucket, log files and images can be stored as separate objects, each with a key unique within the bucket. The raw layer preserves the source data for downstream processing and reprocessing.</p>"
     ]
    ]
   },
@@ -131,8 +136,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "用目录找到整张表",
-    "Resolve a Table Through the Catalog"
+    "数据目录记录表结构和位置",
+    "The Catalog Records Table Schema and Location"
    ],
    "d": [
     "数据目录将表名映射到字段定义和存储位置。",

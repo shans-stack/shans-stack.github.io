@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/nvme.css?v=3c3bcc5b">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://nvmexpress.org/wp-content/uploads/NVM-Express-Base-Specification-2.0d-2024.01.11-Ratified.pdf&quot;&gt;NVM Express Base Specification: Queues, Doorbells and Completions&lt;/a&gt;"><a href="https://nvmexpress.org/wp-content/uploads/NVM-Express-Base-Specification-2.0d-2024.01.11-Ratified.pdf">NVM Express 基础规范：PCIe 队列、门铃与完成记录</a></li>
+      <li data-en="&lt;a href=&quot;https://nvmexpress.org/wp-content/uploads/NVM-Express-NVM-Command-Set-Specification-1.0d-2023.12.28-Ratified.pdf&quot;&gt;NVM Express NVM Command Set Specification: Namespaces and Read&lt;/a&gt;"><a href="https://nvmexpress.org/wp-content/uploads/NVM-Express-NVM-Command-Set-Specification-1.0d-2023.12.28-Ratified.pdf">NVM 命令集规范：命名空间、逻辑块与 Read 命令</a></li>
+      <li data-en="&lt;a href=&quot;https://nvmexpress.org/wp-content/uploads/NVM-Express-PCIe-Transport-Specification-1.0d-2023.12.27-Ratified.pdf&quot;&gt;NVM Express PCIe Transport Specification: Queues and Doorbells&lt;/a&gt;"><a href="https://nvmexpress.org/wp-content/uploads/NVM-Express-PCIe-Transport-Specification-1.0d-2023.12.27-Ratified.pdf">NVM Express PCIe 传输规范：队列及门铃寄存器</a></li>
     </ul></div>
   </div>
 </main>
@@ -62,10 +65,10 @@
   <span>© 2026 Shan's Stack</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/nvme.js?v=a72a8314"></script>
@@ -112,12 +115,12 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "主机把命令写进提交队列",
-    "The Host Posts Commands to a Submission Queue"
+    "主机提交 NVMe 命令",
+    "Host Submission of NVMe Commands"
    ],
    "d": [
-    "主机先在内存里写好命令，再更新门铃寄存器，通知控制器取走新条目。",
-    "The host writes commands in memory, then updates a doorbell register to notify the controller of new entries."
+    "主机将命令写入提交队列，再更新队尾门铃以通知控制器。",
+    "The host writes commands to the submission queue and updates the tail doorbell to notify the controller."
    ],
    "b": [
     [
@@ -130,8 +133,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "控制器把结果写进完成队列",
-    "The Controller Posts Results to a Completion Queue"
+    "控制器发布命令完成记录",
+    "The Controller Posts Command Completions"
    ],
    "d": [
     "控制器完成读取后把状态写入完成队列，主机按命令标识找到对应请求。",

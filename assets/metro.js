@@ -91,7 +91,7 @@ function layout(mapId,o){
     var ls=s.lines.filter(function(l){return l in LI}).map(function(l){return LI[l]}).sort(function(a,b){return a-b});
     if(!ls.length)return;
     var runs=[ls];  /* 停靠的线不相邻时也画成一个长胶囊，跨过中间没停靠的线（那几条线上不画点） */
-    var mark=topic&&!!SS.homeOf(sid);
+    var mark=topic&&SS.inMap(sid,'home');  /* 粗圈只给总图上的原站；厂商站的总图概念在弹窗里给 */
     runs.forEach(function(r,gi){
       var e={sid:sid,ls:r,top:r[0],bot:r[r.length-1],cap:r.length>1,split:runs.length>1,gi:gi,pos:SS.posOf(sid,mapId),mark:mark,
         pair:s.pair&&o.show.indexOf(s.pair)>-1?s.pair:null};
@@ -102,6 +102,9 @@ function layout(mapId,o){
       els.push(e);(byId[sid]=byId[sid]||[]).push(e);
     });
   });
+  /* 虚线连接（SS.links）：a 在 b 正上方同一列时，a 的站名写在线的上方，给竖直虚线让路 */
+  var links=(SS.links||[]).filter(function(k){return k.map===mapId&&byId[k.a]&&byId[k.b]});
+  links.forEach(function(k){var A=byId[k.a][0],B=byId[k.b][0];if(!A.cap&&A.pos===B.pos&&A.bot<B.top){A.labUp=true;if(B.cap)B.labBot=true}});
   /* 列：同一 pos 一列，再把互不重叠的相邻列并起来 */
   var keys=[];els.forEach(function(e){if(keys.indexOf(e.pos)<0)keys.push(e.pos)});keys.sort(function(a,b){return a-b});
   var cols=keys.map(function(){return {els:[],occ:{}}});
@@ -120,7 +123,7 @@ function layout(mapId,o){
   var bands={};
   function put(k,it){(bands[k]=bands[k]||[]).push(it)}
   els.forEach(function(e){
-    put(e.cap?(e.labBot?'U'+e.bot:'L'+e.top):'U'+e.top,{e:e,col:e.col,body:false});
+    put(e.cap?(e.labBot?'U'+e.bot:'L'+e.top):(e.labUp?'L'+e.top:'U'+e.top),{e:e,col:e.col,body:false});
     for(var l=e.top;l<e.bot;l++){put('U'+l,{e:e,col:e.col,body:true});put('L'+(l+1),{e:e,col:e.col,body:true})}
   });
   function hwMin(it){return it.body?BODY:it.e.w2/2}
@@ -171,7 +174,7 @@ function layout(mapId,o){
   var xe=Math.max(X0+(K-1)*p+32,X0+200),W=xe+40;
   els.forEach(function(e){W=Math.max(W,e.x+(e.two?e.w2:e.w1)/2+8)});
   var H=ys[nL-1]+(lastTwo?64:46);
-  return {mapId:mapId,lines:vis,LI:LI,ys:ys,els:els,byId:byId,K:K,p:p,pNeed:pNeed,W:Math.ceil(W),H:Math.ceil(H),xe:xe,tooFull:tooFull,warn:warn,tight:tight};
+  return {mapId:mapId,links:links,lines:vis,LI:LI,ys:ys,els:els,byId:byId,K:K,p:p,pNeed:pNeed,W:Math.ceil(W),H:Math.ceil(H),xe:xe,tooFull:tooFull,warn:warn,tight:tight};
 }
 
 /* ---------- 绘制 ---------- */
@@ -213,6 +216,9 @@ function render(svg,m,o){
       el('line',{x1:A.x,y1:m.ys[m.LI[rt.at[i].line]],x2:B.x,y2:m.ys[m.LI[rt.at[i+1].line]],class:'rj'},gR);
     });
   }
+  (m.links||[]).forEach(function(k){var A=m.byId[k.a][0],B=m.byId[k.b][0];
+    var ya=A.y2+(A.cap?12:8),yb=B.y1-(B.cap?12:8);if(A.y1>B.y1){ya=A.y1-(A.cap?12:8);yb=B.y2+(B.cap?12:8)}
+    el('line',{x1:A.x,y1:ya,x2:B.x,y2:yb,class:'lk'},gR)});
   m.els.forEach(function(e){
     var sid=e.sid,n=stops.indexOf(sid),cls='stn'+(n>-1?' stop':'')+(rt&&rt.via[sid]&&n<0?' via':'')+(fade[sid]?' fd':'')+(o.hl===sid?' hl':'')+(o.sel&&o.sel[sid]?' sel':'');
     var a=el('a',{href:o.stationHref?o.stationHref(sid):'#',class:cls,'data-id':sid},gS);
@@ -229,7 +235,7 @@ function render(svg,m,o){
     }else{
       if(e.split||e.pair)el('circle',{cx:x,cy:y,r:e.mark?18:15,class:'pr',stroke:lcol},a);
       if(e.mark)el('circle',{cx:x,cy:y,r:11,class:'xc'},a);else el('circle',{cx:x,cy:y,r:8,class:'st'},a);
-      t=el('text',{x:x,y:y+33,'text-anchor':'middle',class:e.bold?'lbx':'lb'},a);
+      t=el('text',{x:x,y:e.labUp?(e.two?y-40:y-22):y+33,'text-anchor':'middle',class:e.bold?'lbx':'lb'},a);
     }
     if(e.two){el('tspan',{x:x},t).textContent=e.lab.two[0];el('tspan',{x:x,dy:18},t).textContent=e.lab.two[1]}
     else t.textContent=e.lab.one;

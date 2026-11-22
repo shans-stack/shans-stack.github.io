@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/nvl.css?v=a7a7f24a">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,10 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/pdf/2104.04473&quot;&gt;Megatron-LM: Efficient Large-Scale Language Model Training on GPU Clusters&lt;/a&gt;"><a href="https://arxiv.org/pdf/2104.04473">Megatron-LM：并行组合与设备拓扑</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/nvlink/&quot;&gt;NVIDIA NVLink and NVSwitch&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/nvlink/">NVIDIA NVLink 与 NVSwitch</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb200-nvl72/&quot;&gt;NVIDIA GB200 NVL72: Rack-Scale NVLink Domain&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">NVIDIA GB200 NVL72：机架级互联域</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/multi-gpu-systems.html&quot;&gt;NVIDIA CUDA: Multi-GPU Systems and Peer Access&lt;/a&gt;"><a href="https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/multi-gpu-systems.html">NVIDIA CUDA：多 GPU 对等访问</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/nvl.js?v=c4470131"></script>
@@ -77,8 +81,8 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "GPU 间传输来自共享计算",
-    "Shared Computation Creates GPU-to-GPU Traffic"
+    "模型并行产生 GPU 间通信",
+    "Model Parallelism Creates GPU-to-GPU Traffic"
    ],
    "d": [
     "同一计算拆到多块 GPU 时，一张卡的输出可以成为另一张卡的输入。",
@@ -158,10 +162,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>NVLink 域是由 NVLink 互联并按平台配置可彼此通信的一组设备。多节点 NVLink 是把这种互联延伸到同一机架多节点的实现。接入交换结构的 GPU 仍各自拥有显存，对远端显存的访问由软件配置权限和映射。</p>"
+     "<p>NVLink 域是平台配置下通过 NVLink 互通的一组设备。以 NVIDIA GB200 NVL72 为例，NVLink 交换结构覆盖同一机架的多个计算托盘。各 GPU 仍拥有本地显存，对等访存取决于硬件可达性和软件权限。</p>"
     ],
     [
-     "<p>An NVLink domain is a group of devices configured to communicate over an NVLink fabric. Multi-node NVLink extends this interconnect across multiple nodes in a rack. GPUs attached to the fabric retain their own device memory, and software establishes permissions and mappings for remote memory access.</p>"
+     "<p>An NVLink domain is a group of devices that can communicate over NVLink in a given configuration. In NVIDIA GB200 NVL72, the NVLink fabric spans multiple compute trays in a rack. Each GPU retains its local memory. Peer access depends on hardware reachability and software permissions.</p>"
     ]
    ]
   },

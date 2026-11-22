@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/quant.css?v=1d49b98b">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,10 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/work-quantized-types.html&quot;&gt;NVIDIA TensorRT: Working with Quantized Types&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/work-quantized-types.html">NVIDIA TensorRT：量化表示、校准与低精度算子</a></li>
+      <li data-en="&lt;a href=&quot;https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html&quot;&gt;ONNX Runtime: Quantize ONNX Models&lt;/a&gt;"><a href="https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html">ONNX Runtime：静态量化、动态量化与硬件支持</a></li>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/docs/transformers/kv_cache&quot;&gt;Hugging Face Transformers: KV Cache Strategies&lt;/a&gt;"><a href="https://huggingface.co/docs/transformers/kv_cache">Hugging Face Transformers：KV Cache 独立量化</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/pdf/1712.05877&quot;&gt;Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference&lt;/a&gt;"><a href="https://arxiv.org/pdf/1712.05877">整数量化与量化感知训练原论文</a></li>
     </ul></div>
   </div>
 </main>
@@ -60,10 +64,10 @@
 
 <footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/quant.js?v=826dce4c"></script>
@@ -101,10 +105,10 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>线性整数量化用尺度和零点在整数编码与原数值之间建立映射。尺度定义相邻可表示值的间距，零点是原值零对应的编码。编码时将原值舍入到网格并限制到可用范围，解量化再用尺度换回近似值。</p>"
+     "<p>仿射整数量化用尺度和零点在整数编码与原值间建立映射。尺度定义相邻可表示值的间距，零点是原值零对应的编码。编码时先舍入再限制到整数范围，反量化用尺度与零点恢复近似值。对称量化可将零点固定为零。</p>"
     ],
     [
-     "<p>Linear integer quantization uses a scale and a zero point to map between integer codes and real values. The scale sets the spacing between representable values, and the zero point is the code for real zero. Encoding rounds onto the grid and clamps to the available range. Dequantization maps the code back to an approximation.</p>"
+     "<p>Affine integer quantization uses a scale and zero point to map values to integer codes. The scale sets the spacing between neighboring representable values, and the zero point is the code for real zero. Quantization rounds and clips, and dequantization uses the scale and zero point to recover an approximation. Symmetric quantization can fix the zero point at zero.</p>"
     ]
    ]
   },
@@ -128,8 +132,8 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "用代表性输入做静态校准",
-    "Calibrate with Representative Inputs"
+    "静态激活量化的代表性样本校准",
+    "Representative-Input Calibration for Static Activation Quantization"
    ],
    "d": [
     "静态激活量化先用代表性样本观察激活分布，再为部署固定量化参数。",
@@ -155,10 +159,10 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>量化感知训练（QAT）在训练的前向计算中模拟目标数值格式，继续使用训练数据和梯度调整参数。训练完成后再导出对应的低精度表示。部署质量应在代表性任务上与原模型比较，尤其关注对数值误差敏感的输出。</p>"
+     "<p>量化感知训练（QAT）在训练的前向计算中模拟目标量化的舍入和截断，优化器仍根据训练损失更新参数。训练后可按部署后端支持的格式导出，推理质量可在相同任务和评估集上与原模型比较。</p>"
     ],
     [
-     "<p>Quantization-aware training (QAT) simulates the target format during the training forward pass, allowing data and gradients to adjust parameters. The trained model is then exported to the corresponding lower-precision representation. Quality evaluation compares it with the original model on representative tasks, including outputs sensitive to numerical error.</p>"
+     "<p>Quantization-aware training (QAT) simulates quantization rounding and clipping in the forward pass, while the optimizer updates parameters from the training loss. The trained model can be exported in a format supported by the deployment backend and evaluated against the original model on the same tasks and evaluation data.</p>"
     ]
    ]
   },

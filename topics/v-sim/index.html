@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-sim.css?v=bb901eb7">
 <script>window.SS_ROOT='../../';</script>
@@ -68,10 +68,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-sim.js?v=dce0be27"></script>
@@ -81,17 +81,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/720],
  "steps": [
   {
+   "t": [
+    "精确去重的匹配范围",
+    "Matching in Exact Deduplication"
+   ],
+   "d": [
+    "精确去重只合并内容相同的数据块。",
+    "Exact deduplication consolidates identical chunks."
+   ],
    "s": [
     "去重的局限",
     "The limit of dedupe"
-   ],
-   "t": [
-    "去重只认一模一样的块",
-    "Deduplication Only Recognises Identical Blocks"
-   ],
-   "d": [
-    "两块数据只差几个字节，算出来的指纹就完全不同，去重认不出它们，只好整块再存一份。",
-    "If two blocks differ by only a few bytes, their fingerprints are completely different, so deduplication cannot match them and stores the whole block again."
    ],
    "b": [
     [
@@ -105,10 +105,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "按内容切块",
-    "Content-defined chunks"
-   ],
    "t": [
     "先按内容把数据切成块",
     "First, Cut the Data into Chunks by Content"
@@ -116,6 +112,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "用滚动哈希按内容找切点，把数据切成长短不一的块，平均 16 到 64 KB。",
     "A rolling hash finds cut points by content, cutting the data into chunks of varying length, 16 to 64 KB on average."
+   ],
+   "s": [
+    "按内容切块",
+    "Content-defined chunks"
    ],
    "b": [
     [
@@ -129,10 +129,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "两种指纹",
-    "Two fingerprints"
-   ],
    "t": [
     "每块算两种指纹",
     "Each Chunk Gets Two Kinds of Fingerprint"
@@ -140,6 +136,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "强哈希照常用来去重；另外再算一组故意做得「粗」的相似性哈希，只差几个比特的块会算出同一个值。",
     "The strong hash is still used for deduplication. A set of deliberately coarse similarity hashes is also computed, so chunks that differ by a few bits get the same value."
+   ],
+   "s": [
+    "两种指纹",
+    "Two fingerprints"
    ],
    "b": [
     [
@@ -153,17 +153,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
+   "t": [
+    "相似块的参考字典压缩",
+    "Reference-Dictionary Compression for Similar Chunks"
+   ],
+   "d": [
+    "相似哈希匹配时，系统以参考块作为压缩字典。其余块可单独使用 ZSTD 压缩。",
+    "When a similarity hash matches, the system uses the reference chunk as a compression dictionary. Other chunks can be compressed independently with ZSTD."
+   ],
    "s": [
     "只存差异",
     "Store only the difference"
-   ],
-   "t": [
-    "撞上了，就用参考块的字典压，只存差异",
-    "On a Hit, Compress with the Reference Chunk's Dictionary and Store Only the Difference"
-   ],
-   "d": [
-    "相似指纹撞上后，取出那块已存的参考块，用它的压缩字典压新块，只存差异，不存第二本字典；没撞上的块用 ZSTD 单独压缩。",
-    "After a similarity hit, the stored reference chunk is fetched and its compression dictionary is used on the new chunk, so only the difference is stored and no second dictionary is needed. Chunks without a hit are compressed on their own with ZSTD."
    ],
    "b": [
     [
@@ -177,10 +177,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "一个缩减域",
-    "One reduction realm"
-   ],
    "t": [
     "指纹表放在共享 SCM 上，整套系统一个缩减域",
     "The Fingerprint Table Sits on Shared SCM, so the Whole System Is One Reduction Realm"
@@ -188,6 +184,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "传统去重设备的指纹表放在单台控制器的内存里，规模大了只能拆成几个互不相通的去重域；VAST 把表放在所有 CNode 共享的 SCM 上，整套系统只有一个缩减域。",
     "Classic deduplication appliances keep the fingerprint table in one controller's memory, so at scale they split into separate deduplication domains that cannot see each other. VAST keeps the table on SCM shared by all CNodes, so the whole system is one reduction realm."
+   ],
+   "s": [
+    "一个缩减域",
+    "One reduction realm"
    ],
    "b": [
     [
@@ -201,17 +201,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
+   "t": [
+    "按空间收益调整相似性压缩",
+    "Adaptive Similarity Compression Based on Space Savings"
+   ],
+   "d": [
+    "相似性压缩会增加某些读取的开销。系统按近期写入的空间收益调整是否启用该功能。",
+    "Similarity reduction can increase the cost of some reads. The system adjusts whether to use the feature based on space savings from recent writes."
+   ],
    "s": [
     "按收益开关",
     "Switches with the payoff"
-   ],
-   "t": [
-    "系统按收益自动开关",
-    "The System Switches It on and off by Payoff"
-   ],
-   "d": [
-    "相似性压缩可能明显拖慢读取，所以系统会看最近写入省下了多少，收益低时自动关掉，收益高时再打开。",
-    "Similarity reduction can noticeably slow reads, so the system watches how much recent writes saved, switching it off when the payoff is low and back on when it is high."
    ],
    "b": [
     [

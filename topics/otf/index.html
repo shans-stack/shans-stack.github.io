@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/otf.css?v=0997e167">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://iceberg.apache.org/spec/&quot;&gt;Apache Iceberg Table Specification&lt;/a&gt;"><a href="https://iceberg.apache.org/spec/">Apache Iceberg 规范：表元数据、快照与提交</a></li>
+      <li data-en="&lt;a href=&quot;https://iceberg.apache.org/docs/latest/spark-queries/&quot;&gt;Apache Iceberg: Spark Queries and Time Travel&lt;/a&gt;"><a href="https://iceberg.apache.org/docs/latest/spark-queries/">Apache Iceberg：Spark 历史快照查询</a></li>
+      <li data-en="&lt;a href=&quot;https://iceberg.apache.org/docs/latest/maintenance/&quot;&gt;Apache Iceberg: Maintenance and Snapshot Expiration&lt;/a&gt;"><a href="https://iceberg.apache.org/docs/latest/maintenance/">Apache Iceberg：快照过期与文件维护</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/otf.js?v=eab3b424"></script>
@@ -77,19 +80,19 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "定义一张表包含哪些文件",
-    "Define Which Files Belong to a Table"
+    "表元数据及有效数据文件",
+    "Table Metadata and Active Data Files"
    ],
    "d": [
-    "表元数据记录字段定义，以及组成当前表状态的数据文件。",
-    "Table metadata records field definitions and identifies the data files that make up the current table state."
+    "以 Iceberg 为例，表元数据记录表结构与快照，快照通过清单引用数据文件。",
+    "In Iceberg, table metadata records the schema and snapshots. A snapshot references data files through manifests."
    ],
    "b": [
     [
-     "<p>开放表格式用公开规范描述存储上的表状态，使兼容的读取引擎按同一规则解释一张表。数据文件保存行值，例如 Parquet 文件中的列数据。表格式另行记录表的结构和有效文件集合，使读取器能从一批已登记文件构造结果。</p>"
+     "<p>开放表格式用公开规范定义表状态。Parquet 等数据文件保存记录内容。以 Iceberg 为例，表元数据记录表结构和快照，读取器沿选定快照的 manifest list 与 manifest 解析该快照的数据文件集合。</p>"
     ],
     [
-     "<p>An open table format describes table state with a public specification so compatible readers interpret a table using the same rules. Data files hold row values, such as columns in a Parquet file. The table format records the structure and the set of active files so readers can build results from the registered files.</p>"
+     "<p>An open table format defines table state through a public specification. Data files such as Parquet store the records. In Iceberg, table metadata records schemas and snapshots. Readers resolve the data files in the selected snapshot through its manifest list and manifests.</p>"
     ]
    ]
   },
@@ -140,10 +143,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>表元数据可以包含分区值和列的上下界。查询引擎用这些信息筛选候选文件。例如，查找周二事件时，可以跳过日期上界早于周二的文件。候选文件仍需读取并判断实际的行值。</p>"
+     "<p>Iceberg 清单记录文件的分区值，可保存列值上下界等统计。查询引擎可用这些信息排除不可能匹配谓词的文件。例如，查找周二事件时，可跳过时间上界早于周二的文件。其余文件仍由读取器按谓词筛选。</p>"
     ],
     [
-     "<p>Table metadata can include partition values and column bounds. A query engine uses this information to select candidate files. A query for Tuesday’s events can skip files whose latest date is earlier than Tuesday. The engine reads candidate files and checks the actual row values.</p>"
+     "<p>Iceberg manifests record file partition values and can contain column statistics such as lower and upper bounds. A query engine can eliminate files that cannot satisfy a predicate, such as files whose upper timestamp bound precedes Tuesday. The reader still applies the predicate to remaining files.</p>"
     ]
    ]
   },

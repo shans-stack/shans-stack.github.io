@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/embed.css?v=e33ef2d5">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/search/search-how-to-semantic-chunking&quot;&gt;Microsoft Azure AI Search: Structure-Aware Document Chunking&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/search/search-how-to-semantic-chunking">Microsoft Azure AI Search：文档布局与结构感知切块</a></li>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/search/vector-search-how-to-create-index&quot;&gt;Microsoft Azure AI Search: Create a Vector Index&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/search/vector-search-how-to-create-index">Microsoft Azure AI Search：向量索引的记录结构与查询编码</a></li>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/search/search-how-to-define-index-projections&quot;&gt;Microsoft Azure AI Search: Index Projections and Source Changes&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/search/search-how-to-define-index-projections">Microsoft Azure AI Search：一对多索引投影与变更处理</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/embed.js?v=b4eeb47e"></script>
@@ -95,12 +98,12 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "按语义边界切块",
-    "Split at Meaningful Boundaries"
+    "按文档结构切分文本",
+    "Text Chunking by Document Structure"
    ],
    "d": [
-    "标题与段落提供切分边界，每块记录它所属的文档与位置。",
-    "Headings and paragraphs provide chunk boundaries, and each chunk retains its document and location."
+    "标题与段落可作为切分边界，索引记录可保留所属文档及章节。",
+    "Headings and paragraphs can serve as chunk boundaries. Index records can retain the source document and section."
    ],
    "b": [
     [
@@ -158,10 +161,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>可以按源文档标识跟踪版本变更，并用文档与块的映射定位当前索引结果。更新时重新解析和编码受影响的内容，写入新块并清理旧块。源文档删除时，删除检测机制根据同一映射清除该文档对应的向量记录。</p>"
+     "<p>索引可用父文档标识关联该文档的块。以 Azure AI Search 索引投影为例，父文档变更时可更新其块，并移除更新后不再存在的块。源文档删除时，配置了支持该来源的删除检测策略后，索引器才会移除关联记录。</p>"
     ],
     [
-     "<p>A pipeline can track versions by source document identifier and use the document-to-chunk mapping to locate existing index entries. An update reparses and encodes affected content, writes new chunks and removes obsolete ones. When a source document is deleted, a deletion tracking mechanism uses the same mapping to remove its vector records.</p>"
+     "<p>An index can associate chunks with a parent document identifier. In Azure AI Search index projections, a change to a parent document can update its chunks and remove chunks no longer present after the update. Deleting the source document removes the associated records when the indexer has a supported deletion detection policy configured.</p>"
     ]
    ]
   }

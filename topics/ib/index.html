@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/ib.css?v=e858bf29">
 <script>window.SS_ROOT='../../';</script>
@@ -65,10 +65,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/ib.js?v=3eb7ff9b"></script>
@@ -163,18 +163,18 @@ window.SS_TOPIC_CFG={
      "<p>虚拟通道（VL）是物理链路上的逻辑队列。对支持多条数据 VL 的链路，某条 VL 信用耗尽时，仍有信用的其他 VL 可以按链路调度继续传输。各通道共享物理链路的带宽。</p>"
     ],
     [
-     "<p>A virtual lane (VL) is a logical queue on a physical link. Where a link supports multiple data VLs, lanes with available credits remain eligible for scheduling when another lane runs out. The lanes share the bandwidth of the physical link.</p>"
+     "<p>A virtual lane (VL) is a logical queue on a physical link. Where a link supports multiple data VLs, lanes with available credits remain eligible for scheduling if another lane exhausts its credits. The lanes share the physical link bandwidth.</p>"
     ]
    ]
   },
   {
    "t": [
-    "持续拥塞使队列向上游积累",
-    "Persistent Congestion Backs up Upstream"
+    "持续拥塞向上游传播",
+    "Persistent Congestion Propagates Upstream"
    ],
    "d": [
-    "出口持续繁忙时，信用耗尽的位置会沿转发路径向上游移动。",
-    "A persistently busy egress can cause upstream ports to run out of credits in turn."
+    "出口持续拥塞时，信用不足可沿上游链路传播。",
+    "Persistent egress congestion can cause credit shortages on successive upstream links."
    ],
    "b": [
     [

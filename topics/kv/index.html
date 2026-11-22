@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/kv.css?v=c248851e">
 <script>window.SS_ROOT='../../';</script>
@@ -66,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/kv.js?v=fe7c8005"></script>
@@ -80,16 +80,16 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "推理分两段：先读，再逐字写",
-    "Inference in Two Phases: Read First, Then Write Token by Token"
+    "推理的预填充与解码阶段",
+    "Prefill and Decode in Inference"
    ],
    "d": [
     "模型先一次读完整段提示词（预填充），再逐字生成回答（解码）。",
     "The model first reads the whole prompt in one go (prefill), then generates the answer one token at a time (decode)."
    ],
    "s": [
-    "先读，再逐字写",
-    "Read, then write"
+    "预填充与解码",
+    "Prefill and Decode"
    ],
    "b": [
     [
@@ -104,16 +104,16 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "读提示词时，每个词算出一份 K 和 V",
-    "Reading the Prompt, Each Token Gets a K and a V"
+    "预填充计算各 Token 的键和值",
+    "Prefill Computes Keys and Values for Each Token"
    ],
    "d": [
     "预填充时，每个词都算出一份 Key 和 Value，存进 GPU 显存，这就是 KV Cache。",
     "During prefill, each token produces a Key and a Value, which are stored in GPU memory. That is the KV cache."
    ],
    "s": [
-    "每个词一份 K、V",
-    "A K and V per token"
+    "各 Token 的键和值",
+    "Keys and Values per Token"
    ],
    "b": [
     [
@@ -128,16 +128,16 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "生成新字时，只算新的，旧的从缓存读",
-    "For Each New Token, Compute Only the New One and Read the Rest from Cache"
+    "解码复用历史键值",
+    "Decode Reuses Cached Keys and Values"
    ],
    "d": [
     "每生成一个新字，只为它算一份 K 和 V，前面所有词的 K 和 V 直接从 KV Cache 读，不用重算。",
     "For each new token, only its own K and V are computed; the K and V of every earlier token are read from the KV cache, not recomputed."
    ],
    "s": [
-    "只算新字",
-    "Only the new token"
+    "复用历史键值",
+    "Cached KV Reuse"
    ],
    "b": [
     [
@@ -152,16 +152,16 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "开头相同的请求，可以直接复用",
-    "Requests with the Same Start Can Reuse It"
+    "相同前缀的缓存复用",
+    "Cache Reuse for Matching Prefixes"
    ],
    "d": [
     "新请求和旧请求的开头相同时，直接用存好的 KV Cache，跳过这一段预填充，第一个字出来得更快。",
     "When a new request starts the same way as an earlier one, the stored KV cache is used directly and that part of prefill is skipped, so the first token arrives sooner."
    ],
    "s": [
-    "开头相同就复用",
-    "Reuse a shared start"
+    "前缀复用",
+    "Prefix Reuse"
    ],
    "b": [
     [
@@ -176,16 +176,16 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "上下文越长，KV 越大，等得越久",
-    "Longer Context, Bigger KV, Longer Wait"
+    "上下文长度与缓存开销",
+    "Context Length and Cache Overhead"
    ],
    "d": [
     "提示词越长，KV Cache 占得越多，预填充也越久，而且时间比长度涨得更快。",
     "The longer the prompt, the more space the KV cache takes and the longer prefill runs, and the time grows faster than the length."
    ],
    "s": [
-    "越长越久",
-    "Longer, slower"
+    "缓存开销",
+    "Cache Overhead"
    ],
    "b": [
     [
@@ -200,16 +200,16 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "显存放不下：旧的被挤掉，回头只能重算",
-    "GPU Memory Fills up: Old KV Is Evicted and Must Be Recomputed"
+    "显存缓存淘汰与重算",
+    "GPU Cache Eviction and Recomputation"
    ],
    "d": [
-    "显存里先放模型权重，留给 KV Cache 的地方有限；放满了，最早的 KV 被挤掉，那个请求再来时只能重新预填充。",
-    "GPU memory holds the model weights first, leaving limited room for KV cache. When it is full, the oldest KV is evicted, and when that request comes back it has to be prefilled again."
+    "显存容量限制可保留的 KV 数据量。被淘汰的前缀在无其他可复用副本时需要重新预填充。",
+    "GPU memory limits the amount of resident KV data. An evicted prefix requires prefill again when no reusable copy remains."
    ],
    "s": [
-    "放不下就重算",
-    "Evicted, recomputed"
+    "淘汰与重算",
+    "Eviction and Recomputation"
    ],
    "b": [
     [

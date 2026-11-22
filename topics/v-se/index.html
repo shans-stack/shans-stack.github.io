@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-se.css?v=4c869fb6">
 <script>window.SS_ROOT='../../';</script>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-se.js?v=c3090a83"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/520,480/500],
  "steps": [
   {
-   "s": [
-    "每块盘都挂上",
-    "Mount every drive"
-   ],
    "t": [
     "每台 CNode 挂载集群中的 SSD",
     "Every CNode Mounts the Cluster’s SSDs"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "每台 CNode 启动时经 NVMe-oF 挂载集群中的共享 SSD。",
     "Each CNode mounts the shared SSDs over NVMe-oF at boot."
+   ],
+   "s": [
+    "SSD 挂载",
+    "SSD Mounts"
    ],
    "b": [
     [
@@ -99,10 +99,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "没有主人",
-    "No owner"
-   ],
    "t": [
     "接到读取请求的 CNode 直接访问盘",
     "The Receiving CNode Accesses the Drives Directly"
@@ -110,6 +106,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "CNode 先读共享元数据，再按位置从共享 SSD 读取数据。",
     "The CNode reads shared metadata, then fetches the data from the shared SSDs."
+   ],
+   "s": [
+    "共享 SSD 访问",
+    "Shared SSD Access"
    ],
    "b": [
     [
@@ -121,10 +121,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "找元数据",
-    "Find metadata"
-   ],
    "t": [
     "一致性哈希定位 V-Tree 根",
     "Consistent Hashing Locates the V-Tree Root"
@@ -132,6 +128,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "CNode 对元素的唯一标识做哈希，找到持有树根的 DBox。",
     "A CNode hashes the element’s unique handle to locate a DBox that holds its root."
+   ],
+   "s": [
+    "找元数据",
+    "Find metadata"
    ],
    "b": [
     [
@@ -145,10 +145,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "锁",
-    "Locks"
-   ],
    "t": [
     "元素锁协调同一数据范围的写入",
     "Element Locks Coordinate Writes to the Same Range"
@@ -156,6 +152,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "竞争同一范围的 CNode 根据元素锁中记录的持有者 ID 联系对方。",
     "A contending CNode uses the owner ID in the element lock to contact its holder."
+   ],
+   "s": [
+    "锁",
+    "Locks"
    ],
    "b": [
     [
@@ -169,10 +169,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "事务令牌",
-    "Transaction tokens"
-   ],
    "t": [
     "事务令牌记录 CNode 故障时的更新状态",
     "Transaction Tokens After a CNode Failure"
@@ -180,6 +176,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "遇到无响应 CNode 的未完成事务，另一台 CNode 仍可读取先前一致的元数据。",
     "If a CNode stops responding mid-update, another can read the previous metadata."
+   ],
+   "s": [
+    "事务令牌",
+    "Transaction tokens"
    ],
    "b": [
     [
@@ -193,10 +193,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "条带铺满",
-    "Wide stripes"
-   ],
    "t": [
     "纠删码条带跨共享 SSD",
     "Erasure-coded Stripes Span Shared SSDs"
@@ -204,6 +200,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "直接访问共享盘，使 CNode 可以将一个纠删码条带分布到多块 SSD。",
     "Direct access to shared drives lets a CNode place a stripe across multiple SSDs."
+   ],
+   "s": [
+    "跨 SSD 条带",
+    "Striping Across SSDs"
    ],
    "b": [
     [

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-dase.css?v=2ac9ec9e">
 <script>window.SS_ROOT='../../';</script>
@@ -66,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-dase.js?v=e85f5b92"></script>
@@ -79,17 +79,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/520,480/460],
  "steps": [
   {
-   "s": [
-    "传统做法",
-    "Traditional"
-   ],
    "t": [
-    "传统做法：每台节点只管自己的盘",
-    "Traditional: Each Node Manages Only Its Own Drives"
+    "共享无架构中的节点本地存储",
+    "Node-Local Storage in a Shared-Nothing Architecture"
    ],
    "d": [
     "每台节点带着自己的盘和缓存，节点之间需要持续相互协调。",
     "Each node carries its own drives and cache, so nodes must constantly coordinate with one another."
+   ],
+   "s": [
+    "传统做法",
+    "Traditional"
    ],
    "b": [
     [
@@ -103,17 +103,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
+   "t": [
+    "CNode 计算与 DBox 存储分离",
+    "Separation of CNode Compute and DBox Storage"
+   ],
+   "d": [
+    "在 CNode/DBox 部署中，CNode 执行存储逻辑，DBox 提供持久介质。",
+    "In a CNode/DBox deployment, CNodes execute storage logic and DBoxes provide persistent media."
+   ],
    "s": [
     "解耦",
     "Disaggregated"
-   ],
-   "t": [
-    "第一个词「解耦」：存储逻辑放在 CNode，盘放进 DBox",
-    "The First Word, Disaggregated: Storage Logic in CNodes, Drives in DBoxes"
-   ],
-   "d": [
-    "DASE 的 D 是解耦：跑逻辑的 CNode 和装盘的 DBox 分开。",
-    "The D in DASE stands for disaggregated: the CNodes that run the logic are separate from the DBoxes that hold the drives."
    ],
    "b": [
     [
@@ -127,41 +127,41 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
+   "t": [
+    "CNode 访问共享 SSD",
+    "CNodes Access Shared SSDs"
+   ],
+   "d": [
+    "各 CNode 经 NVMe-oF 访问共享 SSD，数据、元数据和事务状态保存在共享介质上。",
+    "CNodes access shared SSDs over NVMe-oF. Data, metadata, and transaction state reside on shared media."
+   ],
    "s": [
     "全共享",
     "Shared everything"
    ],
-   "t": [
-    "第二个词「全共享」：每台 CNode 都挂上每一块盘",
-    "The Second Part, Shared Everything: Every CNode Mounts Every Drive"
-   ],
-   "d": [
-    "每台 CNode 开机就挂上集群里的每一块 SSD，没有哪块盘归哪台 CNode。",
-    "Every CNode mounts every SSD in the cluster at start-up; no drive belongs to any particular CNode."
-   ],
    "b": [
     [
-     "<p>后半个词是 Shared Everything（全共享）。集群里每一台 CNode 开机时都经 NVMe-oF 挂上集群中的每一块 SSD。数据、元数据和事务状态都放在这些共享的盘上，而不是放在某台节点的内存里。</p>",
-     "<p>这和第 1 步正好相反：那边一块盘只属于一台节点，这边任何一台 CNode 都能直接碰到任何一块盘。后面讲的很多设计（比如条带可以铺满整个集群的盘）都从这一条出发。</p>"
+     "<p>各 CNode 经 NVMe-oF 访问集群的共享 SSD。数据、元数据和事务状态持久化在共享介质上。</p>",
+     "<p>纠删码条带可跨多个存储机箱的 SSD 分布。</p>"
     ],
     [
-     "<p>The second part is Shared Everything. At start-up every CNode in the cluster mounts every SSD in the cluster over NVMe-oF. Data, metadata and transaction state all live on these shared drives rather than in any node&#x27;s memory.</p>",
-     "<p>This is the opposite of step 1: there a drive belongs to one node; here any CNode can reach any drive directly. Many later design choices (such as stripes that can span every drive in the cluster) start from this point.</p>"
+     "<p>CNodes access the cluster’s shared SSDs over NVMe-oF. Data, metadata, and transaction state persist on shared media.</p>",
+     "<p>Erasure-coded stripes can span SSDs in multiple storage enclosures.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "写到盘上才回话",
-    "ACK after the drive"
-   ],
    "t": [
-    "状态只放在共享盘上：写到盘上才回话",
-    "State Lives Only on Shared Drives: No Reply Until It Is on the Drive"
+    "持久化状态与写入确认",
+    "Persistent State and Write Acknowledgment"
    ],
    "d": [
     "CNode 不在内存里攒写入，数据和元数据落到共享盘上之后才确认。",
     "CNodes do not collect writes in memory; they confirm only after data and metadata reach the shared drives."
+   ],
+   "s": [
+    "写入确认",
+    "Write Acknowledgment"
    ],
    "b": [
     [
@@ -170,55 +170,55 @@ window.SS_TOPIC_CFG={
     ],
     [
      "<p>CNodes are stateless: any action that changes state is written to the shared drives before the client gets an acknowledgement (ACK). CNodes do not collect writes in memory, and they keep no read cache or metadata cache.</p>",
-     "<p>This works because the NVMe-oF path from a CNode to the drives is short, and the only copy of the metadata is on the shared drives, so there is no need for another copy on the node. On whether skipping the cache makes it slow, VAST&#x27;s answer is that caching assumes fetching remote data is expensive; once that cost is small, the consistency, coordination and recovery problems a cache brings outweigh its benefit.</p>"
+     "<p>This works because the NVMe-oF path from a CNode to the drives is short, and the only copy of the metadata is on the shared drives, so there is no need for another copy on the node. On whether skipping the cache makes it slow, VAST's answer is that caching assumes fetching remote data is expensive; once that cost is small, the consistency, coordination and recovery problems a cache brings outweigh its benefit.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "不用协调",
-    "No coordination"
-   ],
    "t": [
-    "没有缓存，就不用互相协调",
-    "No Cache, so No Coordination"
+    "缓存一致性与并发协调",
+    "Cache Coherence and Concurrency Coordination"
    ],
    "d": [
-    "CNode 之间不用确认谁手里的数据新，每台都直接去盘上取；数据照样走网络。",
-    "CNodes never need to check whose copy is newer; each goes straight to the drives. Data still travels over the network."
+    "CNode 直接访问共享介质，对同一数据范围的并发修改仍由锁协调。",
+    "CNodes access shared media directly. Locks still coordinate concurrent changes to the same data range."
+   ],
+   "s": [
+    "并发协调",
+    "Concurrency Coordination"
    ],
    "b": [
     [
-     "<p>既然没有哪台 CNode 手里有「自己的一份」，也就没有缓存一致性要维护。第 1 步里节点之间那类锁和缓存同步的往返，在 DASE 的同步读写路径上就没有了。</p>",
-     "<p>准确地说：被消除的是缓存一致性这类协调流量。CNode 不留缓存，就不用互相确认谁手里的数据新；多台 CNode 争用同一段数据时，仍要通过元素锁联系锁的持有者，见 Shared Everything 那一站。数据本身仍然要经 NVMe-oF 网络从 CNode 送到盘、从盘取回来，这部分并没有消失。所以说「没有东西向流量」不准确，准确的说法是「常规读写不需要节点之间的缓存协调」。</p>"
+     "<p>常规读写无需在 CNode 之间同步各自的数据缓存。多个 CNode 竞争同一数据范围时，元素锁仍协调更新。</p>",
+     "<p>CNode 与 SSD 之间的数据传输继续使用 NVMe-oF 网络。</p>"
     ],
     [
-     "<p>Since no CNode holds a copy of its own, there is no cache coherence to maintain. The lock and cache-sync round trips between nodes from step 1 disappear from DASE&#x27;s synchronous read and write path.</p>",
-     "<p>To be precise: what goes away is cache-coherence coordination. CNodes keep no cache, so they never need to check whose copy is newer; when several CNodes contend for the same data, they still contact the lock holder through element locks, as the Shared Everything stop shows. The data itself still travels over the NVMe-oF network from CNodes to drives and back; that part does not disappear. So saying there is no east-west traffic is inaccurate; the accurate statement is that routine reads and writes need no cache coordination between nodes.</p>"
+     "<p>Routine reads and writes do not require synchronization of separate CNode data caches. Element locks still coordinate updates when CNodes contend for the same data range.</p>",
+     "<p>Data transfers between CNodes and SSDs continue to use the NVMe-oF fabric.</p>"
     ]
    ]
   },
   {
+   "t": [
+    "CNode 故障与存储访问连续性",
+    "CNode Failure and Continued Storage Access"
+   ],
+   "d": [
+    "一台 CNode 失效后，仍在运行的 CNode 可从共享介质访问数据。",
+    "After a CNode fails, surviving CNodes can access data on shared media."
+   ],
    "s": [
     "坏一台 CNode",
     "A CNode fails"
    ],
-   "t": [
-    "坏一台 CNode，盘一块不少",
-    "Lose a CNode, Keep Every Drive"
-   ],
-   "d": [
-    "CNode 坏了，别的 CNode 照样能访问全部的盘；换成传统做法，节点坏了，它的盘也一起下线。",
-    "When a CNode fails, the other CNodes still reach every drive. In the traditional design, a failed node takes its drives offline with it."
-   ],
    "b": [
     [
-     "<p>CNode 里不存数据，坏了一台，数据都还在共享盘上，其余 CNode 照样能访问每一块盘，客户端的请求改由它们处理。对比第 1 步的传统做法，一台节点坏了，挂在它下面的盘就一起访问不到了。</p>",
+     "<p>CNode 的失效与共享介质的可用性分开处理。其余 CNode 可访问共享 SSD，并继续处理转移的客户端请求。</p>",
      "<p>这一步说明 DASE 把「算」和「存」的故障拆开了：CNode 坏只影响算力，不影响数据。盘那一侧的高可用由 DBox 自己负责，见 DBox 这一站。</p>"
     ],
     [
-     "<p>CNodes store no data, so when one fails all the data is still on the shared drives; the remaining CNodes can still reach every drive and take over the client requests. Compare the traditional design from step 1: when a node fails, the drives attached to it become unreachable too.</p>",
-     "<p>This step shows that DASE separates compute failures from storage failures: a failed CNode costs processing capacity, not data. High availability on the drive side is the DBox&#x27;s own job; see the DBox stop.</p>"
+     "<p>CNode failure and shared-media availability are handled separately. Surviving CNodes can access the shared SSDs and serve redirected requests.</p>",
+     "<p>This step shows that DASE separates compute failures from storage failures: a failed CNode costs processing capacity, not data. High availability on the drive side is the DBox's own job; see the DBox stop.</p>"
     ]
    ]
   }

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/pfs.css?v=4838881c">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,8 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://doc.lustre.org/lustre_manual.xhtml&quot;&gt;Lustre Operations Manual&lt;/a&gt;"><a href="https://doc.lustre.org/lustre_manual.xhtml">Lustre 操作手册：文件系统组件、客户端和文件布局</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Configuring_Lustre_File_Striping&quot;&gt;Managing Lustre File Striping&lt;/a&gt;"><a href="https://wiki.lustre.org/Configuring_Lustre_File_Striping">Lustre 文件条带配置与访问模式</a></li>
     </ul></div>
   </div>
 </main>
@@ -62,10 +64,10 @@
   <span>© 2026 Shan's Stack</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/pfs.js?v=216ec8ac"></script>
@@ -94,8 +96,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "元数据给出文件布局",
-    "Metadata Provides the File Layout"
+    "元数据服务返回文件布局",
+    "The Metadata Service Provides the File Layout"
    ],
    "d": [
     "客户端打开文件时，从元数据服务取得文件属性和数据布局。",
@@ -166,8 +168,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "条带数随文件和访问方式选择",
-    "Stripe Count Follows File Size and Access Patterns"
+    "条带布局与访问模式",
+    "Stripe Layout and Access Patterns"
    ],
    "d": [
     "顺序读取的大文件可利用多个目标，小文件可用较窄布局控制开销。",

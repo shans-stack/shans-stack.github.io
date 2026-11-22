@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/d-exa.css?v=207dbf3f">
 <script>window.SS_ROOT='../../';</script>
@@ -67,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/d-exa.js?v=789bbb1d"></script>
@@ -82,8 +82,8 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "一台服务器供不过来",
-    "One Server Cannot Keep Up"
+    "单文件服务器的访问瓶颈",
+    "Single-Server File Access Bottleneck"
    ],
    "d": [
     "很多计算节点同时读同一份数据，单台文件服务器只有一个出口，请求在它门口排队。",
@@ -91,19 +91,19 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>GPU 集群和超算里，几百上千台计算节点常常要同时读同一个训练集、写同一批结果。如果所有文件都放在一台文件服务器上（比如一台 NFS 服务器），每个节点都只能访问这一台，它的网口和处理能力就是全体的上限。节点越多，排在它门口的请求越长。</p>",
+     "<p>GPU 集群与超算的计算节点可并发读取训练数据、写入结果。由单台文件服务器服务全部请求时，其链路和处理能力限制聚合访问性能。</p>",
      "<p>并行文件系统要解决的就是这件事：让数据分散在很多台服务器上，节点可以同时找它们要数据。EXAScaler 就是这样一套并行文件系统，下面几步讲它的基本做法。</p>"
     ],
     [
-     "<p>In GPU clusters and supercomputers, hundreds or thousands of compute nodes often need to read the same training set and write the same batch of results at once. If every file sits on one file server (an NFS server, say), every node can only talk to that one machine, and its network port and processing power cap the whole cluster. The more nodes, the longer the queue at its door.</p>",
+     "<p>Compute nodes in GPU clusters and supercomputers can read training data and write results concurrently. When a single file server serves every request, its links and processing capacity limit aggregate I/O.</p>",
      "<p>A parallel file system solves exactly this: data is spread across many servers, and nodes can ask all of them for data at the same time. EXAScaler is such a parallel file system, and the next steps show how it works.</p>"
     ]
    ]
   },
   {
    "t": [
-    "元数据和数据分开管",
-    "Metadata and Data Are Managed Separately"
+    "元数据与文件数据服务",
+    "Metadata and File Data Services"
    ],
    "d": [
     "元数据服务器只管目录、文件名和文件布局；数据服务器存文件内容。",
@@ -122,8 +122,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "先问元数据服务器要布局",
-    "First, Ask the Metadata Server for the Layout"
+    "从元数据服务获取布局",
+    "Layout Lookup Through the Metadata Service"
    ],
    "d": [
     "打开文件时，客户端先向元数据服务器拿一张布局：这个文件的各块在哪几台数据服务器上。",
@@ -142,8 +142,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "再直接找数据服务器，几台一起读",
-    "Then Go Straight to the Data Servers, Several at Once"
+    "并行访问数据服务器",
+    "Parallel Access to Data Servers"
    ],
    "d": [
     "拿到布局后，客户端直接并行读写多台数据服务器，元数据服务器不在这条路上。",
@@ -162,8 +162,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "带宽叠在一起",
-    "Bandwidth Adds Up"
+    "聚合带宽与并发访问",
+    "Aggregate Bandwidth and Concurrent Access"
    ],
    "d": [
     "同样一段时间，从几台服务器同时取数，送到的数据比只靠一台多得多。",
@@ -212,11 +212,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>前面几步讲的都是 Lustre 本身的机制。EXAScaler 是 DDN 基于 Lustre 的商业发行版，在这个底座上加了一些公开功能：把元数据分散到多台服务器（DNE3）、小文件直接放在元数据层（DoM）、文件越写越大时自动换布局（PFL）、闪存和硬盘之间自动分层（Hot Pools）、多租户隔离、给不装客户端的应用用的 NFS / SMB 和 S3 网关，以及管理和监控工具（Insight）。</p>",
-     "<p>交付形态上，EXAScaler 通常预装并调好在 DDN 的存储硬件上，上架就能给 GPU 集群用。</p>"
+     "<p>DDN 将 EXAScaler 作为面向高性能计算与 GPU 集群的存储平台交付。</p>"
     ],
     [
      "<p>Everything in the previous steps is Lustre itself. EXAScaler is DDN's commercial distribution based on Lustre, adding public features on top of that base: spreading metadata across several servers (DNE3), storing small files directly on the metadata tier (DoM), switching layout automatically as a file grows (PFL), automatic tiering between flash and disk (Hot Pools), multi-tenant isolation, NFS / SMB and S3 gateways for applications without the client, and management and monitoring tools (Insight).</p>",
-     "<p>As for delivery, EXAScaler usually comes preinstalled and tuned on DDN storage hardware, ready to serve a GPU cluster once racked.</p>"
+     "<p>DDN delivers EXAScaler as a storage platform for HPC and GPU clusters.</p>"
     ]
    ]
   }

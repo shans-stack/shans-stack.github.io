@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-econ.css?v=699bf034">
 <script>window.SS_ROOT='../../';</script>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-econ.js?v=6736c99d"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/480,480/580],
  "steps": [
   {
-   "s": [
-    "成本口径",
-    "Cost measures"
-   ],
    "t": [
     "从裸容量到有效容量",
     "From Raw Capacity to Effective Capacity"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "每 TB 有效容量的购置成本，用系统购置成本除以有效容量。年度成本另计使用年限。",
     "Acquisition cost per effective TB divides the system purchase cost by its effective capacity. Annualized cost also accounts for service life."
+   ],
+   "s": [
+    "成本口径",
+    "Cost measures"
    ],
    "b": [
     [
@@ -101,10 +101,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "超大规模闪存",
-    "Hyperscale flash"
-   ],
    "t": [
     "高密度闪存降低介质成本",
     "High-density Flash Lowers Media Cost"
@@ -112,6 +108,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 采用面向超大规模场景的 QLC SSD，提高单颗闪存芯片的容量。",
     "VAST uses hyperscale QLC SSDs, which hold more data per flash chip."
+   ],
+   "s": [
+    "超大规模闪存",
+    "Hyperscale flash"
    ],
    "b": [
     [
@@ -125,10 +125,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "使用年限",
-    "Service life"
-   ],
    "t": [
     "写入方式影响闪存磨损",
     "Write Patterns Affect Flash Wear"
@@ -136,6 +132,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 使用 SCM 写缓冲，并将迁往闪存的数据组织成与闪存页对齐的较大写入。",
     "VAST uses an SCM write buffer and migrates data to flash in larger, page-aligned writes."
+   ],
+   "s": [
+    "使用年限",
+    "Service life"
    ],
    "b": [
     [
@@ -149,10 +149,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "保护开销",
-    "Protection"
-   ],
    "t": [
     "条带宽度决定校验空间占比",
     "Stripe Width Determines the Parity Share"
@@ -160,6 +156,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "白皮书以 8+2 条带的 20% 和 Classic DBox 配置下 146+4 条带的约 2.7%，说明校验占条带容量的比例。",
     "The white paper illustrates the parity share of stripe capacity with 20% for an 8+2 stripe and about 2.7% for a 146+4 stripe in a Classic DBox configuration."
+   ],
+   "s": [
+    "保护开销",
+    "Protection"
    ],
    "b": [
     [
@@ -173,10 +173,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "数据缩减",
-    "Data reduction"
-   ],
    "t": [
     "数据缩减提高有效容量",
     "Data Reduction Increases Effective Capacity"
@@ -184,6 +180,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "迁往容量层时先去重，再压缩。启用相似性压缩时，系统也评估该方式的缩减收益。",
     "During migration to the capacity tier, deduplication runs before compression. With similarity reduction enabled, the system also evaluates its space savings."
+   ],
+   "s": [
+    "数据缩减",
+    "Data reduction"
    ],
    "b": [
     [
@@ -197,10 +197,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "成本与容量",
-    "Cost and capacity"
-   ],
    "t": [
     "分别计算购置成本和年度成本",
     "Calculate Acquisition and Annualized Costs Separately"
@@ -208,6 +204,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "介质成本影响购置投入，保护和缩减影响有效容量，使用年限影响购置投入的年度分摊。",
     "Media cost contributes to the purchase cost, protection and reduction affect effective capacity, and service life determines how the purchase is annualized."
+   ],
+   "s": [
+    "成本与容量",
+    "Cost and capacity"
    ],
    "b": [
     [

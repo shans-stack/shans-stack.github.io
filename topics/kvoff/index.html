@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/kvoff.css?v=2af12d52">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/docs/transformers/cache_explanation&quot;&gt;Hugging Face Transformers: Caching&lt;/a&gt;"><a href="https://huggingface.co/docs/transformers/cache_explanation">Hugging Face Transformers：KV 缓存机制</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vllm.ai/en/latest/design/prefix_caching/&quot;&gt;vLLM: Automatic Prefix Caching Design&lt;/a&gt;"><a href="https://docs.vllm.ai/en/latest/design/prefix_caching/">vLLM 自动前缀缓存：块哈希和复用</a></li>
+      <li data-en="&lt;a href=&quot;https://lmcache.ai/wp-content/uploads/2026/07/tech_report.pdf&quot;&gt;LMCache: An Efficient KV Cache Layer for Enterprise-Scale LLM Inference&lt;/a&gt;"><a href="https://lmcache.ai/wp-content/uploads/2026/07/tech_report.pdf">LMCache 原论文：多层 KV 缓存、预取及传输成本</a></li>
     </ul></div>
   </div>
 </main>
@@ -62,10 +65,10 @@
   <span>© 2026 Shan's Stack</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/kvoff.js?v=05fbdb3c"></script>
@@ -94,8 +97,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "将可复用的块保存到低层",
-    "Reusable Blocks Can Move to a Lower Tier"
+    "分层缓存与显存回收",
+    "Cache Tiering and GPU Memory Reclamation"
    ],
    "d": [
     "可复用但暂时不用的块可以复制到主机内存、盘或共享存储，再回收显存槽位。",
@@ -103,10 +106,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>卸载是将缓存块移出显存工作集的过程。工作集是当前计算需要保留的状态。主机内存提供本机缓存层，本地 SSD 或可共享的存储可以提供更大的保留空间。一个分层设计可以在低层副本保存完成后回收对应显存，同时保留正在使用的块。</p>"
+     "<p>卸载将可复用的缓存块保存到显存以外的层级。分层实现可使用主机内存、本地 SSD 或共享存储。缓存策略决定哪些块留在显存，以及何时回收已保存副本所占用的显存槽位。</p>"
     ],
     [
-     "<p>Offloading moves cached blocks out of the GPU working set, the state needed by current computation. Host memory provides a local cache tier. A local SSD or shared store can offer more room for retained blocks. A tiered design can reclaim the corresponding GPU slots once it has stored the lower-tier copy, while retaining active blocks.</p>"
+     "<p>Offloading stores reusable cache blocks in tiers outside GPU memory. A tiered implementation can use host memory, local SSDs, or shared storage. Cache policy determines what remains resident and when GPU slots can be reclaimed after copies are stored.</p>"
     ]
    ]
   },
@@ -121,10 +124,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>前缀是输入开头的一段连续 token。前缀缓存可以用当前块的 token 和先前前缀共同生成缓存键，并结合模型、配置及隔离范围区分可复用状态。命中低层缓存后，推理引擎把相应 KV 块放回显存，后续计算可直接使用这些结果。</p>"
+     "<p>前缀是输入开头的连续 token。vLLM 的前缀缓存以父块哈希、当前块 token 和可选附加标识生成块键，附加标识可区分适配器或隔离范围。分层实现命中低层缓存时，可将相应块加载到显存。</p>"
     ],
     [
-     "<p>A prefix is a contiguous sequence of tokens at the start of an input. A prefix cache can build a key from the block's tokens and the preceding prefix, while accounting for model, configuration, and isolation scope. On a lower-tier hit, the engine loads the corresponding KV blocks into GPU memory for subsequent computation.</p>"
+     "<p>A prefix is the contiguous sequence of tokens at the start of an input. vLLM derives a cache block key from the parent hash, the block tokens, and optional identifiers that can distinguish adapters or isolation scopes. A tiered implementation can load matching blocks from a lower cache tier into GPU memory.</p>"
     ]
    ]
   },
@@ -152,15 +155,15 @@ window.SS_TOPIC_CFG={
     "The Benefit Depends on Retrieval and Recomputation Cost"
    ],
    "d": [
-    "缓存命中采用回读仍有代价，只有回读路径比被替代的计算更快时才会缩短这一段等待。",
-    "Even a cache hit costs time to retrieve. It reduces the wait for this stage when retrieval is faster than the computation it replaces."
+    "回读路径的收益取决于传输、显存回填与可省去的预填充计算。",
+    "The benefit of a cache reload depends on transfer, restoration into GPU memory, and the prefill work avoided."
    ],
    "b": [
     [
-     "<p>回读时间取决于数据量、读取路径的等待与有效带宽，以及将块放入显存的开销。重算时间取决于要重新处理的前缀和 GPU 上的计算负载。预取是在需要前发起读取，可以把一部分等待与其他处理重叠。示例中的两条路径都以生成阶段可用的 KV 块为终点。</p>"
+     "<p>回读时间取决于块大小、存储延迟、链路有效带宽及显存回填开销。重算时间取决于待处理的 token 和 GPU 负载。预取可将部分 I/O 与其他计算重叠。两条路径最终都提供解码所需的 KV 状态。</p>"
     ],
     [
-     "<p>Retrieval time depends on the amount of data, the read path's latency and effective bandwidth, and the cost of placing blocks in GPU memory. Recomputation time depends on the prefix to be processed again and the GPU workload. Prefetching starts a read before the blocks are needed and can overlap some of the wait with other work. Both paths end with KV blocks available for generation.</p>"
+     "<p>Reload time depends on block size, storage latency, effective link bandwidth, and the cost of restoring data into GPU memory. Recomputation time depends on the tokens to process and GPU load. Prefetching can overlap some I/O with other computation. Both paths ultimately produce the KV state needed for decoding.</p>"
     ]
    ]
   }

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/gds.css?v=248f8e94">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,7 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/gpudirect-storage/design-guide/gpudirect-storage-benefits.html&quot;&gt;NVIDIA GPUDirect Storage Design Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/gpudirect-storage/design-guide/gpudirect-storage-benefits.html">NVIDIA GPUDirect Storage 设计指南：直接路径及 CPU 开销</a></li>
       <li data-en="NVIDIA GPUDirect Storage documentation (docs.nvidia.com/gpudirect-storage).">NVIDIA GPUDirect Storage 官方文档（docs.nvidia.com/gpudirect-storage）。</li>
       <li data-en="NVIDIA GTC 2025 session S73012, How to Get Data Between Storage and the GPU at the Speed of Light.">NVIDIA GTC 2025 演讲 S73012《How to Get Data Between Storage and the GPU at the Speed of Light》。</li>
       <li data-en="NVIDIA blog, As AI Increases Demands on Memory, Storage Steps Up (August 2026, cuFile open-sourced).">NVIDIA 官方博客《As AI Increases Demands on Memory, Storage Steps Up》（2026-08，cuFile 开源）。</li>
@@ -67,10 +68,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/gds.js?v=2c0ae68f"></script>
@@ -80,122 +81,120 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/506],
  "steps": [
   {
-   "s": [
-    "老路：中转",
-    "Old path: bounce"
-   ],
    "t": [
-    "老路：先进主机内存，再拷给 GPU",
-    "The Old Path: Into Host Memory First, Then Copied to the GPU"
+    "经主机内存中转的存储路径",
+    "Storage Transfers Staged Through Host Memory"
    ],
    "d": [
-    "数据从盘上读出来，先落进主机内存里的中转区，再由 CPU 拷一次到 GPU 显存。",
-    "Data read from the drive first lands in a staging area in host memory, then the CPU copies it again into GPU memory."
+    "传统中转路径先将数据读入主机内存，再复制到 GPU 显存。",
+    "A staged path reads data into host memory before a second transfer to GPU memory."
+   ],
+   "s": [
+    "主机内存中转",
+    "Host-Memory Staging"
    ],
    "b": [
     [
-     "<p>GPU 要读存储里的数据（训练样本、模型文件、检查点），走标准文件系统时，数据先由盘送到主机内存里一块临时的中转区，业内叫 bounce buffer，再由 CPU 发起第二次拷贝，送进 GPU 自己的显存。GPU 显存（HBM）是 GPU 自带的高速内存，计算只能用这里的数据。</p>",
-     "<p>同一份数据搬运两次，中间还需要 CPU 参与。数据量小时影响不明显，数据量增大后的情况见下一步。</p>"
+     "<p>常规存储读取可以先将数据传到主机内存中的中转缓冲区（bounce buffer），再由主机发起到 GPU 显存的复制。模型文件、训练样本和检查点均可沿这一类路径传输。</p>"
     ],
     [
-     "<p>When a GPU reads data from storage (training samples, model files, checkpoints) through a standard file system, the drive first delivers the data to a temporary staging area in host memory, known in the industry as a bounce buffer. The CPU then starts a second copy into the GPU's own memory. GPU memory (HBM) is the GPU's built-in high-speed memory, and computation can only use data that is there.</p>",
-     "<p>One piece of data is moved twice, with the CPU involved in between. With little data the effect is not noticeable; the next step shows larger volumes.</p>"
+     "<p>A conventional storage read can transfer data first to a bounce buffer in host memory. The host then initiates a separate copy to GPU memory. Model files, training samples, and checkpoints can all follow this path.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "中转成瓶颈",
-    "The bounce bottleneck"
-   ],
    "t": [
-    "数据一多，中转就成了瓶颈",
-    "With More Data, the Bounce Becomes the Bottleneck"
+    "主机中转增加传输开销",
+    "Host Staging Adds Transfer Overhead"
    ],
    "d": [
-    "数据越来越多，主机内存那一段要来回走两趟，CPU 也越来越忙。",
-    "As data grows, the link to host memory carries every piece twice, and the CPU gets busier and busier."
+    "主机内存中转产生额外的数据传输与 CPU 控制开销。",
+    "Host-memory staging adds a data transfer and host-side control overhead."
+   ],
+   "s": [
+    "中转开销",
+    "Staging Overhead"
    ],
    "b": [
     [
-     "<p>盘挂在 CPU 下面时，数据先从盘经 PCIe 上到主机内存，再从主机内存经同一段 PCIe 下到 GPU：CPU 与 PCIe 交换芯片之间的这段链路被占用了两次，同一份数据要用掉这段两回的带宽，同时 CPU 要花时间做拷贝。PCIe 是服务器里连接 CPU、GPU、固态盘、网卡的高速通道。</p>",
-     "<p>GPU 越来越快，供数路径如果仍要绕行，GPU 就会停下来等数据。</p>"
+     "<p>在图示拓扑中，存储和 GPU 位于同一 PCIe 交换结构下。数据进入主机内存，再传回 GPU 时，两次传输都经过与主机相连的 PCIe 链路。该路径增加数据流量与操作提交开销。</p>",
+     "<p>当数据读取限制整个工作负载时，中转开销可能降低 GPU 利用率。</p>"
     ],
     [
-     "<p>When the drive hangs off the CPU, data first travels from the drive over PCIe up to host memory, then from host memory down the same stretch of PCIe to the GPU. The link between the CPU and the PCIe switch chip is used twice, so the same data uses its bandwidth twice over, and the CPU spends time copying. PCIe is the high-speed channel inside a server that connects the CPU, GPUs, solid-state drives and network cards.</p>",
-     "<p>GPUs keep getting faster. If the path that feeds them data still takes a detour, the GPU stops and waits for data.</p>"
+     "<p>In the illustrated topology, storage and the GPU share a PCIe fabric. A transfer to host memory followed by a transfer to the GPU crosses the host-facing PCIe link twice. This adds data traffic and submission overhead.</p>",
+     "<p>Staging overhead can reduce GPU utilization when data input constrains the workload.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "直接进显存",
-    "Straight to GPU memory"
-   ],
    "t": [
-    "GPUDirect Storage：直接进显存",
-    "GPUDirect Storage: Straight into GPU Memory"
+    "GPUDirect Storage：直接传输至显存",
+    "GPUDirect Storage: Direct Transfer to GPU Memory"
    ],
    "d": [
-    "CPU 只发起一次请求，数据从盘经 PCIe 交换芯片直接写进 GPU 显存，不经过主机内存。",
-    "The CPU issues one request, and data goes from the drive through the PCIe switch chip straight into GPU memory, skipping host memory."
+    "在受支持的路径上，存储设备或网卡可通过 DMA 直接传输至 GPU 显存。",
+    "On a supported path, a storage device or network adapter can use DMA to transfer data directly to GPU memory."
+   ],
+   "s": [
+    "直接传输",
+    "Direct Transfer"
    ],
    "b": [
     [
-     "<p>GPUDirect Storage（GDS）是 NVIDIA 让 GPU 直接和本地或远端存储交换数据的技术：数据走 DMA（设备之间直接搬数据、不用 CPU 逐字节拷贝）从盘或网卡直达 GPU 显存，不在主机内存里中转。应用通过 cuFile 这套接口调用它，NVIDIA 已把 cuFile 接口及其下层的存储软件栈开源。</p>",
-     "<p>要走这条直通路，盘或网卡最好和 GPU 挂在同一个 PCIe 交换芯片下面（独立的 PCIe 交换芯片，或用 DPU 充当），数据就不必绕上 CPU。CPU 仍然负责发起请求，但不再搬数据。</p>"
+     "<p>GPUDirect Storage（GDS）用于 GPU 显存与本地或远程存储之间的直接传输。受支持的设备用 DMA 传输数据，省去主机内存中的中转缓冲区。应用可通过 cuFile 接口发起 I/O。</p>",
+     "<p>存储设备或网卡与 GPU 接在同一 PCIe 交换结构下时，某些拓扑可提供直接交换路径。主机仍负责 I/O 提交与控制。</p>"
     ],
     [
-     "<p>GPUDirect Storage (GDS) is NVIDIA's technology for letting GPUs exchange data directly with local or remote storage. Data moves by DMA (devices moving data between themselves without the CPU copying it byte by byte) from the drive or network card straight into GPU memory, with no staging in host memory. Applications call it through the cuFile interface, and NVIDIA has open-sourced the cuFile interface and the storage software stack beneath it.</p>",
-     "<p>For this direct path, the drive or network card should ideally sit under the same PCIe switch chip as the GPU (a separate PCIe switch chip, or a DPU acting as one), so data does not have to go up to the CPU. The CPU still issues the requests but no longer moves the data.</p>"
+     "<p>GPUDirect Storage (GDS) enables direct transfers between GPU memory and local or remote storage. Supported devices transfer data by DMA, avoiding a bounce buffer in host memory. The application can submit I/O through cuFile.</p>",
+     "<p>When a storage device or NIC shares a PCIe fabric with the GPU, some topologies provide a direct switched path. The host still handles I/O submission and control.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "两条路一起跑",
-    "Side by side"
-   ],
    "t": [
-    "两条路一起跑",
-    "The Two Paths Side by Side"
+    "中转路径与直接路径对比",
+    "Staged and Direct Data Paths"
    ],
    "d": [
-    "同样的数据量，直通路送到 GPU 的更多，CPU 也空出来了。",
-    "With the same amount of data, the direct path delivers more to the GPU, and the CPU is freed up."
+    "直接路径可减少主机链路上的数据传输与 CPU 开销。",
+    "A direct path can reduce data traffic on host links and lower CPU overhead."
+   ],
+   "s": [
+    "数据路径对比",
+    "Data-Path Comparison"
    ],
    "b": [
     [
-     "<p>把两条路放在一起跑：经主机内存中转的那条，数据在中转区排队、CPU 一直在拷贝；直通的那条，数据一路送到 GPU，CPU 几乎不参与。省下来的是两样东西：被占两次的那段带宽，以及做拷贝的 CPU 时间。</p>",
-     "<p>典型受益的场景是模型加载、保存和读取检查点，以及推理时读取 KV Cache。并非所有读写都会变快：取决于数据路径上原本有没有这次中转，以及存储系统是否支持 GDS。</p>"
+     "<p>经主机内存中转的路径需要先传输到主机缓冲区，再传输到显存。GDS 在受支持的直接路径上减少中转及相关 CPU 开销。</p>",
+     "<p>模型加载、检查点读写和推理缓存加载可使用存储直连路径。收益取决于平台拓扑、存储支持和 I/O 模式。</p>"
     ],
     [
-     "<p>Run the two paths together. On the path through host memory, data queues in the bounce buffer and the CPU is busy copying the whole time; on the direct path, data flows all the way to the GPU and the CPU barely takes part. Two things are saved: the bandwidth on the link that was used twice, and the CPU time spent copying.</p>",
-     "<p>Typical beneficiaries are loading models, saving and reading checkpoints, and reading KV cache during inference. Not every read and write gets faster. That depends on whether the data path had this bounce in the first place, and whether the storage system supports GDS.</p>"
+     "<p>A staged path transfers data to a host buffer and then to GPU memory. A supported GDS path removes staging and reduces the associated CPU overhead.</p>",
+     "<p>Model loading, checkpoint I/O, and inference cache loading can use a direct storage path. Benefits depend on topology, storage support, and the I/O pattern.</p>"
     ]
    ]
   },
   {
+   "t": [
+    "本地 NVMe 与远程存储路径",
+    "Local NVMe and Remote Storage Paths"
+   ],
+   "d": [
+    "直接数据路径可由本地 NVMe 设备或远端存储提供，远程路径使用支持 RDMA 的网卡。",
+    "A direct path can use a local NVMe device or remote storage, where an RDMA-capable NIC carries the transfer."
+   ],
    "s": [
     "本地或远端",
     "Local or remote"
    ],
-   "t": [
-    "本地盘、远端存储都能直通",
-    "Local Drives and Remote Storage Both Go Direct"
-   ],
-   "d": [
-    "数据可以来自本机的 NVMe 盘，也可以来自远端存储，经网卡用 RDMA 直接进显存。",
-    "Data can come from a local NVMe drive, or from remote storage through the network card over RDMA, straight into GPU memory."
-   ],
    "b": [
     [
-     "<p>GDS 不只读本机的盘：远端的共享存储可以经支持 RDMA 的网卡，把数据直接写进 GPU 显存，同样不经过主机内存。RDMA 是让网卡直接读写内存、不经过 CPU 的网络技术，见「RDMA 为什么快」。对象存储也有对应的做法（S3 over RDMA），控制命令走普通 HTTP，数据走 RDMA。</p>",
-     "<p>GDS 适合由 CPU 提前知道要读哪些数据、成批发起的请求。如果每个 GPU 线程都要在运行中自己决定读什么，NVIDIA 另有让 GPU 自己发起存储请求的方案。</p>"
+     "<p>GDS 支持本地 NVMe 以及具备相应支持的远程文件或块存储。远程路径中的网卡可经 RDMA 将有效载荷送入 GPU 显存。</p>",
+     "<p>这一模型由主机应用通过 cuFile 提交存储 I/O。</p>"
     ],
     [
-     "<p>GDS does not only read local drives. Remote shared storage can write data straight into GPU memory through an RDMA-capable network card, again without passing through host memory. RDMA is the network technology that lets a network card read and write memory directly without the CPU; see \"Why RDMA is fast\". Object storage has a counterpart too (S3 over RDMA): control commands travel over ordinary HTTP, and data over RDMA.</p>",
-     "<p>GDS suits requests where the CPU knows in advance which data to read and issues them in batches. When each GPU thread has to decide at run time what to read, NVIDIA has a separate approach that lets the GPU issue storage requests itself.</p>"
+     "<p>GDS supports local NVMe and compatible remote file or block storage. On a remote path, an RDMA-capable NIC can deliver the payload to GPU memory.</p>",
+     "<p>In this model, the host application submits storage I/O through cuFile.</p>"
     ]
    ]
   }

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-qlc.css?v=087c7330">
 <script>window.SS_ROOT='../../';</script>
@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="QLC Flash: Dense and Cheap, with Few Erase Cycles">QLC 闪存：容量大、价格低，擦写次数少</h1>
+      <div><h1 data-en="QLC Flash Density and Program-Erase Endurance">QLC 闪存的容量密度与擦写寿命</h1>
         <p class="meta"><span data-en="6 steps · VAST, flash, QLC, SSD endurance">6 步 · VAST、闪存、QLC、SSD 寿命</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-qlc.js?v=3dba0f6a"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/480,480/560],
  "steps": [
   {
-   "s": [
-    "单元密度",
-    "Cell density"
-   ],
    "t": [
     "QLC 单元存储 4 比特",
     "A QLC Cell Stores 4 Bits"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "QLC 区分 16 个电荷档位，每档对应一个 4 比特值。SLC 使用两个状态存储 1 比特。",
     "QLC distinguishes 16 charge levels, each representing a 4-bit value. SLC uses two states to store 1 bit."
+   ],
+   "s": [
+    "单元密度",
+    "Cell density"
    ],
    "b": [
     [
@@ -101,10 +101,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "擦写耐久度",
-    "Program/erase endurance"
-   ],
    "t": [
     "档位越密，越容易受电荷泄漏影响",
     "Closer Levels Increase Sensitivity to Charge Leakage"
@@ -112,6 +108,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "反复擦除会磨损单元的绝缘层。档位越密，相同的电荷损失越容易改变读出的值。",
     "Repeated erasure wears the cell’s insulating layer. With closer levels, the same charge loss is more likely to change the value read."
+   ],
+   "s": [
+    "擦写耐久度",
+    "Program/erase endurance"
    ],
    "b": [
     [
@@ -123,10 +123,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "写缓冲",
-    "Write buffer"
-   ],
    "t": [
     "先在 SCM 保护写入，再迁往 QLC",
     "Protect Writes in SCM Before QLC Migration"
@@ -134,6 +130,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "在常规 SCM 缓冲路径上，数据受到持久化保护后即可确认写入，随后在后台迁往容量层。",
     "On the standard SCM-buffered path, the system acknowledges a write once it is durably protected, then migrates it to the capacity tier in the background."
+   ],
+   "s": [
+    "写缓冲",
+    "Write buffer"
    ],
    "b": [
     [
@@ -145,10 +145,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "写入负载",
-    "Write workload"
-   ],
    "t": [
     "大块顺序写入能提高整盘耐久度",
     "Large Sequential Writes Increase Drive Endurance"
@@ -156,6 +152,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "白皮书用 Intel P4326 说明写入负载的重要性：128 KB 顺序写的整盘耐久度约为 4 KB 随机写的 20 倍。",
     "The white paper uses the Intel P4326 to illustrate workload sensitivity: drive endurance for 128 KB sequential writes is about 20 times that for 4 KB random writes."
+   ],
+   "s": [
+    "写入负载",
+    "Write workload"
    ],
    "b": [
     [
@@ -169,10 +169,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "标称耐久度",
-    "Endurance rating"
-   ],
    "t": [
     "标称耐久度对应特定测试负载",
     "Endurance Ratings Describe a Specified Workload"
@@ -180,6 +176,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 白皮书引用的 JEDEC 负载中，77% 的写入请求为 4 KB 或更小。",
     "In the JEDEC workload cited by the VAST white paper, 77% of write requests are 4 KB or smaller."
+   ],
+   "s": [
+    "标称耐久度",
+    "Endurance rating"
    ],
    "b": [
     [
@@ -193,10 +193,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "集群磨损均衡",
-    "Cluster wear levelling"
-   ],
    "t": [
     "写缓冲、对齐和集群磨损均衡",
     "Write Buffering, Alignment and Cluster-Wide Wear Levelling"
@@ -204,6 +200,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "SCM 缓冲短期更新。容量层按页和擦除块组织数据，并在集群范围内均衡磨损。",
     "SCM buffers transient updates. The capacity tier aligns data to pages and erase blocks and balances wear across the cluster."
+   ],
+   "s": [
+    "集群磨损均衡",
+    "Cluster wear levelling"
    ],
    "b": [
     [

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/msize.css?v=ff5283cc">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,11 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/docs/transformers/cache_explanation&quot;&gt;Hugging Face Transformers: Caching&lt;/a&gt;"><a href="https://huggingface.co/docs/transformers/cache_explanation">Hugging Face Transformers：KV 缓存机制</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.pytorch.org/docs/2.15/notes/ddp.html&quot;&gt;PyTorch: DistributedDataParallel Design Note&lt;/a&gt;"><a href="https://docs.pytorch.org/docs/2.15/notes/ddp.html">PyTorch DistributedDataParallel：梯度分桶与归约</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/pdf/2104.04473&quot;&gt;Megatron-LM: Efficient Large-Scale Language Model Training on GPU Clusters&lt;/a&gt;"><a href="https://arxiv.org/pdf/2104.04473">Megatron-LM：并行组合与设备拓扑</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/pdf/1910.02054&quot;&gt;ZeRO: Memory Optimizations Toward Training Trillion Parameter Models&lt;/a&gt;"><a href="https://arxiv.org/pdf/1910.02054">ZeRO 原论文：模型状态分片及显存开销</a></li>
+      <li data-en="&lt;a href=&quot;https://cloud.google.com/blog/products/ai-machine-learning/bfloat16-the-secret-to-high-performance-on-cloud-tpus&quot;&gt;Google Cloud: BFloat16 Format&lt;/a&gt;"><a href="https://cloud.google.com/blog/products/ai-machine-learning/bfloat16-the-secret-to-high-performance-on-cloud-tpus">Google Cloud：BF16 的 16 位格式</a></li>
     </ul></div>
   </div>
 </main>
@@ -60,10 +65,10 @@
 
 <footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/msize.js?v=bc21973d"></script>
@@ -92,8 +97,8 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "分开估算训练和推理",
-    "Budget Training and Inference Separately"
+    "训练与推理的显存构成",
+    "Training and Inference Memory Components"
    ],
    "d": [
     "训练侧保留梯度、优化器状态和激活，生成推理侧还要为 KV Cache 留空间。",
@@ -110,8 +115,8 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "数据并行复制模型并拆数据",
-    "Data Parallelism Replicates the Model and Splits the Data"
+    "数据并行复制模型并划分样本",
+    "Data Parallelism Replicates Models and Partitions Samples"
    ],
    "d": [
     "每张卡处理不同数据，常规数据并行同步各副本产生的梯度。",
@@ -128,8 +133,8 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "张量并行拆同一层",
-    "Tensor Parallelism Splits a Single Layer"
+    "张量并行划分层内权重",
+    "Tensor Parallelism Partitions Weights Within a Layer"
    ],
    "d": [
     "同一层的权重矩阵分布在多张卡上，设备共同完成这一层。",
@@ -140,14 +145,14 @@ window.SS_TOPIC_CFG = {
      "<p>张量是按一个或多个维度排列的数值。张量并行通常沿某个维度切分层内权重矩阵，让不同设备做各自的局部计算。结果按层结构进行拼接或归约，必要时在卡间交换数据。</p>"
     ],
     [
-     "<p>A tensor is an array of values arranged along one or more dimensions. Tensor parallelism typically partitions a layer&#x27;s weight matrix along a dimension so devices compute local results. Those results are concatenated or reduced as required by the layer, with communication between GPUs where needed.</p>"
+     "<p>A tensor is an array of values arranged along one or more dimensions. Tensor parallelism typically partitions a layer's weight matrix along a dimension so devices compute local results. Those results are concatenated or reduced as required by the layer, with communication between GPUs where needed.</p>"
     ]
    ]
   },
   {
    "t": [
-    "流水线并行拆不同层",
-    "Pipeline Parallelism Splits Groups of Layers"
+    "流水线并行划分模型层",
+    "Pipeline Parallelism Partitions Model Layers"
    ],
    "d": [
     "每张卡负责连续的一组层，微批次依次经过各段。",
@@ -164,12 +169,12 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "按单卡峰值核对分组",
-    "Check Peak Memory per GPU"
+    "并行配置中的单设备峰值显存",
+    "Peak Per-Device Memory in Parallel Configurations"
    ],
    "d": [
-    "并行方式决定哪些内容共享、分片或复制，容量判断要落在占用最高的卡上。",
-    "The parallel layout determines what is shared, partitioned, or replicated, so capacity is governed by the GPU with the highest usage."
+    "并行分组决定各设备持有的状态，峰值显存还包括通信缓冲区和临时张量。",
+    "Parallel groups determine each device’s resident state. Peak memory also includes communication buffers and temporary tensors."
    ],
    "b": [
     [

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/d-stripe.css?v=4b531d21">
 <script>window.SS_ROOT='../../';</script>
@@ -67,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/d-stripe.js?v=2be0b981"></script>
@@ -82,12 +82,12 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "不条带：整个文件在一台服务器上",
-    "No Striping: The Whole File on One Server"
+    "单目标文件布局",
+    "Single-Target File Layout"
    ],
    "d": [
-    "文件全放在一台数据服务器上时，读它只能用这一台的带宽，其他几台闲着。",
-    "When a file sits entirely on one data server, reading it can use only that server's bandwidth while the others sit idle."
+    "文件全部位于一个数据目标时，其访问吞吐受该目标的数据路径限制。",
+    "A file on one data target is limited by the throughput of that target’s data path."
    ],
    "b": [
     [
@@ -102,12 +102,12 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "切成条带，轮流放到几台上",
-    "Cut into Stripes, Placed in Turn Across Several Servers"
+    "文件条带块的轮转布局",
+    "Round-Robin Placement of File Stripes"
    ],
    "d": [
-    "文件按固定大小切成块，第 1 块放第 1 台、第 2 块放第 2 台，轮完一圈再从头来。",
-    "The file is cut into fixed-size chunks: chunk 1 goes to server 1, chunk 2 to server 2, and after one round it starts again."
+    "文件按固定字节数划分条带块，并按轮序分配到选定的数据目标。",
+    "Fixed-length file segments are assigned to selected data targets in round-robin order."
    ],
    "b": [
     [
@@ -122,20 +122,20 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "几台一起出数，带宽叠在一起",
-    "Several Servers Send at Once, and Bandwidth Adds Up"
+    "并行请求利用多个存储目标",
+    "Parallel Requests Use Multiple Storage Targets"
    ],
    "d": [
-    "读的时候几台服务器同时送块，同样时间送到的比一台多。",
-    "On a read, several servers send chunks at the same time, so more arrives in the same time than from one server."
+    "客户端可并行读取分布在不同存储目标的文件区间。",
+    "A client can read file ranges on different storage targets in parallel."
    ],
    "b": [
     [
-     "<p>因为相邻的块在不同的 OST 上，通常也分在不同的服务器上，客户端读一个大文件时可以同时向几台要数据，每台各送自己那几块，速度叠在一起。写也一样：客户端把各块同时发往不同的服务器。</p>",
+     "<p>相邻条带块可分布于不同 OST。它们由不同服务器服务时，客户端可并行向多个服务器提交文件读写请求，利用多条数据路径。</p>",
      "<p>画面是示意，不代表实测数字。实际能叠多少，还取决于网络、客户端和其他作业是否在用同样的服务器。</p>"
     ],
     [
-     "<p>Because neighbouring chunks are on different OSTs, usually on different servers, a client reading a large file can ask several servers at once, each sending its own chunks, and the speeds add up. Writes work the same way: the client sends chunks to different servers at the same time.</p>",
+     "<p>Adjacent stripe segments can reside on different OSTs. When separate servers serve those targets, clients can submit file reads and writes in parallel over multiple data paths.</p>",
      "<p>The animation is schematic, not measured. How much adds up in practice also depends on the network, the client, and whether other jobs are using the same servers.</p>"
     ]
    ]
@@ -146,8 +146,8 @@ window.SS_TOPIC_CFG={
     "Two Parameters: Stripe Size and Stripe Count"
    ],
    "d": [
-    "条带大小是每块多大才换下一台；条带数是这个文件铺几台。",
-    "Stripe size is how big a chunk gets before moving to the next server; stripe count is how many servers the file spans."
+    "条带大小是每个条带区间的字节数，条带数是布局使用的存储目标数。",
+    "Stripe size is the byte length of each stripe segment. Stripe count is the number of storage targets in the layout."
    ],
    "b": [
     [
@@ -162,28 +162,28 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "条带不看文件内容：对不齐要多跑",
-    "Striping Ignores File Contents: Misalignment Costs Extra Trips"
+    "访问边界与条带边界",
+    "Access Boundaries and Stripe Boundaries"
    ],
    "d": [
-    "条带只按字节位置切，不管应用里一条记录在哪；一条记录跨在两块之间时，要找两台服务器。",
-    "Striping cuts by byte position and ignores where a record sits in the application; a record that straddles two chunks needs two servers."
+    "读取跨越条带边界时，客户端可能向多个存储目标发起请求。",
+    "A read crossing a stripe boundary may require requests to several storage targets."
    ],
    "b": [
     [
-     "<p>文件系统切条带时完全不看文件内容。应用自己的数据结构（比如图像格式里的分块、数据库里的一条记录）有自己的边界，和条带的边界是两回事。如果应用要读的一段正好跨在两个条带块之间，这一次读就要同时找两台服务器，每台的那一块都只用到一部分。读的次数多了，就变成大量零碎的小读。</p>",
+     "<p>文件系统按条带布局分配字节范围。应用格式的边界可能与条带块不对齐。一次读取跨越条带边界时，客户端可能需要向多个数据目标请求各自负责的范围。</p>",
      "<p>排查这类问题时，常见的方向是让应用的块大小和条带大小对齐，或者用更大的块去读，让每次读尽量落在一个条带块里。</p>"
     ],
     [
-     "<p>The file system cuts stripes without looking at file contents. The application's own data structures (tiles in an image format, a record in a database) have their own boundaries, unrelated to stripe boundaries. If the piece the application wants to read straddles two stripe chunks, that one read has to go to two servers, using only part of each chunk. With many such reads, I/O turns into lots of small, fragmented reads.</p>",
+     "<p>The file system assigns byte ranges according to the stripe layout. Application-format boundaries may differ from stripe boundaries. A read that crosses a stripe boundary can require requests to multiple targets for the corresponding ranges.</p>",
      "<p>When troubleshooting this, the usual directions are to align the application's block size with the stripe size, or to read in larger blocks so that each read falls within one stripe chunk as far as possible.</p>"
     ]
    ]
   },
   {
    "t": [
-    "按目录设定，建文件时就定好",
-    "Set per Directory, Fixed When a File Is Created"
+    "目录默认布局与新文件继承",
+    "Directory Defaults and Layout Inheritance"
    ],
    "d": [
     "目录可以设默认条带，新文件自动继承；布局在建文件时定好，之后改设置只影响新文件。",

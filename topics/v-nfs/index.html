@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-nfs.css?v=0365d555">
 <script>window.SS_ROOT='../../';</script>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-nfs.js?v=6d14de96"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/520,480/520],
  "steps": [
   {
-   "s": [
-    "挂载",
-    "Mount"
-   ],
    "t": [
     "挂载 NFS 导出",
     "Mount an NFS Export"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 通过 view 导出目录，Linux 客户端可将它挂载到本地路径。",
     "VAST exports a directory through a view, and Linux clients can mount it at a local path."
+   ],
+   "s": [
+    "挂载",
+    "Mount"
    ],
    "b": [
     [
@@ -101,10 +101,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "DNS 轮询",
-    "DNS round robin"
-   ],
    "t": [
     "通过 DNS 分配虚拟 IP",
     "Distribute Virtual IPs Through DNS"
@@ -112,6 +108,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 集群 DNS 从对应的 VIP 池轮询返回地址，将挂载分散到池内的 CNode。",
     "VAST cluster DNS returns addresses from the associated VIP pool in round-robin order, spreading mounts across CNodes in the pool."
+   ],
+   "s": [
+    "DNS 轮询",
+    "DNS round robin"
    ],
    "b": [
     [
@@ -125,10 +125,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "加锁",
-    "Locking"
-   ],
    "t": [
     "在共享元数据中记录字节范围锁",
     "Record Byte-Range Locks in Shared Metadata"
@@ -136,6 +132,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "NFSv3 客户端通过 NLM 请求加锁，VAST 把锁记录持久化在 SCM 上的文件元数据树中。",
     "NFSv3 clients request locks through NLM, and VAST persists lock records in the file metadata tree on SCM."
+   ],
+   "s": [
+    "加锁",
+    "Locking"
    ],
    "b": [
     [
@@ -149,10 +149,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "共享锁状态",
-    "Shared lock state"
-   ],
    "t": [
     "跨 CNode 检查锁冲突",
     "Check for Lock Conflicts Across CNodes"
@@ -160,6 +156,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "另一台 CNode 查询同一份锁状态，发现冲突时，阻塞式加锁请求等待锁释放。",
     "Another CNode checks the shared lock state. If there is a conflict, a blocking lock request waits for release."
+   ],
+   "s": [
+    "共享锁状态",
+    "Shared lock state"
    ],
    "b": [
     [
@@ -171,10 +171,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "坏一台 CNode",
-    "A CNode fails"
-   ],
    "t": [
     "CNode 故障后的 VIP 接管",
     "VIP Takeover After a CNode Failure"
@@ -182,6 +178,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "在线 CNode 接管 VIP 后，客户端通过原地址重试，接管节点仍可访问共享锁记录。",
     "After an active CNode takes over the VIP, clients retry at the same address and the new node can access the shared lock records."
+   ],
+   "s": [
+    "CNode 故障",
+    "CNode Failure"
    ],
    "b": [
     [
@@ -195,10 +195,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "访问控制",
-    "Access control"
-   ],
    "t": [
     "导出级限制与文件权限",
     "Export Restrictions and File Permissions"
@@ -206,6 +202,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "view 策略可按客户端 IP 或主机名限制读写，文件和目录的权限仍需单独检查。",
     "A view policy can restrict reads and writes by client IP or hostname. File and directory permissions are checked separately."
+   ],
+   "s": [
+    "访问控制",
+    "Access control"
    ],
    "b": [
     [

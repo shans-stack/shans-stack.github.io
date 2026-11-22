@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/dr.css?v=effe64f8">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,8 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.rfc-editor.org/rfc/rfc1951.html&quot;&gt;RFC 1951: DEFLATE Compressed Data Format&lt;/a&gt;"><a href="https://www.rfc-editor.org/rfc/rfc1951.html">DEFLATE 无损压缩规范（RFC 1951）</a></li>
+      <li data-en="&lt;a href=&quot;https://www.usenix.org/legacy/event/fast08/tech/full_papers/zhu/zhu.pdf&quot;&gt;Data Domain: Avoiding the Disk Bottleneck in the Data Domain Deduplication File System&lt;/a&gt;"><a href="https://www.usenix.org/legacy/event/fast08/tech/full_papers/zhu/zhu.pdf">Data Domain 去重文件系统原论文</a></li>
     </ul></div>
   </div>
 </main>
@@ -62,10 +64,10 @@
   <span>© 2026 Shan's Stack</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/dr.js?v=bf3e2635"></script>
@@ -76,8 +78,8 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "内容保持不变，落盘表示可以更小",
-    "The Same Content Can Use a Smaller Stored Representation"
+    "无损压缩与去重减少存储占用",
+    "Lossless Compression and Deduplication Reduce Storage Use"
    ],
    "d": [
     "压缩缩短一段数据的表示，去重合并多处引用的相同数据。",
@@ -103,10 +105,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>无损压缩要求解码后的内容逐字节等于输入。一种例子是游程编码，即将连续重复的值与重复次数一起记录。实际压缩格式还可以使用其他编码方式，以适应各种数据分布。</p>"
+     "<p>无损压缩要求解码结果逐字节等于输入。以 DEFLATE 为例，编码可以用长度和距离引用先前出现的字节序列，并使用 Huffman 编码表示字面值与相关符号。</p>"
     ],
     [
-     "<p>Lossless compression reproduces the input byte for byte. Run-length encoding, for example, can store a repeated value with its repeat count. Compression formats can also use other encodings for different data distributions.</p>"
+     "<p>Lossless decompression reproduces the input byte for byte. In DEFLATE, a length-and-distance pair can reference a previous byte sequence. Huffman codes represent literals and the symbols used for those references.</p>"
     ]
    ]
   },
@@ -152,8 +154,8 @@ window.SS_TOPIC_CFG={
     "Savings Depend on Repetition in the Data"
    ],
    "d": [
-    "版本之间的相同块可复用，已压缩且彼此不同的数据往往占用更多空间。",
-    "Identical chunks across versions can be shared. Distinct data that is already compressed often takes more storage."
+    "相同数据块可去重，唯一数据块的压缩收益取决于其内容。",
+    "Identical chunks can be deduplicated. Compression savings on unique chunks depend on their contents."
    ],
    "b": [
     [

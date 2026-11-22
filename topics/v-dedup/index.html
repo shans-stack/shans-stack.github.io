@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-dedup.css?v=25137fcc">
 <script>window.SS_ROOT='../../';</script>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-dedup.js?v=c94ec948"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/480,480/600],
  "steps": [
   {
-   "s": [
-    "指纹与指针",
-    "Fingerprints and pointers"
-   ],
    "t": [
     "相同的数据块共享一份存储",
     "Identical Chunks Share One Stored Copy"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "系统为每个块计算内容指纹。识别出相同的块后，后续引用指向已存数据。",
     "The system computes a content fingerprint for each chunk. Once an identical chunk is recognized, subsequent references point to the stored data."
+   ],
+   "s": [
+    "指纹与指针",
+    "Fingerprints and pointers"
    ],
    "b": [
     [
@@ -101,10 +101,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "块大小",
-    "Chunk size"
-   ],
    "t": [
     "块大小影响匹配粒度和索引体积",
     "Chunk Size Controls Match Granularity and Index Size"
@@ -112,6 +108,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "小块可以缩小局部改动对匹配的影响，同时需要管理更多索引项。",
     "Smaller chunks can limit the effect of a local edit on deduplication, while requiring more index entries."
+   ],
+   "s": [
+    "块大小",
+    "Chunk size"
    ],
    "b": [
     [
@@ -125,10 +125,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "去重范围",
-    "Deduplication domain"
-   ],
    "t": [
     "索引覆盖范围决定哪里能共享数据块",
     "Index Scope Determines Where Chunks Can Be Shared"
@@ -136,6 +132,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "各自维护指纹表的设备形成不同的去重域。同一块写入两个互相独立的域时，每个域都要保存一份。",
     "Devices with separate fingerprint tables form separate deduplication domains. A chunk written to two independent domains is stored in each one."
+   ],
+   "s": [
+    "去重范围",
+    "Deduplication domain"
    ],
    "b": [
     [
@@ -147,10 +147,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "共享索引",
-    "Shared index"
-   ],
    "t": [
     "共享 SCM 支持集群级去重",
     "Shared SCM Enables Cluster-Wide Deduplication"
@@ -158,6 +154,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "各 CNode 通过共享 SCM 访问指纹索引，整个集群构成一个数据缩减域。",
     "CNodes access fingerprint indexes in shared SCM, making the cluster a single data reduction realm."
+   ],
+   "s": [
+    "共享索引",
+    "Shared index"
    ],
    "b": [
     [
@@ -169,10 +169,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "迁移时去重",
-    "Deduplication during migration"
-   ],
    "t": [
     "数据从写缓冲迁移时执行去重",
     "Deduplication Runs During Migration from the Write Buffer"
@@ -180,6 +176,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "常规写缓冲先持久化并确认写入，后续迁往容量层时，系统先去重，再压缩剩余的数据块。",
     "The standard write-buffer path durably records and acknowledges writes first. On later migration to the capacity tier, the system deduplicates before compressing the remaining chunks."
+   ],
+   "s": [
+    "迁移时去重",
+    "Deduplication during migration"
    ],
    "b": [
     [
@@ -191,10 +191,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "读取共享块",
-    "Reading shared chunks"
-   ],
    "t": [
     "按元数据引用重组逻辑数据",
     "Metadata References Reassemble Logical Data"
@@ -202,6 +198,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "逻辑上相邻的块可能存于不同位置，顺序读取时也可能产生分散的后端读请求。",
     "Logically adjacent chunks can reside at different locations, so a sequential read can produce scattered back-end reads."
+   ],
+   "s": [
+    "读取共享块",
+    "Reading shared chunks"
    ],
    "b": [
     [

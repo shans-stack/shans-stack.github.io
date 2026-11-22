@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-mpath.css?v=41117fab">
 <script>window.SS_ROOT='../../';</script>
@@ -67,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-mpath.js?v=2569534d"></script>
@@ -80,17 +80,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/500,480/630],
  "steps": [
   {
-   "s": [
-    "一条连接",
-    "One connection"
-   ],
    "t": [
-    "默认：一个挂载点只走一条连接",
-    "By Default, One Mount Uses One Connection"
+    "默认 NFS 挂载的连接路径",
+    "Default NFS Mount Connection Path"
    ],
    "d": [
     "客户端用 NFS 挂上存储，默认只开一条 TCP 连接，连到一个地址，也就是一台 CNode。",
     "When a client mounts storage over NFS, by default it opens one TCP connection to one address, which means one CNode."
+   ],
+   "s": [
+    "一条连接",
+    "One connection"
    ],
    "b": [
     [
@@ -104,65 +104,65 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
+   "t": [
+    "nconnect：单挂载点的多条连接",
+    "Nconnect: Multiple Connections per Mount"
+   ],
+   "d": [
+    "Linux nconnect 可打开多条连接，目标仍为同一个服务端地址。",
+    "Linux nconnect can open multiple connections to the same server address."
+   ],
    "s": [
     "nconnect",
     "nconnect"
    ],
-   "t": [
-    "nconnect：同一个挂载点开几条连接",
-    "Nconnect: Several Connections for One Mount"
-   ],
-   "d": [
-    "Linux 自带的 nconnect 选项让一个挂载点开几条连接，但它们连的还是同一个地址、同一台 CNode。",
-    "Linux's built-in nconnect option lets one mount open several connections, but they all still go to the same address and the same CNode."
-   ],
    "b": [
     [
-     "<p>nconnect 是 Linux 内核自带的 NFS 挂载选项（5.3 版起），作用是一个挂载点同时开多条 TCP 连接，绕开单条连接的上限。它不是 VAST 的组件，客户端不用另外装东西。</p>",
+     "<p>nconnect 是 Linux NFS 客户端的挂载选项，可为同一挂载点建立到同一服务端地址的多条 TCP 连接。</p>",
      "<p>不过这几条连接连的都是同一个服务端地址，所以压力仍然落在同一台 CNode 上，其他 CNode 无法分担。</p>"
     ],
     [
-     "<p>nconnect is an NFS mount option built into the Linux kernel (from version 5.3). It opens several TCP connections for one mount at once, getting around the single-connection ceiling. It is not a VAST component, and the client needs nothing extra installed.</p>",
+     "<p>nconnect is a Linux NFS client mount option that can establish multiple TCP connections from a mount to the same server address.</p>",
      "<p>But all of these connections go to the same server address, so the load still lands on one CNode, and the other CNodes cannot help.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "多台 CNode",
-    "Many CNodes"
-   ],
    "t": [
-    "多路径：连接摊到多个地址，也就摊到了多台 CNode",
-    "Multipath: Connections Spread over Several Addresses, and so over Several CNodes"
+    "跨服务端地址分配连接",
+    "Connection Distribution Across Server Addresses"
    ],
    "d": [
     "多路径把这些连接分别连到多个服务端地址；一个地址就是一台 CNode。",
     "Multipath sends these connections to several server addresses, and each address is one CNode."
    ],
+   "s": [
+    "多台 CNode",
+    "Many CNodes"
+   ],
    "b": [
     [
-     "<p>VAST 的多路径（Multipath）在 nconnect 的基础上更进一步：挂载时给出一组服务端地址，多条连接分别连到不同的地址。因为每个地址对应一台 CNode，摊开地址就等于把一个挂载点的流量摊到了多台 CNode 上。</p>",
+     "<p>VAST 多路径挂载可以指定多个服务端地址。连接分布到可用地址，当这些地址由不同 CNode 提供服务时，客户端流量可跨节点分布。</p>",
      "<p>VAST 不支持 NFS 4.1 里的 pNFS，所以想让单个挂载点同时用上多台 CNode，靠的就是这个多路径组件。</p>"
     ],
     [
-     "<p>VAST&#x27;s Multipath goes a step beyond nconnect: a list of server addresses is given at mount time, and the connections go to different addresses. Because each address corresponds to one CNode, spreading over addresses spreads one mount&#x27;s traffic over several CNodes.</p>",
+     "<p>A VAST multipath mount can specify multiple server addresses. Connections are distributed over available addresses, so traffic can span CNodes when those addresses are served by different nodes.</p>",
      "<p>VAST does not support pNFS from NFS 4.1, so this multipath package is how a single mount uses several CNodes at once.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "多块网卡",
-    "Many NICs"
-   ],
    "t": [
-    "客户端这边也摊开：多块网卡一起用",
-    "Spread on the Client Side Too: Several NICs at Once"
+    "跨客户端网卡分配流量",
+    "Traffic Distribution Across Client NICs"
    ],
    "d": [
     "客户端也可以给出多个本机地址，让几块网卡一起发；组件还会考虑哪块网卡离哪颗 CPU 近。",
     "The client can also give several local addresses so several NICs send together; the package also considers which NIC is closest to which CPU."
+   ],
+   "s": [
+    "多块网卡",
+    "Many NICs"
    ],
    "b": [
     [
@@ -176,17 +176,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "对比",
-    "Side by side"
-   ],
    "t": [
-    "对比：一条连接和多路径同时跑",
-    "Side by Side: One Connection Versus Multipath"
+    "单连接与多路径对比",
+    "Single-Connection and Multipath Comparison"
    ],
    "d": [
     "同样多的数据要发，一条连接只能一块一块排着走；多路径几条连接同时走，送到的多得多。",
     "With the same data to send, one connection moves it one block at a time in a queue; multipath sends over several connections at once and delivers far more."
+   ],
+   "s": [
+    "对比",
+    "Side by side"
    ],
    "b": [
     [
@@ -200,17 +200,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "要装什么",
-    "What to install"
-   ],
    "t": [
-    "要装什么：协议还是标准 NFS，客户端加一个开源组件",
-    "What to Install: Still Standard NFS, Plus One Open-Source Client Package"
+    "多路径客户端组件",
+    "Multipath Client Components"
    ],
    "d": [
     "协议仍是标准 NFS，但要在客户端装 VAST 提供的开源 NFS 组件，才能摊到多台 CNode。",
     "The protocol is still standard NFS, but spreading across several CNodes requires installing VAST's open-source NFS package on the client."
+   ],
+   "s": [
+    "客户端组件",
+    "Client Components"
    ],
    "b": [
     [
@@ -218,7 +218,7 @@ window.SS_TOPIC_CFG={
      "<p>多路径需要在客户端安装组件，但安装的是一个走标准 NFS 语义的开源组件，不是换一套文件系统客户端。挂载时多写两项：本机地址列表（ClientIP）和服务端地址列表（ServerIP）。</p>"
     ],
     [
-     "<p>Multipath does not change the NFS protocol itself; file semantics are unchanged and applications need no changes. The difference is on the client: to use several CNodes, the client needs VAST&#x27;s NFS package. It is open source and VAST has submitted it to the upstream Linux community; for now the package still has to be installed separately on the client.</p>",
+     "<p>Multipath does not change the NFS protocol itself; file semantics are unchanged and applications need no changes. The difference is on the client: to use several CNodes, the client needs VAST's NFS package. It is open source and VAST has submitted it to the upstream Linux community; for now the package still has to be installed separately on the client.</p>",
      "<p>This does mean installing a client package, but it is an open-source package that keeps standard NFS semantics, not a different file system client. The mount needs two extra options: the local address list (ClientIP) and the server address list (ServerIP).</p>"
     ]
    ]

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/march.css?v=3d40af96">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/html/1706.03762&quot;&gt;Original Transformer Paper: Attention and Model Architecture&lt;/a&gt;"><a href="https://arxiv.org/html/1706.03762">Transformer 原论文：注意力机制与模型结构</a></li>
+      <li data-en="&lt;a href=&quot;https://jmlr.org/papers/volume23/21-0998/21-0998.pdf&quot;&gt;Switch Transformers: Scaling to Trillion Parameter Models&lt;/a&gt;"><a href="https://jmlr.org/papers/volume23/21-0998/21-0998.pdf">Switch Transformer 原论文：稀疏路由与负载均衡</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/html/2401.04088v1&quot;&gt;Mixtral of Experts&lt;/a&gt;"><a href="https://arxiv.org/html/2401.04088v1">Mixtral 原论文：多专家路由、参数量与专家并行</a></li>
     </ul></div>
   </div>
 </main>
@@ -60,10 +63,10 @@
 
 <footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/march.js?v=8a0803f4"></script>
@@ -104,7 +107,7 @@ window.SS_TOPIC_CFG = {
      "<p>稠密前馈层对每个 token 的向量执行相同的一组矩阵运算。各位置具有不同的输入，使用同一组层权重。多个 token 可以打成一批由同一个前馈网络计算。</p>"
     ],
     [
-     "<p>A dense feed-forward layer applies the same matrix operations to every token vector. Positions have different inputs and share the layer&#x27;s weights. Multiple tokens can be batched for execution by the same feed-forward network.</p>"
+     "<p>A dense feed-forward layer applies the same matrix operations to every token vector. Positions have different inputs and share the layer's weights. Multiple tokens can be batched for execution by the same feed-forward network.</p>"
     ]
    ]
   },
@@ -119,10 +122,10 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>混合专家（Mixture of Experts，MoE）层包含多套前馈网络，每套称为一个专家。路由器是根据输入向量给专家打分的子模块。常见稀疏路由选择排名靠前的一个或几个专家，未选中的专家留给其他 token。</p>"
+     "<p>混合专家（MoE）层有多套前馈网络，每套称为一个专家。路由器根据输入向量为专家评分。稀疏路由只让得分靠前的专家处理该 token，具体选择数量由模型架构决定。</p>"
     ],
     [
-     "<p>A mixture-of-experts (MoE) layer contains several feed-forward networks, each called an expert. The router is a learned component that scores experts from the input vector. A common sparse routing method selects one or several top-scoring experts and leaves the others available for other tokens.</p>"
+     "<p>A Mixture of Experts (MoE) layer has several feed-forward networks called experts. A router scores the experts from the input vector. Sparse routing sends the token only to selected high-scoring experts, with the number determined by the model architecture.</p>"
     ]
    ]
   },
@@ -140,7 +143,7 @@ window.SS_TOPIC_CFG = {
      "<p>每个选中专家独立处理输入。多专家路由会按路由器给出的组合权重汇总结果，随后恢复 token 的序列位置。当专家分布在不同设备上时，分发输入与收集输出都会产生设备间通信。</p>"
     ],
     [
-     "<p>Each selected expert transforms the input independently. With multiple selected experts, the layer combines their outputs with routing weights and restores the token&#x27;s sequence position. When experts are placed on different devices, dispatching inputs and collecting outputs require inter-device communication.</p>"
+     "<p>Each selected expert transforms the input independently. With multiple selected experts, the layer combines their outputs with routing weights and restores the token's sequence position. When experts are placed on different devices, dispatching inputs and collecting outputs require inter-device communication.</p>"
     ]
    ]
   },
@@ -168,15 +171,15 @@ window.SS_TOPIC_CFG = {
     "Routing Distribution Controls Expert Load"
    ],
    "d": [
-    "当多个 token 被分给同一专家时，该专家的计算负载和排队压力随之上升。",
-    "When many tokens are sent to one expert, its compute load and queuing pressure rise."
+    "路由分布决定各专家收到的 token 数，并影响跨设备调度。",
+    "Routing determines how many tokens each expert receives and affects scheduling across devices."
    ],
    "b": [
     [
-     "<p>批内各专家收到的 token 数可能不同。专家并行把专家分布到多个设备上，单批完成时间同时受最忙专家和数据交换影响。训练可加入负载均衡目标，鼓励路由器把 token 分散到更多专家。</p>"
+     "<p>同一批次中，各专家收到的 token 数可能不同。专家分布在多个设备时，处理开销取决于各设备收到的工作量和交换 token 所需的通信。Switch Transformer 等架构在训练中使用负载均衡损失以减少路由失衡。</p>"
     ],
     [
-     "<p>Experts can receive different numbers of tokens in a batch. Expert parallelism places experts on different devices, so batch completion depends in part on the busiest expert and on data exchange. A training objective can encourage the router to distribute tokens across more experts.</p>"
+     "<p>Experts can receive different numbers of tokens in the same batch. With experts distributed across devices, processing cost depends on device load and communication for token exchange. Architectures such as Switch Transformer use a load-balancing loss during training to reduce routing imbalance.</p>"
     ]
    ]
   }

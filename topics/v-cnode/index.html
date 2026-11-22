@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-cnode.css?v=6f09b6f1">
 <script>window.SS_ROOT='../../';</script>
@@ -66,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-cnode.js?v=cfc275d2"></script>
@@ -79,17 +79,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/470,480/476],
  "steps": [
   {
-   "s": [
-    "存储逻辑",
-    "Storage logic"
-   ],
    "t": [
-    "存储逻辑全在 CNode 上跑",
-    "All Storage Logic Runs on the CNode"
+    "CNode 执行存储服务",
+    "CNodes Execute Storage Services"
    ],
    "d": [
     "NFS、SMB、S3 的请求都进 CNode；协议处理、纠删码、数据缩减也都由 CNode 来算。",
     "NFS, SMB and S3 requests all go to CNodes, and CNodes also do the protocol processing, erasure coding and data reduction."
+   ],
+   "s": [
+    "存储逻辑",
+    "Storage logic"
    ],
    "b": [
     [
@@ -103,17 +103,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "不存数据",
-    "No data"
-   ],
    "t": [
-    "自己不存数据",
-    "It Stores No Data Itself"
+    "CNode 的无状态计算角色",
+    "The Stateless Compute Role of a CNode"
    ],
    "d": [
     "CNode 除了启动盘没有别的盘，读数据要经 NVMe-oF 到 DBox 里去取。",
     "Apart from a boot drive a CNode has no drives; to read data it fetches it from a DBox over NVMe-oF."
+   ],
+   "s": [
+    "不存数据",
+    "No data"
    ],
    "b": [
     [
@@ -127,17 +127,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "写入确认",
-    "Write ACK"
-   ],
    "t": [
-    "写入落到两块以上 SCM 盘，才回确认",
-    "A Write Is Acknowledged Only Once It Is on Two or More SCM Drives"
+    "共享 SCM 持久化与写入确认",
+    "Shared SCM Persistence and Write Acknowledgment"
    ],
    "d": [
     "常规写入路径上，一次写入至少落进两块分在不同 DBox 的 SCM 盘，都写好了 CNode 才向客户端确认。",
     "On the normal write path, each write lands on at least two SCM drives in different DBoxes, and only when both are written does the CNode confirm to the client."
+   ],
+   "s": [
+    "写入确认",
+    "Write ACK"
    ],
    "b": [
     [
@@ -151,17 +151,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "不留缓存",
-    "No cache"
-   ],
    "t": [
-    "不留缓存：读两遍，两遍都去盘上取",
-    "No Cache: Read Twice, Fetch from the Drive Twice"
+    "从共享存储读取数据",
+    "Reads from Shared Storage"
    ],
    "d": [
     "同一份数据读第二次，CNode 照样去 DBox 的盘上取，不在本机留一份。",
     "Reading the same data a second time, the CNode still fetches it from the DBox drives and keeps no copy locally."
+   ],
+   "s": [
+    "不留缓存",
+    "No cache"
    ],
    "b": [
     [
@@ -170,15 +170,11 @@ window.SS_TOPIC_CFG={
     ],
     [
      "<p>CNodes keep no read cache and no metadata cache. It looks wasteful, but the reasoning is that the NVMe-oF path from a CNode to the drives is short and the only copy of the metadata is on the shared drives, so another copy on the node is not worth keeping.</p>",
-     "<p>As soon as a CNode kept a copy, it would have to stay consistent with the drives and with every other CNode&#x27;s copy, which is exactly where the whole class of lock and cache-sync problems in traditional storage comes from. Without a cache, that class of problems disappears entirely.</p>"
+     "<p>As soon as a CNode kept a copy, it would have to stay consistent with the drives and with every other CNode's copy, which is exactly where the whole class of lock and cache-sync problems in traditional storage comes from. Without a cache, that class of problems disappears entirely.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "任何一台都能接",
-    "Any CNode"
-   ],
    "t": [
     "任何一台 CNode 都能接任何请求",
     "Any CNode Can Take Any Request"
@@ -186,6 +182,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "哪个客户端连到哪台 CNode 都行，每台读到的都是同一份数据。",
     "Any client can connect to any CNode, and every CNode reads the same data."
+   ],
+   "s": [
+    "任何一台都能接",
+    "Any CNode"
    ],
    "b": [
     [
@@ -199,17 +199,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "地址漂移",
-    "Address failover"
-   ],
    "t": [
-    "坏了一台：它的地址漂到别的 CNode",
-    "One Fails: Its Address Moves to Another CNode"
+    "CNode 故障后的虚拟 IP 接管",
+    "Virtual IP Takeover After a CNode Failure"
    ],
    "d": [
     "一台 CNode 坏了，它对外的地址转到另一台，客户端的请求接着发过去。",
     "When a CNode fails, its external address moves to another CNode, and client requests keep going to it."
+   ],
+   "s": [
+    "地址漂移",
+    "Address failover"
    ],
    "b": [
     [

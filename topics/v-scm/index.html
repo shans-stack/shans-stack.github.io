@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-scm.css?v=4ea03f94">
 <script>window.SS_ROOT='../../';</script>
@@ -67,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-scm.js?v=4e4a2082"></script>
@@ -80,17 +80,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/650],
  "steps": [
   {
+   "t": [
+    "数据缩减、条带和闪存对齐",
+    "Data Reduction, Striping, and Flash Alignment"
+   ],
+   "d": [
+    "迁入 QLC 前，系统可缩减数据、组装条带并对齐闪存页。",
+    "Before migration to QLC, the system can reduce data, assemble stripes, and align writes to flash pages."
+   ],
    "s": [
     "写入后的重活",
     "The work behind a write"
-   ],
-   "t": [
-    "写入后面跟着一串重活",
-    "A Write Is Followed by a Lot of Heavy Work"
-   ],
-   "d": [
-    "数据写进便宜的 QLC 闪存之前，要先缩减、攒成超宽条带、按闪存的页对齐；如果写的时候同步做完，客户端要一直等着。",
-    "Before data goes onto cheap QLC flash it has to be reduced, gathered into very wide stripes and aligned to flash pages. Doing all that during the write would keep the client waiting."
    ],
    "b": [
     [
@@ -104,17 +104,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "先落 SCM 就回话",
-    "ACK once on SCM"
-   ],
    "t": [
-    "先落进 SCM 就回话",
-    "Acknowledge as Soon as Data Is on SCM"
+    "SCM 缓冲与写入确认",
+    "SCM Buffering and Write Acknowledgment"
    ],
    "d": [
     "写入先写进至少两块 SCM 盘（分在不同的 DBox），元数据也写好几份，然后马上回话。",
     "A write goes to at least two SCM drives in different DBoxes, metadata is written in several copies, and the ACK goes out right away."
+   ],
+   "s": [
+    "先落 SCM 就回话",
+    "ACK once on SCM"
    ],
    "b": [
     [
@@ -128,17 +128,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "后台做重活",
-    "Heavy work in the background"
-   ],
    "t": [
-    "重活放到回话之后，在后台做",
-    "The Heavy Work Happens After the ACK, in the Background"
+    "后台迁移至 QLC",
+    "Background Migration to QLC"
    ],
    "d": [
     "缓冲攒到一定量，CNode 在后台把数据读出来，做相似性压缩、攒成超宽条带、按闪存对齐，再写进 QLC。",
     "When enough has built up in the buffer, CNodes read it back in the background, apply similarity reduction, gather it into very wide stripes, align it to flash and write it to QLC."
+   ],
+   "s": [
+    "后台做重活",
+    "Heavy work in the background"
    ],
    "b": [
     [
@@ -152,17 +152,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
+   "t": [
+    "写入速率与缓冲区回收速率",
+    "Write Rate and Buffer Reclamation Rate"
+   ],
+   "d": [
+    "缓冲区占用取决于写入速率、后台迁移速率与可用空间。",
+    "Buffer occupancy depends on the write rate, background migration rate, and available space."
+   ],
    "s": [
     "排空快过涌入",
     "Drain faster than fill"
-   ],
-   "t": [
-    "只要排空比涌入快，处理多久都不要紧",
-    "As Long as Draining Outpaces Filling, Processing Time Does Not Matter"
-   ],
-   "d": [
-    "新写入不停进来，后台不停把缓冲排空；只要排空的速度跟得上，缓冲就一直不满，单份数据的处理时长无关紧要。",
-    "New writes keep arriving while the background keeps draining the buffer. As long as draining keeps up, the buffer never fills, and how long any one piece takes does not matter."
    ],
    "b": [
     [
@@ -176,17 +176,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "大块写直写 QLC",
-    "Large writes go straight to QLC"
-   ],
    "t": [
-    "例外：大块写直接写进 QLC",
-    "The Exception: Large Writes Go Straight to QLC"
+    "大块写入的直接 QLC 路径",
+    "Direct QLC Path for Large Writes"
    ],
    "d": [
     "像 checkpoint 这样的大块写入（约 256 KB 以上）不进 SCM，直接写进 QLC 上专门留出的一块区域。",
     "Large writes such as checkpoints (roughly 256 KB and up) skip SCM and go straight to a reserved area on QLC."
+   ],
+   "s": [
+    "大块写直写 QLC",
+    "Large writes go straight to QLC"
    ],
    "b": [
     [

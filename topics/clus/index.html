@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/clus.css?v=c5fb2afe">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,10 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-b200/latest/dgx-superpod-architecture.html&quot;&gt;NVIDIA DGX SuperPOD B200: Architecture and Scalable Units&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-b200/latest/dgx-superpod-architecture.html">NVIDIA DGX SuperPOD B200：架构及可扩展单元</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-b200/latest/dgx-superpod-components.html&quot;&gt;NVIDIA DGX SuperPOD B200: Compute, Storage and Management Fabrics&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-b200/latest/dgx-superpod-components.html">NVIDIA DGX SuperPOD B200：计算、存储及管理网络</a></li>
+      <li data-en="&lt;a href=&quot;https://slurm.schedmd.com/srun.html&quot;&gt;SchedMD Slurm: Job Allocation and Task Launch&lt;/a&gt;"><a href="https://slurm.schedmd.com/srun.html">SchedMD Slurm：作业分配及任务启动</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/pdf/2104.04473&quot;&gt;Megatron-LM: Efficient Large-Scale Language Model Training on GPU Clusters&lt;/a&gt;"><a href="https://arxiv.org/pdf/2104.04473">Megatron-LM：并行组合与设备拓扑</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/clus.js?v=e1eccf1d"></script>
@@ -104,10 +108,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>梯度表示损失（对预测误差的度量）随模型参数变化的速率，用于更新权重。分布式训练进程常在每步集中交换梯度，模型拆分时也会交换层的中间结果。这些进程之间的通信经过网卡和计算网交换机。节点之间的带宽与拥塞会影响等待同步的时间。</p>"
+     "<p>梯度表示损失相对于模型参数的变化率，用于更新权重。同步数据并行通常在训练步内归约梯度。模型并行还可能交换中间结果。跨节点通信经网卡和计算网交换机，链路带宽和拥塞影响通信所需的时间。</p>"
     ],
     [
-     "<p>A gradient expresses how the loss, a measure of prediction error, changes with model parameters and guides weight updates. Distributed training processes often exchange gradients during each step. Partitioned models may also exchange intermediate results between layers. Network adapters and compute switches carry these transfers. Bandwidth and congestion between nodes affect how long processes wait to synchronise.</p>"
+     "<p>Gradients measure how the loss changes with respect to model parameters and are used to update weights. Synchronous data parallelism typically reduces gradients within a training step. Model parallelism may also exchange intermediate results. Inter-node communication crosses network adapters and compute switches, where link bandwidth and congestion affect transfer time.</p>"
     ]
    ]
   },
@@ -140,10 +144,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>管理流量通常包括节点部署、状态监控与作业控制。带内管理使用操作系统可访问的网络。带外管理通过独立的管理接口访问硬件控制器，在节点操作系统不可用时仍能进行硬件状态查询或电源控制。计算、存储和管理是网络的不同职责，可以由物理网络或逻辑隔离来实现。</p>"
+     "<p>带内管理网络承载节点部署与管理服务流量。带外管理网络通过独立接口连接基板管理控制器（BMC），可在主机操作系统不可用时用于硬件监控与电源控制。以 NVIDIA DGX SuperPOD 参考架构为例，计算、存储、带内和带外管理各使用对应的网络。</p>"
     ],
     [
-     "<p>Management traffic typically includes node provisioning, health monitoring and job control. In-band management uses a network accessible to the operating system. Out-of-band management uses a dedicated management interface to reach a hardware controller, allowing status checks or power control when the node operating system is unavailable. Compute, storage and management are network roles that can be implemented through physical networks or logical separation.</p>"
+     "<p>In-band management carries node provisioning and management traffic. Out-of-band management connects to baseboard management controllers (BMCs) through separate interfaces and can provide hardware monitoring and power control when the host operating system is unavailable. The NVIDIA DGX SuperPOD reference architecture assigns separate fabrics to compute, storage, in-band management, and out-of-band management.</p>"
     ]
    ]
   },

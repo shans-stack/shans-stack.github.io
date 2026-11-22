@@ -373,4 +373,6 @@ a.tm:hover h3{text-decoration:underline}
 .navdd .ddm a:hover{color:var(--ink);background:var(--bg)}
 .navdd .ddm a[aria-current]{color:var(--ink);font-weight:600}
 @media (max-width:720px){.navdd .ddb{padding:10px 6px;font-size:14px}.navdd .ddm{left:auto;right:0}}
-
+/* 站与站之间的虚线连接 */
+.metro .lk{stroke:var(--ink2);stroke-width:2.5;stroke-dasharray:5 5;fill:none}
+.pop .pop-k{font-size:14px;color:var(--ink2);margin-top:6px}

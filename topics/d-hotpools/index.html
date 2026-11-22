@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/d-hotpools.css?v=be8c32b4">
 <script>window.SS_ROOT='../../';</script>
@@ -67,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/d-hotpools.js?v=b418f017"></script>
@@ -80,10 +80,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/752],
  "steps": [
   {
-   "s": [
-    "两个池",
-    "Two pools"
-   ],
    "t": [
     "两个池，一个目录",
     "Two Pools, One Directory"
@@ -91,6 +87,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "闪存池快但小，硬盘池大而便宜，用户看到的是同一个目录。",
     "The flash pool is fast but small, the disk pool large and cheap, and users see a single directory."
+   ],
+   "s": [
+    "两个池",
+    "Two pools"
    ],
    "b": [
     [
@@ -104,10 +104,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "先落闪存",
-    "Flash first"
-   ],
    "t": [
     "新写入先落闪存",
     "New Writes Land on Flash First"
@@ -115,6 +111,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "新文件默认先写进闪存池，写得快。",
     "New files go to the flash pool by default, so writes are fast."
+   ],
+   "s": [
+    "先落闪存",
+    "Flash first"
    ],
    "b": [
     [
@@ -128,10 +128,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "建硬盘副本",
-    "Disk copy"
-   ],
    "t": [
     "后台给文件在硬盘上建副本",
     "A Disk Copy Is Made in the Background"
@@ -139,6 +135,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "文件写完、一段时间没人碰，后台就在硬盘池复制一份，闪存那份暂时还留着。",
     "Once a file is written and left alone for a while, a copy is made in the disk pool in the background; the flash copy stays for now."
+   ],
+   "s": [
+    "建硬盘副本",
+    "Disk copy"
    ],
    "b": [
     [
@@ -152,10 +152,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "清理闪存",
-    "Flash cleanup"
-   ],
    "t": [
     "闪存快满，就删掉已有硬盘副本的旧文件",
     "When Flash Fills up, Old Files That Have Disk Copies Leave Flash"
@@ -163,6 +159,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "闪存用到水位线，后台从最老的文件开始，删掉它们在闪存上的那份，硬盘上那份还在。",
     "When flash reaches the watermark, the background removes flash copies starting with the oldest files; their disk copies stay."
+   ],
+   "s": [
+    "清理闪存",
+    "Flash cleanup"
    ],
    "b": [
     [
@@ -176,10 +176,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "从硬盘读",
-    "Read from disk"
-   ],
    "t": [
     "读只在硬盘上的文件，直接从硬盘读",
     "A File That Is Only on Disk Is Read Straight from Disk"
@@ -187,6 +183,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "冷文件被读到时，直接从硬盘池供数，不先搬回闪存再返回数据。",
     "When a cold file is read, the disk pool serves it directly instead of moving it back to flash first."
+   ],
+   "s": [
+    "从硬盘读",
+    "Read from disk"
    ],
    "b": [
     [
@@ -200,10 +200,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "热了回闪存",
-    "Back to flash"
-   ],
    "t": [
     "反复被读，文件会自己回到闪存",
     "Read Again and Again, a File Moves Back to Flash on Its Own"
@@ -211,6 +207,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "同一个冷文件被读得越来越频繁，热度过了门槛，后台就把它复制回闪存，之后从闪存读。",
     "As a cold file is read more and more often, its heat crosses a threshold, it is copied back to flash in the background, and later reads come from flash."
+   ],
+   "s": [
+    "热了回闪存",
+    "Back to flash"
    ],
    "b": [
     [
@@ -224,10 +224,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "溢出到硬盘",
-    "Spill to disk"
-   ],
    "t": [
     "闪存快写满时，新写入临时改去硬盘",
     "When Flash Is Nearly Full, New Writes Go to Disk for a While"
@@ -235,6 +231,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "闪存池占用到溢出阈值，新写入暂时跳过闪存、直接写进硬盘池，不会把闪存写爆。",
     "When the flash pool reaches the overflow threshold, new writes skip flash for a while and go straight to the disk pool, so flash never overfills."
+   ],
+   "s": [
+    "溢出到硬盘",
+    "Spill to disk"
    ],
    "b": [
     [

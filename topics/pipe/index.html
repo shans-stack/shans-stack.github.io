@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/pipe.css?v=8ed3f9c6">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,10 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://beam.apache.org/documentation/programming-guide/&quot;&gt;Apache Beam Programming Guide&lt;/a&gt;"><a href="https://beam.apache.org/documentation/programming-guide/">Apache Beam 编程指南：有界及无界数据、转换与数据分流</a></li>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/databricks/ldp/expectations&quot;&gt;Microsoft Azure Databricks: Pipeline Expectations and Quarantine&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/databricks/ldp/expectations">Microsoft Azure Databricks：管道校验与隔离无效记录</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.delta.io/delta-batch/&quot;&gt;Delta Lake: Table Reads and Writes&lt;/a&gt;"><a href="https://docs.delta.io/delta-batch/">Delta Lake：事务写入、批次标识和幂等重试</a></li>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion&quot;&gt;Microsoft Azure Databricks: Medallion Architecture&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion">Microsoft Azure Databricks：原始层、来源元数据及重新处理</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/pipe.js?v=8656edb4"></script>
@@ -140,10 +144,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>转换后的样本可以先写入暂存位置，再通过一次提交发布为可见输出。提交是对外确认某批结果可用的操作。对使用事务表的管道，表提交可以把该批输出作为一个版本发布，下游据此读取同一版本的文件集合。</p>"
+     "<p>使用事务表时，作业可先写出新数据文件，再通过一次表提交发布该批样本。例如，Delta Lake 的事务日志记录新增文件，读取端按已提交的表版本解析文件集合。</p>"
     ],
     [
-     "<p>Transformed samples can be staged before a commit makes them visible. A commit is the operation that marks a set of results as available. A pipeline that writes to a transactional table can publish its output as a version, allowing downstream jobs to read the files associated with that version.</p>"
+     "<p>In a transactional table, a job can write data files and then publish the batch with a table commit. For example, the Delta Lake transaction log records the added files, and consumers resolve the file set from a committed table version.</p>"
     ]
    ]
   },
@@ -167,8 +171,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "用同一批次标识重跑",
-    "Retry with the Same Batch Identifier"
+    "批次标识与幂等重试",
+    "Batch Identifiers and Idempotent Retries"
    ],
    "d": [
     "故障恢复后，重跑使用同一批输入和输出标识，避免重复追加。",
@@ -176,10 +180,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>幂等写入指同一次逻辑操作重复执行后，结果与执行一次相同。管道可以保存输入范围，并在重试时覆盖该批次的结果，或按稳定的记录键插入或更新。读取位置应按管道与目标存储的恢复机制推进，使失败的输入可重读。</p>"
+     "<p>幂等写入指重复执行同一逻辑写入时，结果与执行一次相同。Delta Lake 可以用应用标识和事务版本识别重复写入。固定批次输入后，重试可复用同一个事务标识，防止重复追加。</p>"
     ],
     [
-     "<p>An idempotent write has the same effect whether the same logical operation runs once or is retried. A pipeline can retain the input range and replace the corresponding batch on retry, or insert and update records by stable keys. Input progress is advanced according to the recovery mechanism of the pipeline and its destination so failed input can be reread.</p>"
+     "<p>An idempotent write leaves the same result after repeats as after one execution. Delta Lake can identify repeated writes by an application identifier and transaction version. With the batch inputs held constant, a retry can reuse that transaction identifier to prevent duplicate appends.</p>"
     ]
    ]
   }

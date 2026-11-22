@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-gns.css?v=742c3133">
 <script>window.SS_ROOT='../../';</script>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-gns.js?v=103443d0"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/480,480/600],
  "steps": [
   {
-   "s": [
-    "跨站点访问",
-    "Cross-site access"
-   ],
    "t": [
     "远程客户端经广域网访问集群",
     "Remote Clients Reach a Cluster over the WAN"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "客户端直接访问远程集群时，请求和响应都要经过站点间网络。",
     "When a client accesses a distant cluster directly, the request and response both cross the inter-site network."
+   ],
+   "s": [
+    "跨站点访问",
+    "Cross-site access"
    ],
    "b": [
     [
@@ -99,10 +99,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "全局文件夹",
-    "Global folders"
-   ],
    "t": [
     "源站维护完整内容，卫星站呈现路径",
     "The Origin Keeps the Full Contents, and Satellites Expose a Path"
@@ -110,6 +106,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "Global Access 将源站上的路径呈现在卫星站，卫星站客户端可以就近访问，所需数据按需获取。",
     "Global Access exposes an origin path at satellites, where local clients can access it and data is fetched on demand."
+   ],
+   "s": [
+    "全局文件夹",
+    "Global folders"
    ],
    "b": [
     [
@@ -123,10 +123,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "读取与缓存",
-    "Reads and caching"
-   ],
    "t": [
     "缓存未命中时从源站取数",
     "Cache Misses Fetch Data from the Origin"
@@ -134,6 +130,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "卫星站从源站读取未缓存的数据并存入本地。已缓存且受有效读租约覆盖的数据可就地返回。",
     "A satellite retrieves uncached data from the origin and caches it locally. Cached data covered by a valid read lease can be served locally."
+   ],
+   "s": [
+    "读取与缓存",
+    "Reads and caching"
    ],
    "b": [
     [
@@ -147,10 +147,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "同步与版本",
-    "Sync and versions"
-   ],
    "t": [
     "定期同步会留下版本不一致的窗口",
     "Periodic Sync Can Leave Versions Out of Step"
@@ -158,6 +154,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "采用周期同步的模型中，站点可以在同步前看到不同版本，版本冲突需要另行解决。",
     "In a periodic-sync model, sites can see different versions before the next sync, and version conflicts need a resolution rule."
+   ],
+   "s": [
+    "同步与版本",
+    "Sync and versions"
    ],
    "b": [
     [
@@ -169,10 +169,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "读写租约",
-    "Read and write leases"
-   ],
    "t": [
     "用租约控制写入权和缓存有效性",
     "Leases Govern Write Access and Cache Validity"
@@ -180,6 +176,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "源站协调租约。对同一个数据元素，同一时刻由一个集群持有写租约。发放写租约时，相关读租约失效。",
     "The origin coordinates leases. One cluster holds the write lease for a given element at a time. Granting it invalidates related read leases."
+   ],
+   "s": [
+    "读写租约",
+    "Read and write leases"
    ],
    "b": [
     [
@@ -191,10 +191,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "写入转发",
-    "Write forwarding"
-   ],
    "t": [
     "卫星站将写入请求转发到源站",
     "The Satellite Forwards Writes to the Origin"
@@ -202,6 +198,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "在管理员文档描述的路径上，卫星站把写入请求发往源站，源站确认后再向客户端确认。",
     "On the path described in the administrator’s guide, the satellite sends writes to the origin and acknowledges the client after the origin confirms."
+   ],
+   "s": [
+    "写入转发",
+    "Write forwarding"
    ],
    "b": [
     [

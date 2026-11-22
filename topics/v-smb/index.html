@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-smb.css?v=15043138">
 <script>window.SS_ROOT='../../';</script>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-smb.js?v=4d269067"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/520,480/520],
  "steps": [
   {
-   "s": [
-    "共享",
-    "Share"
-   ],
    "t": [
     "将 SMB 共享映射为盘符",
     "Map an SMB Share as a Drive"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 通过 view 发布 SMB 共享，Windows 客户端可以将它映射为盘符。",
     "VAST exposes an SMB share through a view, which Windows clients can map to a drive letter."
+   ],
+   "s": [
+    "共享",
+    "Share"
    ],
    "b": [
     [
@@ -101,10 +101,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "按域名连接",
-    "Connect by name"
-   ],
    "t": [
     "通过 VIP 池分布客户端连接",
     "Distribute Client Connections Through a VIP Pool"
@@ -112,6 +108,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 集群 DNS 从 VIP 池轮询返回地址，将不同客户端的连接分散到池内的 CNode。",
     "VAST cluster DNS returns VIP pool addresses in round-robin order, distributing client connections across CNodes in the pool."
+   ],
+   "s": [
+    "按域名连接",
+    "Connect by name"
    ],
    "b": [
     [
@@ -123,10 +123,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "登录",
-    "Sign-in"
-   ],
    "t": [
     "使用 Kerberos 票据认证",
     "Authenticate with a Kerberos Ticket"
@@ -134,6 +130,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "Kerberos 是默认认证方式。客户端从 Active Directory 取得服务票据并出示给集群。",
     "Kerberos is the default authentication method. The client obtains a service ticket from Active Directory and presents it to the cluster."
+   ],
+   "s": [
+    "登录",
+    "Sign-in"
    ],
    "b": [
     [
@@ -147,10 +147,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "会话状态",
-    "Session state"
-   ],
    "t": [
     "共享 SCM 中的 SMB 状态",
     "SMB State in Shared SCM"
@@ -158,6 +154,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "CNode 将文件句柄、租约及相关连接状态记录在共享的存储级内存（SCM）中。",
     "CNodes store file handles, leases and related connection state in shared storage-class memory (SCM)."
+   ],
+   "s": [
+    "会话状态",
+    "Session state"
    ],
    "b": [
     [
@@ -169,10 +169,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "坏一台 CNode",
-    "A CNode fails"
-   ],
    "t": [
     "持续可用共享的故障恢复",
     "Failover on a CA Share"
@@ -180,6 +176,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "接管节点读取共享状态，SMB 3.0 客户端可在持续可用共享上重连并恢复持久句柄。",
     "On a continuously available (CA) share, an SMB 3.0 client can reconnect and recover its persistent handle."
+   ],
+   "s": [
+    "CNode 故障",
+    "CNode Failure"
    ],
    "b": [
     [
@@ -193,10 +193,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "多通道",
-    "Multichannel"
-   ],
    "t": [
     "多通道为一个会话并行传输",
     "SMB Multichannel"
@@ -204,6 +200,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "SMB 3 多通道允许 Windows 客户端通过多条 TCP 连接访问同一个 VIP。",
     "SMB 3 Multichannel lets a Windows client access the same VIP over multiple TCP connections."
+   ],
+   "s": [
+    "多通道",
+    "Multichannel"
    ],
    "b": [
     [

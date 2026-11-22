@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/tok.css?v=d91ecbde">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/html/1706.03762&quot;&gt;Original Transformer Paper: Attention and Model Architecture&lt;/a&gt;"><a href="https://arxiv.org/html/1706.03762">Transformer 原论文：注意力机制与模型结构</a></li>
+      <li data-en="&lt;a href=&quot;https://aclanthology.org/D18-2012/&quot;&gt;SentencePiece: A Simple and Language Independent Subword Tokenizer and Detokenizer&lt;/a&gt;"><a href="https://aclanthology.org/D18-2012/">SentencePiece 原论文：子词词表、编码及解码</a></li>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/docs/transformers/generation_strategies&quot;&gt;Hugging Face Transformers: Generation Strategies&lt;/a&gt;"><a href="https://huggingface.co/docs/transformers/generation_strategies">Hugging Face Transformers：自回归生成与解码配置</a></li>
     </ul></div>
   </div>
 </main>
@@ -60,10 +63,10 @@
 
 <footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/tok.js?v=b35c6353"></script>
@@ -74,8 +77,8 @@ window.SS_TOPIC_CFG = {
  "steps": [
   {
    "t": [
-    "切出 Token",
-    "Split Text into Tokens"
+    "文本分词",
+    "Text Tokenization"
    ],
    "d": [
     "分词器按词表和切分规则，把文字转换成一串 token。",
@@ -92,8 +95,8 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "给每个 Token 查编号",
-    "Look up Each Token ID"
+    "词表中的 Token 编号",
+    "Token Identifiers in the Vocabulary"
    ],
    "d": [
     "词表为每个 token 分配整数编号，输入顺序保留在编号序列里。",
@@ -110,8 +113,8 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "用编号查嵌入向量",
-    "Look up Embedding Vectors"
+    "嵌入向量与位置信息",
+    "Embedding Vectors and Positional Information"
    ],
    "d": [
     "嵌入表按 token 编号取出向量，位置机制让后续计算区分先后顺序。",
@@ -119,10 +122,10 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>嵌入是模型训练得到的数值表示。输入层按编号从嵌入表取一行数，这组数叫向量。同一 token 的查表向量相同。位置机制会提供顺序信息，例如把位置向量加到输入表示，或在注意力计算中引入位置信息。</p>"
+     "<p>输入层用 token 编号索引嵌入矩阵，取得对应的向量。同一张嵌入表为相同编号返回相同向量。原始 Transformer 通过将位置编码加到输入嵌入上，为模型提供顺序信息。</p>"
     ],
     [
-     "<p>An embedding is a learned numerical representation. The input layer uses each ID to select one row of numbers, called a vector. Repeated tokens retrieve the same embedding. Position can be supplied by adding a position vector to the input or by incorporating position into attention.</p>"
+     "<p>The input layer uses the token ID to index the embedding matrix and retrieve its vector. A given table returns the same vector for the same ID. The original Transformer supplies order information by adding positional encodings to the input embeddings.</p>"
     ]
    ]
   },
@@ -146,8 +149,8 @@ window.SS_TOPIC_CFG = {
   },
   {
    "t": [
-    "从词表里选下一个 Token",
-    "Select the Next Token from the Vocabulary"
+    "从词表选择下一个 Token",
+    "Next-Token Selection from the Vocabulary"
    ],
    "d": [
     "输出层为词表里的候选打分，解码策略据此选出一个 token。",
@@ -158,14 +161,14 @@ window.SS_TOPIC_CFG = {
      "<p>当前序列最后一个位置的向量经输出层映射，得到每个候选 token 的原始分数，称为 logits。解码可以选最高分，也可以按分数转换出的概率抽样。每次生成选择的是词表中的一个 token。</p>"
     ],
     [
-     "<p>The output layer maps the final position&#x27;s vector to raw scores, called logits, for entries in the vocabulary. Decoding can pick the highest score or sample from probabilities derived from the scores. Each generation step selects one vocabulary token.</p>"
+     "<p>The output layer maps the final position's vector to raw scores, called logits, for entries in the vocabulary. Decoding can pick the highest score or sample from probabilities derived from the scores. Each generation step selects one vocabulary token.</p>"
     ]
    ]
   },
   {
    "t": [
-    "把输出接回序列",
-    "Append the Output to the Sequence"
+    "生成序列的延伸与解码",
+    "Sequence Extension and Detokenization"
    ],
    "d": [
     "新 token 成为下一轮的输入，反分词把生成的编号序列转换回文字。",
@@ -176,7 +179,7 @@ window.SS_TOPIC_CFG = {
      "<p>根据已有序列预测下一个 token、追加后再重复的过程称为自回归生成。生成可在结束 token、输出长度上限或其他停止条件处结束。反分词按分词器定义把生成的编号序列还原成可显示的文本。</p>"
     ],
     [
-     "<p>Autoregressive generation predicts a token from the existing sequence, appends it, and repeats. Generation can stop at an end token, an output-length limit, or another stopping condition. Detokenization converts the generated IDs into displayable text using the tokenizer&#x27;s decoding rules.</p>"
+     "<p>Autoregressive generation predicts a token from the existing sequence, appends it, and repeats. Generation can stop at an end token, an output-length limit, or another stopping condition. Detokenization converts the generated IDs into displayable text using the tokenizer's decoding rules.</p>"
     ]
    ]
   }

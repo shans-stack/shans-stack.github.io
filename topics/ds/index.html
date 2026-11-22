@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/ds.css?v=a8006301">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,10 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/docs/datasets/loading&quot;&gt;Hugging Face Datasets: Loading Datasets&lt;/a&gt;"><a href="https://huggingface.co/docs/datasets/loading">Hugging Face Datasets：固定数据版本及分片</a></li>
+      <li data-en="&lt;a href=&quot;https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupShuffleSplit.html&quot;&gt;scikit-learn: GroupShuffleSplit&lt;/a&gt;"><a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupShuffleSplit.html">scikit-learn：按组划分训练与验证</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.pytorch.org/docs/2.15/data.html&quot;&gt;PyTorch: Data Loading and DistributedSampler&lt;/a&gt;"><a href="https://docs.pytorch.org/docs/2.15/data.html">PyTorch DataLoader、分布式采样与预取</a></li>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/docs/datasets/stream&quot;&gt;Hugging Face Datasets: Streaming&lt;/a&gt;"><a href="https://huggingface.co/docs/datasets/stream">Hugging Face Datasets：流式读取和分片分配</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +67,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/ds.js?v=09c81aba"></script>
@@ -86,10 +90,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>训练数据集是模型学习所用的样本集合。样本可以是文本，也可以是图像及其标签。数据集版本通常记录数据文件的具体版本、字段定义和处理规则，使训练作业按同一方式解释选定样本。</p>"
+     "<p>训练数据集由文本、图像或带标签的记录等样本组成。指定数据仓库的提交及数据文件，可以固定加载的样本来源。字段定义与预处理规则也可随训练配置保存，以便复现输入。</p>"
     ],
     [
-     "<p>A training dataset is the collection of samples a model learns from. A sample can be text or an image with a label. A dataset version typically records data file versions, field definitions and processing rules so a training job interprets the selected samples consistently.</p>"
+     "<p>A training dataset consists of samples such as text, images, or labeled records. Selecting a repository commit and data files fixes the inputs loaded from that source. Field definitions and preprocessing rules can also be recorded in the training configuration to reproduce the inputs.</p>"
     ]
    ]
   },
@@ -104,10 +108,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>同一份源数据可按固定规则划入训练集和验证集。若同一文档产生多个相关样本，按文档整体划分可将它们留在同一侧，减少关联样本跨集合造成的评估偏差。训练和验证分别调用各自的样本集合。</p>"
+     "<p>训练与验证分别使用各自的样本集合。同一源文档生成多个样本时，可将文档标识用作分组键，使这些样本进入同一集合，避免源文档在两个集合之间重叠。</p>"
     ],
     [
-     "<p>A fixed rule can assign source data to training and validation splits. If one document produces multiple related samples, splitting by document keeps those samples together and reduces evaluation bias from related samples crossing splits. Training and validation read from their respective collections.</p>"
+     "<p>Training and validation use separate sample sets. If a source document yields multiple samples, its identifier can serve as the grouping key so all its samples remain in one split, avoiding overlap between splits at the source-document level.</p>"
     ]
    ]
   },
@@ -158,10 +162,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>数据加载可以包含读取、解码和将样本合并为批次。预取是提前准备将来要消费的批次，使部分准备工作与 GPU 计算重叠。队列中的批次会占用内存。如果存储和解码持续供不上训练消耗，预取队列最终也会耗尽。</p>"
+     "<p>数据加载可以包括读取、解码和批次整理。预取可在当前批次计算时提前准备后续批次，暂存批次会占用内存。如果读取和解码长期低于训练消费速率，预取队列仍会耗尽。</p>"
     ],
     [
-     "<p>Data loading can include reading, decoding and combining samples into a batch. Prefetch prepares future batches ahead of consumption so some preparation overlaps GPU computation. Queued batches use memory. If storage and decoding continually supply batches more slowly than training consumes them, the queue eventually runs dry.</p>"
+     "<p>Loading can include I/O, decoding, and collation. Prefetching can prepare subsequent batches during computation on the current batch, using memory for staged batches. The prefetch queue still drains if sustained loading and decoding throughput is below the training consumption rate.</p>"
     ]
    ]
   }

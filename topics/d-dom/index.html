@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/d-dom.css?v=17f85cdb">
 <script>window.SS_ROOT='../../';</script>
@@ -66,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/d-dom.js?v=fecbcc76"></script>
@@ -79,17 +79,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/692],
  "steps": [
   {
-   "s": [
-    "两次来回",
-    "Two round trips"
-   ],
    "t": [
-    "普通布局：读一个小文件要跑两个地方",
-    "Normal Layout: Reading One Small File Means Visiting Two Places"
+    "独立元数据与数据访问路径",
+    "Separate Metadata and Data Access Paths"
    ],
    "d": [
     "客户端先问元数据服务器要属性和布局，再去数据服务器拿内容，一共两次来回。",
     "The client first asks the metadata server for attributes and layout, then fetches the content from a data server: two round trips in all."
+   ],
+   "s": [
+    "两次来回",
+    "Two round trips"
    ],
    "b": [
     [
@@ -103,17 +103,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "小文件多了",
-    "Many small files"
-   ],
    "t": [
-    "小文件多了，来回次数翻倍",
-    "More Small Files, Twice the Round Trips"
+    "小文件访问的往返开销",
+    "Round-Trip Overhead for Small Files"
    ],
    "d": [
     "文件很小时，真正传数据的时间很短，大部分时间花在来回通讯上；文件越多，来回越多。",
     "When files are tiny, moving the data takes very little time and most of it goes on round trips; more files mean more round trips."
+   ],
+   "s": [
+    "小文件多了",
+    "Many small files"
    ],
    "b": [
     [
@@ -127,17 +127,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "放进元数据层",
-    "Into the metadata tier"
-   ],
    "t": [
-    "DoM：小文件直接放进元数据服务器",
-    "DoM: Small Files Go Straight into the Metadata Server"
+    "DoM：数据和元数据存放在同一目标",
+    "DoM Colocates Data and Metadata on the Same Target"
    ],
    "d": [
     "Data on MDT 把小文件的内容直接存在元数据服务器的闪存上，和它的属性放在一起。",
     "Data on MDT stores a small file's content directly on the metadata server's flash, next to its attributes."
+   ],
+   "s": [
+    "放进元数据层",
+    "Into the metadata tier"
    ],
    "b": [
     [
@@ -151,17 +151,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "一次来回",
-    "One round trip"
-   ],
    "t": [
-    "一次来回拿到属性和内容",
-    "One Round Trip Returns Attributes and Content"
+    "元数据和小文件内容联合读取",
+    "Combined Retrieval of Metadata and Small-File Contents"
    ],
    "d": [
     "读这样的文件时，客户端只找元数据服务器一次，属性和内容一起回来，数据服务器不参与。",
     "To read such a file the client goes to the metadata server once; attributes and content come back together, and the data servers stay out of it."
+   ],
+   "s": [
+    "一次来回",
+    "One round trip"
    ],
    "b": [
     [
@@ -175,17 +175,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "一批同时跑",
-    "A batch side by side"
-   ],
    "t": [
-    "一批小文件同时跑",
-    "A Batch of Small Files, Side by Side"
+    "批量小文件访问对比",
+    "Comparison of Batched Small-File Access"
    ],
    "d": [
     "同样一段时间，用 DoM 读完的小文件比普通布局多。",
     "In the same time, DoM finishes more small files than the normal layout."
+   ],
+   "s": [
+    "一批同时跑",
+    "A batch side by side"
    ],
    "b": [
     [
@@ -199,17 +199,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "大文件的开头",
-    "Start of a large file"
-   ],
    "t": [
-    "大文件只把开头放进去",
-    "Large Files Put Only Their Start There"
+    "含元数据目标的混合文件布局",
+    "Hybrid File Layout with a Metadata Target"
    ],
    "d": [
     "大文件的开头一小段放在元数据服务器上，后面照常条带到数据服务器上。",
     "The first small chunk of a large file sits on the metadata server; the rest is striped across data servers as usual."
+   ],
+   "s": [
+    "大文件的开头",
+    "Start of a large file"
    ],
    "b": [
     [

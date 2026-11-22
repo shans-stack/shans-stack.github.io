@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-dbox.css?v=fc6ec289">
 <script>window.SS_ROOT='../../';</script>
@@ -66,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-dbox.js?v=c8fab09c"></script>
@@ -79,10 +79,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/494,480/466],
  "steps": [
   {
-   "s": [
-    "数据都在这",
-    "Where data lives"
-   ],
    "t": [
     "全部数据都放在 DBox 里",
     "All the Data Lives in DBoxes"
@@ -91,29 +87,33 @@ window.SS_TOPIC_CFG={
     "CNode 写下来的数据都落进 DBox；DBox 里有少量 SCM 盘和大量 QLC 盘。",
     "Everything CNodes write lands in DBoxes, which hold a few SCM drives and many QLC drives."
    ],
+   "s": [
+    "数据都在这",
+    "Where data lives"
+   ],
    "b": [
     [
      "<p>DBox 是 VAST 定制的存储箱，属于 JBOF（只装盘、不跑存储软件的盘柜）。集群的全部数据和元数据都放在 DBox 里，CNode 经 NVMe-oF 网络直接读写这些盘。</p>",
      "<p>箱子里有两种盘：少量 SCM（存储级内存，又快又耐写，用作写缓冲和存元数据）和大量 QLC 闪存（单位容量便宜，用来长期存数据）。VAST 靠软件把便宜的 QLC 用得久，这部分见 SCM 写缓冲和闪存几何对齐两站。</p>"
     ],
     [
-     "<p>A DBox is VAST&#x27;s custom storage enclosure, a JBOF (an enclosure that holds drives and runs no storage software). All the cluster&#x27;s data and metadata live in DBoxes, and CNodes read and write those drives directly over the NVMe-oF network.</p>",
+     "<p>A DBox is VAST's custom storage enclosure, a JBOF (an enclosure that holds drives and runs no storage software). All the cluster's data and metadata live in DBoxes, and CNodes read and write those drives directly over the NVMe-oF network.</p>",
      "<p>The enclosure holds two kinds of drive: a few SCM drives (storage-class memory, fast and high-endurance, used as the write buffer and for metadata) and many QLC flash drives (low cost per unit of capacity, used to keep data long term). VAST relies on software to make the inexpensive QLC last; see the SCM write buffer and flash geometry stops.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "DNode 只转发",
-    "DNodes forward"
-   ],
    "t": [
-    "DNode 只转发，不跑存储逻辑",
-    "DNodes Only Forward; They Run No Storage Logic"
+    "DNode 提供网络存储访问",
+    "DNodes Provide Network Storage Access"
    ],
    "d": [
     "DNode 只把盘接到网络上；纠删码、数据缩减这些计算都在 CNode 上做。",
     "DNodes only connect the drives to the network; computation such as erasure coding and data reduction happens on CNodes."
+   ],
+   "s": [
+    "DNode 只转发",
+    "DNodes forward"
    ],
    "b": [
     [
@@ -127,10 +127,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "双活",
-    "Active-active"
-   ],
    "t": [
     "两个 DNode 同时工作，各管一半盘",
     "Both DNodes Work at Once, Each Serving Half the Drives"
@@ -138,6 +134,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "两个 DNode 同时在线，经 PCIe 交换芯片各连一半的盘。",
     "Both DNodes are online at the same time, each connected to half the drives through a PCIe switch."
+   ],
+   "s": [
+    "双活",
+    "Active-active"
    ],
    "b": [
     [
@@ -151,17 +151,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "DNode 故障切换",
-    "DNode failover"
-   ],
    "t": [
-    "一个 DNode 下线，另一个接管全部的盘",
-    "One DNode Goes Offline, the Other Takes over Every Drive"
+    "DNode 故障后的路径切换",
+    "Path Failover After a DNode Failure"
    ],
    "d": [
     "DNode 坏了，PCIe 交换芯片把它那一半盘改接到另一个 DNode，数据照常读写。",
     "If a DNode fails, the PCIe switch reconnects its half of the drives to the other DNode, and reads and writes carry on."
+   ],
+   "s": [
+    "DNode 故障切换",
+    "DNode failover"
    ],
    "b": [
     [
@@ -175,50 +175,50 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
+   "t": [
+    "DBox 机箱组件故障域",
+    "DBox Component Failure Domains"
+   ],
+   "d": [
+    "冗余 DNode 路径在单个控制器失效时保持对 SSD 的访问。",
+    "Redundant DNode paths preserve SSD access after a single controller failure."
+   ],
    "s": [
     "一次故障一块盘",
     "One fault, one drive"
    ],
-   "t": [
-    "一次故障最多带走一块盘",
-    "One Fault Takes Out at Most One Drive"
-   ],
-   "d": [
-    "从网口到盘全程没有单点：DNode 坏了一块盘都不少，盘坏了也只少它自己。",
-    "There is no single point of failure from network port to drive: a failed DNode loses no drives, and a failed drive loses only itself."
-   ],
    "b": [
     [
-     "<p>DBox 从网口到 SSD 全程没有单点，DNode 也是两个，一个坏了另一个接管（上一步）。所以箱子里任何一个部件坏掉，最多只带走一块 SSD，也就是坏的那块盘自己。</p>",
-     "<p>这里说的「一次故障」是指箱子内部的单个部件。整台 DBox 断电或下线是另一回事：在默认的 Classic 方式下，整台 DBox 掉线会让整个集群停下来；要扛住整台 DBox 掉线，需要另外打开 DBox-HA，见 Classic 与 DBox-HA 一站。</p>"
+     "<p>DBox 的冗余 DNode 和供电路径用于保持对机箱内 SSD 的访问。</p>",
+     "<p>Classic 布局以 SSD 为故障域。需要在整台 DBox 离线时维持数据访问的配置使用 DBox-HA 布局。</p>"
     ],
     [
-     "<p>A DBox has no single point of failure from network port to SSD, and its DNodes come in pairs, so if one fails the other takes over (previous step). Any single component failure inside the enclosure therefore takes out at most one SSD: the failed drive itself.</p>",
-     "<p>One fault here means a single component inside the enclosure. A whole DBox losing power or going offline is a different matter: in the default Classic mode, a whole DBox dropping out stops the cluster. Surviving the loss of a whole DBox requires turning on DBox-HA; see the Classic and DBox-HA stop.</p>"
+     "<p>Redundant DNodes and power paths maintain access to the SSDs inside a DBox.</p>",
+     "<p>The Classic layout treats SSDs as failure domains. Configurations requiring data access after an entire DBox goes offline use the DBox-HA layout.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "按盘铺条带",
-    "Stripes per drive"
-   ],
    "t": [
-    "所以条带可以按盘来铺",
-    "So Stripes Can Be Laid Out Drive by Drive"
+    "按 SSD 分布纠删码条带",
+    "Erasure-Code Striping Across SSDs"
    ],
    "d": [
-    "故障单位缩小到一块盘，一条条带的每一片就可以放在不同的盘上，铺满整个集群。",
-    "With the unit of failure shrunk to one drive, each piece of a stripe can go on a different drive, spread across the whole cluster."
+    "Classic 布局支持将同一条带的块分布到集群中的不同 SSD。",
+    "The Classic layout can distribute blocks of a stripe across SSDs in the cluster."
+   ],
+   "s": [
+    "SSD 条带",
+    "SSD Striping"
    ],
    "b": [
     [
-     "<p>纠删码把一份数据切成若干片，再算出几片校验，分散存放；坏掉几片还能用其余的算回来。分散的前提是：每一片都要放在不同的故障单位上。在一台服务器管一组盘的架构里，故障单位是整台服务器，条带只能按服务器来分。</p>",
-     "<p>DBox 把故障单位缩小到一块盘，条带就可以按盘来分，每一片放在不同的盘上，可以铺满整个集群的盘。坏一块盘，一条条带只少一片。条带能铺得很宽，校验占的空间就能很少，见宽条带纠删码一站。</p>"
+     "<p>纠删码将数据块与校验块分布到多个设备。每个故障域可容纳的块数取决于所需的故障容忍能力。</p>",
+     "<p>冗余路径允许 Classic 布局以 SSD 为故障域。对于固定的校验块数，更宽的条带具有更低的校验占比。</p>"
     ],
     [
-     "<p>Erasure coding splits data into pieces, computes a few parity pieces and stores them apart; if some pieces are lost, the rest can rebuild them. Spreading them out only works if each piece sits in a different unit of failure. Where each server manages its own drives, the unit of failure is a whole server, so stripes can only be split across servers.</p>",
-     "<p>The DBox shrinks the unit of failure to a single drive, so stripes can be split across drives, each piece on a different drive, spanning every drive in the cluster. Losing a drive costs a stripe only one piece. Because stripes can be very wide, parity can take up very little space; see the wide-stripe erasure coding stop.</p>"
+     "<p>Erasure coding distributes data and parity blocks across devices. The number of blocks allowed per failure domain depends on the required protection level.</p>",
+     "<p>Redundant paths let the Classic layout use SSDs as failure domains. For a fixed number of parity blocks, wider stripes have a lower parity fraction.</p>"
     ]
    ]
   }

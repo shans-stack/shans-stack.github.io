@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/obj.css?v=1da193b9">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,11 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html&quot;&gt;Amazon S3: Naming Objects&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html">Amazon S3：对象键、前缀与命名空间</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html&quot;&gt;Amazon S3 API: GetObject and Byte Ranges&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">Amazon S3 API：GetObject 与 Range</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html&quot;&gt;Amazon S3 API: PutObject&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">Amazon S3 API：PutObject 与完整对象写入</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html&quot;&gt;Amazon S3: Multipart Upload Overview&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html">Amazon S3：分段上传、完成与重试</a></li>
+      <li data-en="&lt;a href=&quot;https://pubs.opengroup.org/onlinepubs/9799919799/functions/write.html&quot;&gt;The Open Group POSIX: write and pwrite&lt;/a&gt;"><a href="https://pubs.opengroup.org/onlinepubs/9799919799/functions/write.html">The Open Group POSIX：write 与 pwrite</a></li>
     </ul></div>
   </div>
 </main>
@@ -62,10 +67,10 @@
   <span>© 2026 Shan's Stack</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/obj.js?v=38c47db1"></script>
@@ -94,8 +99,8 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "前缀把平铺的键组织成组",
-    "Prefixes Group Keys in a Flat Namespace"
+    "平铺命名空间中的前缀分组",
+    "Prefix Grouping in a Flat Namespace"
    ],
    "d": [
     "列表操作可按键的开头筛选对象，界面可利用分隔符显示类似目录的分组。",
@@ -157,10 +162,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>POSIX 是定义文件等操作接口的一组标准。其 pwrite() 可把字节写到打开文件的指定偏移。S3 通用存储桶的 PutObject 则在一次操作中提交整个对象，对象服务可用新内容替换该键所指向的当前对象。按对象组织的数据集通常可以将独立更新的内容放在不同的键下，例如每个数据分片使用一个键。</p>"
+     "<p>POSIX 的 <code>pwrite()</code> 将字节写入打开文件的指定偏移。S3 通用存储桶的 PutObject 接收完整对象。键已存在时，写入结果取决于版本控制等存储桶设置，例如产生该键的新版本。按对象保存的数据集可以为独立更新的分片分配各自的键。</p>"
     ],
     [
-     "<p>POSIX is a family of standards for interfaces including file operations. Its pwrite() can write bytes at a specified offset in an open file. PutObject for an S3 general purpose bucket submits a whole object in one operation, allowing the service to replace the current object at that key with new content. Object-based datasets can keep independently updated data under separate keys, such as one key per shard.</p>"
+     "<p>POSIX <code>pwrite()</code> writes bytes at a specified offset in an open file. PutObject in an S3 general purpose bucket accepts a complete object. For an existing key, bucket settings such as versioning determine the result, which can be a new version at that key. Object-based datasets can assign separate keys to shards that are updated independently.</p>"
     ]
    ]
   }

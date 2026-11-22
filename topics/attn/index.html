@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/attn.css?v=163e7078">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/html/1706.03762&quot;&gt;Original Transformer Paper: Attention and Model Architecture&lt;/a&gt;"><a href="https://arxiv.org/html/1706.03762">Transformer 原论文：注意力机制与模型结构</a></li>
+      <li data-en="&lt;a href=&quot;https://aclanthology.org/2023.emnlp-main.298/&quot;&gt;GQA: Training Generalized Multi-Query Transformer Models&lt;/a&gt;"><a href="https://aclanthology.org/2023.emnlp-main.298/">分组查询注意力原论文</a></li>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/docs/transformers/cache_explanation&quot;&gt;Hugging Face Transformers: Caching&lt;/a&gt;"><a href="https://huggingface.co/docs/transformers/cache_explanation">Hugging Face Transformers：KV 缓存机制</a></li>
     </ul></div>
   </div>
 </main>
@@ -60,10 +63,10 @@
 
 <footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/attn.js?v=88ebddc1"></script>
@@ -83,17 +86,17 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>自注意力从同一序列生成三类向量。查询（Q）用于衡量当前要找什么，键（K）用于与查询比较，值（V）携带将被汇总的信息。同一位置的三类向量来自不同的线性变换。</p>"
+     "<p>自注意力从同一序列生成查询（Q）、键（K）和值（V）。查询与键用于计算注意力分数，值向量按权重参与输出聚合。同一位置的 Q、K、V 来自不同的线性投影。</p>"
     ],
     [
-     "<p>Self-attention derives three kinds of vectors from the same sequence. A query (Q) is used to look for relevant positions, a key (K) is compared with a query, and a value (V) carries the information that will be combined. Separate linear projections produce the three vectors at each position.</p>"
+     "<p>Self-attention generates queries (Q), keys (K), and values (V) from the same sequence. Queries and keys determine attention scores. The output aggregates the value vectors using the resulting weights. Distinct linear projections produce Q, K, and V at each position.</p>"
     ]
    ]
   },
   {
    "t": [
-    "用查询和键算分",
-    "Score Keys Against the Query"
+    "查询与键的缩放点积",
+    "Scaled Dot Products Between Queries and Keys"
    ],
    "d": [
     "当前查询分别与各位置的键做缩放点积，得到一组相关性分数。",
@@ -173,10 +176,10 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>在因果注意力中，追加 token 后，历史位置的表示保持有效。KV Cache 按层保留历史位置的键和值，省去重新计算这些向量的工作。当前查询仍在可见键上计算新权重，并对可见值做加权求和。</p>"
+     "<p>在因果注意力中，追加 token 不改变已处理位置可见的前缀。KV Cache 按层保留历史位置的键和值，避免重新计算这些向量。当前查询仍需计算对可见键的注意力权重，并对可见值求加权和。</p>"
     ],
     [
-     "<p>In causal attention, appending tokens leaves earlier representations valid. The KV cache retains earlier keys and values for each layer, avoiding recomputation of those vectors. The new query still computes new weights over visible keys and combines their values.</p>"
+     "<p>In causal attention, appending a token leaves the visible prefix of each earlier position unchanged. The KV cache stores the keys and values of earlier positions at each layer, avoiding recomputation. The current query still scores the visible keys and computes a weighted sum of their values.</p>"
     ]
    ]
   }

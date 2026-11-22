@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/sharp.css?v=f1527a45">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html&quot;&gt;NVIDIA NCCL: Collective Operations&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html">NVIDIA NCCL：集合通信操作</a></li>
+      <li data-en="&lt;a href=&quot;https://networking-docs.nvidia.com/sharpum/350/introduction&quot;&gt;NVIDIA SHARP Documentation&lt;/a&gt;"><a href="https://networking-docs.nvidia.com/sharpum/350/introduction">NVIDIA SHARP：交换机聚合与通信卸载</a></li>
+      <li data-en="&lt;a href=&quot;https://network.nvidia.com/related-docs/solutions/hpc/paperieee_copyright.pdf&quot;&gt;Scalable Hierarchical Aggregation and Reduction Protocol (SHARP)&lt;/a&gt;"><a href="https://network.nvidia.com/related-docs/solutions/hpc/paperieee_copyright.pdf">SHARP 原论文：聚合树与集合操作</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/sharp.js?v=b4acc51d"></script>
@@ -99,8 +102,8 @@ window.SS_TOPIC_CFG={
     "Reduction-capable Switches Combine Inputs"
    ],
    "d": [
-    "交换芯片等同一位置的输入块到齐后，将对应元素合并为一个部分结果。",
-    "Switch hardware combines the inputs for a block position into a partial result once those inputs arrive."
+    "支持卸载的交换机将匹配的输入元素归约为部分结果。",
+    "An offload-capable switch reduces corresponding input elements to a partial result."
    ],
    "b": [
     [

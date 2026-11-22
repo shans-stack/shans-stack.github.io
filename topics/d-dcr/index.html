@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/d-dcr.css?v=a039f3d4">
 <script>window.SS_ROOT='../../';</script>
@@ -68,10 +68,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/d-dcr.js?v=eebe4fcd"></script>
@@ -81,41 +81,41 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/420],
  "steps": [
   {
+   "t": [
+    "传统 RAID：固定盘组与专用热备盘",
+    "Conventional RAID: Fixed Drive Groups and Dedicated Hot Spares"
+   ],
+   "d": [
+    "传统 RAID 使用固定盘组，专用热备通常在重建时投入使用。",
+    "Conventional RAID uses fixed drive groups and typically activates a dedicated hot spare during rebuild."
+   ],
    "s": [
     "传统 RAID",
     "Traditional RAID"
    ],
-   "t": [
-    "传统 RAID：固定几块盘一组，外加整块热备盘",
-    "Traditional RAID: Fixed Groups of Drives, Plus Whole Hot-Spare Drives"
-   ],
-   "d": [
-    "每个 RAID 组是固定的几块盘，另有整块热备盘平时闲着。",
-    "Each RAID group is a fixed set of drives, and whole hot-spare drives sit idle."
-   ],
    "b": [
     [
      "<p>传统 RAID 把几块盘绑成一个 RAID 组，组里的盘一起存数据和校验（校验：按数据算出来的额外信息，坏一块盘时能把丢的数据算回来）。为了坏盘后能马上恢复，还要另外放一块或几块热备盘：平时不存数据，只等着顶替坏盘。</p>",
-     "<p>这个结构简单好懂，但有两个代价：一组的读写只落在固定那几块盘上；热备盘平时完全闲着。下一步看坏盘时这两点怎么变成问题。</p>"
+     "<p>固定盘组将一组数据的常规读写限制在该组成员内。专用热备盘通常在故障重建前不参与该组的读写。</p>"
     ],
     [
      "<p>Traditional RAID binds a few drives into a RAID group, and the drives in the group store data and parity together (parity: extra information computed from the data, which lets lost data be recalculated when a drive fails). To recover right away after a failure, one or more hot-spare drives are added as well: they hold no data and just wait to replace a failed drive.</p>",
-     "<p>The structure is simple to understand, but it has two costs: a group's reads and writes land only on its fixed set of drives, and the hot spares sit completely idle. The next step shows how these two points become a problem when a drive fails.</p>"
+     "<p>Fixed groups constrain routine I/O for the group’s data to its member drives. A dedicated hot spare typically does not serve that group’s I/O until a rebuild.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "传统重建",
-    "Traditional rebuild"
-   ],
    "t": [
-    "传统重建：所有写都压在那一块热备盘上",
-    "Traditional Rebuild: Every Write Lands on One Hot Spare"
+    "传统 RAID 重建写入集中于热备盘",
+    "Conventional Rebuild Writes Target a Dedicated Hot Spare"
    ],
    "d": [
     "坏一块盘，组里剩下的盘负责读，算出来的数据全部写进同一块热备盘，它成了瓶颈。",
     "When a drive fails, the rest of the group does the reading, and all the rebuilt data is written to one hot spare, which becomes the bottleneck."
+   ],
+   "s": [
+    "传统重建",
+    "Traditional rebuild"
    ],
    "b": [
     [
@@ -129,41 +129,41 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "分簇布局",
-    "Declustered layout"
-   ],
    "t": [
-    "分簇：数据、校验和备用空间都打散到所有盘上",
-    "Declustering: Data, Parity and Spare Space Are Spread over Every Drive"
+    "分簇布局分散数据、校验和备用空间",
+    "Declustered Placement Distributes Data, Parity, and Spare Space"
    ],
    "d": [
     "每块盘切成很多小段，一个条带的成员散在池里不同的盘上，备用空间也切成小段，分散在每块盘上。",
     "Each drive is cut into many small pieces. A stripe's members sit on different drives across the pool, and spare space is cut into pieces on every drive too."
    ],
+   "s": [
+    "分簇布局",
+    "Declustered layout"
+   ],
    "b": [
     [
      "<p>分簇 RAID（Declustered RAID）不再按「一组固定几块盘」来组织。它把池里每块物理盘切成大量固定大小的小段，再从不同的盘上各取一段，拼成一个 RAID 条带（条带：一组数据段加上保护它们的校验段）。每个条带的成员落在哪几块盘上是打散的，不同条带用到的盘组合各不相同。DDN SFA 的 DCR 支持 RAID 6 的 8+2 和 4+2 条带（8+2 即 8 段数据加 2 段校验），一个 DCR 池可以从 2 块盘到 900 块盘。</p>",
-     "<p>备用空间也不再是整块热备盘，而是在每块盘上都预留一些空闲小段。这样池里所有盘平时都在存数据，没有一块是闲着的。这也是可用容量看起来比传统 RAID 少的原因：备用小段占了池容量，换来的是下一步的快速重建。画面里的盘数和条带宽度只是示意。</p>"
+     "<p>备用空间可以分布在各成员盘上，使这些盘同时承载常规数据与重建预留空间。动画中的盘数和条带宽度仅作示意。</p>"
     ],
     [
      "<p>Declustered RAID no longer organises drives into fixed groups. It cuts every physical drive in the pool into a large number of fixed-size pieces, then takes one piece from each of several different drives to form a RAID stripe (stripe: a set of data pieces plus the parity pieces that protect them). Which drives a stripe's members land on is scattered, and different stripes use different combinations of drives. DDN SFA DCR supports RAID 6 8+2 and 4+2 stripes (8+2 means eight data segments and two parity segments), and a DCR pool can hold from 2 to 900 drives.</p>",
-     "<p>Spare space is no longer a whole hot-spare drive either: every drive keeps some free pieces in reserve. So every drive in the pool stores data, and none sits idle. This is also why usable capacity looks smaller than with traditional RAID: the spare pieces take up pool capacity, and in return they make the fast rebuild in the next step possible. The number of drives and the stripe width in the picture are schematic.</p>"
+     "<p>Spare capacity can be distributed across member drives so they carry both regular data and rebuild reserves. The animation uses illustrative drive counts and stripe widths.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "分簇重建",
-    "Declustered rebuild"
-   ],
    "t": [
-    "分簇重建：很多盘一起读、一起写",
-    "Declustered Rebuild: Many Drives Read and Write Together"
+    "分簇重建的并行读取与写入",
+    "Parallel Reads and Writes in Declustered Rebuild"
    ],
    "d": [
     "坏盘上的每一段属于不同的条带，各自由不同的盘读、写进不同盘上的备用空间，很多盘同时工作。",
     "Each piece on the failed drive belongs to a different stripe, so each is read from different drives and written to spare space on a different drive. Many drives work at once."
+   ],
+   "s": [
+    "分簇重建",
+    "Declustered rebuild"
    ],
    "b": [
     [
@@ -177,17 +177,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "同时跑",
-    "Side by side"
-   ],
    "t": [
-    "同时跑：同样坏一块盘，谁先恢复冗余",
-    "Side by Side: One Failed Drive Each, Which Regains Redundancy First"
+    "重建并行度对比",
+    "Comparison of Rebuild Parallelism"
    ],
    "d": [
     "两种做法同时重建同样多的数据，分簇那边很多盘一起写，已重建的段数涨得快得多。",
     "Both approaches rebuild the same amount of data at once. On the declustered side many drives write together, so the rebuilt count climbs much faster."
+   ],
+   "s": [
+    "并行度对比",
+    "Parallelism Comparison"
    ],
    "b": [
     [
@@ -201,17 +201,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "换盘回拷",
-    "Copyback"
-   ],
    "t": [
-    "换上新盘后回拷，额度还回来",
-    "After the New Drive Goes in, Copyback Returns the Allowance"
+    "换盘回拷与备用容量恢复",
+    "Copyback and Spare Capacity Recovery"
    ],
    "d": [
     "备用空间够几次快速重建是建池时定的；换上新盘后，数据从备用小段拷回新盘，布局恢复，额度还回来。",
     "How many fast rebuilds the spare space covers is set when the pool is built. After a new drive goes in, data is copied from the spare pieces back to it, the layout is restored, and the allowance is returned."
+   ],
+   "s": [
+    "换盘回拷",
+    "Copyback"
    ],
    "b": [
     [

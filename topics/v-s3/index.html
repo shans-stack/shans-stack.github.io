@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-s3.css?v=9a0accea">
 <script>window.SS_ROOT='../../';</script>
@@ -64,10 +64,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-s3.js?v=42da3ff1"></script>
@@ -77,10 +77,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/520,480/520],
  "steps": [
   {
-   "s": [
-    "S3",
-    "S3"
-   ],
    "t": [
     "通过 HTTP(S) 存取对象",
     "Store and Fetch Objects over HTTP(S)"
@@ -88,6 +84,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "VAST 实现了 AWS S3 REST API 的一个子集，客户端用桶名和键标识对象。",
     "VAST implements a subset of the AWS S3 REST API. Clients identify an object by bucket and key."
+   ],
+   "s": [
+    "S3",
+    "S3"
    ],
    "b": [
     [
@@ -101,10 +101,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "CNode 直接处理",
-    "Handled by CNodes"
-   ],
    "t": [
     "CNode 处理 S3 请求",
     "CNodes Handle S3 Requests"
@@ -112,6 +108,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "S3 客户端连接虚拟 IP，由提供该地址服务的 CNode 访问 Element Store。",
     "An S3 client connects to a virtual IP. The CNode serving that address accesses the Element Store."
+   ],
+   "s": [
+    "CNode 直接处理",
+    "Handled by CNodes"
    ],
    "b": [
     [
@@ -123,10 +123,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "Element Store",
-    "Element Store"
-   ],
    "t": [
     "Element Store 的共享命名空间",
     "The Shared Namespace in the Element Store"
@@ -134,6 +130,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "多协议 view 可将同一个元素呈现为目录里的文件和桶里的对象。",
     "A multiprotocol view can expose the same element as a file in a directory and an object in a bucket."
+   ],
+   "s": [
+    "Element Store",
+    "Element Store"
    ],
    "b": [
     [
@@ -145,10 +145,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "文件进，对象出",
-    "File in, object out"
-   ],
    "t": [
     "通过 NFS 写入文件，通过 S3 读取对象",
     "Write a File over NFS and Read It over S3"
@@ -156,6 +152,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "S3 客户端使用文件相对于 view 根目录的路径作为对象键。",
     "The S3 client uses the file path relative to the view root as its object key."
+   ],
+   "s": [
+    "文件进，对象出",
+    "File in, object out"
    ],
    "b": [
     [
@@ -169,10 +169,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "security flavor",
-    "Security flavor"
-   ],
    "t": [
     "Security flavor 决定权限检查方式",
     "Security Flavor Selects the Permission Rules"
@@ -180,6 +176,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "view 策略中的 security flavor 决定如何检查权限，以及哪些协议能设置权限。",
     "The security flavor in the view policy determines how permissions are checked and which protocols can set them."
+   ],
+   "s": [
+    "security flavor",
+    "Security flavor"
    ],
    "b": [
     [

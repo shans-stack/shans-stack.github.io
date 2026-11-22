@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/v-ldc.css?v=052f2cd9">
 <script>window.SS_ROOT='../../';</script>
@@ -66,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/v-ldc.js?v=17d229e3"></script>
@@ -79,17 +79,17 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/700],
  "steps": [
   {
-   "s": [
-    "坏了一块盘",
-    "A drive fails"
-   ],
    "t": [
-    "坏了一块盘，要把它那一份补回来",
-    "A Drive Fails and Its Piece Must Be Rebuilt"
+    "单块 SSD 失效后的数据重建",
+    "Reconstruction After a Single SSD Failure"
    ],
    "d": [
     "一条 146+4 的宽条带里有一块盘坏了，系统要用剩下的份把丢掉的那一份算回来。",
     "A drive in a wide 146+4 stripe fails, and the system must recompute the lost piece from the rest."
+   ],
+   "s": [
+    "坏了一块盘",
+    "A drive fails"
    ],
    "b": [
     [
@@ -103,17 +103,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "传统算法",
-    "Classic algorithm"
-   ],
    "t": [
-    "传统算法：要读剩下的全部数据份",
-    "The Classic Algorithm Reads Every Remaining Data Piece"
+    "传统 Reed–Solomon 的重建读取",
+    "Conventional Reed–Solomon Rebuild Reads"
    ],
    "d": [
     "用传统的 Reed-Solomon 纠删码，补回一份要读同一条带里 146 份存活的数据。",
     "With classic Reed-Solomon erasure coding, recovering one piece reads the 146 surviving data pieces in the stripe."
+   ],
+   "s": [
+    "传统算法",
+    "Classic algorithm"
    ],
    "b": [
     [
@@ -127,58 +127,54 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "宽条带的两难",
-    "The wide-stripe dilemma"
-   ],
    "t": [
-    "宽条带的两难：省空间，但重建读得多",
-    "The Wide-Stripe Dilemma: Less Space, More Rebuild Reads"
+    "条带宽度、校验占比与重建读取",
+    "Stripe Width, Parity Fraction, and Rebuild Reads"
    ],
    "d": [
     "条带窄，重建读得少，但校验占的空间多；条带宽，校验占比小，但重建要读的份数跟着变多。",
     "A narrow stripe reads little on rebuild but spends more space on parity. A wide stripe spends little on parity but reads more pieces to rebuild."
    ],
+   "s": [
+    "条带宽度与开销",
+    "Stripe Width and Overhead"
+   ],
    "b": [
     [
      "<p>8+2 的条带，校验占 20%，坏一块盘只要读 8 份；146+4 的条带，校验只占约 2.7%，坏一块盘却要读 146 份。用传统算法，省空间和重建快只能二选一。</p>",
-     "<p>这正是行业普遍把条带控制在十几到二十几份宽的原因：原因不在于无法做宽，而在于条带过宽时重建负担过重。VAST 要用宽条带，就必须先把重建要读的量降下来。</p>"
+     "<p>较宽的条带可降低校验占比。传统解码所需的读取量会随数据块数量增加，局部解码用于降低这部分开销。</p>"
     ],
     [
      "<p>An 8+2 stripe spends 20% on parity and reads 8 pieces to rebuild a drive; a 146+4 stripe spends only about 2.7% on parity but reads 146 pieces. With the classic algorithm, the choice is between saving space and rebuilding quickly.</p>",
-     "<p>That is why the industry generally keeps stripes ten to twenty-something pieces wide: not because wider is impossible, but because rebuilds cannot keep up. To use wide stripes, VAST first has to cut how much a rebuild reads.</p>"
+     "<p>Wider stripes can lower the parity fraction. Conventional decoding reads more blocks as the data-block count grows, and local decoding reduces this overhead.</p>"
     ]
    ]
   },
   {
+   "t": [
+    "局部解码利用校验块减少重建读取",
+    "Local Decoding Uses Parity to Reduce Rebuild Reads"
+   ],
+   "d": [
+    "每个校验块由选定的数据块组合生成，局部恢复可以利用校验块减少重建读取。",
+    "Each parity block is computed over a selected set of data blocks. Local recovery uses parity to reduce rebuild reads."
+   ],
    "s": [
     "一份校验顶一组",
     "One parity covers a group"
    ],
-   "t": [
-    "本地可解码：每份校验能顶替一大组数据",
-    "Locally Decodable: Each Parity Piece Stands in for a Large Group"
-   ],
-   "d": [
-    "每份校验从一组跨多个条带、略有差异的数据算出来，重建时一份校验就能代替一大组数据份；3 份校验顶掉四分之三的数据份。",
-    "Each parity piece is computed from a slightly different set of data spanning several stripes, so in a rebuild one parity piece replaces a large group of data pieces. Three parity pieces cover three quarters of the data."
-   ],
    "b": [
     [
-     "<p>本地可解码纠删码（locally decodable codes）改的是校验怎么算。传统做法里，每份校验都由同一条带的全部数据算出；VAST 让每份校验从一组跨越多个条带、彼此略有差异的数据集合算出来。这样在重建计算里，一份校验就能「顶替」一大组数据份，不必把那组数据一份份读回来。</p>",
+     "<p>VAST 的本地可解码纠删码对不同的数据块组合计算校验。局部恢复利用这些校验关系，只需读取部分存活数据块。</p>",
      "<p>按 VAST 白皮书的说法，3 份校验能顶掉四分之三的数据份，重建只需读剩下的四分之一。图里把数据分成四组只是示意，帮助理解「顶替」的意思，不是真实的分组方式。</p>"
     ],
     [
-     "<p>Locally decodable codes change how parity is computed. Classically, every parity piece is computed from all the data in the same stripe. VAST computes each parity piece from a set of data that spans several stripes, with each set slightly different. In the rebuild calculation, one parity piece can then stand in for a large group of data pieces, so that group does not have to be read back piece by piece.</p>",
+     "<p>VAST’s locally decodable codes compute parity across different sets of data blocks. Local recovery uses those parity relationships to read only a subset of surviving data blocks.</p>",
      "<p>According to the VAST white paper, 3 parity pieces stand in for three quarters of the data pieces, so a rebuild reads only the remaining quarter. The four groups in the picture are only an aid to understanding what standing in means; they are not the real grouping.</p>"
     ]
    ]
   },
   {
-   "s": [
-    "只读四分之一",
-    "Read only a quarter"
-   ],
    "t": [
     "重建只读四分之一：38 份对 146 份",
     "Rebuild Reads a Quarter: 38 Pieces Instead of 146"
@@ -186,6 +182,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "同样补回一份，传统算法要读 146 份，本地可解码只读 38 份。",
     "To recover the same piece, the classic algorithm reads 146 pieces and locally decodable codes read 38."
+   ],
+   "s": [
+    "只读四分之一",
+    "Read only a quarter"
    ],
    "b": [
     [
@@ -199,17 +199,17 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "分散写回",
-    "Spread the rebuilt data"
-   ],
    "t": [
-    "补回来的数据摊到所有盘上，不用热备盘",
-    "Rebuilt Data Spreads over Many Drives, with No Hot Spare"
+    "重建数据分布到可用 SSD",
+    "Rebuilt Data Is Distributed Across Available SSDs"
    ],
    "d": [
     "重建出来的份按各盘剩余空间和寿命分散写到许多盘上，不设专门的热备盘，坏盘不换也能继续跑。",
     "Rebuilt pieces are written across many drives according to each drive's free space and remaining life. There is no dedicated hot spare, and the system keeps running without replacing the failed drive."
+   ],
+   "s": [
+    "分散写回",
+    "Spread the rebuilt data"
    ],
    "b": [
     [

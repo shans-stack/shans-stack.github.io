@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
+<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
 <link rel="stylesheet" href="../../assets/anim/ckpt.css?v=9b72e91a">
 <script>window.SS_ROOT='../../';</script>
@@ -43,6 +43,9 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.pytorch.org/docs/2.15/distributed.checkpoint.html&quot;&gt;PyTorch: Distributed Checkpoint&lt;/a&gt;"><a href="https://docs.pytorch.org/docs/2.15/distributed.checkpoint.html">PyTorch 分布式检查点接口与存储写入器</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html&quot;&gt;PyTorch: Saving and Loading Models&lt;/a&gt;"><a href="https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html">PyTorch 检查点：模型状态、优化器状态与训练进度</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.pytorch.org/tutorials/recipes/distributed_async_checkpoint_recipe.html&quot;&gt;PyTorch: Asynchronous Distributed Checkpointing&lt;/a&gt;"><a href="https://docs.pytorch.org/tutorials/recipes/distributed_async_checkpoint_recipe.html">PyTorch 异步分布式检查点与暂存开销</a></li>
     </ul></div>
   </div>
 </main>
@@ -63,10 +66,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=d8caef16"></script>
-<script src="../../data/stations.js?v=9583696b"></script>
-<script src="../../data/maps.js?v=7b42679f"></script>
-<script src="../../data/talks.js?v=7cb8ea3c"></script>
+<script src="../../data/lines.js?v=592fc31f"></script>
+<script src="../../data/stations.js?v=78aee762"></script>
+<script src="../../data/maps.js?v=13800c68"></script>
+<script src="../../data/talks.js?v=9c02c723"></script>
 <script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../assets/core.js?v=67905bc1"></script>
 <script src="../../assets/anim/ckpt.js?v=5a166049"></script>
@@ -113,19 +116,19 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "分片齐备后登记为可恢复",
-    "Mark a Checkpoint Complete After All Shards Arrive"
+    "分片写入完成后登记检查点",
+    "Checkpoint Finalization After Shard Writes"
    ],
    "d": [
-    "写入过程保留上一个完整检查点，新版本在全部分片就绪后才可用于恢复。",
-    "The previous complete checkpoint stays available while the new version is written and marked ready for recovery."
+    "独立保存的检查点在所需分片和元数据写入成功后可用于恢复。",
+    "A separately stored checkpoint is recoverable after the required shards and metadata have been written."
    ],
    "b": [
     [
-     "<p>新检查点可以先写入独立位置，并在存储写入成功后记录完成状态。例如，协调进程可在参与进程报告成功后发布完成记录。如果有分片写入失败，恢复流程可以选择先前已完成的版本。</p>"
+     "<p>新检查点可以写入独立位置。以 PyTorch Distributed Checkpoint 的文件系统写入器为例，各进程写入其数据，协调进程完成检查点元数据写入。写入失败时，仍可选择已保留的完整版本恢复。</p>"
     ],
     [
-     "<p>A new checkpoint can be written to a separate location and marked complete after storage writes succeed. A coordinating process can, for example, publish a completion record after participants report success. If a shard fails to write, recovery can select an earlier complete version.</p>"
+     "<p>A new checkpoint can be written to a separate location. With the PyTorch Distributed Checkpoint file-system writer, participating processes write their data and a coordinator finalizes the checkpoint metadata. A retained complete version remains available if the new write fails.</p>"
     ]
    ]
   },
@@ -158,10 +161,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>恢复流程选择最新的完整版本，将模型和优化器状态加载到训练进程，并按保存的进度与输入状态继续取样。中断前在这一检查点之后完成的工作需要重新执行。保存得更频繁可以缩短可能重做的区间，同时增加保存操作。</p>"
+     "<p>恢复流程将选定检查点中的模型和优化器状态加载到训练进程。应用保存并恢复相应的进度和数据读取状态时，可以从该位置继续取样。中断前在该检查点之后完成的训练步骤需要重新执行。保存频率越高，潜在的重做区间越短，保存操作也越频繁。</p>"
     ],
     [
-     "<p>Recovery selects the latest complete version, loads model and optimizer state into the training processes, and resumes sampling from the saved progress and input state. Work completed after that checkpoint before the interruption must run again. More frequent checkpoints shorten the potential replay interval and increase the number of saves.</p>"
+     "<p>The training processes load model and optimizer state from the selected checkpoint. When the application saves and restores progress and input state, sampling can resume from that point. Steps completed after the checkpoint must be repeated. More frequent saves shorten the potential replay interval and increase the number of save operations.</p>"
     ]
    ]
   }
