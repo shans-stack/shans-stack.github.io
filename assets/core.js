@@ -145,11 +145,14 @@ SS.renderCols=function(el,mapId,primary){if(!el)return;var L=SS.L,m=SS.mapById[m
     var ids=SS.onLine(lid,mapId).filter(function(id){var ls=SS.linesIn(id,mapId);return ls.length===1||primary[id]===lid||(!primary[id]&&ls[0]===lid)});
     return '<div class="col" id="ln-'+lid+'" style="--lc:'+SS.lc(lid)+'"><h3>'+SS.sym(lid)+'<span>'+SS.esc(SS.lineName(lid))+'</span></h3><p class="d">'+SS.esc(SS.T(SS.line[lid].d))+'</p><ul>'+
       ids.map(item).join('')+'</ul></div>'}).join('')};
-/* 专题图页头的公司信息，数据在 data/intro.js（由知识库公司页生成） */
-SS.renderIntro=function(mapId,facts){var it=(SS.intro||{})[mapId];if(!facts)return;
-  if(!it){facts.hidden=true;return}
-  var T=function(a){return SS.L(a[0],a[1])};
-  facts.innerHTML=it.rows.map(function(r){return '<div><dt>'+SS.esc(T(r.k))+'</dt><dd>'+T(r.v)+'</dd></div>'}).join('');facts.hidden=false};
+/* 专题图页头一行：公司 · 成立年份 · 总部（来自 data/intro.js，由知识库公司页生成），返回纯文本 */
+SS.introLine=function(mapId){var it=(SS.intro||{})[mapId];if(!it)return '';
+  var strip=function(h){return String(h).replace(/<[^>]+>/g,'')},out=[];
+  it.rows.forEach(function(r){var k=r.k[0],v=strip(SS.L(r.v[0],r.v[1]));
+    if(k==='成立')out.push(SS.L(v.replace(/\s*年$/,'')+' 年成立','Founded '+v));
+    else if(k==='总部')out.push(SS.L('总部 '+v,'Headquartered in '+v));
+    else out.push(v)});
+  return out.join(' · ')};
 SS.esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 SS.zhNum=function(n){var d='零一二三四五六七八九';if(n<10)return d[n];if(n<20)return '十'+(n%10?d[n%10]:'');return d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:'')};
 SS.lvName=function(lv){return lv===2?SS.L('深入','In depth'):SS.L('入门','Intro')};
