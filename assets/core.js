@@ -62,12 +62,24 @@ window.ssSetLang=function(v){if(!okLang(v))return;var was=window.SS_LANG;putLang
   if(was==='tw'&&v!=='tw'){location.reload();return}/* 繁体是整页转换出来的，切回别的语言最稳是重新载入 */
   apply(v)};
 window.SS_LANG=getLang();
+/* 厂商视角：'' 通用，'vast' 等见 data/views.js。?v=vast 直达并记住，?v=all 回通用。 */
+function getView(){var v=q.get('v');if(v==='all')return '';if(v&&SS.viewById&&SS.viewById[v])return v;
+  try{v=localStorage.getItem('ss-view')||'';return (v&&SS.viewById&&SS.viewById[v])?v:''}catch(e){return ''}}
+SS.VIEW=getView();try{if(q.has('v'))localStorage.setItem('ss-view',SS.VIEW)}catch(e){}
+SS.view=function(){return SS.VIEW&&SS.viewById?SS.viewById[SS.VIEW]:null};
+window.ssSetView=function(v){try{localStorage.setItem('ss-view',v)}catch(e){}
+  try{var u=new URL(location.href);if(u.searchParams.has('v'))u.searchParams.set('v',v||'all');history.replaceState(null,'',u)}catch(e){}
+  location.reload()};
 document.addEventListener('DOMContentLoaded',function(){
   var b=document.querySelector('[data-lang-toggle]');
   if(b){var g=document.createElement('div');g.className='langs';g.setAttribute('role','group');g.setAttribute('aria-label','语言 / Language');g.setAttribute('data-noconv','');
     LANGS.forEach(function(o){var x=document.createElement('button');x.type='button';x.textContent=o[1];x.title=o[2];x.setAttribute('lang',o[0]==='en'?'en':(o[0]==='tw'?'zh-Hant':'zh-Hans'));
       x.setAttribute('data-lang-set',o[0]);x.addEventListener('click',function(){if(window.SS_LANG!==o[0])window.ssSetLang(o[0])});g.appendChild(x)});
-    b.replaceWith(g)}
+    b.replaceWith(g);
+    if(SS.views&&SS.views.length){var vg=document.createElement('div');vg.className='langs views';vg.setAttribute('role','group');vg.setAttribute('aria-label','视角 / View');
+      [['','通用','General']].concat(SS.views.map(function(v){return [v.id,v.zh,v.en]})).forEach(function(o){var x=document.createElement('button');x.type='button';x.textContent=o[1];x.setAttribute('data-en',o[2]);
+        x.setAttribute('aria-pressed',(SS.VIEW||'')===o[0]?'true':'false');x.addEventListener('click',function(){if((SS.VIEW||'')!==o[0])window.ssSetView(o[0])});vg.appendChild(x)});
+      g.parentNode.insertBefore(vg,g)}}
   apply(getLang());
 });
 SS.lang=function(){return window.SS_LANG==='en'?'en':'zh'};

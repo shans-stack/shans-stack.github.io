@@ -117,3 +117,14 @@ body.present .stage{display:grid;grid-template-rows:minmax(0,1fr) auto auto;heig
 @media (max-width:720px){.langs{margin-left:4px}.langs button{min-width:30px;padding:0 6px;font-size:13px}}
 @media (max-width:440px){.nav a{padding:10px 4px;font-size:13px}.brand{font-size:15px;gap:8px}.langs button{min-width:28px;padding:0 5px}}
 .no-talks #pick,.no-talks #talks,.no-talks a[href$="#talks"],.no-talks #intalks{display:none!important}
+.views{margin-left:12px}
+@media (max-width:440px){.nav a{display:none}.views{margin-left:0}}
+.sec.vw h2{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.sec.vw .bd{margin-top:14px}
+.sec.vw .see{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-wrap:wrap;gap:8px 24px}
+.sec.vw .see li{margin:0;font-size:16px}
+.sec.vw .see a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule2);text-underline-offset:4px}
+.sec.vw .see a:hover{text-decoration-color:var(--ink)}
+.sec.vw .see li.wip{color:var(--ink3)}
+.rel li.wip .w{display:flex;align-items:center;gap:10px;padding:12px 0;font-size:16px;color:var(--ink3)}
+.rel li.wip .w svg{width:20px;height:20px;flex:none;opacity:.5}

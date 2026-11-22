@@ -20,7 +20,8 @@
   var LS=SS.linesIn(id,MAP);
   document.body.style.setProperty('--lc',SS.lc(LS[0]));
   function li(x){var mid=SS.inMap(x,HOME)?HOME:SS.maps.filter(function(m){return SS.inMap(x,m.id)})[0].id,l=SS.linesIn(x,mid)[0];
-    return '<li><a href="'+SS.stationHref(x,mid)+'">'+SS.sym(l)+'<span>'+SS.esc(SS.title(x))+'</span>'+(SS.stations[x].st==='live'?'':' <span class="tag">'+SS.stName(SS.stations[x].st)+'</span>')+'</a></li>'}
+    if(SS.stations[x].st!=='live')return '<li class="wip"><span class="w">'+SS.sym(l)+'<span>'+SS.esc(SS.title(x))+'</span></span></li>';
+    return '<li><a href="'+SS.stationHref(x,mid)+'">'+SS.sym(l)+'<span>'+SS.esc(SS.title(x))+'</span></a></li>'}
   function fillMeta(){
     var m=SS.mapById[MAP],mapName=MAP===HOME?L('总图','Main map'):SS.L(m.zh,m.en);
     document.getElementById('crumb').innerHTML='<a href="'+SS.url(m.href)+(LS.length>1?'?hl='+id:'')+'#map">'+SS.esc(mapName)+'</a><span class="sep">/</span>'+
@@ -46,9 +47,17 @@
     art.innerHTML=STEPS.map(function(s,i){
       return '<section class="sec" id="step-'+(i+1)+'" data-i="'+i+'"><div class="hd2"><h2>'+SS.esc(T(s.t))+'</h2></div><p class="lead">'+SS.esc(T(s.d))+'</p>'+
         '<div class="figbox"><div class="mhost" data-i="'+i+'"></div></div><div class="bd">'+T(s.b).join('')+'</div></section>';
-    }).join('');
+    }).join('')+viewSec();
     prog.innerHTML=STEPS.map(function(s,i){return '<button type="button" data-go="'+i+'" aria-label="'+(i+1)+'"></button>'}).join('');
     mountDocAnims();
+  }
+  /* 厂商视角：通用知识点页末尾加一节「<厂商> 怎么用它」（data/views.js），只在文档模式出现 */
+  function viewSec(){
+    var v=SS.view&&SS.view(),n=v&&v.notes&&v.notes[id];if(!n)return '';
+    var see=(n.see||[]).filter(function(x){return SS.stations[x]}).map(function(x){var s2=SS.stations[x];
+      return s2.st==='live'?'<li><a href="'+SS.url(s2.page)+'">'+SS.esc(SS.title(x))+'</a></li>':'<li class="wip">'+SS.esc(SS.title(x))+'</li>'}).join('');
+    return '<section class="sec vw" id="view"><div class="hd2"><h2>'+SS.esc(L(v.zh+' 怎么用它','How '+v.en+' uses it'))+SS.brandMark(v.id,'lg')+'</h2></div><div class="bd">'+
+      T([n.zh,n.en]).map(function(t){return '<p>'+SS.esc(t)+'</p>'}).join('')+(see?'<ul class="see">'+see+'</ul>':'')+'</div></section>';
   }
   function mountDocAnims(){
     if(io){io.disconnect();io=null}
@@ -62,7 +71,7 @@
   }
   function activeFromScroll(){
     var a=0,line=innerHeight*0.42;
-    art.querySelectorAll('.sec').forEach(function(s,i){if(s.getBoundingClientRect().top<line)a=i});
+    art.querySelectorAll('.sec[data-i]').forEach(function(s,i){if(s.getBoundingClientRect().top<line)a=i});
     return a;
   }
   var ticking=false;

@@ -99,7 +99,7 @@ function drawLine(){
     others.forEach(function(o){acts+='<a class="btn sm" href="'+SS.lineHref(mapId,o,id)+'" data-line="'+o+'" data-st="'+id+'">'+SS.sym(o,'mini')+L('换到','Change to ')+SS.esc(SS.lineName(o))+L('线','')+'</a>'});
     if(st.panel)acts+='<button class="btn sm" type="button" data-toggle="'+id+'">'+((st.stops||[]).indexOf(id)>-1?L('移出讲解','Remove from talk'):L('加入讲解','Add to talk'))+'</button>';
     return '<li class="'+(ls.length>1?'x ':'')+(id===st.lineSt?'cur ':'')+'" id="lv-'+id+'"><span class="mk"><i></i></span><div class="bd"><h4>'+SS.esc(SS.title(id))+
-      ' <span class="tag'+(s.st==='live'?' live':'')+'">'+SS.stName(s.st)+'</span></h4><p>'+SS.esc(SS.desc(id,mapId))+'</p>'+(acts?'<p class="acts">'+acts+'</p>':'')+'</div></li>';
+      (s.st==='live'?'':' <span class="soon">'+L('整理中','In progress')+'</span>')+'</h4><p>'+SS.esc(SS.desc(id,mapId))+'</p>'+(acts?'<p class="acts">'+acts+'</p>':'')+'</div></li>';
   }
   var h='<p class="lvback"><a class="btn sm" href="'+SS.url(map.href)+'#map" data-back>'+L('← 返回整张图','← Back to the whole map')+'</a></p>'+
     '<div class="lvh" style="--lc:'+SS.lc(lid)+'">'+SS.sym(lid)+'<h3>'+SS.esc(SS.lineName(lid))+L('线','')+'</h3><small>'+ids.length+L(' 站',' stops')+'</small></div>'+
@@ -114,8 +114,7 @@ function caption(){
   if(st.line){cap.hidden=true;return}cap.hidden=false;
   var c=current();
   if(!c.rt){
-    if(!topic){cap.hidden=true;return}
-    cap.innerHTML='<p>'+SS.esc(SS.T(map.d))+'</p>';
+    cap.hidden=true;return;/* 地图说明已在页首，不再重复 */
     return;
   }
   var r=c.rt,n=r.stops.length,t=st.preview?SS.talkById[st.preview]:(!st.custom&&st.talk?SS.talkById[st.talk]:null);
@@ -193,7 +192,7 @@ function openPop(id,anchor,note){
   if(st.panel)acts+='<button class="btn sm" type="button" data-toggle="'+id+'">'+((st.stops||[]).indexOf(id)>-1?L('移出讲解','Remove from talk'):L('加入讲解','Add to talk'))+'</button>';
   pop.innerHTML='<div class="pop-hd"><span class="pop-s">'+ls.map(function(l){return SS.sym(l)}).join('')+'</span><b>'+SS.esc(SS.title(id))+'</b><button type="button" class="x" data-close aria-label="'+L('关闭','Close')+'">✕</button></div>'+
     (note?'<p class="pop-n">'+SS.esc(note)+'</p>':'')+
-    '<p class="pop-l">'+ls.map(function(l){return SS.esc(SS.lineName(l))+L('线','')}).join(L('、',', '))+' · '+SS.lvName(s.lv)+' · <span class="tag'+(s.st==='live'?' live':'')+'">'+SS.stName(s.st)+'</span></p>'+
+    '<p class="pop-l">'+ls.map(function(l){return SS.esc(SS.lineName(l))+L('线','')}).join(L('、',', '))+' · '+SS.lvName(s.lv)+(s.st==='live'?'':' · '+L('整理中','In progress'))+'</p>'+
     '<p class="pop-d">'+SS.esc(SS.desc(id,mapId))+'</p><p class="acts">'+acts+'</p>';
   pop.hidden=false;
   var b=box.getBoundingClientRect(),r=anchor?anchor.getBoundingClientRect():{left:b.left+b.width/2,width:0,bottom:b.top+40,top:b.top};

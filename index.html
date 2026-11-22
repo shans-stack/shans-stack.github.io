@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="assets/brand/brand.css">
 <link rel="stylesheet" href="assets/site.css">
 <!-- 总图。地图、讲稿、知识点列表都由 data/ 生成，见 README。 -->
+<script>/* VAST 等厂商视角：首页换成该厂商的专题图 */(function(){try{var q=new URLSearchParams(location.search),v=q.get('v');if(v==='all'){localStorage.setItem('ss-view','');return}
+if(v)localStorage.setItem('ss-view',v);else v=localStorage.getItem('ss-view');var M={vast:'maps/vast/index.html'};if(M[v])location.replace(M[v]+location.search)}catch(e){}})();</script>
 </head>
 <body>
 <script src="assets/symbols.js"></script>
@@ -64,7 +66,6 @@
   <section id="topics">
     <div class="sh"><h2 data-en="Stops by line">按线路找知识点</h2></div>
     <div class="cols" id="cols"></div>
-    <div class="xfer" id="xfer"></div>
   </section>
 
   <section id="new">
@@ -83,6 +84,7 @@
 <script src="data/stations.js"></script>
 <script src="data/maps.js"></script>
 <script src="data/talks.js"></script>
+<script src="data/views.js"></script>
 <script src="assets/core.js"></script>
 <script src="assets/metro.js"></script>
 <script src="assets/mapview.js"></script>

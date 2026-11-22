@@ -63,6 +63,7 @@
 <script src="../../data/stations.js"></script>
 <script src="../../data/maps.js"></script>
 <script src="../../data/talks.js"></script>
+<script src="../../data/views.js"></script>
 <script src="../../assets/core.js"></script>
 <script src="../../assets/metro.js"></script>
 <script src="../../assets/mapview.js"></script>
@@ -70,7 +71,9 @@
 document.addEventListener('ss-lang',function(){
   var m=SS.mapById['{{ID}}'],n=SS.stationsOf(m.id).length;
   document.getElementById('mcrumb').textContent=SS.L(m.zh,m.en);
-  document.getElementById('mtitle').textContent=SS.L(m.zh+' 专题图',m.en+' topic map');
+  var vw=SS.view&&SS.view(),own=vw&&vw.map===m.id;
+  document.getElementById('mtitle').textContent=own?SS.L(m.zh+'，一站一站看懂',m.en+', one stop at a time'):SS.L(m.zh+' 专题图',m.en+' topic map');
+  document.querySelector('.mhero .crumb').hidden=!!own;
   document.getElementById('mbrand').innerHTML=SS.brandMark(m.brand,'mh-lg');
   document.getElementById('mlead').textContent=SS.T(m.d)+SS.L(' '+m.lines.length+' 条线，'+n+' 个站。',' '+m.lines.length+' lines, '+n+' stops.');
 });

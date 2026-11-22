@@ -32,15 +32,14 @@ function talks(){
 function item(id,extra){var s=SS.stations[id];
   if(s.st==='live')return '<li><a href="'+SS.stationHref(id,HOME)+'"><span class="n">'+SS.esc(SS.title(id))+'</span>'+(s.steps?'<span class="m">'+s.steps+L(' 步',' steps')+'</span>':'')+(extra||'')+'</a></li>';
   return '<li class="wip"><span class="n">'+SS.esc(SS.title(id))+'</span>'+(extra||'')+'</li>'}
+/* 换乘站不单独列，按这张表放进最相关的那条线（地图上的胶囊照旧）。 */
+var HOMELINE={rdma:'n',nvmeof:'n',gds:'s',dist:'c',ckpt:'d',vec:'a'};
 function cols(){
   $('cols').innerHTML=map.lines.map(function(lid){
-    var ids=SS.onLine(lid,HOME).filter(function(id){return SS.linesIn(id,HOME).length===1});
+    var ids=SS.onLine(lid,HOME).filter(function(id){var ls=SS.linesIn(id,HOME);return ls.length===1||HOMELINE[id]===lid||(ls.length>1&&!HOMELINE[id]&&ls[0]===lid)});
     return '<div class="col" style="--lc:'+SS.lc(lid)+'"><h3>'+SS.sym(lid)+'<span>'+SS.esc(SS.lineName(lid))+'</span></h3><p class="d">'+SS.esc(SS.T(SS.line[lid].d))+'</p><ul>'+
       ids.map(function(id){return item(id)}).join('')+'</ul></div>';
   }).join('');
-  var xs=SS.stationsOf(HOME).filter(function(id){return SS.linesIn(id,HOME).length>1}).sort(function(a,b){return SS.posOf(a,HOME)-SS.posOf(b,HOME)});
-  $('xfer').innerHTML='<div class="xh"><h3>'+L('换乘站','Transfer stops')+'</h3></div><ul>'+
-    xs.map(function(id){var ls=SS.linesIn(id,HOME);return item(id,'<span class="ls">'+ls.map(function(l){return SS.sym(l,'mini')}).join('')+'</span>')}).join('')+'</ul>';
 }
 function news(){
   var ids=Object.keys(SS.stations).filter(function(id){return SS.stations[id].added&&SS.stations[id].st==='live'}).sort(function(a,b){return SS.stations[a].added<SS.stations[b].added?1:-1}).slice(0,4);

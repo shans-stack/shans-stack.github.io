@@ -339,3 +339,6 @@ a.tm:hover h3{text-decoration:underline}
 @media (max-width:720px){.langs{margin-left:4px}.langs button{min-width:30px;padding:0 6px;font-size:13px}}
 @media (max-width:440px){.nav a{padding:10px 4px;font-size:13px}.brand{font-size:15px;gap:8px}.langs button{min-width:28px;padding:0 5px}}
 .no-talks #pick,.no-talks #talks,.no-talks a[href$="#talks"],.no-talks #intalks{display:none!important}
+.views{margin-left:12px}
+@media (max-width:440px){.nav a{display:none}.views{margin-left:0}}
+.soon{font-size:13px;font-weight:400;color:var(--ink3);margin-left:6px}
