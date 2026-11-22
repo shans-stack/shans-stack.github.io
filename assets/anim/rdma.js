@@ -9,7 +9,7 @@
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/rdma.css。 */
 (function(){
-var EN={"服务器 ": "Server ", "应用内存": "App RAM", "内核缓冲区": "Kernel buffer", "网卡": "NIC", "直接读": "reads", "直接写": "writes", "CPU": "CPU", "不经过": "bypassed", "排队": "queued", "网络": "Network", "已送达": "Delivered", "忙着搬数据": "busy moving data", "空出来做计算": "free for compute", "内核": "Kernel", "CPU 复制": "CPU copy", "内核 · ": "Kernel · ", "不经过内核": "skips the kernel", "示意，不代表实测数字": "Schematic, not measured", "InfiniBand": "InfiniBand", "以太网 RoCE": "Ethernet RoCE", "IB 交换机": "IB switch", "以太网交换机": "Ethernet switch", "专用网络": "Dedicated network", "普通以太网": "Standard Ethernet", "⇄ 换成": "⇄ Switch to ", " InfiniBand": "InfiniBand", "切换网络，当前 ": "Switch network, now ", "复制数据": "copying", "占用很高": "very busy", "占用升高": "getting busy", "占用较低": "light load", "只发起一次": "starts it once", "不参与": "not involved", "": "", "两台服务器之间传数据：TCP 与 RDMA 的路径和 CPU 负担": "Moving data between two servers: the TCP and RDMA paths and the CPU cost", "?": "?", "A": "A", "B": "B", "0": "0", "TCP": "TCP", "RDMA": "RDMA"};
+var EN={"服务器 ": "Server ", "应用内存": "App RAM", "内核缓冲区": "Kernel buffer", "网卡": "NIC", "直接读": "reads", "直接写": "writes", "CPU": "CPU", "不经过": "bypassed", "排队": "queued", "网络": "Network", "已送达": "Delivered", "CPU 负责复制": "CPU copies data", "CPU 可用于计算": "CPU free for compute", "内核": "Kernel", "CPU 复制": "CPU copy", "内核 · ": "Kernel · ", "不经过内核": "skips the kernel", "示意，不代表实测数字": "Schematic, not measured", "InfiniBand": "InfiniBand", "以太网 RoCE": "Ethernet RoCE", "IB 交换机": "IB switch", "以太网交换机": "Ethernet switch", "专用网络": "Dedicated network", "普通以太网": "Standard Ethernet", "⇄ 换成": "⇄ Switch to ", " InfiniBand": "InfiniBand", "切换网络，当前 ": "Switch network, now ", "复制数据": "copying", "占用很高": "very busy", "占用升高": "getting busy", "占用较低": "light load", "只发起一次": "starts it once", "不参与": "not involved", "": "", "两台服务器之间传数据：TCP 与 RDMA 的路径和 CPU 负担": "Moving data between two servers: the TCP and RDMA paths and the CPU cost", "?": "?", "A": "A", "B": "B", "0": "0", "TCP": "TCP", "RDMA": "RDMA"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function mount(host,opts){
@@ -158,7 +158,7 @@ function build(){
     tx(cp.lx,cp.y,'CPU',f.sm,'ink3-t','start',race);
     el('rect',{x:cp.tx,y:cp.y-L.trackH/2,width:cp.tw,height:L.trackH,rx:4,class:'track'},race);
     E.race['f'+k]=el('rect',{x:cp.tx,y:cp.y-L.trackH/2,width:0,height:L.trackH,rx:4,class:'fill'+(k==='R'?' sage':'')},race);
-    E.race['s'+k]=tx(cp.sx,cp.sy||cp.y,k==='T'?'忙着搬数据':'空出来做计算',f.sm,'st '+(k==='T'?'rose-t':'sage-t'),'start',race);
+    E.race['s'+k]=tx(cp.sx,cp.sy||cp.y,k==='T'?'CPU 负责复制':'CPU 可用于计算',f.sm,'st '+(k==='T'?'rose-t':'sage-t'),'start',race);
   });
   E.race.stn=R.st.map(s=>{
     const y=R.T.y;

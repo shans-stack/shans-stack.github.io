@@ -6,7 +6,7 @@
    排版规则（详见 README）：
    1. 每条线一行横轨，上下顺序由地图数据定。
    2. 站按 pos 从左往右排；同一 pos 的站在同一列。换乘站在它停靠的每条线上都在同一列。
-   3. 一个站停靠的线不相邻时，画成一个长胶囊跨过中间的线；胶囊里只在它停靠的线上画点，跨过的线不画点。
+   3. 一个站停靠的线不相邻时，画成一个长胶囊跨过中间的线；胶囊里在它停靠的每条线上画点，跨过的线不画点。
    4. 相邻两列如果占用的线互不重叠，就并成一列（站少时更紧凑）；但不把换乘站的站名
       放到上一条线某个站名的正下方（两行字上下贴着，容易看成一个站）。
    5. 间距：先算出「所有站名互不重叠、也不压到胶囊」需要的最小列距，再在 954px 宽的轨道里
@@ -96,6 +96,8 @@ function layout(mapId,o){
       var e={sid:sid,ls:r,top:r[0],bot:r[r.length-1],cap:r.length>1,split:runs.length>1,gi:gi,pos:SS.posOf(sid,mapId),mark:mark,
         pair:s.pair&&o.show.indexOf(s.pair)>-1?s.pair:null};
       e.lab=lab(sid,mark);e.bold=e.cap||mark;
+      /* 胶囊最下端停在产品线（软件、硬件）上、最上端不是：站名写在最下面那条线下方，让产品线上看得到站名 */
+      e.labBot=e.cap&&!!SS.line[vis[e.bot]].prod&&!SS.line[vis[e.top]].prod;
       e.w1=tw(e.lab.one,e.bold);e.w2=e.lab.two?Math.max(tw(e.lab.two[0],e.bold),tw(e.lab.two[1],e.bold)):e.w1;
       els.push(e);(byId[sid]=byId[sid]||[]).push(e);
     });
@@ -118,7 +120,7 @@ function layout(mapId,o){
   var bands={};
   function put(k,it){(bands[k]=bands[k]||[]).push(it)}
   els.forEach(function(e){
-    put(e.cap?'L'+e.top:'U'+e.top,{e:e,col:e.col,body:false});
+    put(e.cap?(e.labBot?'U'+e.bot:'L'+e.top):'U'+e.top,{e:e,col:e.col,body:false});
     for(var l=e.top;l<e.bot;l++){put('U'+l,{e:e,col:e.col,body:true});put('L'+(l+1),{e:e,col:e.col,body:true})}
   });
   function hwMin(it){return it.body?BODY:it.e.w2/2}
@@ -221,9 +223,9 @@ function render(svg,m,o){
     if(e.cap){
       if(e.split||e.pair)el('rect',{x:x-17,y:e.y1-17,width:34,height:e.y2-e.y1+34,rx:17,class:'pr',stroke:lcol},a);
       el('rect',{x:x-12,y:e.y1-12,width:24,height:e.y2-e.y1+24,rx:12,class:'xc'},a);
-      if(e.bot-e.top+1>e.ls.length)e.ls.forEach(function(li){el('circle',{cx:x,cy:m.ys[li],r:4.5,class:'cd',fill:SS.lc(m.lines[li])},a)});
-      t=el('text',{x:x,y:e.y1-22,'text-anchor':'middle',class:'lbx'},a);
-      if(e.two){t.setAttribute('y',e.y1-40)}
+      e.ls.forEach(function(li){el('circle',{cx:x,cy:m.ys[li],r:4.5,class:'cd',fill:SS.lc(m.lines[li])},a)});
+      t=el('text',{x:x,y:e.labBot?e.y2+33:e.y1-22,'text-anchor':'middle',class:'lbx'},a);
+      if(e.two&&!e.labBot){t.setAttribute('y',e.y1-40)}
     }else{
       if(e.split||e.pair)el('circle',{cx:x,cy:y,r:e.mark?18:15,class:'pr',stroke:lcol},a);
       if(e.mark)el('circle',{cx:x,cy:y,r:11,class:'xc'},a);else el('circle',{cx:x,cy:y,r:8,class:'st'},a);

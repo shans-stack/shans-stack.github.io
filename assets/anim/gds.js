@@ -6,7 +6,7 @@
    系统开了「减少动态效果」时每步只画一帧静态结果。文字有中英两套（EN 表 + T()），跟着 ss-lang 事件重画。
    样式在 assets/anim/gds.css，类名都在 .an-gds 之内。 */
 (function(){
-var EN={"服务器": "Server", "主机内存": "Host memory", "中转区": "Staging", "PCIe 交换": "PCIe switch", "NVMe 盘": "NVMe SSD", "GPU 显存": "GPU memory", "网卡": "NIC", "远端存储": "Remote storage", "这段走两趟": "This link is used twice", "不经过": "Skipped", "经主机内存中转": "Via host memory", "盘": "Drive", "已送达": "Delivered", "忙着拷贝": "busy copying", "空出来": "freed up", "主机内存 · ": "Host memory · ", "CPU 拷贝": "CPU copy", "不经过主机内存": "Skips host memory", "示意，不代表实测数字": "Schematic, not measured", "CPU：拷贝数据": "CPU: copying data", "先进主机内存": "Lands in host memory first", "第二次才到 GPU": "Reaches the GPU on the second copy", "CPU：只发起": "CPU: starts it only", "CPU：拷贝 · 占用较低": "CPU: copying · light load", "CPU：拷贝 · 占用升高": "CPU: copying · getting busy", "CPU：拷贝 · 占用很高": "CPU: copying · very busy", "⇄ 换成本地 NVMe": "⇄ To local NVMe", "⇄ 换成远端存储": "⇄ To remote storage", "切换数据来源，当前 远端存储": "Switch data source, now remote storage", "切换数据来源，当前 本地 NVMe": "Switch data source, now local NVMe"};
+var EN={"服务器": "Server", "主机内存": "Host memory", "中转区": "Staging", "PCIe 交换": "PCIe switch", "NVMe 盘": "NVMe SSD", "GPU 显存": "GPU memory", "网卡": "NIC", "远端存储": "Remote storage", "这段走两趟": "This link is used twice", "不经过": "Skipped", "经主机内存中转": "Via host memory", "盘": "Drive", "已送达": "Delivered", "负责复制": "copies data", "不参与复制": "not copying", "主机内存 · ": "Host memory · ", "CPU 拷贝": "CPU copy", "不经过主机内存": "Skips host memory", "示意，不代表实测数字": "Schematic, not measured", "CPU：拷贝数据": "CPU: copying data", "先进主机内存": "Lands in host memory first", "第二次才到 GPU": "Reaches the GPU on the second copy", "CPU：只发起": "CPU: starts it only", "CPU：拷贝 · 占用较低": "CPU: copying · light load", "CPU：拷贝 · 占用升高": "CPU: copying · getting busy", "CPU：拷贝 · 占用很高": "CPU: copying · very busy", "⇄ 换成本地 NVMe": "⇄ To local NVMe", "⇄ 换成远端存储": "⇄ To remote storage", "切换数据来源，当前 远端存储": "Switch data source, now remote storage", "切换数据来源，当前 本地 NVMe": "Switch data source, now local NVMe"};
 var ARIA=["一台服务器里的数据路径：经主机内存中转与 GPUDirect Storage 直通", "Inside a server: the bounce-buffer path and the GPUDirect Storage path from storage to GPU memory"];
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&typeof s==='string'&&EN[s]!==undefined?EN[s]:s}
@@ -196,7 +196,7 @@ build(){
     o.n=tx(R.cnt.x,y+R.cnt.ny,'0',f.big,'num '+(j?'sage-t':'rose-t'),'middle',race);
     const cp=R.cpu;tx(cp.lx,y+cp.dy,'CPU',f.sm,'ink3-t','start',race);
     o.bar=bar(cp.tx,y+cp.dy-(L.mobile?6:7),cp.tw,L.mobile?12:14,race,j?'sage':'');
-    o.st=tx(cp.sx,y+(cp.sdy||cp.dy),j?'空出来':'忙着拷贝',f.sm,'st '+(j?'sage-t':'rose-t'),'start',race);
+    o.st=tx(cp.sx,y+(cp.sdy||cp.dy),j?'不参与复制':'负责复制',f.sm,'st '+(j?'sage-t':'rose-t'),'start',race);
     o.route=j?[P(R.src.x+R.src.w+L.pw/2-2,y),P(R.dst.x+4,y)]:[P(R.src.x+R.src.w+L.pw/2-2,y),P(R.st.x,y,'B'),P(R.dst.x+4,y)];
   });
   {const y=R.lanes[0];E.race.stn=rect({x:R.st.x-R.st.w/2,y:y-R.st.h/2,w:R.st.w,h:R.st.h},'stn',race,10);

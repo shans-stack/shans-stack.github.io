@@ -336,8 +336,8 @@ a.tm:hover h3{text-decoration:underline}
 .glossary-group h2{font-size:22px;border-bottom:1px solid var(--rule);padding-bottom:5px}
 .glossary-term{padding:14px 0;scroll-margin-top:16px}
 .glossary-term:target{outline:1px solid var(--rule2);outline-offset:6px}
-.glossary-term h3{font-size:19px;font-weight:600}
-.glossary-term h3 span{font-size:15px;font-weight:400;color:var(--ink2);margin-inline-start:.5em}
+.glossary-term h3{font-size:22px;font-weight:600;line-height:1.3}
+.glossary-term .gzh{font-size:15px;font-weight:400;color:var(--ink3);margin-inline-start:.5em}
 .glossary-term p{color:var(--ink2);margin-top:3px}
 .glossary-term a{display:inline-block;margin-top:4px;font-size:15px;text-decoration:underline;text-underline-offset:3px}
 .gdoms{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
@@ -357,3 +357,20 @@ a.tm:hover h3{text-decoration:underline}
 .mhero~#map{margin-top:20px}
 .mhero~#map .mhd{display:none}
 .mhero~#map .mapbox{margin-top:0}
+/* 专题图之间切换 */
+.mswitch{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:15px;color:var(--ink3)}
+.mswitch a{color:var(--ink2)}
+.mswitch a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.mswitch b{color:var(--ink);font-weight:600}
+.mswitch .sep{color:var(--rule2)}
+/* 顶栏「专题」下拉菜单 */
+.navdd{position:relative}
+.navdd .ddb{display:flex;align-items:center;gap:6px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink2);background:none;border:0;cursor:pointer;white-space:nowrap}
+.navdd .ddb:hover,.navdd .ddb[aria-expanded=true]{color:var(--ink)}
+.navdd .ddb svg{width:10px;height:6px}
+.navdd .ddm{position:absolute;top:100%;left:0;z-index:60;min-width:150px;padding:6px 0;background:var(--surface);border:1px solid var(--rule2)}
+.navdd .ddm a{display:block;padding:8px 16px;font-size:15px;color:var(--ink2);white-space:nowrap}
+.navdd .ddm a:hover{color:var(--ink);background:var(--bg)}
+.navdd .ddm a[aria-current]{color:var(--ink);font-weight:600}
+@media (max-width:720px){.navdd .ddb{padding:10px 6px;font-size:14px}.navdd .ddm{left:auto;right:0}}
+

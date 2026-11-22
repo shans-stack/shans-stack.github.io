@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=5eb2f8e4">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
-<link rel="stylesheet" href="../../assets/site.css?v=dbc30165">
+<link rel="stylesheet" href="../../assets/site.css?v=a3e02db0">
 <!-- 由 tools/new_map.py 从 tools/map.tpl.html 生成。页面内容全部来自 data/，这里只定地图 id。 -->
 <script>window.SS_ROOT='../../';</script>
 </head>
@@ -27,9 +27,8 @@
 
 <main class="wrap">
   <div class="mhero">
-    <p class="crumb"><a href="../../index.html#maps" data-en="Topic maps">专题</a> / <span id="mcrumb"></span></p>
+    <nav class="mswitch" id="mswitch" aria-label="切换专题图" data-en-label="Switch topic map"></nav>
     <div class="mt"><h1 id="mtitle"></h1><span id="mbrand"></span></div>
-    <p class="lead" id="mlead"></p>
   </div>
 
   <div id="map" data-map="vast">
@@ -63,24 +62,22 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=24ea10d9"></script>
-<script src="../../data/stations.js?v=93118515"></script>
-<script src="../../data/maps.js?v=3747e7a0"></script>
+<script src="../../data/lines.js?v=d8caef16"></script>
+<script src="../../data/stations.js?v=9583696b"></script>
+<script src="../../data/maps.js?v=7b42679f"></script>
 <script src="../../data/talks.js?v=7cb8ea3c"></script>
-<script src="../../data/vendors.js?v=c410a3eb"></script>
+<script src="../../data/vendors.js?v=a0e9392a"></script>
 <script src="../../data/intro.js?v=5d3399f8"></script>
-<script src="../../assets/core.js?v=e8917429"></script>
-<script src="../../assets/metro.js?v=6cbeeb03"></script>
+<script src="../../assets/core.js?v=67905bc1"></script>
+<script src="../../assets/metro.js?v=ee7d15c4"></script>
 <script src="../../assets/mapview.js?v=d79e1fd8"></script>
 <script>
 document.addEventListener('ss-lang',function(){
   var m=SS.mapById['vast'],n=SS.stationsOf(m.id).length;
-  document.getElementById('mcrumb').textContent=SS.L(m.zh,m.en);
+  SS.renderMapSwitch(document.getElementById('mswitch'),m.id);
   document.getElementById('mtitle').textContent=SS.L(m.zh+' 专题图',m.en+' topic map');
   document.getElementById('mbrand').innerHTML=SS.brandMark(m.brand,'mh-lg');
   SS.renderCols(document.getElementById('cols'),m.id);
-  var who=SS.introLine(m.id);
-  document.getElementById('mlead').textContent=(who?who+' · ':'')+SS.L(m.lines.length+' 条线，'+n+' 个站',m.lines.length+' lines, '+n+' stops');
 });
 </script>
 </body>

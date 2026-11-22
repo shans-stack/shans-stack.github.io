@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/palette.css?v=5eb2f8e4">
-<link rel="stylesheet" href="../assets/site.css?v=dbc30165">
+<link rel="stylesheet" href="../assets/site.css?v=a3e02db0">
 <script>window.SS_ROOT='../';</script>
 </head>
 <body>
@@ -36,9 +36,10 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../data/stations.js?v=93118515"></script>
+<script src="../data/stations.js?v=9583696b"></script>
+<script src="../data/maps.js?v=7b42679f"></script>
 <script src="../data/terms.js?v=461d407d"></script>
-<script src="../assets/core.js?v=e8917429"></script>
+<script src="../assets/core.js?v=67905bc1"></script>
 <script>
 (function(){
   var groups=new Map(),list=document.getElementById('term-list'),input=document.getElementById('term-filter'),empty=document.getElementById('no-terms');
@@ -86,9 +87,9 @@
     document.title=SS.L('术语表','Glossary')+" · Shan's Stack";
     list.innerHTML=Array.from(groups,function(group){
       return '<section class="glossary-group" id="g-'+esc(group[0])+'"><h2>'+esc(group[0])+'</h2>'+group[1].map(function(entry){
-        var id=entry[0],t=entry[1],name=SS.T(t),alt=en?t.zh:t.en,see=SS.termSee(t);
-        return '<article class="glossary-term" id="'+esc(id)+'"><h3>'+esc(name)+
-          (name===alt?'':'<span lang="'+(en?'zh-CN':'en')+'">'+esc(alt)+'</span>')+'</h3><p>'+esc(SS.T(t.d))+'</p>'+
+        var id=entry[0],t=entry[1],name=t.en,alt=t.zh,see=SS.termSee(t);  /* 英文名为主标题，中文名作副标题（中文模式才显示） */
+        return '<article class="glossary-term" id="'+esc(id)+'"><h3><span lang="en" data-noconv>'+esc(name)+'</span>'+
+          (name===alt||en?'':'<span class="gzh" lang="zh">'+esc(alt)+'</span>')+'</h3><p>'+esc(SS.T(t.d))+'</p>'+
           (see?'<a href="'+esc(see)+'">'+esc(SS.L('详见：','See: ')+SS.title(t.see))+'</a>':'')+'</article>';
       }).join('')+'</section>';
     }).join('');
