@@ -1,0 +1,26 @@
+.an-topo {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font: 500 17px var(--f);
+}
+.an-topo-label, .an-topo-note { fill: var(--ink); dominant-baseline: central; }
+.an-topo-note { fill: var(--ink2); font-size: 16px; }
+.an-topo-node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.an-topo-node.an-topo-green { stroke: var(--l5); }
+.an-topo-node.an-topo-rose { stroke: var(--l1); }
+.an-topo-node.an-topo-control { stroke: var(--l4); }
+.an-topo-link { fill: none; stroke: var(--rule2); stroke-width: 2.5; stroke-linejoin: round; }
+.an-topo-link.an-topo-green { stroke: var(--l5); }
+.an-topo-link.an-topo-rose { stroke: var(--l1); }
+.an-topo-link.an-topo-control { stroke: var(--l4); stroke-dasharray: 5 5; }
+.an-topo-link.an-topo-rail { stroke: var(--l6); }
+.an-topo-block { fill: var(--l5); stroke: var(--surface); stroke-width: 1; }
+.an-topo-block.an-topo-rose { fill: var(--l1); }
+.an-topo-block.an-topo-control { fill: var(--l4); }
+.an-topo-block.an-topo-rail { fill: var(--l6); }
+.an-topo-link.an-topo-track { stroke: none; }
+@media (640px < width <= 720px) {
+  main[data-station="topo"] .mhost { aspect-ratio: var(--ar); }
+}

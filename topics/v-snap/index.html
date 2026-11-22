@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>快照与时间点恢复 · Shan’s Stack</title>
+<meta name="description" content="快照与时间点恢复。改写分配新的数据位置。快照保留时间点对应的版本。快照的容量占用。跨路径的时间点一致性。保护策略的频率与保留期。从快照恢复文件或创建克隆。不可删除快照的保留保护">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-snap.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-snap">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Snapshots and point-in-time recovery">快照与时间点恢复</h1>
+        <p class="meta"><span data-en="snaptime, protection policies, indestructible snapshots">snaptime、保护策略、不可删除快照</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), sections on low-overhead snapshots and clones, indestructible storage and protection policies.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版），Low-Overhead Snapshots and Clones、Indestructible Storage、Protection Policies 各节。</li>
+      <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5): Snapshots, Managing Protection Policies, Async Replication Best Practices.">VAST Data 官方文档（docs.vastdata.com，5.5 版）：Snapshots、Managing Protection Policies、Async Replication Best Practices。</li>
+      <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5): Indestructibility Overview, Managing the Indestructibility Mechanism, Required First Steps.">VAST Data 官方文档（docs.vastdata.com，5.5 版）：Indestructibility Overview、Managing the Indestructibility Mechanism、Required First Steps。</li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-snap.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-snap',ar:[960/392,480/368],
+  steps:[
+    {"t": ["改写分配新的数据位置", "Overwrites allocate a new data location"], "d": ["新数据写入空闲空间，当前元数据更新到新位置。", "New data is written to free space and current metadata is updated to reference it."], "b": [["<p>改写文件或对象时，数据先写入 SCM 写入缓冲区中的空闲空间。Element Store 把新数据的指针关联到对象的 V-Tree 元数据。垃圾回收清理不再被当前版本或快照引用的旧数据。</p>"], ["<p>When a file or object is overwritten, new data goes into free space in the SCM write buffer. Element Store links the new data pointer into the object’s V-Tree metadata. Garbage collection reclaims old data once neither the current version nor a snapshot references it.</p>"]]},
+    {"t": ["快照保留时间点对应的版本", "Snapshots preserve a point-in-time version"], "d": ["快照保留指定路径的元数据指针及其引用的数据块。", "A snapshot preserves the path’s metadata pointers and the data chunks they reference."], "b": [["<p>创建快照时，当前版本与快照共享数据块。读取快照时，Element Store 按 snaptime 选取早于快照时间的最新指针。后续写入更新当前版本，快照仍可读取先前的数据。</p>"], ["<p>When a snapshot is taken, it shares data chunks with the current version. To read the snapshot, Element Store selects the latest pointers with a snaptime earlier than the snapshot. Later writes update the current version, and the snapshot can still read the prior data.</p>"]]},
+    {"t": ["快照的容量占用", "Snapshot capacity usage"], "d": ["快照保留被改写或删除的旧数据时，会延迟这些空间的释放。", "A snapshot retains overwritten or deleted data and delays reclaiming that space."], "b": [["<p>快照共享未变化的数据，无需预留专用容量，且不计入配额。VMS 的 Unique Usage 估算单独删除该快照可回收的容量。Aggregated Usage 假设同路径更早的快照已删除，再估算删除该快照可回收的容量。</p>"], ["<p>Snapshots share unchanged data, require no dedicated capacity reserve and do not count toward quota. In VMS, Unique Usage estimates capacity reclaimed by deleting that snapshot alone. Aggregated Usage estimates capacity reclaimed by deleting it after earlier snapshots on the same path have already been deleted.</p>"]]},
+    {"t": ["跨路径的时间点一致性", "Point-in-time consistency across paths"], "d": ["同一保护策略可在多个路径上建立一致的快照恢复点。", "A single protection policy can create consistent snapshot recovery points across paths."], "b": [["<p>snaptime 是集群级计数器，在各 CNode 上同步推进。使用同一保护策略为多个路径创建同一时刻的快照，可将这些路径恢复到共同的存储时间点。</p>"], ["<p>Snaptime is a cluster-wide counter that advances in sync across CNodes. A shared protection policy can snapshot multiple paths at the same point in storage time, giving them a common recovery point.</p>"]]},
+    {"t": ["保护策略的频率与保留期", "Protection policy schedules and retention"], "d": ["保护策略可设置多档快照频率和保留期，快照到期后自动删除。", "A protection policy can set several snapshot schedules and retention periods. Snapshots expire automatically."], "b": [["<p>VAST 白皮书示例在同一策略中配置每 15 分钟一份留 4 小时、每小时一份留一周、每天一份留 40 天、每月一份留一年。集群达到快照数量上限后，需要先释放名额才能创建新快照。</p>"], ["<p>The VAST white paper illustrates one policy with snapshots every 15 minutes retained for four hours, hourly for one week, daily for 40 days and monthly for one year. At the cluster snapshot limit, an existing snapshot must be removed or expire before another can be created.</p>"]]},
+    {"t": ["从快照恢复文件或创建克隆", "File recovery and writable clones"], "d": ["只读快照可用于复制旧文件，也可作为可写克隆的来源。", "A read-only snapshot can be used to copy an earlier file or to create a writable clone."], "b": [["<p>路径 <code>/a/b</code> 上名为 <code>MySnapshot_b</code> 的快照可从 <code>/a/b/.snapshot/MySnapshot_b</code> 访问。NFS 和 SMB 用户可从有权访问的快照复制所需文件。</p>", "<p>可写克隆在后台建立。复制完成前，克隆的读取可由快照提供。相同的数据块可共享，写入克隆的新内容属于克隆。</p>"], ["<p>A snapshot named <code>MySnapshot_b</code> of <code>/a/b</code> is accessible at <code>/a/b/.snapshot/MySnapshot_b</code>. NFS and SMB users can copy files from snapshots they are authorized to access.</p>", "<p>A writable clone is built in the background. The snapshot can serve clone reads while copying is in progress. Identical data chunks can be shared, and new writes to the clone belong to the clone.</p>"]]},
+    {"t": ["不可删除快照的保留保护", "Retention protection for indestructible snapshots"], "d": ["机制锁定时拒绝手动删除和缩短保留期，允许延长快照保留期。", "While the mechanism is locked, manual deletion and retention shortening are blocked. Snapshot retention can be extended."], "b": [["<p>可以手动标记不可删除快照，也可通过不可删除保护策略自动创建。已登记的授权人员可在 VAST 支持协助下临时解锁，VAST 5.5 在一小时后自动恢复保护。</p>"], ["<p>A snapshot can be marked indestructible manually or created by an indestructible protection policy. Enrolled personnel can temporarily unlock the mechanism with VAST Support. VAST 5.5 reinstates protection automatically after one hour.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

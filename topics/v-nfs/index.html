@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NFS：标准挂载，文件锁记在共享元数据里 · Shan's Stack</title>
+<meta name="description" content="VAST NFS 的标准挂载、VIP 分配、NLM 字节范围锁、CNode 故障切换和访问控制。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-nfs.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-nfs">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NFS: standard mounts, with file locks kept in shared metadata">NFS：标准挂载，文件锁记在共享元数据里</h1>
+        <p class="meta"><span data-en="6 steps · NFS, virtual IPs, file locks">6 步 · NFS、虚拟 IP、文件锁</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/nfs-overview">VAST 5.5 · NFS Overview</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/nfs-features-for-enhanced-performance">VAST 5.5 · NFS Features for Enhanced Performance</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/nfsv4-2-security-labels">VAST 5.5 · NFSv4.2 Security Labels</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/byte-range-file-locking-with-nfs">VAST 5.5 · Byte Range File Locking with NFS</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/configuring-network-access">VAST 5.5 · Configuring Network Access</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/dns-based-virtual-ip-distribution">VAST 5.5 · DNS-Based Virtual IP Distribution</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/controlling-file-and-directory-permissions-across-protocols">VAST 5.5 · Controlling File and Directory Permissions Across Protocols</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/kerberos-authentication-for-nfsv4">VAST 5.5 · Kerberos Authentication for NFSv4.1</a></li>
+      <li><a href="https://www.vastdata.com/whitepaper">VAST AI OS White Paper · NLM Byte-Range Locking</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-nfs.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-nfs',ar:[960/520,480/520],
+  steps:[
+    {"s": ["挂载", "Mount"], "t": ["挂载 NFS 导出", "Mount an NFS export"], "d": ["VAST 通过 view 导出目录，Linux 客户端可将它挂载到本地路径。", "VAST exports a directory through a view, and Linux clients can mount it at a local path."], "b": [["<p>NFS（Network File System）让客户端通过网络访问文件。VAST 将导出配置为 view，同一个目录也可通过 SMB 或 S3 访问。标准 Linux 客户端默认通过 TCP 挂载。</p>", "<p>VAST 5.5 支持 NFSv3、NFSv4.1 和 NFSv4.2。NFSv4.2 需要租户启用该版本，且 view 启用 NFSv4。</p>"], ["<p>NFS (Network File System) gives clients access to files over the network. VAST configures exports as views, and the same directory can also be exposed over SMB or S3. Standard Linux clients mount over TCP by default.</p>", "<p>VAST 5.5 supports NFSv3, NFSv4.1 and NFSv4.2. NFSv4.2 requires tenant-level enablement and NFSv4 on the view.</p>"]]},
+    {"s": ["DNS 轮询", "DNS round robin"], "t": ["通过 DNS 分配虚拟 IP", "Distribute virtual IPs through DNS"], "d": ["VAST 集群 DNS 从对应的 VIP 池轮询返回地址，将挂载分散到池内的 CNode。", "VAST cluster DNS returns addresses from the associated VIP pool in round-robin order, spreading mounts across CNodes in the pool."], "b": [["<p>客户端通过虚拟 IP（VIP）访问集群。VIP 池可分配给全部在线 CNode，也可限制在指定节点组。标准挂载使用一个 VIP。</p>", "<p>图中使用 VAST 集群 DNS，每次查询返回一个 VIP。也可用外部 DNS 返回一个地址列表，由客户端选用其中的地址。</p>"], ["<p>Clients reach the cluster through virtual IPs (VIPs). A VIP pool can span all active CNodes or be limited to a node group. A standard mount uses one VIP.</p>", "<p>The diagram uses VAST cluster DNS, which returns one VIP per query. External DNS can also return an address list for the client to select from.</p>"]]},
+    {"s": ["加锁", "Locking"], "t": ["在共享元数据中记录字节范围锁", "Record byte-range locks in shared metadata"], "d": ["NFSv3 客户端通过 NLM 请求加锁，VAST 把锁记录持久化在 SCM 上的文件元数据树中。", "NFSv3 clients request locks through NLM, and VAST persists lock records in the file metadata tree on SCM."], "b": [["<p>NFSv3 通过 NLM（Network Lock Manager）对字节范围或整个文件加锁。锁状态保存在共享的存储级内存（SCM）上，各 CNode 都可查询。</p>", "<p>NFSv4.1 的字节范围锁由协议本身处理。</p>"], ["<p>NFSv3 uses NLM (Network Lock Manager) to lock a byte range or an entire file. Lock state resides on shared storage-class memory (SCM), where CNodes can query it.</p>", "<p>NFSv4.1 handles byte-range locking within the protocol.</p>"]]},
+    {"s": ["共享锁状态", "Shared lock state"], "t": ["跨 CNode 检查锁冲突", "Check for lock conflicts across CNodes"], "d": ["另一台 CNode 查询同一份锁状态，发现冲突时，阻塞式加锁请求等待锁释放。", "Another CNode checks the shared lock state. If there is a conflict, a blocking lock request waits for release."], "b": [["<p>图中 A 持有独占锁，B 经另一台 CNode 请求同一字节范围的独占锁。A 释放后，B 才能获得该锁。NLM 是建议性锁，应用需主动检查并遵守锁。</p>"], ["<p>In the example, A holds an exclusive lock and B requests an exclusive lock on the same range through another CNode. B can acquire it after A releases it. NLM locks are advisory, so applications must check and honor them.</p>"]]},
+    {"s": ["坏一台 CNode", "A CNode fails"], "t": ["CNode 故障后的 VIP 接管", "VIP takeover after a CNode failure"], "d": ["在线 CNode 接管 VIP 后，客户端通过原地址重试，接管节点仍可访问共享锁记录。", "After an active CNode takes over the VIP, clients retry at the same address and the new node can access the shared lock records."], "b": [["<p>CNode 故障时，集群将它的 VIP 迁移到其他在线节点。交换机需允许无偿 ARP（gratuitous ARP），以便更新该地址的网络映射。</p>", "<p>共享元数据与前端地址分离。接管节点使用原有的 NLM 锁记录处理后续请求。</p>"], ["<p>When a CNode fails, the cluster moves its VIPs to active nodes. The switches must accept gratuitous ARP so the network mapping for the address can be updated.</p>", "<p>Shared metadata is separate from front-end addressing. The new node processes subsequent requests using the existing NLM lock records.</p>"]]},
+    {"s": ["访问控制", "Access control"], "t": ["导出级限制与文件权限", "Export restrictions and file permissions"], "d": ["view 策略可按客户端 IP 或主机名限制读写，文件和目录的权限仍需单独检查。", "A view policy can restrict reads and writes by client IP or hostname. File and directory permissions are checked separately."], "b": [["<p>导出级规则可将客户端设为读写或只读。文件和目录的权限可由 POSIX 权限位、POSIX ACL 或 NFSv4 ACL 表达，具体机制由 NFS 版本和 view 的 security flavor 决定。</p>", "<p>NFSv4.1 还支持 Kerberos 认证、完整性保护和加密。</p>"], ["<p>Export-level rules can grant a client read-write or read-only access. NFS version and the view’s security flavor determine whether file and directory permissions use mode bits, POSIX ACLs or NFSv4 ACLs.</p>", "<p>NFSv4.1 also supports Kerberos authentication, integrity protection and encryption.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

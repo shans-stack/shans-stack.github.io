@@ -1,0 +1,25 @@
+.tok-figure { position: relative; }
+.tok-figure svg { display: block; width: 100%; height: auto; font: 16px var(--f); }
+.tok-figure text { fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+.tok-figure .tok-heading { font-size: 20px; font-weight: 600; }
+.tok-figure .tok-value { font-size: 18px; font-weight: 500; }
+.tok-figure .tok-muted { fill: var(--ink3); }
+.tok-figure .tok-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1; }
+.tok-figure .tok-active { fill: color-mix(in srgb, var(--l2) 15%, var(--surface)); stroke: var(--l2); }
+.tok-figure .tok-cool { fill: color-mix(in srgb, var(--l4) 19%, var(--surface)); stroke: var(--l4); }
+.tok-figure .tok-ready { fill: color-mix(in srgb, var(--l5) 22%, var(--surface)); stroke: var(--l5); }
+.tok-figure .tok-busy { fill: color-mix(in srgb, var(--l1) 20%, var(--surface)); stroke: var(--l1); }
+.tok-figure .tok-idle { fill: var(--bg); stroke: var(--rule2); stroke-dasharray: 3 3; }
+.tok-figure .tok-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.tok-figure .tok-wire.tok-active { stroke: var(--l2); }
+.tok-figure .tok-wire.tok-cool { stroke: var(--l4); }
+.tok-figure .tok-wire.tok-ready { stroke: var(--l5); }
+.tok-figure .tok-wire.tok-busy { stroke: var(--l1); }
+.tok-figure .tok-wire.tok-idle { stroke: var(--rule2); }
+.tok-figure .tok-packet { fill: var(--l2); stroke: var(--surface); stroke-width: 1; }
+.tok-figure .tok-packet.tok-cool { fill: var(--l4); }
+.tok-figure .tok-packet.tok-ready { fill: var(--l5); }
+.tok-figure .tok-packet.tok-busy { fill: var(--l1); }
+@media (min-width: 641px) and (max-width: 720px) {
+  main[data-station="tok"] .mhost { aspect-ratio: var(--ar); }
+}

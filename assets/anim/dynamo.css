@@ -1,0 +1,41 @@
+.an-dynamo {
+  display: block;
+  width: 100%;
+  font-family: var(--f);
+}
+.an-dynamo text {
+  fill: var(--ink);
+  dominant-baseline: central;
+}
+.an-dynamo-heading { font-size: 23px; font-weight: 650; }
+.an-dynamo-label { font-size: 22px; font-weight: 650; }
+.an-dynamo .an-dynamo-detail { font-size: 18px; fill: var(--ink2); }
+.an-dynamo .an-dynamo-note { font-size: 17px; fill: var(--ink3); }
+.an-dynamo-data { --an-dynamo-tone: var(--l4); }
+.an-dynamo-good { --an-dynamo-tone: var(--l5); }
+.an-dynamo-wait { --an-dynamo-tone: var(--l1); }
+.an-dynamo-control { --an-dynamo-tone: var(--l3); }
+.an-dynamo-idle { --an-dynamo-tone: var(--rule2); }
+.an-dynamo-node {
+  fill: color-mix(in srgb, var(--an-dynamo-tone, var(--l4)) 10%, var(--surface));
+  stroke: var(--an-dynamo-tone, var(--l4));
+  stroke-width: 1.25;
+}
+.an-dynamo-wire {
+  fill: none;
+  stroke: var(--an-dynamo-tone, var(--rule2));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.an-dynamo-wire.an-dynamo-control,
+.an-dynamo-wire.an-dynamo-idle { stroke-dasharray: 4 4; }
+.an-dynamo-arrow,
+.an-dynamo-packet { fill: var(--an-dynamo-tone, var(--l4)); }
+main[data-station="dynamo"] .mhost { aspect-ratio: var(--ar); }
+@media (max-width: 640px) {
+  .an-dynamo-heading { font-size: 17px; }
+  .an-dynamo-label { font-size: 16px; }
+  .an-dynamo .an-dynamo-detail,
+  .an-dynamo .an-dynamo-note { font-size: 14px; }
+  main[data-station="dynamo"] .mhost { aspect-ratio: var(--arm); }
+}

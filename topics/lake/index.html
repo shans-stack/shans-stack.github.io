@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据湖 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明数据湖如何保留原始数据、组织可查询的表，并让分析和训练使用同一批整理后的数据。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/lake.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="lake">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Data lakes">数据湖</h1>
+        <p class="meta"><span data-en="5 steps · object storage, data catalogs, columnar files">5 步 · 对象存储、数据目录、列式文件</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html">AWS Lake Formation Developer Guide</a></li>
+      <li><a href="https://docs.aws.amazon.com/pdfs/prescriptive-guidance/latest/defining-bucket-names-data-lakes/defining-bucket-names-data-lakes.pdf">AWS Prescriptive Guidance — Defining Amazon S3 bucket and path names for data lake layers</a></li>
+      <li><a href="https://parquet.apache.org/docs/file-format/">Apache Parquet Documentation — File Format</a></li>
+      <li><a href="https://iceberg.apache.org/spec/">Apache Iceberg Table Specification</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/lake.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'lake',ar:[900/340,360/420],
+  steps:[
+    {t:["保留多种原始数据", "Retain raw data in multiple formats"],
+     d:["导入后，日志、图像等输入可以按各自的原始格式保留。", "Logs, images and other inputs can be retained in their original formats after ingest."],
+     b:[["<p>数据湖集中保存从不同来源取得的数据。以对象存储为底座时，日志文件和图像各自作为对象写入，并通过唯一的对象键定位。原始层保留来源数据，便于后续修正处理逻辑和重新生成下游结果。</p>"], ["<p>A data lake collects data from multiple sources. On object storage, log files and images are stored as separate objects and located by their unique object keys. The raw layer retains source data so downstream results can be regenerated when processing logic changes.</p>"]]},
+    {t:["从原始层生成整理层", "Build a curated layer from raw data"],
+     d:["处理作业生成字段一致的记录，原始文件继续保留。", "A processing job produces records with consistent fields while the original files remain available."],
+     b:[["<p>下游查询和训练需要稳定的字段与类型。处理作业可以解析原始日志，统一时间和设备标识，再将结果写入整理层。原始文件与输出分开保存，使下游可重复使用整理结果，也使处理作业能够从原始层重跑。</p>"], ["<p>Downstream queries and training need stable fields and types. A processing job can parse raw logs, standardise timestamps and device identifiers, and write the result to a curated layer. Keeping source files and outputs separate lets downstream jobs reuse the curated data and lets the processing job run again from the raw layer.</p>"]]},
+    {t:["按列保存常查字段", "Store frequently queried fields by column"],
+     d:["查询引擎可按查询需要读取列式文件中的相关列。", "A query engine can read the relevant columns from a columnar file."],
+     b:[["<p>整理后的结构化记录可写成 Parquet。Parquet 是一种列式文件格式，将一组行中同一列的值集中存放。查询只读取设备列时，读取器可以跳过时间和载荷列的数据。这种组织方式适用于从宽表中选取少量字段的查询。</p>"], ["<p>Structured records in the curated layer can be written as Parquet. Parquet is a columnar file format that stores values from the same column together within a group of rows. A query that selects only the device column can skip data from the timestamp and payload columns. This layout suits queries that select a small subset of a wide table.</p>"]]},
+    {t:["用目录找到整张表", "Resolve a table through the catalog"],
+     d:["数据目录将表名映射到字段定义和存储位置。", "A data catalog maps table names to field definitions and storage locations."],
+     b:[["<p>整理层的一张表可以包含多个文件。数据目录记录表的元数据，也就是描述数据的结构和位置的信息。查询引擎先按表名查目录，再根据返回的定义读取数据文件。对需要提交多个文件并保留表版本的场景，开放表格式可以在文件之上维护统一的表状态。</p>"], ["<p>A table in the curated layer can contain many files. A data catalog records table metadata, which describes the structure and location of the data. The query engine looks up the table name and uses the returned definition to read the files. Where a workload needs multi-file commits and table version history, an open table format can maintain a consistent table state over those files.</p>"]]},
+    {t:["复用整理后的数据", "Reuse curated data"],
+     d:["分析作业查询整理表，训练管道从同一张表提取样本。", "An analytics job queries the curated table while a training pipeline derives samples from it."],
+     b:[["<p>整理表成为多个下游作业的共同输入。分析作业可以按设备统计事件，训练管道可以按固定条件抽取样本，再把选定输入版本和处理规则记录到数据集。查询与训练各自读取所需的数据，整理表可以继续服务后续作业。</p>"], ["<p>A curated table provides common input for multiple downstream jobs. An analytics job can count events by device, while a training pipeline can select samples with fixed criteria and record the input version and processing rules with the dataset. Each job reads the data it needs, and the table remains available for future jobs.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

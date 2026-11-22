@@ -1,0 +1,41 @@
+.an-vec {
+  display: block;
+  width: 100%;
+  font-family: var(--f);
+}
+.an-vec text {
+  fill: var(--ink);
+  dominant-baseline: central;
+}
+.an-vec-heading { font-size: 23px; font-weight: 650; }
+.an-vec-label { font-size: 22px; font-weight: 650; }
+.an-vec .an-vec-detail { font-size: 18px; fill: var(--ink2); }
+.an-vec .an-vec-note { font-size: 17px; fill: var(--ink3); }
+.an-vec-data { --an-vec-tone: var(--l4); }
+.an-vec-good { --an-vec-tone: var(--l5); }
+.an-vec-wait { --an-vec-tone: var(--l1); }
+.an-vec-control { --an-vec-tone: var(--l3); }
+.an-vec-idle { --an-vec-tone: var(--rule2); }
+.an-vec-node {
+  fill: color-mix(in srgb, var(--an-vec-tone, var(--l4)) 10%, var(--surface));
+  stroke: var(--an-vec-tone, var(--l4));
+  stroke-width: 1.25;
+}
+.an-vec-wire {
+  fill: none;
+  stroke: var(--an-vec-tone, var(--rule2));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.an-vec-wire.an-vec-control,
+.an-vec-wire.an-vec-idle { stroke-dasharray: 4 4; }
+.an-vec-arrow,
+.an-vec-packet { fill: var(--an-vec-tone, var(--l4)); }
+main[data-station="vec"] .mhost { aspect-ratio: var(--ar); }
+@media (max-width: 640px) {
+  .an-vec-heading { font-size: 17px; }
+  .an-vec-label { font-size: 16px; }
+  .an-vec .an-vec-detail,
+  .an-vec .an-vec-note { font-size: 14px; }
+  main[data-station="vec"] .mhost { aspect-ratio: var(--arm); }
+}

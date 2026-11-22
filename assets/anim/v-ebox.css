@@ -1,0 +1,61 @@
+/* EBox：一台标准服务器里同时跑 CNode 和 DNode：动画区样式。由 assets/anim/v-ebox.js 使用，只作用于 .ssa-v-ebox 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-ebox{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-ebox .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-ebox .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-ebox .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-ebox .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-ebox .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-ebox .vwm-d{display:inline}
+.ssa-v-ebox .ssa-scene text{dominant-baseline:central}
+.ssa-v-ebox .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-ebox .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-ebox .ebx{transition:opacity .4s}
+.ssa-v-ebox .ebx.dim{opacity:.28}
+.ssa-v-ebox .ebx.off .box,.ssa-v-ebox .ebx.off .disk,.ssa-v-ebox .ebx.off .ln,.ssa-v-ebox .ebx.off text{opacity:.32}
+.ssa-v-ebox .ebx.off .box.hot{opacity:1}
+.ssa-v-ebox .xm{opacity:0;transition:opacity .3s}
+.ssa-v-ebox .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-ebox .box.soft{stroke:var(--rule);fill:none}
+.ssa-v-ebox .box.on{stroke:var(--slate);stroke-width:3}
+.ssa-v-ebox .box.hot{stroke:var(--rose)}
+.ssa-v-ebox .box.ok{stroke:var(--sage);stroke-width:3}
+.ssa-v-ebox .box.upg{stroke:var(--ochre);stroke-width:3;stroke-dasharray:6 5}
+.ssa-v-ebox .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-ebox .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-ebox .b7{font-weight:700}
+.ssa-v-ebox .rose-t{fill:var(--rose)}
+.ssa-v-ebox .sage-t{fill:var(--sage)}
+.ssa-v-ebox .slate-t{fill:var(--slate)}
+.ssa-v-ebox .violet-t{fill:var(--violet)}
+.ssa-v-ebox .ochre-t{fill:var(--ochre)}
+.ssa-v-ebox .ink3-t{fill:var(--ink3)}
+.ssa-v-ebox .ink2-t{fill:var(--ink2)}
+.ssa-v-ebox .st{font-weight:600}
+.ssa-v-ebox .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-ebox .ln.thin{stroke-width:3}
+.ssa-v-ebox .ln.lit{stroke:var(--slate)}
+.ssa-v-ebox .ln.dead{opacity:.25}
+.ssa-v-ebox .ln.hand{transition:opacity .4s,stroke .3s}
+.ssa-v-ebox .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-ebox .disk.lit{stroke:var(--slate);stroke-width:3}
+.ssa-v-ebox .disk.w{fill:var(--slate);stroke:var(--slate)}
+.ssa-v-ebox .disk.par{fill:var(--ochre);stroke:var(--ochre)}
+.ssa-v-ebox .disk.meta{stroke:var(--violet);stroke-width:4}
+.ssa-v-ebox .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-ebox .pkt.par{fill:var(--ochre)}
+.ssa-v-ebox .dot{fill:var(--slate)}
+.ssa-v-ebox .dot.v{fill:var(--violet)}
+.ssa-v-ebox .xmark{stroke:var(--rose);stroke-width:5;stroke-linecap:round;fill:none}
+.ssa-v-ebox .viptag{fill:var(--card);stroke:var(--sage);stroke-width:2}
+.ssa-v-ebox .vipt{fill:var(--sage);font-weight:700}
+.ssa-v-ebox .vip{transition:opacity .2s}
+
+main[data-station=v-ebox] .bd a {text-decoration:underline;text-underline-offset:.16em}
+@media (max-width:640px){
+  body.present .stage:has(.ssa-v-ebox){padding:12px}
+  body.present .stage:has(.ssa-v-ebox) .figbox{margin:0}
+  body.present .stage:has(.ssa-v-ebox) .cap{display:block;margin-top:8px}
+  body.present .stage:has(.ssa-v-ebox) .cap h2{font-size:24px}
+  body.present .stage:has(.ssa-v-ebox) .cap .desc{font-size:16px}
+  body.present .stage:has(.ssa-v-ebox) .ctl{gap:8px;margin-top:8px}
+}

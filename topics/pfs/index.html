@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>并行文件系统：共享路径与并行读写 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明并行文件系统如何共享路径、查询布局，并从多个数据目标读写文件。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/pfs.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="pfs">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Parallel file systems: Shared paths and parallel I/O">并行文件系统：共享路径与并行读写</h1>
+        <p class="meta"><span data-en="6 steps · Shared namespace, Metadata, Striping">6 步 · 共享命名空间、元数据、条带</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li>Lustre Wiki — Lustre Architecture for Admins</li>
+      <li>Lustre Wiki — Lustre Striping Best Practices</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/pfs.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'pfs',ar:[900/388,360/482],
+  steps:[
+    {t:["多个客户端共享同一套路径", "Clients share one file namespace"],
+     d:["各计算节点挂载同一文件系统，通过共享路径访问文件。", "Compute nodes mount the same file system and access files through shared paths."],
+     b:[["<p>并行文件系统允许多个客户端同时访问一个共享文件命名空间。命名空间是文件名和目录构成的路径体系。计算节点挂载同一 Lustre 文件系统后，可用同一个路径定位共享文件。访问仍受文件权限和文件系统的并发规则控制。</p>"],
+        ["<p>A parallel file system lets multiple clients access a shared file namespace concurrently. The namespace is the hierarchy of file and directory names. Compute nodes that mount the same Lustre file system can refer to a shared file by the same path. Permissions and the file system's concurrency rules govern access.</p>"]]},
+    {t:["元数据给出文件布局", "Metadata provides the file layout"],
+     d:["客户端打开文件时，从元数据服务取得文件属性和数据布局。", "When a client opens a file, the metadata service provides file attributes and the data layout."],
+     b:[["<p>元数据描述文件名、权限等属性，以及文件数据的位置。以 Lustre 为例，元数据服务器（MDS）处理路径和文件元数据请求，元数据目标（MDT）保存这些信息。客户端拿到文件布局后，能确定需要访问哪些数据目标。</p>"],
+        ["<p>Metadata describes properties such as file names and permissions, as well as where file data resides. In Lustre, a metadata server (MDS) handles namespace and file metadata requests. A metadata target (MDT) stores this information. The returned layout identifies the data targets that hold the file.</p>"]]},
+    {t:["条带把文件区间分给多个目标", "Striping maps file ranges to multiple targets"],
+     d:["文件里的连续区间按布局依次分配到不同的数据目标。", "The layout assigns consecutive regions of the file to different data targets."],
+     b:[["<p>条带化把文件的字节范围切成区间，再按布局将区间分配给数据目标。以 Lustre 的基本轮转布局为例，条带大小定义每次分配的连续字节数，条带数定义参与该文件布局的目标数量。分配遍历一轮后可回到第一个目标，继续分配后续区间。</p>"],
+        ["<p>Striping divides a file's byte ranges into regions and assigns those regions to data targets. In a basic Lustre round-robin layout, stripe size sets how many contiguous bytes go to a target at a time, while stripe count sets how many targets participate. Assignment can wrap back to the first target for subsequent regions.</p>"]]},
+    {t:["数据直接在客户端和数据服务器之间传输", "Clients transfer data directly with data servers"],
+     d:["同一次文件读取可以并行请求多个目标的数据。", "One file read can request data from several targets in parallel."],
+     b:[["<p>取到布局后，Lustre 客户端把涉及多个目标的读取拆成可并行发送的请求。对象存储服务器（OSS）提供数据访问，对象存储目标（OST）保存文件片段。常规条带文件的批量数据直接在客户端和数据服务器之间传输，元数据服务负责此前的布局查询。并行请求可利用多个数据服务路径的带宽。</p>"],
+        ["<p>After obtaining the layout, a Lustre client can issue separate read requests to several targets in parallel. Object storage servers (OSSs) serve this I/O, and object storage targets (OSTs) hold file fragments. Bulk data for an ordinary striped file travels directly between the client and the data servers. The metadata service handles the preceding layout lookup. Concurrent requests can use bandwidth from several data paths.</p>"]]},
+    {t:["客户端按文件偏移组装结果", "The client assembles data by file offset"],
+     d:["来自不同目标的数据可以先后返回，客户端按其在文件中的位置交付。", "Data from different targets can arrive at different times. The client delivers it in file order."],
+     b:[["<p>文件偏移是某段数据相对文件起点的字节位置。客户端按布局把每个响应放回读取缓冲区中的对应区间。应用仍然操作一个文件，可以用同一文件描述符读取连续的字节范围。</p>"],
+        ["<p>A file offset is the byte position of data relative to the start of the file. The client uses the layout to place each response in the corresponding range of the read buffer. The application still operates on one file and can read a contiguous byte range through the same file descriptor.</p>"]]},
+    {t:["条带数随文件和访问方式选择", "Stripe count follows file size and access patterns"],
+     d:["顺序读取的大文件可利用多个目标，小文件可用较窄布局控制开销。", "Large sequential reads can use several targets, while narrow layouts can limit overhead for small files."],
+     b:[["<p>大文件的连续访问覆盖多个条带时，多个目标可以一起工作。小文件或短范围读取常常只触及少量条带，扩大布局可能增加请求和管理开销。同一文件系统还可以把不同小文件分布在不同目标上，由多文件并发提供带宽。</p>"],
+        ["<p>Large sequential reads can engage several targets when they span multiple stripes. Small files or short range reads often touch few stripes, and a wider layout can add request and bookkeeping overhead. Distributing separate small files across targets also lets concurrent reads of different files use aggregate bandwidth.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

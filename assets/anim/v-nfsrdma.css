@@ -1,0 +1,78 @@
+/* NFSoRDMA：NFS 换成 RDMA 传输，数据由网卡直接搬：动画区样式。由 assets/anim/v-nfsrdma.js 使用，只作用于 .ssa-v-nfsrdma 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-nfsrdma{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-nfsrdma .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-nfsrdma .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-nfsrdma .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-nfsrdma .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-nfsrdma .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-nfsrdma .vwm-d{display:inline}
+.ssa-v-nfsrdma .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-nfsrdma .tgl[hidden]{display:none}
+.ssa-v-nfsrdma .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-nfsrdma .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-nfsrdma .ssa-scene text{dominant-baseline:central}
+.ssa-v-nfsrdma .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-nfsrdma .ssa-scene .hid{opacity:0;visibility:hidden;transition:none}
+.ssa-v-nfsrdma .ssa-scene .dim{opacity:.22}
+.ssa-v-nfsrdma .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-nfsrdma .box.soft{stroke:var(--rule)}
+.ssa-v-nfsrdma .box.on{stroke:var(--slate)}
+.ssa-v-nfsrdma .box.hot{stroke:var(--rose)}
+.ssa-v-nfsrdma .box.ok{stroke:var(--sage)}
+.ssa-v-nfsrdma .box.vio{stroke:var(--violet)}
+.ssa-v-nfsrdma .box.ochre{stroke:var(--ochre)}
+.ssa-v-nfsrdma .box.dead{opacity:.35}
+.ssa-v-nfsrdma .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-nfsrdma .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-nfsrdma .b7{font-weight:700}
+.ssa-v-nfsrdma .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:500}
+.ssa-v-nfsrdma .rose-t{fill:var(--rose)}
+.ssa-v-nfsrdma .sage-t{fill:var(--sage)}
+.ssa-v-nfsrdma .slate-t{fill:var(--slate)}
+.ssa-v-nfsrdma .violet-t{fill:var(--violet)}
+.ssa-v-nfsrdma .ochre-t{fill:var(--ochre)}
+.ssa-v-nfsrdma .ink3-t{fill:var(--ink3)}
+.ssa-v-nfsrdma .ink2-t{fill:var(--ink2)}
+.ssa-v-nfsrdma .st{font-weight:600;transition:opacity .25s}
+.ssa-v-nfsrdma .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-nfsrdma .ln.thin{stroke-width:3}
+.ssa-v-nfsrdma .ln.lit{stroke:var(--slate)}
+.ssa-v-nfsrdma .ln.ok{stroke:var(--sage)}
+.ssa-v-nfsrdma .ln.hot{stroke:var(--rose)}
+.ssa-v-nfsrdma .ln.vio{stroke:var(--violet)}
+.ssa-v-nfsrdma .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-nfsrdma .ln.dead{opacity:.3}
+.ssa-v-nfsrdma .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-nfsrdma .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-nfsrdma .disk.lit{stroke:var(--slate)}
+.ssa-v-nfsrdma .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-nfsrdma .disk.scm{stroke:var(--ochre)}
+.ssa-v-nfsrdma .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-nfsrdma .pkt.rose{fill:var(--rose)}
+.ssa-v-nfsrdma .pkt.ok{fill:var(--sage)}
+.ssa-v-nfsrdma .pkt.vio{fill:var(--violet)}
+.ssa-v-nfsrdma .pkt.ochre{fill:var(--ochre)}
+.ssa-v-nfsrdma .dot{fill:var(--slate)}
+.ssa-v-nfsrdma .dot.v{fill:var(--violet)}
+.ssa-v-nfsrdma .dot.ok{fill:var(--sage)}
+.ssa-v-nfsrdma .dot.rose{fill:var(--rose)}
+.ssa-v-nfsrdma .dot.ochre{fill:var(--ochre)}
+.ssa-v-nfsrdma .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-nfsrdma .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-nfsrdma .track{fill:var(--rule)}
+.ssa-v-nfsrdma .fill{fill:var(--rose)}
+.ssa-v-nfsrdma .fill.sage{fill:var(--sage)}
+.ssa-v-nfsrdma .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-nfsrdma .chip{fill:var(--card);stroke:var(--rule2);stroke-width:2}
+.ssa-v-nfsrdma .box.skip{stroke-dasharray:6 5;opacity:.55}
+.ssa-v-nfsrdma .ln.skip{opacity:.25}
+.ssa-v-nfsrdma .ln.dash.lit{stroke:var(--slate)}
+
+
+@media (max-width:640px){
+  body.present:has(main[data-station="v-nfsrdma"]) .stage{padding:12px}
+  main[data-station="v-nfsrdma"] ~ .stage .figbox{margin:8px 0}
+  main[data-station="v-nfsrdma"] ~ .stage .cap{margin-top:8px}
+  main[data-station="v-nfsrdma"] ~ .stage h2{font-size:22px}
+  main[data-station="v-nfsrdma"] ~ .stage .desc{font-size:16px;line-height:1.45}
+}

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拥塞控制与无损网络 · Shan's Stack</title>
+<meta name="description" content="分 7 步说明出口队列如何产生，以及 ECN 反馈与 PFC 暂停如何作用。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/cong.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="cong">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Congestion control and lossless networks">拥塞控制与无损网络</h1>
+        <p class="meta"><span data-en="7 steps · queues, ECN, PFC">7 步 · 队列、ECN、PFC</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="IETF RFC 3168, The Addition of Explicit Congestion Notification (ECN) to IP">IETF RFC 3168，The Addition of Explicit Congestion Notification (ECN) to IP</li>
+      <li data-en="IEEE 802.1Qbb, Priority-based Flow Control">IEEE 802.1Qbb，Priority-based Flow Control</li>
+      <li data-en="SIGCOMM, Congestion Control for Large-Scale RDMA Deployments">SIGCOMM，Congestion Control for Large-Scale RDMA Deployments</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/cong.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'cong',ar:[900/360,360/520],
+  steps:[
+    {t:["多条流争用同一个出口", "Multiple flows contend for an egress"],
+     d:["多路报文到达同一出口时，超出发送能力的部分在缓冲区排队。", "When several flows converge on an egress, packets that exceed its service rate wait in a buffer."],
+     b:[["<p>拥塞发生在流量到达速度超过某处的处理或发送速度时。交换机出口是报文离开设备的端口。多台服务器同时向同一端点发送时，报文会在共享出口竞争发送时隙，缓冲区用来容纳暂时发不出去的报文。</p>"], ["<p>Congestion occurs when traffic arrives faster than a resource can process or transmit it. A switch egress is the port through which packets leave. When several servers send to one destination at the same time, packets compete for transmission on the shared egress. The buffer holds packets that are waiting to leave.</p>"]]},
+    {t:["持续排队增加延迟", "Sustained queues increase delay"],
+     d:["只要到达速率高于排出速率，队列就会增长，报文等待时间随之增加。", "The queue grows while arrivals exceed departures, increasing packet waiting time."],
+     b:[["<p>队列深度是缓冲区内待发的数据量。更长的队列意味着报文在发送前要等待更多数据先离开。如果持续到达的报文用完了可用缓冲空间，后续报文可能被丢弃。</p>"], ["<p>Queue depth is the amount of data waiting in a buffer. A longer queue makes new packets wait for more data to leave first. If arrivals exhaust the available buffer space, subsequent packets can be dropped.</p>"]]},
+    {t:["ECN 在转发时标记拥塞", "ECN marks packets in transit"],
+     d:["支持 ECN 的设备可以在队列溢出前标记支持该机制的 IP 报文，并继续转发。", "An ECN-enabled device can mark an ECN-capable IP packet before the queue overflows and still forward it."],
+     b:[["<p>显式拥塞通知（ECN）利用 IP 头中的字段携带拥塞信息。设备根据配置的队列条件，把支持 ECN 的报文标为拥塞已发生（CE）。报文继续流向接收端，将这个信号带到传输路径的终点。</p>"], ["<p>Explicit Congestion Notification (ECN) carries congestion information in the IP header. Based on configured queue conditions, a device can set the Congestion Experienced (CE) codepoint on an ECN-capable packet. The marked packet continues to its receiver with the congestion signal intact.</p>"]]},
+    {t:["接收端把信号反馈给源端", "The receiver feeds the signal back"],
+     d:["在 RoCEv2 中，接收网卡根据拥塞标记向源网卡返回 CNP。", "In RoCEv2, the receiving adapter can respond to a congestion mark with a CNP to the source."],
+     b:[["<p>拥塞通知报文（CNP）是接收网卡发给源网卡的控制报文。交换机标记经过的 IP 报文，接收网卡依据标记产生反馈，源网卡的拥塞控制算法依据反馈调节流量。数据和反馈沿相反方向在端点之间传递。</p>"], ["<p>A Congestion Notification Packet (CNP) is a control packet sent from the receiving adapter to the source adapter. The switch marks the IP packet in transit, the receiver generates feedback based on the mark, and the source adapter's congestion controller responds. Data and feedback travel in opposite directions between the endpoints.</p>"]]},
+    {t:["降低发送速率让队列排空", "Slower sending lets the queue drain"],
+     d:["当到达速率低于出口排出速率时，积压的报文逐步离开缓冲区。", "Backlogged packets leave the buffer as the arrival rate falls below the egress service rate."],
+     b:[["<p>源网卡收到反馈后降低相应流的发送速率。只要共享该出口的总到达速率低于出口的排出速率，队列就会缩短。发送端随后按拥塞控制算法逐步提高速率，重新利用可用容量。</p>"], ["<p>The source adapter reduces the send rate of the affected flow after feedback. The queue shrinks when the combined arrival rate drops below the egress service rate. The source then raises its rate according to the congestion control algorithm to use available capacity again.</p>"]]},
+    {t:["PFC 暂停相邻链路的一类流量", "PFC pauses one priority on an adjacent link"],
+     d:["缓冲区达到暂停条件时，接收端口可要求直连上游暂停指定优先级。", "At the pause condition, a receiving port can ask its directly connected peer to pause a selected priority."],
+     b:[["<p>基于优先级的流量控制（PFC）通过链路层控制帧传递暂停请求。相邻上游端口暂停该优先级，其他优先级仍可按调度规则发送。在配置 PFC 的路径上，缓冲区需要为暂停生效前已经在途的帧预留空间。</p>"], ["<p>Priority-based Flow Control (PFC) sends pause requests in link-layer control frames. The upstream peer pauses the selected priority, while other priorities remain eligible for scheduling. A PFC-enabled path needs buffer headroom for frames already in flight when a pause is triggered.</p>"]]},
+    {t:["配合使用时分别控制速率和缓冲区", "Rate control and buffer protection work together"],
+     d:["ECN 反馈用于调节源端流量，PFC 用于在队列压力上升时逐跳保护缓冲区。", "ECN feedback controls the rate at the source, while PFC protects buffers hop by hop as queue pressure rises."],
+     b:[["<p>在同时配置两种机制的网络里，可以将队列的 ECN 标记条件设在 PFC 暂停条件之前，为端到端反馈留出反应时间。突发仍可能先填满可用空间，因此 PFC 提供逐跳保护。持续暂停会使上游积压，也可能延迟同一优先级内经过该端口的其他流量。</p>"], ["<p>With both mechanisms configured, the queue can start ECN marking before the PFC pause condition, giving end-to-end feedback time to take effect. A burst can still fill the available space first, so PFC provides hop-by-hop protection. Sustained pauses can build queues upstream and delay other flows of the same priority that use the port.</p>"]]}
+  ]};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

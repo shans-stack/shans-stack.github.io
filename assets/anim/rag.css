@@ -1,0 +1,41 @@
+.an-rag {
+  display: block;
+  width: 100%;
+  font-family: var(--f);
+}
+.an-rag text {
+  fill: var(--ink);
+  dominant-baseline: central;
+}
+.an-rag-heading { font-size: 23px; font-weight: 650; }
+.an-rag-label { font-size: 22px; font-weight: 650; }
+.an-rag .an-rag-detail { font-size: 18px; fill: var(--ink2); }
+.an-rag .an-rag-note { font-size: 17px; fill: var(--ink3); }
+.an-rag-data { --an-rag-tone: var(--l4); }
+.an-rag-good { --an-rag-tone: var(--l5); }
+.an-rag-wait { --an-rag-tone: var(--l1); }
+.an-rag-control { --an-rag-tone: var(--l3); }
+.an-rag-idle { --an-rag-tone: var(--rule2); }
+.an-rag-node {
+  fill: color-mix(in srgb, var(--an-rag-tone, var(--l4)) 10%, var(--surface));
+  stroke: var(--an-rag-tone, var(--l4));
+  stroke-width: 1.25;
+}
+.an-rag-wire {
+  fill: none;
+  stroke: var(--an-rag-tone, var(--rule2));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.an-rag-wire.an-rag-control,
+.an-rag-wire.an-rag-idle { stroke-dasharray: 4 4; }
+.an-rag-arrow,
+.an-rag-packet { fill: var(--an-rag-tone, var(--l4)); }
+main[data-station="rag"] .mhost { aspect-ratio: var(--ar); }
+@media (max-width: 640px) {
+  .an-rag-heading { font-size: 17px; }
+  .an-rag-label { font-size: 16px; }
+  .an-rag .an-rag-detail,
+  .an-rag .an-rag-note { font-size: 14px; }
+  main[data-station="rag"] .mhost { aspect-ratio: var(--arm); }
+}

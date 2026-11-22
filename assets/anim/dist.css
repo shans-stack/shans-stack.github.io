@@ -1,0 +1,17 @@
+.dist-anim{position:relative}
+.dist-anim svg{display:block;width:100%;height:auto;overflow:hidden}
+.dist-label,.dist-note{font:600 20px var(--f);fill:var(--ink);pointer-events:none}
+.dist-note{font:500 17px var(--f);fill:var(--ink2)}
+.dist-device,.dist-active,.dist-idle,.dist-storage,.dist-rose,.dist-frame{stroke:var(--rule2);fill:var(--surface);stroke-width:1.5}
+.dist-active{fill:color-mix(in srgb,var(--l5) 13%,var(--surface));stroke:var(--l5)}
+.dist-storage{fill:color-mix(in srgb,var(--l4) 14%,var(--surface));stroke:var(--l4)}
+.dist-rose{fill:color-mix(in srgb,var(--l1) 13%,var(--surface));stroke:var(--l1)}
+.dist-idle{fill:var(--bg);stroke-dasharray:5 4}
+.dist-frame{fill:var(--bg);stroke-dasharray:5 5}
+.dist-wire{fill:none;stroke:var(--rule2);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.dist-good{stroke:var(--l5)}
+.dist-blue{stroke:var(--l4)}
+.dist-burden{stroke:var(--l1)}
+.dist-moving{fill:var(--l5);stroke:var(--surface);stroke-width:1}
+.dist-data{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.dist-load{fill:var(--l1);stroke:var(--surface);stroke-width:1}

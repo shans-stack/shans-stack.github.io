@@ -1,0 +1,41 @@
+.an-infer {
+  display: block;
+  width: 100%;
+  font-family: var(--f);
+}
+.an-infer text {
+  fill: var(--ink);
+  dominant-baseline: central;
+}
+.an-infer-heading { font-size: 23px; font-weight: 650; }
+.an-infer-label { font-size: 22px; font-weight: 650; }
+.an-infer .an-infer-detail { font-size: 18px; fill: var(--ink2); }
+.an-infer .an-infer-note { font-size: 17px; fill: var(--ink3); }
+.an-infer-data { --an-infer-tone: var(--l4); }
+.an-infer-good { --an-infer-tone: var(--l5); }
+.an-infer-wait { --an-infer-tone: var(--l1); }
+.an-infer-control { --an-infer-tone: var(--l3); }
+.an-infer-idle { --an-infer-tone: var(--rule2); }
+.an-infer-node {
+  fill: color-mix(in srgb, var(--an-infer-tone, var(--l4)) 10%, var(--surface));
+  stroke: var(--an-infer-tone, var(--l4));
+  stroke-width: 1.25;
+}
+.an-infer-wire {
+  fill: none;
+  stroke: var(--an-infer-tone, var(--rule2));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.an-infer-wire.an-infer-control,
+.an-infer-wire.an-infer-idle { stroke-dasharray: 4 4; }
+.an-infer-arrow,
+.an-infer-packet { fill: var(--an-infer-tone, var(--l4)); }
+main[data-station="infer"] .mhost { aspect-ratio: var(--ar); }
+@media (max-width: 640px) {
+  .an-infer-heading { font-size: 17px; }
+  .an-infer-label { font-size: 16px; }
+  .an-infer .an-infer-detail,
+  .an-infer .an-infer-note { font-size: 14px; }
+  main[data-station="infer"] .mhost { aspect-ratio: var(--arm); }
+}

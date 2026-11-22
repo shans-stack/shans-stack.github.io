@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>向量检索 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明文本如何映射成向量，系统如何按相似度查找原文。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/vec.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="vec">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Vector search">向量检索</h1>
+        <p class="meta"><span data-en="5 steps · embeddings, similarity, approximate neighbors">5 步 · 嵌入、相似度、近似近邻</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="Dense Passage Retrieval for Open-Domain Question Answering">论文《Dense Passage Retrieval for Open-Domain Question Answering》</li>
+      <li data-en="Faiss documentation: MetricType and distances">Faiss 文档《MetricType and distances》</li>
+      <li data-en="Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs">论文《Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs》</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/vec.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'vec',ar:[920/376,360/482],steps:[
+  {t:["把片段和问题映射到同一空间", "Map passages and queries into a common space"],
+   d:["嵌入模型将两类文本转换成可比较的固定维度向量。", "Embedding models turn both kinds of text into comparable fixed-length vectors."],
+   b:[
+     ["<p>嵌入（embedding）是对文本等对象特征的数值表示。文档侧把切好的片段编码为向量，并保存向量与片段标识的对应关系。</p>", "<p>查询侧在请求到来时对问题编码。问题和片段可以使用同一个编码器，也可以使用配套训练的两个编码器。检索依赖两者输出处于同一个可比较空间。</p>"],
+     ["<p>An embedding is a numerical representation of features of an object such as text. The document pipeline encodes passages as vectors and retains the mapping from each vector to a passage ID.</p>", "<p>The query pipeline encodes a question when it arrives. Queries and passages can share an encoder or use two encoders trained to work together. Retrieval depends on their outputs occupying the same comparable space.</p>"]
+   ]},
+  {t:["用相似度定义什么是近邻", "Use a similarity measure to define neighbors"],
+   d:["余弦相似度比较向量方向，方向越接近，得分越高。", "Cosine similarity compares direction, assigning a higher score to more closely aligned vectors."],
+   b:[
+     ["<p>相似度是对两个向量接近程度的数值评价。余弦相似度用夹角的余弦衡量两个非零向量的方向关系。对单位长度向量，它等于向量的点积。</p>", "<p>向量检索也可以用欧氏距离等度量。用于建索引和搜索的度量应与嵌入模型的训练目标相符，因为更换度量可能改变近邻的顺序。</p>"],
+     ["<p>A similarity measure scores the proximity of two vectors. Cosine similarity uses the cosine of the angle between two nonzero vectors to compare directions. For unit-length vectors it equals their dot product.</p>", "<p>Vector search can also use measures such as Euclidean distance. The measure used to index and search should match the embedding model’s training objective, since another measure can change the neighbor order.</p>"]
+   ]},
+  {t:["精确检索计算全部候选的分数", "Exact search scores all eligible vectors"],
+   d:["逐个比较查询和候选向量，再返回得分最高的若干项。", "Compare the query with each eligible vector and return the highest-scoring items."],
+   b:[
+     ["<p>直接扫描会对每条符合条件的向量计算相似度，再取前 k 项。k 是期望返回的结果数量。这条路径可以作为校验其他搜索方法的基线。</p>", "<p>在向量维度和计算方式相同的情况下，候选越多，需要评估的向量也越多。索引可通过缩小访问范围减少这一开销。</p>"],
+     ["<p>A direct scan scores every eligible vector and takes the top k. Here k is the desired number of results. This provides a baseline for checking other search methods.</p>", "<p>With the dimension and computation method held fixed, more candidates mean more vectors to score. An index can reduce this work by narrowing the search.</p>"]
+   ]},
+  {t:["近似索引用图缩小搜索范围", "An approximate index narrows the search with a graph"],
+   d:["分层图先定位候选区域，再通过邻接关系搜索局部近邻。", "A layered graph locates a promising region and explores local neighbors through graph links."],
+   b:[
+     ["<p>近似最近邻搜索只访问部分向量以找到较好的近邻。分层可导航小世界图（HNSW）是一种索引：上层节点较少，负责粗定位；底层图沿着邻接边细查。</p>", "<p>搜索可以扩展考察更多节点，以提高找回精确近邻的机会。召回率衡量精确结果中有多少被近似搜索找回，常与查询耗时一起观察。</p>"],
+     ["<p>Approximate nearest-neighbor search visits a subset of vectors to find good neighbors. A Hierarchical Navigable Small World graph (HNSW) uses sparse upper layers for coarse navigation and edges in a denser bottom layer to refine the search.</p>", "<p>The search can examine more nodes to improve its chances of finding true neighbors. Recall measures how many exact results the approximate search recovers and is commonly evaluated alongside query time.</p>"]
+   ]},
+  {t:["通过结果标识取回内容", "Fetch content using the result IDs"],
+   d:["索引返回片段标识与分数，应用据此读取正文和元数据。", "The index returns passage IDs and scores, which the application uses to fetch text and metadata."],
+   b:[
+     ["<p>向量近邻通常以标识与分数返回。标识关联原始片段，元数据是描述片段的附加属性，例如来自哪篇文档。应用可以据此取回正文和出处。</p>", "<p>相似度反映的是嵌入空间中的接近程度。对需要来源或内容核对的应用，取回的正文供后续重排与生成阶段检查。</p>"],
+     ["<p>Vector neighbors generally come back as IDs and scores. An ID links to the original passage. Metadata describes a passage with details such as its source document. The application uses these records to fetch text and provenance.</p>", "<p>Similarity reflects proximity in embedding space. In applications that check sources or content, the retrieved text can be assessed during later reranking and generation.</p>"]
+   ]},
+]};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

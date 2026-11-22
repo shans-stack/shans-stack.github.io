@@ -1,0 +1,62 @@
+/* Classic 与 DBox-HA：动画区样式。由 assets/anim/v-classic.js 使用，只作用于 .ssa-v-classic 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-classic{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-classic .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-classic .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-classic .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-classic .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-classic .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-classic .vwm-d{display:inline}
+.ssa-v-classic .ssa-scene text{dominant-baseline:central}
+.ssa-v-classic .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-classic .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-classic .dbx{transition:opacity .4s}
+.ssa-v-classic .dbx.dim{opacity:.28}
+.ssa-v-classic .dbx.off .box,.ssa-v-classic .dbx.off .disk,.ssa-v-classic .dbx.off .ln{opacity:.32}
+.ssa-v-classic .dbx.off .box.hot{opacity:1}
+.ssa-v-classic .xm{opacity:0;transition:opacity .3s}
+.ssa-v-classic .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-classic .box.soft{stroke:var(--rule);fill:none}
+.ssa-v-classic .box.on{stroke:var(--slate);stroke-width:3}
+.ssa-v-classic .box.hot{stroke:var(--rose)}
+.ssa-v-classic .box.ok{stroke:var(--sage);stroke-width:3}
+.ssa-v-classic .box.upg{stroke:var(--ochre);stroke-width:3;stroke-dasharray:6 5}
+.ssa-v-classic .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-classic .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-classic .b7{font-weight:700}
+.ssa-v-classic .rose-t{fill:var(--rose)}
+.ssa-v-classic .sage-t{fill:var(--sage)}
+.ssa-v-classic .slate-t{fill:var(--slate)}
+.ssa-v-classic .violet-t{fill:var(--violet)}
+.ssa-v-classic .ochre-t{fill:var(--ochre)}
+.ssa-v-classic .ink3-t{fill:var(--ink3)}
+.ssa-v-classic .ink2-t{fill:var(--ink2)}
+.ssa-v-classic .st{font-weight:600}
+.ssa-v-classic .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-classic .ln.thin{stroke-width:3}
+.ssa-v-classic .ln.lit{stroke:var(--slate)}
+.ssa-v-classic .ln.dead{opacity:.25}
+.ssa-v-classic .ln.hand{transition:opacity .4s,stroke .3s}
+.ssa-v-classic .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-classic .disk.lit{stroke:var(--slate);stroke-width:3}
+.ssa-v-classic .disk.w{fill:var(--slate);stroke:var(--slate)}
+.ssa-v-classic .disk.par{fill:var(--ochre);stroke:var(--ochre)}
+.ssa-v-classic .disk.meta{stroke:var(--violet);stroke-width:4}
+.ssa-v-classic .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-classic .pkt.par{fill:var(--ochre)}
+.ssa-v-classic .dot{fill:var(--slate)}
+.ssa-v-classic .dot.v{fill:var(--violet)}
+.ssa-v-classic .xmark{stroke:var(--rose);stroke-width:5;stroke-linecap:round;fill:none}
+.ssa-v-classic .viptag{fill:var(--card);stroke:var(--sage);stroke-width:2}
+.ssa-v-classic .vipt{fill:var(--sage);font-weight:700}
+.ssa-v-classic .vip{transition:opacity .2s}
+.ssa-v-classic .dbx.dim{opacity:.28}
+.ssa-v-classic .disk.bad{stroke:var(--rose);stroke-width:3;stroke-dasharray:4 3}
+.ssa-v-classic .disk.rb{fill:var(--card);stroke:var(--sage);stroke-width:4}
+.ssa-v-classic .pkt.rb{fill:var(--card);stroke:var(--sage);stroke-width:3}
+.ssa-v-classic .box.dead{opacity:.35}
+.ssa-v-classic .blk{fill:var(--slate);transition:opacity .25s}
+.ssa-v-classic .blk.par{fill:var(--ochre)}
+.ssa-v-classic .chip{transition:opacity .4s}
+.ssa-v-classic .chipb{fill:var(--card);stroke:var(--rule2);stroke-width:2}
+
+main[data-station=v-classic] .bd a {text-decoration:underline;text-underline-offset:.16em}

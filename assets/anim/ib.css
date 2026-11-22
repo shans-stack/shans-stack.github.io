@@ -1,0 +1,25 @@
+.an-ib {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font: 500 17px var(--f);
+}
+.an-ib-label, .an-ib-note { fill: var(--ink); dominant-baseline: central; }
+.an-ib-note { fill: var(--ink2); font-size: 16px; }
+.an-ib-node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.an-ib-node.an-ib-green { stroke: var(--l5); }
+.an-ib-node.an-ib-rose { stroke: var(--l1); }
+.an-ib-node.an-ib-control { stroke: var(--l4); }
+.an-ib-link { fill: none; stroke: var(--rule2); stroke-width: 2.5; stroke-linejoin: round; }
+.an-ib-link.an-ib-green { stroke: var(--l5); }
+.an-ib-link.an-ib-rose { stroke: var(--l1); }
+.an-ib-link.an-ib-control { stroke: var(--l4); stroke-dasharray: 5 5; }
+.an-ib-link.an-ib-rail { stroke: var(--l6); }
+.an-ib-block { fill: var(--l5); stroke: var(--surface); stroke-width: 1; }
+.an-ib-block.an-ib-rose { fill: var(--l1); }
+.an-ib-block.an-ib-control { fill: var(--l4); }
+.an-ib-block.an-ib-rail { fill: var(--l6); }
+@media (640px < width <= 720px) {
+  main[data-station="ib"] .mhost { aspect-ratio: var(--ar); }
+}

@@ -1,0 +1,28 @@
+.an-nvme {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 18px var(--f);
+  color: var(--ink);
+}
+.an-nvme text { fill: currentColor; dominant-baseline: central; }
+.an-nvme-title { font-weight: 650; }
+.an-nvme-secondary, .an-nvme-note { color: var(--ink2); }
+.an-nvme-note { font-size: 16px; }
+.an-nvme-chip, .an-nvme-counter { font-variant-numeric: tabular-nums; font-weight: 650; }
+.an-nvme-neutral { --accent: var(--rule2); }
+.an-nvme-ink { --accent: var(--ink3); }
+.an-nvme-blue { --accent: var(--l4); }
+.an-nvme-green { --accent: var(--l5); }
+.an-nvme-rose { --accent: var(--l1); }
+.an-nvme-gold { --accent: var(--l2); }
+.an-nvme-violet { --accent: var(--l3); }
+.an-nvme-box { fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; }
+.an-nvme-line, .an-nvme-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.an-nvme-dashed { stroke-dasharray: 5 5; }
+.an-nvme-cell { fill: var(--bg); stroke: var(--rule); }
+.an-nvme-tile { fill: color-mix(in srgb, var(--accent) 20%, var(--surface)); stroke: var(--accent); }
+.an-nvme-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.4; }
+@media (max-width: 640px) {
+  .an-nvme, .an-nvme-note { font-size: 14px; }
+}

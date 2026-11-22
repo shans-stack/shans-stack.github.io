@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>跨集群复制与故障切换 · Shan’s Stack</title>
+<meta name="description" content="跨集群复制与故障切换。受保护路径与复制对端。按快照传输增量。复制间隔与恢复点滞后。一对多与多对一复制。计划内与计划外故障切换。同步复制的写入确认">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-repl.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-repl">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Cross-cluster replication and failover">跨集群复制与故障切换</h1>
+        <p class="meta"><span data-en="async replication, failover, sync replication">异步复制、故障切换、同步复制</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), The VAST DataSpace chapter: VAST Replication, Minimizing Recovery Point Objective, Simple, Powerful Policies.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版），The VAST DataSpace 一章：VAST Replication、Minimizing Recovery Point Objective、Simple, Powerful Policies。</li>
+      <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5): Data Protection Overview, Overview of VAST Replication, Monitoring Replication, Async Replication Best Practices.">VAST Data 官方文档（docs.vastdata.com，5.5 版）：Data Protection Overview、Overview of VAST Replication、Monitoring Replication、Async Replication Best Practices。</li>
+      <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5): Failover Capabilities and Scenarios for Asynchronous Replication, Turnover Scenarios for Synchronous Replication.">VAST Data 官方文档（docs.vastdata.com，5.5 版）：Failover Capabilities and Scenarios for Asynchronous Replication、Turnover Scenarios for Synchronous Replication。</li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-repl.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-repl',ar:[960/374,480/530],
+  steps:[
+    {"t": ["受保护路径与复制对端", "Protected paths and replication peers"], "d": ["异步复制从源路径到目标路径先执行初始同步。", "Asynchronous replication starts by synchronizing the source path to the destination path."], "b": [["<p>受保护路径指定要保护的数据范围。复制流将该路径关联到目标集群及其目标路径。异步复制可保护文件、S3 对象、块卷及路径内的 VAST 数据库。初始同步完成后，对端获得首个可用的恢复点。</p>"], ["<p>A protected path identifies the data to protect. A replication stream associates it with a destination cluster and path. Asynchronous replication can protect files, S3 objects, block volumes and VAST databases within the path. The initial sync gives the peer its first usable recovery point.</p>"]]},
+    {"t": ["按快照传输增量", "Incremental transfer by snapshot"], "d": ["源端定期创建快照，将自上一份快照以来的改动传到对端。", "The source takes snapshots on a schedule and sends changes since the previous snapshot to the peer."], "b": [["<p>保护策略定义异步复制计划。客户端写入可先在源端完成，后续通过快照增量传到对端。对端以只读方式呈现最近一次完成传输的快照状态。</p>", "<p>VAST 对跨集群传输的数据进行压缩，两端分别进行去重和相似性数据缩减。复制连接可启用双向 TLS（mTLS）。</p>"], ["<p>The protection policy defines the replication schedule. Client writes can complete at the source before they are sent to the peer in a snapshot delta. The peer presents the state of the latest fully transferred snapshot as a read-only replica.</p>", "<p>VAST compresses the data transferred between clusters. Each cluster performs its own deduplication and similarity reduction. Replication connections can use mutual TLS (mTLS).</p>"]]},
+    {"t": ["复制间隔与恢复点滞后", "Replication intervals and recovery point lag"], "d": ["对端的恢复点取决于快照间隔和传输时间。传输跨过计划间隔时，计划快照可能被跳过。", "The recovery point at the peer depends on the snapshot interval and transfer time. A scheduled snapshot can be skipped if a transfer overruns the interval."], "b": [["<p>VMS 将最近一次完整传到对端的快照在源端创建至今的时间显示为当前 RPO。初始同步或增量传输耗时较长时，最新可用恢复点可能滞后。</p>", "<p>VMS 可在保护路径持续超过 RPO 目标时触发告警。</p>"], ["<p>VMS shows current RPO as the elapsed time since the source took the latest snapshot fully transferred to the peer. A long initial sync or delta transfer can delay the next usable recovery point.</p>", "<p>VMS can raise an alarm when a protected path exceeds its RPO target for a configured period.</p>"]]},
+    {"t": ["一对多与多对一复制", "One-to-many and many-to-one replication"], "d": ["一个路径可复制到多个集群，一个集群也可接收来自多个源的路径。", "A path can replicate to multiple clusters, and one cluster can receive paths from multiple sources."], "b": [["<p>受保护路径可用多条复制流指定不同的目标对端、目标路径和保护策略。各复制流和两端的快照保留时间可按恢复需求配置。</p>"], ["<p>A protected path can have multiple streams with their own destination peers, destination paths and policies. Streams and snapshot retention on each peer can be configured for their recovery requirements.</p>"]]},
+    {"t": ["计划内与计划外故障切换", "Planned and unplanned failover"], "d": ["计划内切换先同步最终改动。计划外切换从对端最近一次完成的恢复点继续。", "Planned failover synchronizes the final changes. Unplanned failover resumes from the destination’s latest complete recovery point."], "b": [["<p>计划内切换要求对端互通。最终同步期间两个路径只读，完成后新源可写。在一对一复制中，复制方向随之反转。</p>", "<p>计划外切换可在源端失联时启用对端写入。恢复点之后的写入不在对端副本中。一对一复制在此时暂停，重新同步后可再进行计划内回切。</p>"], ["<p>Planned failover requires peer connectivity. Both paths are read-only during the final sync, after which the new source becomes writable. In one-to-one replication, the replication direction then reverses.</p>", "<p>Unplanned failover can enable writes at the destination while the source is unreachable. The destination copy lacks writes made after its recovery point. One-to-one replication pauses until the peers are resynchronized, after which a planned failback can restore the original roles.</p>"]]},
+    {"t": ["同步复制的写入确认", "Write acknowledgements in synchronous replication"], "d": ["同步链路正常时，两端持久化写入后才向客户端确认，可提供零 RPO。", "With healthy synchronous replication, writes are acknowledged after both peers persist them, providing zero RPO."], "b": [["<p>VAST 5.5 的同步复制适用于 S3 桶视图，使用一个同步对端。跨站链路的往返时间计入写延迟。</p>", "<p>链路断开达到超时后，原主端以独立角色继续读写，辅助端阻断访问。连接恢复后，需显式恢复原主端角色。</p>"], ["<p>VAST 5.5 supports synchronous replication for S3 bucket views with one synchronous peer. Round-trip time between sites contributes to write latency.</p>", "<p>After a disconnect timeout, the original primary continues serving reads and writes as standalone and the secondary blocks access. Restoring the original primary role requires explicit action after reconnecting.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

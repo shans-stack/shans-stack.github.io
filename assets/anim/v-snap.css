@@ -1,0 +1,95 @@
+/* 快照：不复制数据，只留住那一刻的指针：动画区样式。由 assets/anim/v-snap.js 使用，只作用于 .ssa-v-snap 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-snap{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-snap .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-snap .vwm-d{display:none}
+.ssa-v-snap .nvbk{fill:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-snap .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-snap .vwm-d{display:inline}:root:not([data-theme=light]) .ssa-v-snap .nvbk{fill:#DADCDF}}
+:root[data-theme=dark] .ssa-v-snap .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-snap .vwm-d{display:inline}
+:root[data-theme=dark] .ssa-v-snap .nvbk{fill:#DADCDF}
+.ssa-v-snap .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-snap .tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.ssa-v-snap .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-snap .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-snap .ssa-scene text{dominant-baseline:central}
+.ssa-v-snap .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-snap .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-snap .ssa-scene .dim{opacity:.22}
+.ssa-v-snap .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-snap .box.soft{stroke:var(--rule)}
+.ssa-v-snap .box.on{stroke:var(--slate)}
+.ssa-v-snap .box.hot{stroke:var(--rose)}
+.ssa-v-snap .box.ok{stroke:var(--sage)}
+.ssa-v-snap .box.dead{opacity:.35}
+.ssa-v-snap .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.ssa-v-snap .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-snap .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-snap .b7{font-weight:700}
+.ssa-v-snap .rose-t{fill:color-mix(in srgb,var(--rose) 55%,var(--ink2))}
+.ssa-v-snap .sage-t{fill:color-mix(in srgb,var(--sage) 55%,var(--ink2))}
+.ssa-v-snap .slate-t{fill:color-mix(in srgb,var(--slate) 55%,var(--ink2))}
+.ssa-v-snap .violet-t{fill:color-mix(in srgb,var(--violet) 55%,var(--ink2))}
+.ssa-v-snap .ink3-t{fill:var(--ink3)}
+.ssa-v-snap .ink2-t{fill:var(--ink2)}
+.ssa-v-snap .st{font-weight:600;transition:opacity .25s}
+.ssa-v-snap .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-snap .ln.thin{stroke-width:3}
+.ssa-v-snap .ln.lit{stroke:var(--slate)}
+.ssa-v-snap .ln.ok{stroke:var(--sage)}
+.ssa-v-snap .ln.hot{stroke:var(--rose)}
+.ssa-v-snap .ln.vio{stroke:var(--violet)}
+.ssa-v-snap .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-snap .ln.dead{opacity:.3}
+.ssa-v-snap .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-snap .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-snap .disk.lit{stroke:var(--slate)}
+.ssa-v-snap .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-snap .disk.bad{stroke:var(--rose);stroke-width:3}
+.ssa-v-snap .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-snap .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.ssa-v-snap .pkt.ok{fill:var(--sage)}
+.ssa-v-snap .dot{fill:var(--slate)}
+.ssa-v-snap .dot.v{fill:var(--violet)}
+.ssa-v-snap .dot.ok{fill:var(--sage)}
+.ssa-v-snap .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-snap .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-snap .track{fill:var(--rule)}
+.ssa-v-snap .fill{fill:var(--rose)}
+.ssa-v-snap .fill.sage{fill:var(--sage)}
+.ssa-v-snap .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-snap .ochre-t{fill:color-mix(in srgb,var(--ochre) 55%,var(--ink2))}
+.ssa-v-snap .ink-t{fill:var(--ink)}
+.ssa-v-snap .box.vio{stroke:var(--violet)}
+.ssa-v-snap .box.dash{stroke-dasharray:6 5}
+.ssa-v-snap .cell{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,fill .3s}
+.ssa-v-snap .cell.on{stroke:var(--slate)}
+.ssa-v-snap .cell.ok{stroke:var(--sage)}
+.ssa-v-snap .cell.hot{stroke:var(--rose)}
+.ssa-v-snap .cell.old{fill:var(--rule);stroke:var(--rule2)}
+.ssa-v-snap .cell.gone{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-snap .pkt.vio{fill:var(--violet)}
+.ssa-v-snap .pkt.rose{fill:var(--rose)}
+.ssa-v-snap .pkt.ochre{fill:var(--ochre)}
+.ssa-v-snap .dot.rose{fill:var(--rose)}
+.ssa-v-snap .dot.ochre{fill:var(--ochre)}
+.ssa-v-snap .ln.ochre{stroke:var(--ochre)}
+.ssa-v-snap .ln.ptr{stroke-width:2.5;stroke:var(--ink3)}
+.ssa-v-snap .ln.ptr.snap{stroke:var(--violet)}
+.ssa-v-snap .ln.ptr.clone{stroke:var(--ochre)}
+.ssa-v-snap .ln.ptr.live{stroke:var(--slate)}
+.ssa-v-snap .bar{fill:var(--slate)}
+.ssa-v-snap .bar.w{fill:var(--sage)}
+.ssa-v-snap .cell.free{stroke:var(--rule);stroke-dasharray:4 4}
+.ssa-v-snap .cell.snap{stroke:var(--violet);stroke-width:3}
+.ssa-v-snap .cell.ok{stroke-width:3}
+.ssa-v-snap .ptrc.live{stroke:var(--slate)}
+.ssa-v-snap .ptrc.snap{stroke:var(--violet)}
+.ssa-v-snap .ptrc.clone{stroke:var(--ochre)}
+.ssa-v-snap .ptrc.on{stroke-width:3.5}
+.ssa-v-snap .ptrc.gone{stroke-dasharray:4 4;opacity:.55}
+.ssa-v-snap .snapmk{fill:var(--violet);transition:none}
+.ssa-v-snap .snapmk.exp{fill:var(--rose)}
+.ssa-v-snap .ln.snapv{stroke:var(--violet);stroke-width:3;transition:opacity .3s}
+.ssa-v-snap .ln.cursor{stroke:var(--ink3);stroke-width:2;stroke-dasharray:3 5;transition:none}
+.ssa-v-snap .lockb,.ssa-v-snap .lockh{fill:none;stroke:var(--violet);stroke-width:2.2}

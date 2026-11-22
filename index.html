@@ -12,8 +12,6 @@
 <link rel="stylesheet" href="assets/brand/brand.css">
 <link rel="stylesheet" href="assets/site.css">
 <!-- 总图。地图、讲稿、知识点列表都由 data/ 生成，见 README。 -->
-<script>/* VAST 等厂商视角：首页换成该厂商的专题图 */(function(){try{var q=new URLSearchParams(location.search),v=q.get('v');if(v==='all'){localStorage.setItem('ss-view','');return}
-if(v)localStorage.setItem('ss-view',v);else v=localStorage.getItem('ss-view');var M={vast:'maps/vast/index.html'};if(M[v])location.replace(M[v]+location.search)}catch(e){}})();</script>
 </head>
 <body>
 <script src="assets/symbols.js"></script>
@@ -30,6 +28,11 @@ if(v)localStorage.setItem('ss-view',v);else v=localStorage.getItem('ss-view');va
   <div class="hero">
     <h1 data-en="AI infrastructure, one stop at a time">AI 基础设施，一站一站看懂</h1>
     <p class="lead" id="lead"></p>
+    <form class="tsearch" action="glossary/index.html" method="get" role="search">
+      <input type="search" name="q" autocomplete="off" aria-label="查术语" data-en-label="Look up a term" placeholder="PFC / ECN / SCM">
+      <button class="btn" type="submit" data-en="Look up">查术语</button>
+      <span class="tcount" id="tcount"></span>
+    </form>
   </div>
 
   <div id="map" data-map="home">
@@ -84,7 +87,8 @@ if(v)localStorage.setItem('ss-view',v);else v=localStorage.getItem('ss-view');va
 <script src="data/stations.js"></script>
 <script src="data/maps.js"></script>
 <script src="data/talks.js"></script>
-<script src="data/views.js"></script>
+<script src="data/terms.js"></script>
+<script src="data/vendors.js"></script>
 <script src="assets/core.js"></script>
 <script src="assets/metro.js"></script>
 <script src="assets/mapview.js"></script>

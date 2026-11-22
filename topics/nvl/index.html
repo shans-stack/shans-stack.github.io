@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVLink：GPU 之间的高速互联 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明GPU 对等传输、NVLink、NVSwitch 和跨域通信。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/nvl.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="nvl">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVLink: high-speed links between GPUs">NVLink：GPU 之间的高速互联</h1>
+        <p class="meta"><span data-en="6 steps · GPU interconnects, NVSwitch, cross-domain transfers">6 步 · GPU 互联、NVSwitch、跨域通信</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li>NVIDIA NCCL User Guide — Environment Variables</li>
+      <li>NVIDIA AI Enterprise — NVIDIA NVSwitch</li>
+      <li>NVIDIA Multi-Node NVLink User Guide — Overview</li>
+      <li>NVIDIA GPU Operator — GPUDirect RDMA and GPUDirect Storage</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/nvl.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'nvl',ar:[840/390,360/520],steps:[
+  {t:["GPU 间传输来自共享计算", "Shared computation creates GPU-to-GPU traffic"],
+   d:["同一计算拆到多块 GPU 时，一张卡的输出可以成为另一张卡的输入。", "When a computation spans GPUs, the output from one GPU can become the input to another."],
+   b:[["<p>每块 GPU 有可供本地计算使用的显存。训练或推理把模型分到多块 GPU 时，一个分片算出的中间结果可能是下一个分片的输入。因为这样的交换发生在计算步骤之间，卡间传输时间会进入整步耗时。</p>"], ["<p>Each GPU has device memory for local computation. When training or inference partitions a model across GPUs, an intermediate result from one partition may be needed by another. These transfers occur between compute operations, so their duration contributes to the time per step.</p>"]]},
+  {t:["PCIe 可提供对等传输", "PCIe can carry peer-to-peer transfers"],
+   d:["支持对等访问的 PCIe 拓扑允许 GPU 直接交换数据，省去主机内存中转。", "A PCIe topology with peer access lets GPUs exchange data without staging it in host memory."],
+   b:[["<p>PCIe 是连接处理器、加速器和网卡等设备的通用互连标准。对等传输（P2P）是一个设备直接访问另一个设备内存的传输方式。GPU、平台拓扑与驱动支持时，设备显存之间可经 PCIe 完成对等传输。CPU（中央处理器）可以负责启动操作，数据本身沿 PCIe 路径移动。</p>"], ["<p>PCIe is a general-purpose interconnect standard for processors, accelerators and network adapters. Peer-to-peer transfer, or P2P, lets one device access memory on another. With support from the GPUs, platform topology and drivers, transfers between device memories can run over PCIe. The host processor, or CPU, may initiate the operation while the payload travels along the PCIe path.</p>"]]},
+  {t:["NVLink 提供专用的 GPU 间路径", "NVLink provides a dedicated GPU-to-GPU path"],
+   d:["配置了 NVLink 的 GPU 可沿专用链路交换数据。", "GPUs connected by NVLink can exchange data along dedicated links."],
+   b:[["<p>NVLink 是 NVIDIA 的高速互联技术。用于 GPU 之间时，它提供一条专用数据路径，以服务频繁的显存间交换。应用或通信库发起传输，数据由设备沿可用的 NVLink 路径移动。主机侧的任务控制和 GPU 间的数据搬运各有自己的路径。</p>"], ["<p>NVLink is a high-speed interconnect developed by NVIDIA. Between GPUs, it supplies a dedicated data path for frequent transfers between device memories. An application or communication library initiates the transfer, and the devices move the payload over an available NVLink path. Host-side control and GPU-to-GPU data movement follow separate paths.</p>"]]},
+  {t:["NVSwitch 把多块 GPU 接入交换域", "NVSwitch connects GPUs through a switched fabric"],
+   d:["支持 NVSwitch 的系统可以让多块 GPU 通过交换芯片彼此通信。", "Systems with NVSwitch let multiple GPUs communicate through switch chips."],
+   b:[["<p>直接连接的链路只连接指定设备。NVSwitch 是用于 NVLink 的交换芯片，可以在接入同一交换结构的 GPU 之间转发流量。每块 GPU 的可达范围由系统布线与配置决定，程序仍通过相应的驱动和通信库使用这些路径。</p>"], ["<p>A direct link connects a specific pair of devices. NVSwitch is an NVLink switch chip that forwards traffic among GPUs attached to the same fabric. System wiring and configuration determine which peers a GPU can reach. Programs use these paths through the relevant drivers and communication libraries.</p>"]]},
+  {t:["NVLink 域可覆盖多个节点", "An NVLink domain can span multiple nodes"],
+   d:["互联域随系统设计确定，可以位于一个节点内，也可以覆盖同一机架中的多个节点。", "System design defines the fabric domain, which can sit within a node or span several nodes in a rack."],
+   b:[["<p>NVLink 域是由 NVLink 互联并按平台配置可彼此通信的一组设备。多节点 NVLink 是把这种互联延伸到同一机架多节点的实现。接入交换结构的 GPU 仍各自拥有显存，对远端显存的访问由软件配置权限和映射。</p>"], ["<p>An NVLink domain is a group of devices configured to communicate over an NVLink fabric. Multi-node NVLink extends this interconnect across multiple nodes in a rack. GPUs attached to the fabric retain their own device memory, and software establishes permissions and mappings for remote memory access.</p>"]]},
+  {t:["跨域通信经集群网络", "Transfers between domains use the cluster network"],
+   d:["跨两个 NVLink 域的通信可由通信库交给网卡和集群交换网络。", "A communication library can use network adapters and the cluster fabric to move data between NVLink domains."],
+   b:[["<p>域内可用 NVLink，跨域的节点则可通过 InfiniBand 或以太网相连。RDMA（远程直接内存访问）可让网卡直接读写获准访问的内存。支持 GPU 显存直接访问的系统还可让网卡直接与显存交换数据。跨域作业的通信路径因此同时涉及 GPU 拓扑、网卡位置和集群网络。</p>"], ["<p>NVLink is available within the domain, while nodes in separate domains can connect over InfiniBand or Ethernet. Remote direct memory access, or RDMA, lets a network adapter access authorised memory directly. Systems that support direct access to GPU memory also let the adapter exchange data with device memory. The communication path of a cross-domain job therefore depends on GPU topology, adapter placement and the cluster fabric.</p>"]]}
+]};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+.an-obj {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 18px var(--f);
+  color: var(--ink);
+}
+.an-obj text { fill: currentColor; dominant-baseline: central; }
+.an-obj-title { font-weight: 650; }
+.an-obj-secondary, .an-obj-note { color: var(--ink2); }
+.an-obj-note { font-size: 16px; }
+.an-obj-chip, .an-obj-counter { font-variant-numeric: tabular-nums; font-weight: 650; }
+.an-obj-neutral { --accent: var(--rule2); }
+.an-obj-ink { --accent: var(--ink3); }
+.an-obj-blue { --accent: var(--l4); }
+.an-obj-green { --accent: var(--l5); }
+.an-obj-rose { --accent: var(--l1); }
+.an-obj-gold { --accent: var(--l2); }
+.an-obj-violet { --accent: var(--l3); }
+.an-obj-box { fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; }
+.an-obj-line, .an-obj-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.an-obj-dashed { stroke-dasharray: 5 5; }
+.an-obj-cell { fill: var(--bg); stroke: var(--rule); }
+.an-obj-tile { fill: color-mix(in srgb, var(--accent) 20%, var(--surface)); stroke: var(--accent); }
+.an-obj-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.4; }
+@media (max-width: 640px) {
+  .an-obj, .an-obj-note { font-size: 14px; }
+}

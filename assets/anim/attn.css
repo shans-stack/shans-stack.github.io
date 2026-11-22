@@ -1,0 +1,25 @@
+.attn-figure { position: relative; }
+.attn-figure svg { display: block; width: 100%; height: auto; font: 16px var(--f); }
+.attn-figure text { fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+.attn-figure .attn-heading { font-size: 20px; font-weight: 600; }
+.attn-figure .attn-value { font-size: 18px; font-weight: 500; }
+.attn-figure .attn-muted { fill: var(--ink3); }
+.attn-figure .attn-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1; }
+.attn-figure .attn-active { fill: color-mix(in srgb, var(--l2) 15%, var(--surface)); stroke: var(--l2); }
+.attn-figure .attn-cool { fill: color-mix(in srgb, var(--l4) 19%, var(--surface)); stroke: var(--l4); }
+.attn-figure .attn-ready { fill: color-mix(in srgb, var(--l5) 22%, var(--surface)); stroke: var(--l5); }
+.attn-figure .attn-busy { fill: color-mix(in srgb, var(--l1) 20%, var(--surface)); stroke: var(--l1); }
+.attn-figure .attn-idle { fill: var(--bg); stroke: var(--rule2); stroke-dasharray: 3 3; }
+.attn-figure .attn-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.attn-figure .attn-wire.attn-active { stroke: var(--l2); }
+.attn-figure .attn-wire.attn-cool { stroke: var(--l4); }
+.attn-figure .attn-wire.attn-ready { stroke: var(--l5); }
+.attn-figure .attn-wire.attn-busy { stroke: var(--l1); }
+.attn-figure .attn-wire.attn-idle { stroke: var(--rule2); }
+.attn-figure .attn-packet { fill: var(--l2); stroke: var(--surface); stroke-width: 1; }
+.attn-figure .attn-packet.attn-cool { fill: var(--l4); }
+.attn-figure .attn-packet.attn-ready { fill: var(--l5); }
+.attn-figure .attn-packet.attn-busy { fill: var(--l1); }
+@media (min-width: 641px) and (max-width: 720px) {
+  main[data-station="attn"] .mhost { aspect-ratio: var(--ar); }
+}

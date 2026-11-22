@@ -1,0 +1,25 @@
+.an-cong {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font: 500 17px var(--f);
+}
+.an-cong-label, .an-cong-note { fill: var(--ink); dominant-baseline: central; }
+.an-cong-note { fill: var(--ink2); font-size: 16px; }
+.an-cong-node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.an-cong-node.an-cong-green { stroke: var(--l5); }
+.an-cong-node.an-cong-rose { stroke: var(--l1); }
+.an-cong-node.an-cong-control { stroke: var(--l4); }
+.an-cong-link { fill: none; stroke: var(--rule2); stroke-width: 2.5; stroke-linejoin: round; }
+.an-cong-link.an-cong-green { stroke: var(--l5); }
+.an-cong-link.an-cong-rose { stroke: var(--l1); }
+.an-cong-link.an-cong-control { stroke: var(--l4); stroke-dasharray: 5 5; }
+.an-cong-link.an-cong-rail { stroke: var(--l6); }
+.an-cong-block { fill: var(--l5); stroke: var(--surface); stroke-width: 1; }
+.an-cong-block.an-cong-rose { fill: var(--l1); }
+.an-cong-block.an-cong-control { fill: var(--l4); }
+.an-cong-block.an-cong-rail { fill: var(--l6); }
+@media (640px < width <= 720px) {
+  main[data-station="cong"] .mhost { aspect-ratio: var(--ar); }
+}

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prefill 与 Decode 分离 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明共享部署与分离部署的执行路径，以及阶段交接、等待和容量权衡。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/pd.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="pd">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Prefill and decode disaggregation">Prefill 与 Decode 分离</h1>
+        <p class="meta"><span data-en="6 steps · stage handoff, KV transfer, streaming cadence">6 步 · 阶段交接、KV 传输、生成节奏</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving">论文《DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving》</li>
+      <li data-en="vLLM documentation: Disaggregated Prefilling">vLLM 文档《Disaggregated Prefilling》</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/pd.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'pd',ar:[920/376,360/482],steps:[
+  {t:["共享部署在同一组工作进程执行两阶段", "Colocated serving runs both phases on the same workers"],
+   d:["预填充和解码共用算力、显存与调度时段。", "Prefill and decode share compute, memory, and scheduling time."],
+   b:[
+     ["<p>预填充（prefill）处理输入提示词并生成上下文状态；解码（decode）使用此前状态迭代生成输出。在共享部署中，同一组工作进程承担两个阶段。</p>", "<p>共享部署可在本地保留 KV Cache，即后续注意力计算会读取的键值中间结果。新请求的预填充与正在生成的请求由同一调度器安排。</p>"],
+     ["<p>Prefill processes the prompt and builds context state. Decode uses the state to generate output iteratively. In a colocated deployment the same workers run both phases.</p>", "<p>Colocation can keep the KV cache local. It holds the intermediate keys and values later attention operations read. One scheduler coordinates new prefills and requests already generating.</p>"]
+   ]},
+  {t:["两阶段的执行特征不同", "The phases have different execution profiles"],
+   d:["预填充可并行处理输入位置，解码依次生成并持续读取已有 KV。", "Prefill can process input positions in parallel, while decode generates sequentially and repeatedly reads KV."],
+   b:[
+     ["<p>预填充可以在一次模型前向计算中处理多个输入位置。长提示词往往带来较大的计算批次，调度器也可以将其拆成多段处理。</p>", "<p>同一序列的解码步之间有依赖。常规逐 token 解码每轮处理少量新输入，并读取随上下文增长的 KV。小批量解码通常更容易受内存带宽限制。</p>"],
+     ["<p>Prefill can process many input positions in one model forward pass. Long prompts often create a large compute workload, which a scheduler can split into chunks.</p>", "<p>Decode iterations in one sequence depend on previous iterations. Conventional token-by-token decode processes a small amount of new input per iteration and reads KV that grows with context. Small decode batches are often more sensitive to memory bandwidth.</p>"]
+   ]},
+  {t:["分离部署在两组工作进程之间交接 KV", "Disaggregated serving hands off KV between worker pools"],
+   d:["预填充生成的 KV 和续算所需状态交给解码实例。", "Prompt KV and continuation state are handed to a decode instance."],
+   b:[
+     ["<p>分离部署把预填充和解码放到各自的执行组中。调度器选择预填充实例处理输入，再把续算所需的元数据和 KV 交给解码实例。</p>", "<p>解码实例使用收到的状态继续处理输出。若两个实例在不同主机，交接会占用网络带宽；步骤可以重叠到什么程度由引擎与传输实现决定。</p>"],
+     ["<p>Disaggregation assigns prefill and decode to distinct worker pools. The scheduler places the prompt on a prefill worker, then hands the required KV and continuation metadata to a decode worker.</p>", "<p>The decode worker continues generation using the received state. A cross-host handoff consumes network bandwidth. The engine and transfer implementation determine how much of the work can overlap.</p>"]
+   ]},
+  {t:["隔离长预填充对解码节奏的干扰", "Isolate decode cadence from long prefills"],
+   d:["在共享算力上等待长预填充会拉大输出间隔，独立解码组可以继续运行。", "A long prefill on shared compute can widen output gaps, while a separate decode pool can continue."],
+   b:[
+     ["<p>共享部署中，较长的预填充有时会延后活跃序列的下一轮解码。分离后，预填充的执行时段由另一组实例承担，解码组可以按自己的调度节奏执行。</p>", "<p>共享部署也可把预填充分段，并在解码迭代之间安排小段计算，以缓解单次预填充占用过长的问题。</p>"],
+     ["<p>In a colocated deployment a long prefill can delay the next decode iteration for an active sequence. With disaggregation, the prefill runs in a separate pool, and decode can proceed on its own schedule.</p>", "<p>Colocated serving can also chunk prefill and interleave shorter pieces of prompt work with decode iterations to limit disruption from a single prefill.</p>"]
+   ]},
+  {t:["两组实例分别对应不同的服务指标", "The worker pools address different service metrics"],
+   d:["预填充侧影响首 token 等待，解码侧影响后续输出间隔。", "Prefill affects the first-token wait, while decode affects later output gaps."],
+   b:[
+     ["<p>首 token 时延（TTFT）衡量从发出请求到收到第一个 token 的等待。输入处理、排队和请求路径上的其他开销都会影响这一指标。</p>", "<p>token 间时延（ITL）衡量流中相邻 token 的到达间隔。将两类指标和各池的排队情况联看，有助于识别瓶颈在哪一阶段。</p>"],
+     ["<p>Time to first token (TTFT) covers the wait from sending a request to receiving the first token. Input processing, queueing, and other costs along the request path affect it.</p>", "<p>Inter-token latency (ITL) measures the arrival gap between consecutive streamed tokens. Reading both metrics alongside the queues helps identify which phase is the bottleneck.</p>"]
+   ]},
+  {t:["部署结果取决于计算、排队和交接", "Deployment outcomes depend on compute, queueing, and handoff"],
+   d:["请求的输入长度、输出长度与 KV 交接代价共同决定怎样配置执行组。", "Input length, output length, and KV handoff cost guide the choice of worker capacity."],
+   b:[
+     ["<p>分离部署允许分别选择两组实例的数量和执行配置，同时增加了两阶段之间的交接。上下文越长，潜在需要传送的 KV 越多，网络开销越值得计入请求预算。</p>", "<p>容量规划可用代表性的输入与输出长度分布，对照两组排队、KV 交接及生成节奏，衡量达到时延目标的请求处理能力。</p>"],
+     ["<p>Disaggregation allows each pool’s instance count and execution settings to be chosen separately while introducing a handoff. A longer context can create more KV to transfer, increasing the importance of network overhead in the request budget.</p>", "<p>Capacity planning can use representative input and output length distributions, tracking the two queues, KV handoff, and generation cadence to assess how much traffic meets latency targets.</p>"]
+   ]},
+]};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

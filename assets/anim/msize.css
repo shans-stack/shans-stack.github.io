@@ -1,0 +1,25 @@
+.msize-figure { position: relative; }
+.msize-figure svg { display: block; width: 100%; height: auto; font: 16px var(--f); }
+.msize-figure text { fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+.msize-figure .msize-heading { font-size: 20px; font-weight: 600; }
+.msize-figure .msize-value { font-size: 18px; font-weight: 500; }
+.msize-figure .msize-muted { fill: var(--ink3); }
+.msize-figure .msize-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1; }
+.msize-figure .msize-active { fill: color-mix(in srgb, var(--l2) 15%, var(--surface)); stroke: var(--l2); }
+.msize-figure .msize-cool { fill: color-mix(in srgb, var(--l4) 19%, var(--surface)); stroke: var(--l4); }
+.msize-figure .msize-ready { fill: color-mix(in srgb, var(--l5) 22%, var(--surface)); stroke: var(--l5); }
+.msize-figure .msize-busy { fill: color-mix(in srgb, var(--l1) 20%, var(--surface)); stroke: var(--l1); }
+.msize-figure .msize-idle { fill: var(--bg); stroke: var(--rule2); stroke-dasharray: 3 3; }
+.msize-figure .msize-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.msize-figure .msize-wire.msize-active { stroke: var(--l2); }
+.msize-figure .msize-wire.msize-cool { stroke: var(--l4); }
+.msize-figure .msize-wire.msize-ready { stroke: var(--l5); }
+.msize-figure .msize-wire.msize-busy { stroke: var(--l1); }
+.msize-figure .msize-wire.msize-idle { stroke: var(--rule2); }
+.msize-figure .msize-packet { fill: var(--l2); stroke: var(--surface); stroke-width: 1; }
+.msize-figure .msize-packet.msize-cool { fill: var(--l4); }
+.msize-figure .msize-packet.msize-ready { fill: var(--l5); }
+.msize-figure .msize-packet.msize-busy { fill: var(--l1); }
+@media (min-width: 641px) and (max-width: 720px) {
+  main[data-station="msize"] .mhost { aspect-ratio: var(--ar); }
+}

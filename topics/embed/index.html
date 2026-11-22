@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>向量化摄取 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明文档如何解析、切块、转成检索向量、写入索引并跟随源更新。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/embed.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="embed">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Embedding ingest">向量化摄取</h1>
+        <p class="meta"><span data-en="5 steps · document parsing, embeddings, index sync">5 步 · 文档解析、嵌入向量、索引同步</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://learn.microsoft.com/en-us/azure/search/vector-search-how-to-chunk-documents">Azure AI Search Documentation — Chunk large documents for RAG and vector search</a></li>
+      <li><a href="https://learn.microsoft.com/en-us/azure/search/search-how-to-define-index-projections">Azure AI Search Documentation — Define an index projection for parent-child indexing</a></li>
+      <li><a href="https://www.sbert.net/examples/sentence_transformer/applications/semantic-search/README.html">Sentence Transformers Documentation — Semantic Search</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/embed.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'embed',ar:[900/340,360/420],
+  steps:[
+    {t:["解析文档并保留出处", "Parse documents and retain provenance"],
+     d:["解析得到可处理的文本，同时保留标题、页码或章节等来源信息。", "Parsing produces text for processing and preserves source details such as headings, pages or sections."],
+     b:[["<p>向量化摄取是把源内容处理成可用于向量检索的记录。对文档，解析器先从页面或文件中抽取正文和结构，再记录文本对应的位置。位置和文档标识可在检索命中后用来定位原文。</p>"], ["<p>Embedding ingest turns source content into records for vector retrieval. A document parser first extracts text and structure from pages or files, then records where the text came from. A location and document identifier can link a search result back to its source.</p>"]]},
+    {t:["按语义边界切块", "Split at meaningful boundaries"],
+     d:["标题与段落提供切分边界，每块记录它所属的文档与位置。", "Headings and paragraphs provide chunk boundaries, and each chunk retains its document and location."],
+     b:[["<p>文本块是可独立编码与检索的文档片段。切块可沿章节或段落边界保留相关内容，超过模型输入上限的片段再继续分拆。块的边界影响一次命中能返回多少上下文，来源位置可将结果连回文档。</p>"], ["<p>A chunk is a passage that can be encoded and retrieved independently. Chunking can preserve related material along section or paragraph boundaries and split passages that exceed the encoder’s input limit. Chunk boundaries determine the context returned with a match, and source locations connect results back to the document.</p>"]]},
+    {t:["将文本块编码为向量", "Encode each chunk as a vector"],
+     d:["嵌入模型把一个文本块编码为一组数字，供后续计算语义相似度。", "An embedding model encodes a chunk as a list of numbers for semantic similarity scoring."],
+     b:[["<p>嵌入向量是一组由模型计算出的数值，用来表示输入内容。摄取过程为每个文本块生成向量，并关联块的标识。检索时，查询文本也需要用兼容的编码方式进入同一向量空间，再用相似度度量为候选块排序。</p>"], ["<p>An embedding is a vector of numbers computed by a model to represent its input. Ingest produces a vector for each chunk and associates it with the chunk identifier. At query time, compatible encoding places the query in the same vector space so a similarity measure can rank candidate chunks.</p>"]]},
+    {t:["将向量和来源写入索引", "Index vectors with their sources"],
+     d:["索引记录把向量与原文片段的标识、位置和检索字段关联起来。", "An index entry associates the vector with its source chunk identifier, location and search fields."],
+     b:[["<p>向量索引按相似度查找候选记录。向量可以和块文本一同写入，也可以和指向块文本的引用写入。文档标识、章节和内容类别等字段支持取回原文、显示出处或限制查询范围。</p>"], ["<p>A vector index finds candidate records by similarity. A vector can be indexed with its chunk text or with a reference to the text. Fields such as the document identifier, section and content category support source lookup, attribution or query filtering.</p>"]]},
+    {t:["同步修改和删除", "Apply updates and deletions"],
+     d:["文档修改时更新受影响的索引记录，文档删除时移除其对应记录。", "When a document changes, affected index records are updated. Deletion removes its associated records."],
+     b:[["<p>可以按源文档标识跟踪版本变更，并用文档与块的映射定位当前索引结果。更新时重新解析和编码受影响的内容，写入新块并清理旧块。源文档删除时，删除检测机制根据同一映射清除该文档对应的向量记录。</p>"], ["<p>A pipeline can track versions by source document identifier and use the document-to-chunk mapping to locate existing index entries. An update reparses and encodes affected content, writes new chunks and removes obsolete ones. When a source document is deleted, a deletion tracking mechanism uses the same mapping to remove its vector records.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

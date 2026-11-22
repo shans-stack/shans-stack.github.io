@@ -1,0 +1,47 @@
+.an-otf {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font-family: var(--f);
+  --an-otf-tone: var(--l3);
+}
+.an-otf text { text-anchor: middle; fill: var(--ink); }
+.an-otf-label { font-size: 21px; font-weight: 700; }
+.an-otf text.an-otf-detail { font-size: 17px; fill: var(--ink2); }
+.an-otf text.an-otf-note { font-size: 16px; fill: var(--ink3); }
+.an-otf [data-tone="good"],
+.an-otf [data-tone="switch"] { --an-otf-tone: var(--l5); }
+.an-otf [data-tone="warn"] { --an-otf-tone: var(--l1); }
+.an-otf [data-tone="muted"],
+.an-otf [data-tone="off"] { --an-otf-tone: var(--ink3); }
+.an-otf-node {
+  fill: var(--surface);
+  stroke: var(--an-otf-tone);
+  stroke-width: 1.5;
+}
+.an-otf [data-state="pending"] .an-otf-node,
+.an-otf [data-tone="muted"] .an-otf-node { stroke: var(--rule2); }
+.an-otf [data-state="cleared"] .an-otf-node { stroke-dasharray: 4 4; }
+.an-otf-wire path {
+  fill: none;
+  stroke: var(--an-otf-tone);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+.an-otf-wire[data-tone="off"] path:first-child { stroke-dasharray: 4 5; }
+.an-otf-wire[data-tone="off"] .an-otf-arrow { visibility: hidden; }
+.an-otf-marks,
+.an-otf-marks rect,
+.an-otf-packet { fill: var(--an-otf-tone); }
+.an-otf-marks[data-group="A"] { --an-otf-tone: var(--l3); }
+.an-otf-marks[data-group="B"] { --an-otf-tone: var(--l4); }
+.an-otf-marks rect.an-otf-outline { fill: none; stroke: var(--an-otf-tone); }
+@media (max-width: 640px) {
+  .an-otf-label { font-size: 14.5px; }
+  .an-otf text.an-otf-detail, .an-otf text.an-otf-note { font-size: 13px; }
+}
+@media (641px <= width <= 720px) {
+  main[data-station="otf"] .mhost { aspect-ratio: var(--ar); }
+}

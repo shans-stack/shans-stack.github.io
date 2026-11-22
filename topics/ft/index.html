@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>预训练、微调与偏好对齐 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明语言模型如何从语料预训练开始，经监督微调和偏好对齐完成任务适配。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/ft.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="ft">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Pretraining, fine-tuning, and preference alignment">预训练、微调与偏好对齐</h1>
+        <p class="meta"><span data-en="6 steps · Pretraining, supervised fine-tuning, LoRA">6 步 · 预训练、监督微调、LoRA</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li>Language Models are Few-Shot Learners</li>
+      <li>Don&#x27;t Stop Pretraining: Adapt Language Models to Domains and Tasks</li>
+      <li>Training language models to follow instructions with human feedback</li>
+      <li>Direct Preference Optimization: Your Language Model is Secretly a Reward Model</li>
+      <li>LoRA: Low-Rank Adaptation of Large Language Models</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/ft.js"></script>
+<script>
+window.SS_TOPIC_CFG = { anim: 'ft', ar: [960/334, 400/544], steps: [
+    { t: ["预训练学习下一个 Token", "Pretrain on next-token prediction"],
+      d: ["自回归预训练从语料本身取得预测目标，训练得到可继续适配的基础模型。", "Autoregressive pretraining takes prediction targets from the corpus and produces a base model that can be adapted further."],
+      b: [["<p>预训练是在规模较大的语料上建立初始参数的阶段。自回归语言模型用序列的已有部分预测下一个 token。实际出现的下一个 token 提供训练目标，这种从输入数据本身生成监督信号的方式称为自监督。</p>"], ["<p>Pretraining establishes initial parameters using a large corpus. An autoregressive language model predicts the next token from the preceding sequence. The next token in the training text provides the target. Obtaining the training signal from the input data itself is called self-supervision.</p>"]] },
+    { t: ["继续预训练补足领域语料", "Continue pretraining on domain text"],
+      d: ["在已有权重上继续执行语言建模目标，使模型接触更多目标领域的术语和文本。", "Continuing the language-modeling objective from existing weights exposes the model to more target-domain language."],
+      b: [["<p>继续预训练从已有模型初始化，使用领域语料继续更新权重。例如技术语料可提高专门术语及其语境在训练数据中的覆盖。训练目标仍可沿用下一个 token 预测，领域范围主要由选用的数据决定。</p>"], ["<p>Continued pretraining starts from an existing model and updates the weights on domain text. Technical corpora, for example, can increase coverage of specialized vocabulary and context. The objective can remain next-token prediction, with the selected data defining the domain coverage.</p>"]] },
+    { t: ["监督微调学习目标回答", "Learn target responses with supervised fine-tuning"],
+      d: ["用指令和参考答案构成训练样本，让模型学习任务需要的回答方式。", "Instruction and reference-answer pairs teach the model the response patterns required by a task."],
+      b: [["<p>微调从已有权重出发，对特定数据和目标继续训练。监督微调使用带有目标输出的样本，例如输入指令和参考回答。指令微调仍可使用 token 预测损失，训练信号通常来自回答部分，输入指令提供上下文。</p>"], ["<p>Fine-tuning starts from existing weights and trains further on selected data and an objective. Supervised fine-tuning uses examples with target outputs, such as an instruction and a reference response. Instruction tuning can still use a token prediction loss, typically applied to the response with the instruction as context.</p>"]] },
+    { t: ["用偏好数据调整回答排序", "Adjust response preferences with paired examples"],
+      d: ["同一指令下标出更受偏好的回答，训练使模型相对倾向该回答。", "Preference data identifies a preferred response to the same prompt and trains the model to favor it relatively more."],
+      b: [["<p>偏好对齐通过比较回答补充参考答案所提供的信号。直接偏好优化（DPO）可利用同一指令下的优选与次选回答，调整两者的相对倾向。偏好标签反映标注标准，训练结果可用独立任务与偏好样本评估。</p>"], ["<p>Preference alignment adds comparative feedback to the signal available from reference answers. Direct Preference Optimization (DPO) can use a preferred and a less-preferred response to the same prompt to adjust their relative likelihood. Labels reflect the rating criteria, and independent task and preference samples can be used for evaluation.</p>"]] },
+    { t: ["全量微调更新基础权重", "Update base weights with full fine-tuning"],
+      d: ["全量微调把基础模型权重设为可训练参数，任务梯度可更新各层。", "Full fine-tuning makes the base weights trainable, allowing task gradients to update every layer."],
+      b: [["<p>全量微调根据任务数据计算损失和梯度，优化器据此更新基础权重。这种做法能直接调整全部层的参数，同时要为可训练参数保留梯度及所需的优化器状态。每个独立微调版本通常要保存一份新的模型权重。</p>"], ["<p>Full fine-tuning computes loss and gradients from the task data, then uses an optimizer to update base weights. It can directly adjust parameters throughout the model, and it needs memory for gradients and optimizer state associated with those trainable parameters. An independent fine-tuned version typically saves a new set of model weights.</p>"]] },
+    { t: ["LoRA 只训练低秩增量", "Train a low-rank update with LoRA"],
+      d: ["LoRA 冻结基础权重，只训练构成权重增量的两个较小矩阵。", "LoRA freezes the base weights and trains two smaller matrices that represent a weight update."],
+      b: [["<p>低秩适配（LoRA）把某些层的权重增量表示成两个小矩阵的乘积。基础权重仍参与前向计算，梯度只用于更新适配器参数。适配器可以独立保存并与对应基础模型组合，较少的可训练参数也减少了相应梯度和优化器状态。</p>"], ["<p>Low-Rank Adaptation (LoRA) represents weight updates in selected layers as products of two smaller matrices. Base weights still participate in the forward pass, while gradients update the adapter parameters. Adapters can be saved separately and combined with the corresponding base model. Fewer trainable parameters also reduce their associated gradients and optimizer state.</p>"]] }
+] };
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

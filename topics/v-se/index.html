@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shared Everything：每台 CNode 都直接访问全部数据和状态 · Shan's Stack</title>
+<meta name="description" content="VAST DASE 的共享 SSD、V-Tree 定位、元素锁、事务令牌与跨盘纠删码。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-se.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-se">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Shared Everything: every CNode reaches all data and state directly">Shared Everything：每台 CNode 都直接访问全部数据和状态</h1>
+        <p class="meta"><span data-en="6 steps · CNode, DBox, metadata, locks, transactions">6 步 · CNode、DBox、元数据、锁、事务</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://www.vastdata.com/whitepaper" data-en="VAST AI Operating System white paper · DASE, DataStore metadata, Transaction Tokens, Element Locking, and data protection">VAST AI Operating System 白皮书 · DASE、DataStore 元数据、Transaction Tokens、Element Locking 与数据保护</a></li>
+      <li data-en="Schematic illustrations.">动画为示意。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-se.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-se',ar:[960/520,480/500],
+  steps:[
+    {"s": ["每块盘都挂上", "Mount every drive"], "t": ["每台 CNode 挂载集群中的 SSD", "Every CNode mounts the cluster’s SSDs"], "d": ["每台 CNode 启动时经 NVMe-oF 挂载集群中的共享 SSD。", "Each CNode mounts the shared SSDs over NVMe-oF at boot."], "b": [["<p>DASE 中的 Shared Everything 指所有 CNode 都能直接访问集群的共享数据、元数据和持久系统状态。DBox 中的存储级内存（SCM）用于写缓冲和持久元数据，大容量闪存承载数据。</p>"], ["<p>Shared Everything means that all CNodes can access the cluster’s shared data, metadata, and persistent system state directly. Storage Class Memory (SCM) in the DBoxes holds the write buffer and persistent metadata. High-capacity flash holds data.</p>"]]},
+    {"s": ["没有主人", "No owner"], "t": ["接到读取请求的 CNode 直接访问盘", "The receiving CNode accesses the drives directly"], "d": ["CNode 先读共享元数据，再按位置从共享 SSD 读取数据。", "The CNode reads shared metadata, then fetches the data from the shared SSDs."], "b": [["<p>白皮书描述的常规读取路径由接到请求的 CNode 完成。它从共享 SCM 读取持久元数据，再从大容量闪存或写缓冲读取数据，最后返回客户端。这个读取流程无需把请求转发给另一台 CNode。</p>"], ["<p>On the ordinary read path described in the white paper, the CNode receiving the request reads persistent metadata from shared SCM. It fetches the data from high-capacity flash or the write buffer and replies to the client without forwarding the request to another CNode.</p>"]]},
+    {"s": ["找元数据", "Find metadata"], "t": ["一致性哈希定位 V-Tree 根", "Consistent hashing locates the V-Tree root"], "d": ["CNode 对元素的唯一标识做哈希，找到持有树根的 DBox。", "A CNode hashes the element’s unique handle to locate a DBox that holds its root."], "b": [["<p>DataStore 用 V-Tree 保存文件、对象、目录、表或卷的元数据。CNode 启动时把一致性哈希表加载到内存。哈希表用元素的唯一标识定位树根，随后 CNode 沿树读取持久元数据。</p>", "<p>白皮书描述的布局将每个哈希区间分配给两到三台 DBox。V-Tree 的宽扇出把查找所需的网络往返限制在最多七跳。</p>"], ["<p>DataStore uses V-Trees for the metadata of files, objects, directories, tables, and volumes. At boot, a CNode loads the consistent hash table into memory. It uses the element’s unique handle to locate the root and traverses the tree to read persistent metadata.</p>", "<p>In the white paper’s layout, each hash range is assigned to two or three DBoxes. A V-Tree’s wide fan-out limits the round trips needed for a lookup to at most seven hops.</p>"]]},
+    {"s": ["锁", "Locks"], "t": ["元素锁协调同一数据范围的写入", "Element locks coordinate writes to the same range"], "d": ["竞争同一范围的 CNode 根据元素锁中记录的持有者 ID 联系对方。", "A contending CNode uses the owner ID in the element lock to contact its holder."], "b": [["<p>元数据读取无需加锁。多个写入者操作同一数据范围时，元素锁协调并行写入。发现锁已被持有时，CNode 联系持有者确认状态，无需中心锁管理器。</p>", "<p>相关 DBox 的 DRAM 保存元素锁的只读副本。白皮书另述，CNode 通过对 DBox Fabric Module 内存执行原子 RDMA 操作来核验锁状态。</p>"], ["<p>Metadata reads are lockless. Element locks coordinate concurrent writers targeting the same data range. A contending CNode contacts the recorded owner directly without relying on a central lock manager.</p>", "<p>The relevant DBox keeps a read-only copy of the element lock in DRAM. The white paper also describes the CNode using an atomic RDMA operation against the DBox fabric module’s memory to verify lock state.</p>"]]},
+    {"s": ["事务令牌", "Transaction tokens"], "t": ["事务令牌记录 CNode 故障时的更新状态", "Transaction tokens after a CNode failure"], "d": ["遇到无响应 CNode 的未完成事务，另一台 CNode 仍可读取先前一致的元数据。", "If a CNode stops responding mid-update, another can read the previous metadata."], "b": [["<p>更新 V-Tree 时，事务令牌记录唯一 ID、所属 CNode 及事务状态。读取时，CNode 根据令牌状态判断要使用哪一版元数据。</p>", "<p>若未完成事务的所属 CNode 无响应，访问方可使用先前的元数据，也可取消事务并移除该令牌对应的未提交更新。</p>"], ["<p>When a CNode updates a V-Tree, the transaction token records a unique ID, the owning CNode, and the transaction state. A reader uses that state to choose the version of the metadata.</p>", "<p>If the owner of an in-flight transaction is unresponsive, the requesting CNode can use the previous metadata. It can also cancel the transaction and remove uncommitted updates associated with the token.</p>"]]},
+    {"s": ["条带铺满", "Wide stripes"], "t": ["纠删码条带跨共享 SSD", "Erasure-coded stripes span shared SSDs"], "d": ["直接访问共享盘，使 CNode 可以将一个纠删码条带分布到多块 SSD。", "Direct access to shared drives lets a CNode place a stripe across multiple SSDs."], "b": [["<p>DataStore 将数据片与校验片写入共享闪存。存储设备由 CNode 公用，条带布局可跨多个 SSD。白皮书在数据保护章节分别说明了不同部署方式下的条带布局。</p>"], ["<p>DataStore writes data and parity strips to shared flash. CNodes share access to the drives, so the stripe layout can span many SSDs. The white paper’s data protection section describes stripe layouts for different deployments.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const en = detail === 'en';
+  const group = document.querySelector('.langs');
+  group.setAttribute('aria-label', en ? 'Language' : '语言');
+  for (const [id, short, label, nativeLabel, nativeLang] of [
+    ['zh', 'SC', 'Simplified Chinese', '简体中文', 'zh-Hans'],
+    ['tw', 'TC', 'Traditional Chinese', '繁體中文', 'zh-Hant'],
+  ]) {
+    const button = group.querySelector('[data-lang-set="' + id + '"]');
+    button.textContent = en ? short : id === 'zh' ? '简' : '繁';
+    button.title = en ? label : nativeLabel;
+    button.lang = en ? 'en' : nativeLang;
+  }
+});
+</script>
+</body>
+</html>

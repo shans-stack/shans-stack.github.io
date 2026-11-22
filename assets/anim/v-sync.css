@@ -1,0 +1,79 @@
+/* SyncEngine：把外部的数据搬进 VAST：动画区样式。由 assets/anim/v-sync.js 使用，只作用于 .ssa-v-sync 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-sync{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);--teal:var(--l6);position:relative;width:100%;margin:0 auto}
+.ssa-v-sync .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+/* VAST 字标：两份原件，浅色显示黑字、深色显示白字 */
+.ssa-v-sync .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-sync .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-sync .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-sync .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-sync .vwm-d{display:inline}
+.ssa-v-sync .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-sync .tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.ssa-v-sync .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-sync .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-sync .ssa-scene text{dominant-baseline:central}
+.ssa-v-sync .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-sync .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-sync .ssa-scene .dim{opacity:.25}
+.ssa-v-sync .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s,fill .3s}
+.ssa-v-sync .box.soft{stroke:var(--rule)}
+.ssa-v-sync .box.frame{fill:none;stroke:var(--rule2)}
+.ssa-v-sync .box.on{stroke:var(--slate)}
+.ssa-v-sync .box.hot{stroke:var(--rose)}
+.ssa-v-sync .box.ok{stroke:var(--sage)}
+.ssa-v-sync .box.vio{stroke:var(--violet)}
+.ssa-v-sync .box.och{stroke:var(--ochre)}
+.ssa-v-sync .box.off{opacity:.35}
+.ssa-v-sync .box.fillv{fill:var(--violet);fill-opacity:.16;stroke:var(--violet)}
+.ssa-v-sync .box.fills{fill:var(--slate);fill-opacity:.14;stroke:var(--slate)}
+.ssa-v-sync .box.fillg{fill:var(--sage);fill-opacity:.16;stroke:var(--sage)}
+.ssa-v-sync .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-sync .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-sync .b7{font-weight:700}
+.ssa-v-sync .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.ssa-v-sync .rose-t{fill:var(--rose)}
+.ssa-v-sync .sage-t{fill:var(--sage)}
+.ssa-v-sync .slate-t{fill:var(--slate)}
+.ssa-v-sync .violet-t{fill:var(--violet)}
+.ssa-v-sync .ochre-t{fill:var(--ochre)}
+.ssa-v-sync .ink3-t{fill:var(--ink3)}
+.ssa-v-sync .ink2-t{fill:var(--ink2)}
+.ssa-v-sync .st{font-weight:600;transition:opacity .25s}
+.ssa-v-sync .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-sync .ln.thin{stroke-width:2.5}
+.ssa-v-sync .ln.lit{stroke:var(--slate)}
+.ssa-v-sync .ln.ok{stroke:var(--sage)}
+.ssa-v-sync .ln.hot{stroke:var(--rose)}
+.ssa-v-sync .ln.vio{stroke:var(--violet)}
+.ssa-v-sync .ln.dash{stroke-dasharray:7 7;stroke-width:2.5}
+.ssa-v-sync .ln.off{opacity:.3}
+.ssa-v-sync .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-sync .pkt.ok{fill:var(--sage)}
+.ssa-v-sync .pkt.vio{fill:var(--violet)}
+.ssa-v-sync .pkt.och{fill:var(--ochre)}
+.ssa-v-sync .pkt.rose{fill:var(--rose)}
+.ssa-v-sync .pkt.ghost{fill:none;stroke:var(--rule2);stroke-dasharray:4 3}
+.ssa-v-sync .dot{fill:var(--slate)}
+.ssa-v-sync .dot.vio{fill:var(--violet)}
+.ssa-v-sync .dot.ok{fill:var(--sage)}
+.ssa-v-sync .dot.och{fill:var(--ochre)}
+.ssa-v-sync .dot.rose{fill:var(--rose)}
+.ssa-v-sync .tile rect{fill:var(--card);stroke:var(--slate);stroke-width:2}
+.ssa-v-sync .tile .tt{fill:var(--ink);font-weight:500}
+.ssa-v-sync .tile.vio rect{stroke:var(--violet)}
+.ssa-v-sync .tile.vio .tt{fill:var(--violet);font-weight:600}
+.ssa-v-sync .tile.ok rect{stroke:var(--sage)}
+.ssa-v-sync .tile.och rect{stroke:var(--ochre)}
+.ssa-v-sync .tile.rose rect{stroke:var(--rose)}
+.ssa-v-sync .tile.solid rect{fill:var(--slate);stroke:var(--card)}
+.ssa-v-sync .tile.solid .tt{fill:var(--card)}
+.ssa-v-sync .cell{fill:var(--card);stroke:var(--rule);stroke-width:1.5;transition:fill .3s,stroke .3s,opacity .3s}
+.ssa-v-sync .cell.hd{fill:var(--rule);fill-opacity:.55}
+.ssa-v-sync .cell.on{stroke:var(--slate);stroke-width:2.5}
+.ssa-v-sync .cell.ok{stroke:var(--sage);stroke-width:2.5;fill:var(--sage);fill-opacity:.12}
+.ssa-v-sync .cell.och{stroke:var(--ochre);stroke-width:2.5;fill:var(--ochre);fill-opacity:.12}
+.ssa-v-sync .cell.vio{stroke:var(--violet);stroke-width:2.5;fill:var(--violet);fill-opacity:.12}
+.ssa-v-sync .cell.off{opacity:.3}
+.ssa-v-sync .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-sync .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-sync .fadein{transition:opacity .35s}

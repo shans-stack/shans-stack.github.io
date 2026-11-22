@@ -1,0 +1,76 @@
+/* Block：把存储当成磁盘卷，经 NVMe/TCP 交给服务器：动画区样式。由 assets/anim/v-block.js 使用，只作用于 .ssa-v-block 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-block{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-block .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-block .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-block .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-block .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-block .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-block .vwm-d{display:inline}
+.ssa-v-block .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-block .tgl[hidden]{display:none}
+.ssa-v-block .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-block .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-block .ssa-scene text{dominant-baseline:central}
+.ssa-v-block .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-block .ssa-scene .hid{opacity:0;visibility:hidden;transition:none}
+.ssa-v-block .ssa-scene .dim{opacity:.22}
+.ssa-v-block .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-block .box.soft{stroke:var(--rule)}
+.ssa-v-block .box.on{stroke:var(--slate)}
+.ssa-v-block .box.hot{stroke:var(--rose)}
+.ssa-v-block .box.ok{stroke:var(--sage)}
+.ssa-v-block .box.vio{stroke:var(--violet)}
+.ssa-v-block .box.ochre{stroke:var(--ochre)}
+.ssa-v-block .box.dead{opacity:.35}
+.ssa-v-block .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-block .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-block .b7{font-weight:700}
+.ssa-v-block .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:500}
+.ssa-v-block .rose-t{fill:var(--rose)}
+.ssa-v-block .sage-t{fill:var(--sage)}
+.ssa-v-block .slate-t{fill:var(--slate)}
+.ssa-v-block .violet-t{fill:var(--violet)}
+.ssa-v-block .ochre-t{fill:var(--ochre)}
+.ssa-v-block .ink3-t{fill:var(--ink3)}
+.ssa-v-block .ink2-t{fill:var(--ink2)}
+.ssa-v-block .st{font-weight:600;transition:opacity .25s}
+.ssa-v-block .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-block .ln.thin{stroke-width:3}
+.ssa-v-block .ln.lit{stroke:var(--slate)}
+.ssa-v-block .ln.ok{stroke:var(--sage)}
+.ssa-v-block .ln.hot{stroke:var(--rose)}
+.ssa-v-block .ln.vio{stroke:var(--violet)}
+.ssa-v-block .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-block .ln.dead{opacity:.3}
+.ssa-v-block .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-block .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-block .disk.lit{stroke:var(--slate)}
+.ssa-v-block .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-block .disk.scm{stroke:var(--ochre)}
+.ssa-v-block .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-block .pkt.rose{fill:var(--rose)}
+.ssa-v-block .pkt.ok{fill:var(--sage)}
+.ssa-v-block .pkt.vio{fill:var(--violet)}
+.ssa-v-block .pkt.ochre{fill:var(--ochre)}
+.ssa-v-block .dot{fill:var(--slate)}
+.ssa-v-block .dot.v{fill:var(--violet)}
+.ssa-v-block .dot.ok{fill:var(--sage)}
+.ssa-v-block .dot.rose{fill:var(--rose)}
+.ssa-v-block .dot.ochre{fill:var(--ochre)}
+.ssa-v-block .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-block .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-block .track{fill:var(--rule)}
+.ssa-v-block .fill{fill:var(--rose)}
+.ssa-v-block .fill.sage{fill:var(--sage)}
+.ssa-v-block .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-block .chip{fill:var(--card);stroke:var(--rule2);stroke-width:2}
+.ssa-v-block .box.hl{stroke:var(--slate)}
+
+
+@media (max-width:640px){
+  body.present:has(main[data-station="v-block"]) .stage{padding:12px}
+  main[data-station="v-block"] ~ .stage .figbox{margin:8px 0}
+  main[data-station="v-block"] ~ .stage .cap{margin-top:8px}
+  main[data-station="v-block"] ~ .stage h2{font-size:22px}
+  main[data-station="v-block"] ~ .stage .desc{font-size:16px;line-height:1.45}
+}

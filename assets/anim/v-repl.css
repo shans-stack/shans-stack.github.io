@@ -1,0 +1,100 @@
+/* 复制：把快照送到另一套集群，出事时切过去：动画区样式。由 assets/anim/v-repl.js 使用，只作用于 .ssa-v-repl 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-repl{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-repl .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-repl .vwm-d{display:none}
+.ssa-v-repl .nvbk{fill:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-repl .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-repl .vwm-d{display:inline}:root:not([data-theme=light]) .ssa-v-repl .nvbk{fill:#DADCDF}}
+:root[data-theme=dark] .ssa-v-repl .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-repl .vwm-d{display:inline}
+:root[data-theme=dark] .ssa-v-repl .nvbk{fill:#DADCDF}
+.ssa-v-repl .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-repl .tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.ssa-v-repl .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-repl .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-repl .ssa-scene text{dominant-baseline:central}
+.ssa-v-repl .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-repl .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-repl .ssa-scene .dim{opacity:.22}
+.ssa-v-repl .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-repl .box.soft{stroke:var(--rule)}
+.ssa-v-repl .box.on{stroke:var(--slate)}
+.ssa-v-repl .box.hot{stroke:var(--rose)}
+.ssa-v-repl .box.ok{stroke:var(--sage)}
+.ssa-v-repl .box.dead{opacity:.35}
+.ssa-v-repl .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.ssa-v-repl .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-repl .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-repl .b7{font-weight:700}
+.ssa-v-repl .rose-t{fill:color-mix(in srgb,var(--rose) 55%,var(--ink2))}
+.ssa-v-repl .sage-t{fill:color-mix(in srgb,var(--sage) 55%,var(--ink2))}
+.ssa-v-repl .slate-t{fill:color-mix(in srgb,var(--slate) 55%,var(--ink2))}
+.ssa-v-repl .violet-t{fill:color-mix(in srgb,var(--violet) 55%,var(--ink2))}
+.ssa-v-repl .ink3-t{fill:var(--ink3)}
+.ssa-v-repl .ink2-t{fill:var(--ink2)}
+.ssa-v-repl .st{font-weight:600;transition:opacity .25s}
+.ssa-v-repl .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-repl .ln.thin{stroke-width:3}
+.ssa-v-repl .ln.lit{stroke:var(--slate)}
+.ssa-v-repl .ln.ok{stroke:var(--sage)}
+.ssa-v-repl .ln.hot{stroke:var(--rose)}
+.ssa-v-repl .ln.vio{stroke:var(--violet)}
+.ssa-v-repl .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-repl .ln.dead{opacity:.3}
+.ssa-v-repl .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-repl .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-repl .disk.lit{stroke:var(--slate)}
+.ssa-v-repl .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-repl .disk.bad{stroke:var(--rose);stroke-width:3}
+.ssa-v-repl .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-repl .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.ssa-v-repl .pkt.ok{fill:var(--sage)}
+.ssa-v-repl .dot{fill:var(--slate)}
+.ssa-v-repl .dot.v{fill:var(--violet)}
+.ssa-v-repl .dot.ok{fill:var(--sage)}
+.ssa-v-repl .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-repl .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-repl .track{fill:var(--rule)}
+.ssa-v-repl .fill{fill:var(--rose)}
+.ssa-v-repl .fill.sage{fill:var(--sage)}
+.ssa-v-repl .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-repl .ochre-t{fill:color-mix(in srgb,var(--ochre) 55%,var(--ink2))}
+.ssa-v-repl .ink-t{fill:var(--ink)}
+.ssa-v-repl .box.vio{stroke:var(--violet)}
+.ssa-v-repl .box.dash{stroke-dasharray:6 5}
+.ssa-v-repl .cell{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,fill .3s}
+.ssa-v-repl .cell.on{stroke:var(--slate)}
+.ssa-v-repl .cell.ok{stroke:var(--sage)}
+.ssa-v-repl .cell.hot{stroke:var(--rose)}
+.ssa-v-repl .cell.old{fill:var(--rule);stroke:var(--rule2)}
+.ssa-v-repl .cell.gone{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-repl .pkt.vio{fill:var(--violet)}
+.ssa-v-repl .pkt.rose{fill:var(--rose)}
+.ssa-v-repl .pkt.ochre{fill:var(--ochre)}
+.ssa-v-repl .dot.rose{fill:var(--rose)}
+.ssa-v-repl .dot.ochre{fill:var(--ochre)}
+.ssa-v-repl .ln.ochre{stroke:var(--ochre)}
+.ssa-v-repl .ln.ptr{stroke-width:2.5;stroke:var(--ink3)}
+.ssa-v-repl .ln.ptr.snap{stroke:var(--violet)}
+.ssa-v-repl .ln.ptr.clone{stroke:var(--ochre)}
+.ssa-v-repl .ln.ptr.live{stroke:var(--slate)}
+.ssa-v-repl .bar{fill:var(--slate)}
+.ssa-v-repl .bar.w{fill:var(--sage)}
+.ssa-v-repl .cell.free{stroke:var(--rule);stroke-dasharray:4 4}
+.ssa-v-repl .cell.on{stroke:var(--slate)}
+.ssa-v-repl .cell.chg{stroke:var(--ochre);stroke-width:3.5}
+.ssa-v-repl .cell.lost{stroke:var(--rose);stroke-width:3.5;stroke-dasharray:5 4}
+.ssa-v-repl .snapmk{fill:var(--violet);transition:none}
+.ssa-v-repl .snapmk.off{fill:none;stroke:var(--rule2);stroke-width:1.5}
+.ssa-v-repl .snapmk.exp{fill:var(--rose)}
+.ssa-v-repl .xfer{fill:var(--sage);opacity:.85}
+.ssa-v-repl .xfer.slow{fill:var(--ochre)}
+.ssa-v-repl .ln.cursor{stroke:var(--ink3);stroke-width:2;stroke-dasharray:3 5;transition:none}
+
+@media (max-width:640px){
+  body.present:has(main[data-station=v-repl]) .stage{
+    & .figbox{margin:0}
+    & h2{font-size:24px}
+    & .desc{font-size:16px;line-height:1.45}
+  }
+}

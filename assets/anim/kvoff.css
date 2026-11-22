@@ -1,0 +1,28 @@
+.an-kvoff {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 18px var(--f);
+  color: var(--ink);
+}
+.an-kvoff text { fill: currentColor; dominant-baseline: central; }
+.an-kvoff-title { font-weight: 650; }
+.an-kvoff-secondary, .an-kvoff-note { color: var(--ink2); }
+.an-kvoff-note { font-size: 16px; }
+.an-kvoff-chip, .an-kvoff-counter { font-variant-numeric: tabular-nums; font-weight: 650; }
+.an-kvoff-neutral { --accent: var(--rule2); }
+.an-kvoff-ink { --accent: var(--ink3); }
+.an-kvoff-blue { --accent: var(--l4); }
+.an-kvoff-green { --accent: var(--l5); }
+.an-kvoff-rose { --accent: var(--l1); }
+.an-kvoff-gold { --accent: var(--l2); }
+.an-kvoff-violet { --accent: var(--l3); }
+.an-kvoff-box { fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; }
+.an-kvoff-line, .an-kvoff-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.an-kvoff-dashed { stroke-dasharray: 5 5; }
+.an-kvoff-cell { fill: var(--bg); stroke: var(--rule); }
+.an-kvoff-tile { fill: color-mix(in srgb, var(--accent) 20%, var(--surface)); stroke: var(--accent); }
+.an-kvoff-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.4; }
+@media (max-width: 640px) {
+  .an-kvoff, .an-kvoff-note { font-size: 14px; }
+}

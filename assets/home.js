@@ -4,6 +4,7 @@ var SS=window.SS,L=SS.L,$=function(id){return document.getElementById(id)};
 var HOME='home',map=SS.mapById[HOME];
 function lead(){
   var n=SS.stationsOf(HOME).length,x=SS.stationsOf(HOME).filter(function(id){return SS.linesIn(id,HOME).length>1}).length;
+  var tc=$('tcount');if(tc&&SS.terms){var k=Object.keys(SS.terms).length;tc.textContent=L('共 '+k+' 个术语',k+' terms')}
   var el=$('lead');if(!el)return;
   el.textContent=L('六条线、'+SS.zhNum(n)+'个站，每站五到七步讲完。',
     'Six lines, '+n+' stops, each told in 5 to 7 steps.');
@@ -28,19 +29,9 @@ function talks(){
       (first?'<a class="btn" href="'+SS.url(SS.stations[first].page)+'">'+L('网页看','Read on the web')+'</a>':'')+'</div></div>';
   }).join('');
 }
-/* 做完的站深色、可点，后面写步数；还没做的站浅灰、不可点。不挂标签、不分级、不画分隔线。 */
-function item(id,extra){var s=SS.stations[id];
-  if(s.st==='live')return '<li><a href="'+SS.stationHref(id,HOME)+'"><span class="n">'+SS.esc(SS.title(id))+'</span>'+(s.steps?'<span class="m">'+s.steps+L(' 步',' steps')+'</span>':'')+(extra||'')+'</a></li>';
-  return '<li class="wip"><span class="n">'+SS.esc(SS.title(id))+'</span>'+(extra||'')+'</li>'}
 /* 换乘站不单独列，按这张表放进最相关的那条线（地图上的胶囊照旧）。 */
 var HOMELINE={rdma:'n',nvmeof:'n',gds:'s',dist:'c',ckpt:'d',vec:'a'};
-function cols(){
-  $('cols').innerHTML=map.lines.map(function(lid){
-    var ids=SS.onLine(lid,HOME).filter(function(id){var ls=SS.linesIn(id,HOME);return ls.length===1||HOMELINE[id]===lid||(ls.length>1&&!HOMELINE[id]&&ls[0]===lid)});
-    return '<div class="col" style="--lc:'+SS.lc(lid)+'"><h3>'+SS.sym(lid)+'<span>'+SS.esc(SS.lineName(lid))+'</span></h3><p class="d">'+SS.esc(SS.T(SS.line[lid].d))+'</p><ul>'+
-      ids.map(function(id){return item(id)}).join('')+'</ul></div>';
-  }).join('');
-}
+function cols(){SS.renderCols($('cols'),HOME,HOMELINE)}
 function news(){
   var ids=Object.keys(SS.stations).filter(function(id){return SS.stations[id].added&&SS.stations[id].st==='live'}).sort(function(a,b){return SS.stations[a].added<SS.stations[b].added?1:-1}).slice(0,4);
   $('news').innerHTML=ids.map(function(id){var s=SS.stations[id],mid=SS.inMap(id,HOME)?HOME:SS.maps.filter(function(m){return SS.inMap(id,m.id)})[0].id,ls=SS.linesIn(id,mid);

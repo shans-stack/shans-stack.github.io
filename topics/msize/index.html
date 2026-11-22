@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模型显存与多卡并行 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明权重、训练状态和 KV Cache 的显存组成，以及数据、张量和流水线并行的拆分方式。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/msize.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="msize">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Model memory and multi-GPU parallelism">模型显存与多卡并行</h1>
+        <p class="meta"><span data-en="6 steps · GPU memory, tensor parallelism, pipeline parallelism">6 步 · 显存、张量并行、流水线并行</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li>PyTorch DistributedDataParallel documentation</li>
+      <li>ZeRO: Memory Optimizations Toward Training Trillion Parameter Models</li>
+      <li>Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism</li>
+      <li>GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism</li>
+      <li>Efficient Memory Management for Large Language Model Serving with PagedAttention</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/msize.js"></script>
+<script>
+window.SS_TOPIC_CFG = { anim: 'msize', ar: [960/334, 400/544], steps: [
+    { t: ["从权重开始估算", "Start with the weights"],
+      d: ["权重占用与参数数量及每个参数的存储字节数直接相关。", "Weight storage depends directly on the parameter count and the bytes used per parameter."],
+      b: [["<p>参数是模型学习得到的数值，权重是其中用于计算的数值。若参数采用同一种存储格式，权重体积的基础估算是参数量乘以单个参数的字节数。例如 BF16 是 16 位浮点格式，每个值占两字节。混合格式要分组估算，再加上元数据和布局开销。</p>"], ["<p>Parameters are the values a model learns, including weights used in its calculations. When all weights use a single storage format, their basic footprint is the parameter count multiplied by bytes per parameter. BF16 is a 16-bit floating-point format, so each value occupies two bytes. Mixed formats are counted separately, along with metadata and layout overhead.</p>"]] },
+    { t: ["分开估算训练和推理", "Budget training and inference separately"],
+      d: ["训练侧保留梯度、优化器状态和激活，生成推理侧还要为 KV Cache 留空间。", "Training retains gradients, optimizer state, and activations, while generation budgets separately for the KV cache."],
+      b: [["<p>训练中的梯度表示损失对参数的变化率，优化器状态保存更新权重用的历史统计，激活是前向计算产生并可能为反向保留的中间值。生成推理通常无需保存训练梯度和优化器状态。KV Cache 保存已处理 token 的键和值，其占用随保留的序列与 token 增长。两侧还需给临时缓冲区留空间。</p>"], ["<p>During training, gradients describe how the loss changes with parameters, optimizer state stores statistics used to update weights, and activations are intermediate values that can be retained for backpropagation. Generation typically omits training gradients and optimizer state. Its KV cache stores keys and values for processed tokens and grows with the sequences and tokens retained. Both workloads also need temporary buffer space.</p>"]] },
+    { t: ["数据并行复制模型并拆数据", "Data parallelism replicates the model and splits the data"],
+      d: ["每张卡处理不同数据，常规数据并行同步各副本产生的梯度。", "Each GPU processes different data, and conventional data parallelism synchronizes replica gradients."],
+      b: [["<p>常规数据并行在每张卡放一份完整模型，用各自的数据子批次计算梯度，再对梯度做归约，使各副本得到一致的更新。归约把分散在不同设备上的值合并，例如求和。若要进一步降低单卡训练状态占用，可采用分片方案，把参数、梯度或优化器状态分布在数据并行组内。</p>"], ["<p>Conventional data parallelism stores a full model replica on each GPU. Each computes gradients on a different subset of the batch and then reduces those gradients so all replicas apply a consistent update. A reduction combines values across devices, for example by summing them. Sharding can further reduce per-GPU training state by distributing parameters, gradients, or optimizer state across the data-parallel group.</p>"]] },
+    { t: ["张量并行拆同一层", "Tensor parallelism splits a single layer"],
+      d: ["同一层的权重矩阵分布在多张卡上，设备共同完成这一层。", "Several GPUs hold different pieces of the same weight matrix and jointly compute the layer."],
+      b: [["<p>张量是按一个或多个维度排列的数值。张量并行通常沿某个维度切分层内权重矩阵，让不同设备做各自的局部计算。结果按层结构进行拼接或归约，必要时在卡间交换数据。</p>"], ["<p>A tensor is an array of values arranged along one or more dimensions. Tensor parallelism typically partitions a layer&#x27;s weight matrix along a dimension so devices compute local results. Those results are concatenated or reduced as required by the layer, with communication between GPUs where needed.</p>"]] },
+    { t: ["流水线并行拆不同层", "Pipeline parallelism splits groups of layers"],
+      d: ["每张卡负责连续的一组层，微批次依次经过各段。", "Each GPU runs a consecutive group of layers, and microbatches pass through the stages in order."],
+      b: [["<p>流水线并行把层分成多个阶段，上一阶段将激活传给下一阶段。微批次是把一个训练批次再细分得到的小批。多个微批次可同时占用不同阶段，启动、收尾或阶段负载不均时，部分设备会出现空闲。</p>"], ["<p>Pipeline parallelism assigns groups of layers to stages. Each stage sends activations to the next. A microbatch is a subdivision of a training batch. Multiple microbatches can occupy different stages at once, with idle time during fill, drain, or stage imbalance.</p>"]] },
+    { t: ["按单卡峰值核对分组", "Check peak memory per GPU"],
+      d: ["并行方式决定哪些内容共享、分片或复制，容量判断要落在占用最高的卡上。", "The parallel layout determines what is shared, partitioned, or replicated, so capacity is governed by the GPU with the highest usage."],
+      b: [["<p>数据、张量和流水线并行可以组合。每张卡的权重与运行状态取决于实际分组，峰值还会包含通信缓冲区、临时张量以及分片方案所需的短时聚合。容量估算按各卡实际放置的内容分别计算。</p>"], ["<p>Data, tensor, and pipeline parallelism can be combined. Per-GPU weights and runtime state depend on the group layout. Peak usage also covers communication buffers, temporary tensors, and short-lived gathers required by some sharding schemes. Capacity is estimated from the data placed on each GPU.</p>"]] }
+] };
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

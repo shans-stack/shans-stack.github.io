@@ -1,0 +1,17 @@
+.gpu-anim{position:relative}
+.gpu-anim svg{display:block;width:100%;height:auto;overflow:hidden}
+.gpu-label,.gpu-note{font:600 20px var(--f);fill:var(--ink);pointer-events:none}
+.gpu-note{font:500 17px var(--f);fill:var(--ink2)}
+.gpu-device,.gpu-active,.gpu-idle,.gpu-storage,.gpu-rose,.gpu-frame{stroke:var(--rule2);fill:var(--surface);stroke-width:1.5}
+.gpu-active{fill:color-mix(in srgb,var(--l5) 13%,var(--surface));stroke:var(--l5)}
+.gpu-storage{fill:color-mix(in srgb,var(--l4) 14%,var(--surface));stroke:var(--l4)}
+.gpu-rose{fill:color-mix(in srgb,var(--l1) 13%,var(--surface));stroke:var(--l1)}
+.gpu-idle{fill:var(--bg);stroke-dasharray:5 4}
+.gpu-frame{fill:var(--bg);stroke-dasharray:5 5}
+.gpu-wire{fill:none;stroke:var(--rule2);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.gpu-good{stroke:var(--l5)}
+.gpu-blue{stroke:var(--l4)}
+.gpu-burden{stroke:var(--l1)}
+.gpu-moving{fill:var(--l5);stroke:var(--surface);stroke-width:1}
+.gpu-data{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.gpu-load{fill:var(--l1);stroke:var(--surface);stroke-width:1}

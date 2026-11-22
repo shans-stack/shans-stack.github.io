@@ -1,0 +1,50 @@
+/* 机柜与布线：动画区样式。由 assets/anim/v-rack.js 使用，只作用于 .ssa-v-rack 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-rack{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-rack .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-rack .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-rack .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-rack .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-rack .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-rack .vwm-d{display:inline}
+.ssa-v-rack .ssa-scene text{dominant-baseline:central}
+.ssa-v-rack .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-rack .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-rack .xm{opacity:0;transition:opacity .3s}
+.ssa-v-rack .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-rack .box.soft{stroke:var(--rule);fill:none}
+.ssa-v-rack .box.on{stroke:var(--slate);stroke-width:3}
+.ssa-v-rack .box.hot{stroke:var(--rose)}
+.ssa-v-rack .box.ok{stroke:var(--sage);stroke-width:3}
+.ssa-v-rack .box.upg{stroke:var(--ochre);stroke-width:3;stroke-dasharray:6 5}
+.ssa-v-rack .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-rack .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-rack .b7{font-weight:700}
+.ssa-v-rack .rose-t{fill:var(--rose)}
+.ssa-v-rack .sage-t{fill:var(--sage)}
+.ssa-v-rack .slate-t{fill:var(--slate)}
+.ssa-v-rack .violet-t{fill:var(--violet)}
+.ssa-v-rack .ochre-t{fill:var(--ochre)}
+.ssa-v-rack .ink3-t{fill:var(--ink3)}
+.ssa-v-rack .ink2-t{fill:var(--ink2)}
+.ssa-v-rack .st{font-weight:600}
+.ssa-v-rack .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-rack .ln.thin{stroke-width:3}
+.ssa-v-rack .ln.lit{stroke:var(--slate)}
+.ssa-v-rack .ln.dead{opacity:.25}
+.ssa-v-rack .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-rack .pkt.par{fill:var(--ochre)}
+.ssa-v-rack .dot{fill:var(--slate)}
+.ssa-v-rack .dot.v{fill:var(--violet)}
+.ssa-v-rack .xmark{stroke:var(--rose);stroke-width:5;stroke-linecap:round;fill:none}
+.ssa-v-rack .box.rack{fill:none;stroke:var(--rule2);stroke-width:3}
+.ssa-v-rack .box.cell{stroke:var(--rule)}
+.ssa-v-rack .box.sg{stroke:var(--sage);stroke-width:3}
+.ssa-v-rack .call{transition:opacity .4s}
+.ssa-v-rack .ln.sg{stroke:var(--sage)}
+.ssa-v-rack .ln.mg,.ssa-v-rack .ln.mgl{stroke:var(--ochre)}
+.ssa-v-rack .ln.ip,.ssa-v-rack .ln.ipl{stroke:var(--violet)}
+.ssa-v-rack .pkt.sg{fill:var(--sage)}
+.ssa-v-rack .dot.mg{fill:var(--ochre)}
+.ssa-v-rack .dot.ip{fill:var(--violet)}
+
+main[data-station=v-rack] .bd a {text-decoration:underline;text-underline-offset:.16em}

@@ -1,0 +1,90 @@
+/* 管理与监控：一个 VMS，网页、CLI 和 API 共用一套接口：动画区样式。由 assets/anim/v-mgmt.js 使用，只作用于 .ssa-v-mgmt 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-mgmt{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-mgmt .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-mgmt .vwm-d{display:none}
+.ssa-v-mgmt .nvbk{fill:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-mgmt .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-mgmt .vwm-d{display:inline}:root:not([data-theme=light]) .ssa-v-mgmt .nvbk{fill:#DADCDF}}
+:root[data-theme=dark] .ssa-v-mgmt .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-mgmt .vwm-d{display:inline}
+:root[data-theme=dark] .ssa-v-mgmt .nvbk{fill:#DADCDF}
+.ssa-v-mgmt .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-mgmt .tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.ssa-v-mgmt .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-mgmt .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-mgmt .ssa-scene text{dominant-baseline:central}
+.ssa-v-mgmt .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-mgmt .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-mgmt .ssa-scene .dim{opacity:.22}
+.ssa-v-mgmt .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-mgmt .box.soft{stroke:var(--rule)}
+.ssa-v-mgmt .box.on{stroke:var(--slate)}
+.ssa-v-mgmt .box.hot{stroke:var(--rose)}
+.ssa-v-mgmt .box.ok{stroke:var(--sage)}
+.ssa-v-mgmt .box.dead{opacity:.35}
+.ssa-v-mgmt .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.ssa-v-mgmt .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-mgmt .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-mgmt .b7{font-weight:700}
+.ssa-v-mgmt .rose-t{fill:color-mix(in srgb,var(--rose) 55%,var(--ink2))}
+.ssa-v-mgmt .sage-t{fill:color-mix(in srgb,var(--sage) 55%,var(--ink2))}
+.ssa-v-mgmt .slate-t{fill:color-mix(in srgb,var(--slate) 55%,var(--ink2))}
+.ssa-v-mgmt .violet-t{fill:color-mix(in srgb,var(--violet) 55%,var(--ink2))}
+.ssa-v-mgmt .ink3-t{fill:var(--ink3)}
+.ssa-v-mgmt .ink2-t{fill:var(--ink2)}
+.ssa-v-mgmt .st{font-weight:600;transition:opacity .25s}
+.ssa-v-mgmt .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-mgmt .ln.thin{stroke-width:3}
+.ssa-v-mgmt .ln.lit{stroke:var(--slate)}
+.ssa-v-mgmt .ln.ok{stroke:var(--sage)}
+.ssa-v-mgmt .ln.hot{stroke:var(--rose)}
+.ssa-v-mgmt .ln.vio{stroke:var(--violet)}
+.ssa-v-mgmt .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-mgmt .ln.dead{opacity:.3}
+.ssa-v-mgmt .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-mgmt .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-mgmt .disk.lit{stroke:var(--slate)}
+.ssa-v-mgmt .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-mgmt .disk.bad{stroke:var(--rose);stroke-width:3}
+.ssa-v-mgmt .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-mgmt .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.ssa-v-mgmt .pkt.ok{fill:var(--sage)}
+.ssa-v-mgmt .dot{fill:var(--slate)}
+.ssa-v-mgmt .dot.v{fill:var(--violet)}
+.ssa-v-mgmt .dot.ok{fill:var(--sage)}
+.ssa-v-mgmt .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-mgmt .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-mgmt .track{fill:var(--rule)}
+.ssa-v-mgmt .fill{fill:var(--rose)}
+.ssa-v-mgmt .fill.sage{fill:var(--sage)}
+.ssa-v-mgmt .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-mgmt .ochre-t{fill:color-mix(in srgb,var(--ochre) 55%,var(--ink2))}
+.ssa-v-mgmt .ink-t{fill:var(--ink)}
+.ssa-v-mgmt .box.vio{stroke:var(--violet)}
+.ssa-v-mgmt .box.dash{stroke-dasharray:6 5}
+.ssa-v-mgmt .cell{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,fill .3s}
+.ssa-v-mgmt .cell.on{stroke:var(--slate)}
+.ssa-v-mgmt .cell.ok{stroke:var(--sage)}
+.ssa-v-mgmt .cell.hot{stroke:var(--rose)}
+.ssa-v-mgmt .cell.old{fill:var(--rule);stroke:var(--rule2)}
+.ssa-v-mgmt .cell.gone{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-mgmt .pkt.vio{fill:var(--violet)}
+.ssa-v-mgmt .pkt.rose{fill:var(--rose)}
+.ssa-v-mgmt .pkt.ochre{fill:var(--ochre)}
+.ssa-v-mgmt .dot.rose{fill:var(--rose)}
+.ssa-v-mgmt .dot.ochre{fill:var(--ochre)}
+.ssa-v-mgmt .ln.ochre{stroke:var(--ochre)}
+.ssa-v-mgmt .ln.ptr{stroke-width:2.5;stroke:var(--ink3)}
+.ssa-v-mgmt .ln.ptr.snap{stroke:var(--violet)}
+.ssa-v-mgmt .ln.ptr.clone{stroke:var(--ochre)}
+.ssa-v-mgmt .ln.ptr.live{stroke:var(--slate)}
+.ssa-v-mgmt .bar{fill:var(--slate)}
+.ssa-v-mgmt .bar.w{fill:var(--sage)}
+
+@media (max-width:640px){
+  body.present:has(main[data-station=v-mgmt]) .stage{
+    & .figbox{margin:0}
+    & h2{font-size:24px}
+    & .desc{font-size:16px;line-height:1.45}
+  }
+}

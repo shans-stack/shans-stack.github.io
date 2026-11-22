@@ -46,6 +46,7 @@
       <li data-en="Mark Holland and Garth A. Gibson, Parity Declustering for Continuous Operation in Redundant Disk Arrays, ASPLOS V, 1992 (the general principle of declustering).">Mark Holland、Garth A. Gibson，Parity Declustering for Continuous Operation in Redundant Disk Arrays，ASPLOS V，1992（分簇的一般原理）。</li>
       <li data-en="IBM documentation, Declustered RAID (IBM Spectrum Scale RAID): data, redundancy and spare space spread across all disks; rebuild uses all operational disks.">IBM 文档，Declustered RAID（IBM Spectrum Scale RAID）：数据、冗余和备用空间打散到所有盘上，重建由所有在线盘一起完成。</li>
       <li data-en="DDN SFA200X2 / SFA400X2 data sheet: lists DeClustered RAID (DCR) as a system feature.">DDN SFA200X2 / SFA400X2 数据表：系统功能里列有 DeClustered RAID（DCR）。</li>
+      <li data-en="DDN SFA18KX data sheet: DCR supports RAID 6 8+2, with pools from 2 to 900 drives.">DDN SFA18KX 数据表：DCR 支持 RAID 6 8+2，池可以从 2 块盘到 900 块盘。</li>
       <li data-en="Animations are schematic. Drive counts, stripe widths and speeds are illustrative, not measured.">动画为示意，盘数、条带宽度和速度都不代表实测。</li>
     </ul></div>
   </div>
@@ -71,7 +72,7 @@
 <script src="../../data/stations.js"></script>
 <script src="../../data/maps.js"></script>
 <script src="../../data/talks.js"></script>
-<script src="../../data/views.js"></script>
+<script src="../../data/vendors.js"></script>
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/d-dcr.js"></script>
 <script>
@@ -91,9 +92,9 @@ window.SS_TOPIC_CFG={anim:'d-dcr',ar:[960/476,480/420],
          '<p>Only the drives in that one group take part, and every write goes to a single hot spare, so the rebuild is limited by how fast that one drive can write; the bigger the drive, the longer the rebuild. If another drive in the same group fails during the rebuild, data is at risk. The other drives in the pool do nothing at all.</p>']]},
     {s:['分簇布局','Declustered layout'],t:['分簇：数据、校验和备用空间都打散到所有盘上','Declustering: data, parity and spare space are spread over every drive'],
      d:['每块盘切成很多小段，一个条带的成员散在池里不同的盘上，备用空间也切成小段，分散在每块盘上。','Each drive is cut into many small pieces. A stripe\'s members sit on different drives across the pool, and spare space is cut into pieces on every drive too.'],
-     b:[['<p>分簇 RAID（Declustered RAID）不再按「一组固定几块盘」来组织。它把池里每块物理盘切成大量固定大小的小段，再从不同的盘上各取一段，拼成一个 RAID 条带（条带：一组数据段加上保护它们的校验段）。每个条带的成员落在哪几块盘上是打散的，不同条带用到的盘组合各不相同。</p>',
+     b:[['<p>分簇 RAID（Declustered RAID）不再按「一组固定几块盘」来组织。它把池里每块物理盘切成大量固定大小的小段，再从不同的盘上各取一段，拼成一个 RAID 条带（条带：一组数据段加上保护它们的校验段）。每个条带的成员落在哪几块盘上是打散的，不同条带用到的盘组合各不相同。DDN SFA 的 DCR 支持 RAID 6 的 8+2 条带（8 段数据加 2 段校验），一个 DCR 池可以从 2 块盘到 900 块盘。</p>',
          '<p>备用空间也不再是整块热备盘，而是在每块盘上都预留一些空闲小段。这样池里所有盘平时都在存数据，没有一块是闲着的。这也是可用容量看起来比传统 RAID 少的原因：备用小段占了池容量，换来的是下一步的快速重建。画面里的盘数和条带宽度只是示意。</p>'],
-        ['<p>Declustered RAID no longer organises drives into fixed groups. It cuts every physical drive in the pool into a large number of fixed-size pieces, then takes one piece from each of several different drives to form a RAID stripe (stripe: a set of data pieces plus the parity pieces that protect them). Which drives a stripe\'s members land on is scattered, and different stripes use different combinations of drives.</p>',
+        ['<p>Declustered RAID no longer organises drives into fixed groups. It cuts every physical drive in the pool into a large number of fixed-size pieces, then takes one piece from each of several different drives to form a RAID stripe (stripe: a set of data pieces plus the parity pieces that protect them). Which drives a stripe\'s members land on is scattered, and different stripes use different combinations of drives. DDN SFA DCR supports RAID 6 8+2 stripes (eight data segments and two parity segments), and a DCR pool can hold from 2 to 900 drives.</p>',
          '<p>Spare space is no longer a whole hot-spare drive either: every drive keeps some free pieces in reserve. So every drive in the pool stores data, and none sits idle. This is also why usable capacity looks smaller than with traditional RAID: the spare pieces take up pool capacity, and in return they make the fast rebuild in the next step possible. The number of drives and the stripe width in the picture are schematic.</p>']]},
     {s:['分簇重建','Declustered rebuild'],t:['分簇重建：很多盘一起读、一起写','Declustered rebuild: many drives read and write together'],
      d:['坏盘上的每一段属于不同的条带，各自由不同的盘读、写进不同盘上的备用空间，很多盘同时工作。','Each piece on the failed drive belongs to a different stripe, so each is read from different drives and written to spare space on a different drive. Many drives work at once.'],

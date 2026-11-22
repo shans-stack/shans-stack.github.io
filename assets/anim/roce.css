@@ -1,0 +1,25 @@
+.an-roce {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font: 500 17px var(--f);
+}
+.an-roce-label, .an-roce-note { fill: var(--ink); dominant-baseline: central; }
+.an-roce-note { fill: var(--ink2); font-size: 16px; }
+.an-roce-node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.an-roce-node.an-roce-green { stroke: var(--l5); }
+.an-roce-node.an-roce-rose { stroke: var(--l1); }
+.an-roce-node.an-roce-control { stroke: var(--l4); }
+.an-roce-link { fill: none; stroke: var(--rule2); stroke-width: 2.5; stroke-linejoin: round; }
+.an-roce-link.an-roce-green { stroke: var(--l5); }
+.an-roce-link.an-roce-rose { stroke: var(--l1); }
+.an-roce-link.an-roce-control { stroke: var(--l4); stroke-dasharray: 5 5; }
+.an-roce-link.an-roce-rail { stroke: var(--l6); }
+.an-roce-block { fill: var(--l5); stroke: var(--surface); stroke-width: 1; }
+.an-roce-block.an-roce-rose { fill: var(--l1); }
+.an-roce-block.an-roce-control { fill: var(--l4); }
+.an-roce-block.an-roce-rail { fill: var(--l6); }
+@media (640px < width <= 720px) {
+  main[data-station="roce"] .mhost { aspect-ratio: var(--ar); }
+}

@@ -55,6 +55,7 @@ function apply(lang){
   });
   document.querySelectorAll('[data-lang-set]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-lang-set')===lang?'true':'false')});
   window.SS_LANG=lang;document.dispatchEvent(new CustomEvent('ss-lang',{detail:lang}));
+  document.querySelectorAll('.glossary-link').forEach(function(a){a.href=SS.termHref()});
   if(lang==='tw')toTW();
 }
 window.ssSetLang=function(v){if(!okLang(v))return;var was=window.SS_LANG;putLang(v);
@@ -62,21 +63,19 @@ window.ssSetLang=function(v){if(!okLang(v))return;var was=window.SS_LANG;putLang
   if(was==='tw'&&v!=='tw'){location.reload();return}/* 繁体是整页转换出来的，切回别的语言最稳是重新载入 */
   apply(v)};
 window.SS_LANG=getLang();
-/* 厂商视角：'' 通用，'vast' 等见 data/views.js。?v=vast 直达并记住，?v=all 回通用。 */
-function getView(){var v=q.get('v');if(v==='all')return '';if(v&&SS.viewById&&SS.viewById[v])return v;
-  try{v=localStorage.getItem('ss-view')||'';return (v&&SS.viewById&&SS.viewById[v])?v:''}catch(e){return ''}}
-SS.VIEW=getView();try{if(q.has('v'))localStorage.setItem('ss-view',SS.VIEW)}catch(e){}
-SS.view=function(){return SS.VIEW&&SS.viewById?SS.viewById[SS.VIEW]:null};
-window.ssSetView=function(v){try{localStorage.setItem('ss-view',v)}catch(e){}
-  try{var u=new URL(location.href);if(u.searchParams.has('v'))u.searchParams.set('v',v||'all');history.replaceState(null,'',u)}catch(e){}
-  location.reload()};
 document.addEventListener('DOMContentLoaded',function(){
-  var b=document.querySelector('[data-lang-toggle]');
-  if(b){var g=document.createElement('div');g.className='langs';g.setAttribute('role','group');g.setAttribute('aria-label','语言 / Language');g.setAttribute('data-noconv','');
+  var b=document.querySelector('[data-lang-toggle]'),g;
+  if(b){g=document.createElement('div');g.className='langs';g.setAttribute('role','group');g.setAttribute('aria-label','语言 / Language');g.setAttribute('data-noconv','');
     LANGS.forEach(function(o){var x=document.createElement('button');x.type='button';x.textContent=o[1];x.title=o[2];x.setAttribute('lang',o[0]==='en'?'en':(o[0]==='tw'?'zh-Hant':'zh-Hans'));
       x.setAttribute('data-lang-set',o[0]);x.addEventListener('click',function(){if(window.SS_LANG!==o[0])window.ssSetLang(o[0])});g.appendChild(x)});
     b.replaceWith(g);
-    /* 厂商视角不放按钮（2026-11-22 用户定），只靠 ?v=vast / ?v=all 链接切换 */}
+  }
+  g=g||document.querySelector('.nav .langs');
+  if(g){
+    var a=document.createElement('a');a.className='glossary-link';a.textContent='术语表';a.dataset.en='Glossary';
+    if(/\/glossary\/(?:index\.html)?$/.test(location.pathname))a.setAttribute('aria-current','page');
+    g.before(a);
+  }
   apply(getLang());
 });
 SS.lang=function(){return window.SS_LANG==='en'?'en':'zh'};
@@ -118,12 +117,30 @@ SS.stationHref=function(id,mapId){
   if(!mapId||!SS.inMap(id,mapId)){mapId=SS.maps.filter(function(m){return SS.inMap(id,m.id)})[0].id}
   return SS.lineHref(mapId,SS.linesIn(id,mapId)[0],id);
 };
+function readingHref(path){
+  var p=new URLSearchParams();
+  if(okLang(q.get('lang')))p.set('lang',window.SS_LANG);
+  if(q.get('theme')==='dark'||q.get('theme')==='light')p.set('theme',q.get('theme'));
+  return SS.url(path)+(p.size?'?'+p:'');
+}
+SS.termHref=function(id){return readingHref('glossary/index.html')+(id?'#'+encodeURIComponent(id):'')};
+SS.termSee=function(term){var s=SS.stations[term.see];return s&&s.st==='live'&&s.page?readingHref(s.page):''};
 /* 厂商 logo（data/maps.js 的 SS.brands）。id 没有对应 logo（如 generic）时返回空串。
    cls 定用在哪：tm-lg 首页专题入口、mh-lg 专题图页头、cr-lg 知识点页面包屑，尺寸在 site.css。 */
 SS.brandOf=function(id){var s=SS.stations[id];return s&&SS.brands&&SS.brands[s.tag]?s.tag:''};
 SS.brandMark=function(bid,cls){var b=SS.brands&&SS.brands[bid];if(!b)return '';
   return '<span class="lg lg-'+bid+(b.backing?' bk':'')+(b.dark?' dk':'')+(cls?' '+cls:'')+'" role="img" aria-label="'+SS.esc(b.name)+'">'+
     '<img class="lg-l" src="'+SS.url(b.src)+'" alt="">'+(b.dark?'<img class="lg-d" src="'+SS.url(b.dark)+'" alt="">':'')+'</span>'};
+/* 按线路列知识点（首页与专题图共用）：做完的站深色、可点，后面写步数；没做完的浅灰、不可点；不挂标签、不画分隔线。
+   换乘站只放进一条线：primary 表里指定的那条，没指定就放第一条。 */
+SS.renderCols=function(el,mapId,primary){if(!el)return;var L=SS.L,m=SS.mapById[mapId];primary=primary||{};
+  function item(id){var s=SS.stations[id];
+    if(s.st==='live')return '<li><a href="'+SS.stationHref(id,mapId)+'"><span class="n">'+SS.esc(SS.title(id))+'</span>'+(s.steps?'<span class="m">'+s.steps+L(' 步',' steps')+'</span>':'')+'</a></li>';
+    return '<li class="wip"><span class="n">'+SS.esc(SS.title(id))+'</span></li>'}
+  el.innerHTML=m.lines.map(function(lid){
+    var ids=SS.onLine(lid,mapId).filter(function(id){var ls=SS.linesIn(id,mapId);return ls.length===1||primary[id]===lid||(!primary[id]&&ls[0]===lid)});
+    return '<div class="col" style="--lc:'+SS.lc(lid)+'"><h3>'+SS.sym(lid)+'<span>'+SS.esc(SS.lineName(lid))+'</span></h3><p class="d">'+SS.esc(SS.T(SS.line[lid].d))+'</p><ul>'+
+      ids.map(item).join('')+'</ul></div>'}).join('')};
 SS.esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 SS.zhNum=function(n){var d='零一二三四五六七八九';if(n<10)return d[n];if(n<20)return '十'+(n%10?d[n%10]:'');return d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:'')};
 SS.lvName=function(lv){return lv===2?SS.L('深入','In depth'):SS.L('入门','Intro')};

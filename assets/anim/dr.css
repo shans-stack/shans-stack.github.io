@@ -1,0 +1,28 @@
+.an-dr {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 18px var(--f);
+  color: var(--ink);
+}
+.an-dr text { fill: currentColor; dominant-baseline: central; }
+.an-dr-title { font-weight: 650; }
+.an-dr-secondary, .an-dr-note { color: var(--ink2); }
+.an-dr-note { font-size: 16px; }
+.an-dr-chip, .an-dr-counter { font-variant-numeric: tabular-nums; font-weight: 650; }
+.an-dr-neutral { --accent: var(--rule2); }
+.an-dr-ink { --accent: var(--ink3); }
+.an-dr-blue { --accent: var(--l4); }
+.an-dr-green { --accent: var(--l5); }
+.an-dr-rose { --accent: var(--l1); }
+.an-dr-gold { --accent: var(--l2); }
+.an-dr-violet { --accent: var(--l3); }
+.an-dr-box { fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; }
+.an-dr-line, .an-dr-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.an-dr-dashed { stroke-dasharray: 5 5; }
+.an-dr-cell { fill: var(--bg); stroke: var(--rule); }
+.an-dr-tile { fill: color-mix(in srgb, var(--accent) 20%, var(--surface)); stroke: var(--accent); }
+.an-dr-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.4; }
+@media (max-width: 640px) {
+  .an-dr, .an-dr-note { font-size: 14px; }
+}

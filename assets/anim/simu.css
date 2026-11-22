@@ -1,0 +1,41 @@
+.an-simu {
+  display: block;
+  width: 100%;
+  font-family: var(--f);
+}
+.an-simu text {
+  fill: var(--ink);
+  dominant-baseline: central;
+}
+.an-simu-heading { font-size: 23px; font-weight: 650; }
+.an-simu-label { font-size: 22px; font-weight: 650; }
+.an-simu .an-simu-detail { font-size: 18px; fill: var(--ink2); }
+.an-simu .an-simu-note { font-size: 17px; fill: var(--ink3); }
+.an-simu-data { --an-simu-tone: var(--l4); }
+.an-simu-good { --an-simu-tone: var(--l5); }
+.an-simu-wait { --an-simu-tone: var(--l1); }
+.an-simu-control { --an-simu-tone: var(--l3); }
+.an-simu-idle { --an-simu-tone: var(--rule2); }
+.an-simu-node {
+  fill: color-mix(in srgb, var(--an-simu-tone, var(--l4)) 10%, var(--surface));
+  stroke: var(--an-simu-tone, var(--l4));
+  stroke-width: 1.25;
+}
+.an-simu-wire {
+  fill: none;
+  stroke: var(--an-simu-tone, var(--rule2));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.an-simu-wire.an-simu-control,
+.an-simu-wire.an-simu-idle { stroke-dasharray: 4 4; }
+.an-simu-arrow,
+.an-simu-packet { fill: var(--an-simu-tone, var(--l4)); }
+main[data-station="simu"] .mhost { aspect-ratio: var(--ar); }
+@media (max-width: 640px) {
+  .an-simu-heading { font-size: 17px; }
+  .an-simu-label { font-size: 16px; }
+  .an-simu .an-simu-detail,
+  .an-simu .an-simu-note { font-size: 14px; }
+  main[data-station="simu"] .mhost { aspect-ratio: var(--arm); }
+}

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>开放表格式 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明开放表格式如何定义文件归属、提交一致版本、裁剪扫描和读取历史。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/otf.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="otf">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Open table formats">开放表格式</h1>
+        <p class="meta"><span data-en="5 steps · table metadata, atomic commits, snapshots">5 步 · 表元数据、原子提交、快照</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://iceberg.apache.org/spec/">Apache Iceberg Table Specification</a></li>
+      <li><a href="https://iceberg.apache.org/docs/latest/spark-queries/">Apache Iceberg Documentation — Spark Queries</a></li>
+      <li><a href="https://iceberg.apache.org/docs/latest/maintenance/">Apache Iceberg Documentation — Maintenance</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/otf.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'otf',ar:[900/340,360/420],
+  steps:[
+    {t:["定义一张表包含哪些文件", "Define which files belong to a table"],
+     d:["表元数据记录字段定义，以及组成当前表状态的数据文件。", "Table metadata records field definitions and identifies the data files that make up the current table state."],
+     b:[["<p>开放表格式用公开规范描述存储上的表状态，使兼容的读取引擎按同一规则解释一张表。数据文件保存行值，例如 Parquet 文件中的列数据。表格式另行记录表的结构和有效文件集合，使读取器能从一批已登记文件构造结果。</p>"], ["<p>An open table format describes table state with a public specification so compatible readers interpret a table using the same rules. Data files hold row values, such as columns in a Parquet file. The table format records the structure and the set of active files so readers can build results from the registered files.</p>"]]},
+    {t:["用快照固定一次读取", "Pin a read to a snapshot"],
+     d:["打开表时选定一个快照，整次读取沿用其中记录的文件集合。", "A read selects a snapshot when it opens the table and uses that snapshot’s file set throughout."],
+     b:[["<p>快照表示表在某次提交时的状态。以 Iceberg 为例，快照通过文件清单引用表中的数据文件。读取器可以固定在当前快照上完成一次查询，同时写入器在准备下一版。不同快照可以引用同一份未更改的数据文件。</p>"], ["<p>A snapshot represents the table’s state at a commit. In Iceberg, for example, a snapshot refers to the table’s data files through manifests. A reader can finish a query against its selected snapshot while a writer prepares the next version. Multiple snapshots can refer to the same unchanged data files.</p>"]]},
+    {t:["原子发布新版本", "Publish a new version atomically"],
+     d:["新文件准备完毕后切换表元数据指针，读者一次看到完整的新版本。", "Once new files are ready, the table metadata pointer switches and readers can see the complete new version."],
+     b:[["<p>以 Iceberg 的提交方式为例，写入器先生成数据文件和新版元数据，再尝试将当前元数据指针从自己读到的基准版本切换到新版本。原子切换指读者只会看到切换前或切换后的完整状态。如果并发写入已改变基准版本，本次写入需要按操作规则重新校验后再提交。</p>"], ["<p>In Iceberg’s commit scheme, a writer creates the data files and new metadata, then tries to swap the current metadata pointer from the base version it read to the new version. An atomic swap lets readers see a complete state on either side of the change. If a concurrent write has changed the base version, the operation must be revalidated under its commit rules before retrying.</p>"]]},
+    {t:["根据文件统计裁剪扫描", "Prune scans using file statistics"],
+     d:["查询通过分区信息和文件统计排除不可能匹配的文件。", "A query uses partition information and file statistics to exclude files that cannot match."],
+     b:[["<p>表元数据可以包含分区值和列的上下界。查询引擎用这些信息筛选候选文件。例如，查找周二事件时，可以跳过日期上界早于周二的文件。候选文件仍需读取并判断实际的行值。</p>"], ["<p>Table metadata can include partition values and column bounds. A query engine uses this information to select candidate files. A query for Tuesday’s events can skip files whose latest date is earlier than Tuesday. The engine reads candidate files and checks the actual row values.</p>"]]},
+    {t:["读取仍然保留的历史快照", "Read a retained historical snapshot"],
+     d:["历史查询指定以前的快照，重新打开当时的文件集合。", "A historical query selects an earlier snapshot and reopens its file set."],
+     b:[["<p>当前表已有新版本时，读取器还可以按快照标识或受支持的时间条件读取保留的历史状态，这一能力称为时间旅行。历史读取依赖快照及其引用的文件仍然可用。快照过期后，维护作业可清理其他保留快照也未引用的文件。</p>"], ["<p>After a new version becomes current, a reader can still select a retained historical state by snapshot identifier or a supported time criterion. This is called time travel. Historical reads require both the snapshot and its referenced files to be available. After a snapshot expires, maintenance can remove files that other retained snapshots also leave unreferenced.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+.an-agent {
+  display: block;
+  width: 100%;
+  font-family: var(--f);
+}
+.an-agent text {
+  fill: var(--ink);
+  dominant-baseline: central;
+}
+.an-agent-heading { font-size: 23px; font-weight: 650; }
+.an-agent-label { font-size: 22px; font-weight: 650; }
+.an-agent .an-agent-detail { font-size: 18px; fill: var(--ink2); }
+.an-agent .an-agent-note { font-size: 17px; fill: var(--ink3); }
+.an-agent-data { --an-agent-tone: var(--l4); }
+.an-agent-good { --an-agent-tone: var(--l5); }
+.an-agent-wait { --an-agent-tone: var(--l1); }
+.an-agent-control { --an-agent-tone: var(--l3); }
+.an-agent-idle { --an-agent-tone: var(--rule2); }
+.an-agent-node {
+  fill: color-mix(in srgb, var(--an-agent-tone, var(--l4)) 10%, var(--surface));
+  stroke: var(--an-agent-tone, var(--l4));
+  stroke-width: 1.25;
+}
+.an-agent-wire {
+  fill: none;
+  stroke: var(--an-agent-tone, var(--rule2));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.an-agent-wire.an-agent-control,
+.an-agent-wire.an-agent-idle { stroke-dasharray: 4 4; }
+.an-agent-arrow,
+.an-agent-packet { fill: var(--an-agent-tone, var(--l4)); }
+main[data-station="agent"] .mhost { aspect-ratio: var(--ar); }
+@media (max-width: 640px) {
+  .an-agent-heading { font-size: 17px; }
+  .an-agent-label { font-size: 16px; }
+  .an-agent .an-agent-detail,
+  .an-agent .an-agent-note { font-size: 14px; }
+  main[data-station="agent"] .mhost { aspect-ratio: var(--arm); }
+}

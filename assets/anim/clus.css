@@ -1,0 +1,17 @@
+.clus-anim{position:relative}
+.clus-anim svg{display:block;width:100%;height:auto;overflow:hidden}
+.clus-label,.clus-note{font:600 20px var(--f);fill:var(--ink);pointer-events:none}
+.clus-note{font:500 17px var(--f);fill:var(--ink2)}
+.clus-device,.clus-active,.clus-idle,.clus-storage,.clus-rose,.clus-frame{stroke:var(--rule2);fill:var(--surface);stroke-width:1.5}
+.clus-active{fill:color-mix(in srgb,var(--l5) 13%,var(--surface));stroke:var(--l5)}
+.clus-storage{fill:color-mix(in srgb,var(--l4) 14%,var(--surface));stroke:var(--l4)}
+.clus-rose{fill:color-mix(in srgb,var(--l1) 13%,var(--surface));stroke:var(--l1)}
+.clus-idle{fill:var(--bg);stroke-dasharray:5 4}
+.clus-frame{fill:var(--bg);stroke-dasharray:5 5}
+.clus-wire{fill:none;stroke:var(--rule2);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.clus-good{stroke:var(--l5)}
+.clus-blue{stroke:var(--l4)}
+.clus-burden{stroke:var(--l1)}
+.clus-moving{fill:var(--l5);stroke:var(--surface);stroke-width:1}
+.clus-data{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.clus-load{fill:var(--l1);stroke:var(--surface);stroke-width:1}

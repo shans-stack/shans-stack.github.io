@@ -1,0 +1,72 @@
+/* NFS：标准挂载，文件锁记在共享元数据里：动画区样式。由 assets/anim/v-nfs.js 使用，只作用于 .ssa-v-nfs 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。
+   VAST 字标引用 assets/brand/vast-wordmark-black.svg 与 -white.svg：浅色模式显示黑字版，深色模式显示白字版。 */
+.ssa-v-nfs{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-nfs .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-nfs .wm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-nfs .wm-l{display:none}:root:not([data-theme=light]) .ssa-v-nfs .wm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-nfs .wm-l{display:none}
+:root[data-theme=dark] .ssa-v-nfs .wm-d{display:inline}
+.ssa-v-nfs .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-nfs .tgl[hidden]{display:none}
+.ssa-v-nfs .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-nfs .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-nfs .ssa-scene text{dominant-baseline:central}
+.ssa-v-nfs .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-nfs .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-nfs .ssa-scene .dim{opacity:.65}
+.ssa-v-nfs .ssa-scene .dead{opacity:.65;transition:opacity .4s}
+.ssa-v-nfs .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-nfs .box.soft{stroke:var(--rule)}
+.ssa-v-nfs .box.on{stroke:var(--slate)}
+.ssa-v-nfs .box.hot{stroke:var(--rose)}
+.ssa-v-nfs .box.ok{stroke:var(--sage)}
+.ssa-v-nfs .box.vio{stroke:var(--violet)}
+.ssa-v-nfs .box.off{opacity:.35}
+.ssa-v-nfs .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-nfs .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-nfs .b7{font-weight:700}
+.ssa-v-nfs .rose-t{fill:color-mix(in srgb,var(--rose) 76%,var(--ink))}
+.ssa-v-nfs .sage-t{fill:color-mix(in srgb,var(--sage) 76%,var(--ink))}
+.ssa-v-nfs .slate-t{fill:color-mix(in srgb,var(--slate) 76%,var(--ink))}
+.ssa-v-nfs .violet-t{fill:color-mix(in srgb,var(--violet) 76%,var(--ink))}
+.ssa-v-nfs .ochre-t{fill:color-mix(in srgb,var(--ochre) 76%,var(--ink))}
+.ssa-v-nfs .ink3-t{fill:var(--ink3)}
+.ssa-v-nfs .ink2-t{fill:var(--ink2)}
+.ssa-v-nfs .st{font-weight:600;transition:opacity .25s}
+.ssa-v-nfs .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-nfs .ln.thin{stroke-width:3}
+.ssa-v-nfs .ln.lit{stroke:var(--slate)}
+.ssa-v-nfs .ln.ok{stroke:var(--sage)}
+.ssa-v-nfs .ln.hot{stroke:var(--rose)}
+.ssa-v-nfs .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-nfs .chip rect{fill:var(--card);stroke:var(--rule2);stroke-width:1.5;transition:stroke .3s,fill .3s}
+.ssa-v-nfs .chip text{fill:var(--ink2);font-weight:500}
+.ssa-v-nfs .chip.on rect{stroke:var(--slate);stroke-width:2.5}
+.ssa-v-nfs .chip.on text{fill:color-mix(in srgb,var(--slate) 76%,var(--ink));font-weight:600}
+.ssa-v-nfs .chip.mv rect{stroke:var(--sage);stroke-width:2.5}
+.ssa-v-nfs .chip.mv text{fill:color-mix(in srgb,var(--sage) 76%,var(--ink));font-weight:600}
+.ssa-v-nfs .chip.file rect,.ssa-v-nfs .chip.blk rect{stroke:var(--rule2);stroke-width:2}
+.ssa-v-nfs .chip.file.on rect{stroke:var(--slate);stroke-width:3}
+.ssa-v-nfs .chip.file.w rect,.ssa-v-nfs .chip.w rect{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-nfs .chip.vio rect{stroke:var(--violet);stroke-width:2.5}
+.ssa-v-nfs .chip.vio text{fill:color-mix(in srgb,var(--violet) 76%,var(--ink));font-weight:600}
+.ssa-v-nfs .chip.hot rect{stroke:var(--rose);stroke-width:3}
+.ssa-v-nfs .chip.hot text{fill:color-mix(in srgb,var(--rose) 76%,var(--ink))}
+.ssa-v-nfs .chip.keep rect{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-nfs .chip.lock{transition:opacity .3s}
+.ssa-v-nfs .slot{fill:none;stroke:var(--rule);stroke-width:1.5;stroke-dasharray:5 5}
+.ssa-v-nfs .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-nfs .pkt.ok{fill:var(--sage)}
+.ssa-v-nfs .pkt.v{fill:var(--violet)}
+.ssa-v-nfs .pkt.bad{fill:var(--rose)}
+.ssa-v-nfs .pkt.och{fill:var(--ochre)}
+.ssa-v-nfs .dot{fill:var(--slate)}
+.ssa-v-nfs .dot.v{fill:var(--violet)}
+.ssa-v-nfs .dot.ok{fill:var(--sage)}
+.ssa-v-nfs .dot.bad{fill:var(--rose)}
+.ssa-v-nfs .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-nfs .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-nfs .sep{stroke:var(--rule);stroke-width:1.5}
+
+main[data-station="v-nfs"] .src li a{padding:0;font-size:inherit;text-decoration:underline;text-underline-offset:3px}

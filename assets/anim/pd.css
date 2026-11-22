@@ -1,0 +1,41 @@
+.an-pd {
+  display: block;
+  width: 100%;
+  font-family: var(--f);
+}
+.an-pd text {
+  fill: var(--ink);
+  dominant-baseline: central;
+}
+.an-pd-heading { font-size: 23px; font-weight: 650; }
+.an-pd-label { font-size: 22px; font-weight: 650; }
+.an-pd .an-pd-detail { font-size: 18px; fill: var(--ink2); }
+.an-pd .an-pd-note { font-size: 17px; fill: var(--ink3); }
+.an-pd-data { --an-pd-tone: var(--l4); }
+.an-pd-good { --an-pd-tone: var(--l5); }
+.an-pd-wait { --an-pd-tone: var(--l1); }
+.an-pd-control { --an-pd-tone: var(--l3); }
+.an-pd-idle { --an-pd-tone: var(--rule2); }
+.an-pd-node {
+  fill: color-mix(in srgb, var(--an-pd-tone, var(--l4)) 10%, var(--surface));
+  stroke: var(--an-pd-tone, var(--l4));
+  stroke-width: 1.25;
+}
+.an-pd-wire {
+  fill: none;
+  stroke: var(--an-pd-tone, var(--rule2));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.an-pd-wire.an-pd-control,
+.an-pd-wire.an-pd-idle { stroke-dasharray: 4 4; }
+.an-pd-arrow,
+.an-pd-packet { fill: var(--an-pd-tone, var(--l4)); }
+main[data-station="pd"] .mhost { aspect-ratio: var(--ar); }
+@media (max-width: 640px) {
+  .an-pd-heading { font-size: 17px; }
+  .an-pd-label { font-size: 16px; }
+  .an-pd .an-pd-detail,
+  .an-pd .an-pd-note { font-size: 14px; }
+  main[data-station="pd"] .mhost { aspect-ratio: var(--arm); }
+}

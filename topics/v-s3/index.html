@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S3：同一份数据，按文件写进去，按对象读出来 · Shan's Stack</title>
+<meta name="description" content="VAST S3 的 HTTP 接口、CNode 请求处理、Element Store 的多协议访问，以及 view 策略中的 security flavor。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-s3.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-s3">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="S3: the same data, written as files and read as objects">S3：同一份数据，按文件写进去，按对象读出来</h1>
+        <p class="meta"><span data-en="5 steps · S3, Element Store, multiprotocol">5 步 · S3、Element Store、多协议</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/overview-of-vast-cluster-s3-implementation">VAST 5.5 · Overview of VAST Cluster S3 Implementation</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/supported-s3-requests">VAST 5.5 · Supported S3 Requests</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/configuring-network-access">VAST 5.5 · Configuring Network Access</a></li>
+      <li><a href="https://www.vastdata.com/whitepaper">VAST AI OS White Paper · VAST S3</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/overview-of-multi-protocol-storage-access">VAST 5.5 · Overview of Multi-Protocol Storage Access</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/accessing-subdirectories-of-multi-protocol-views">VAST 5.5 · Accessing Subdirectories of Multi-Protocol Views</a></li>
+      <li><a href="https://docs.vastdata.com/develop/docs/dev-datastore-guides-multiprotocol">VAST · Multiprotocol Access Guide</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/s3-directories">VAST 5.5 · S3 Directories</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/controlling-file-and-directory-permissions-across-protocols">VAST 5.5 · Controlling File and Directory Permissions Across Protocols</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/s3-object-ownership">VAST 5.5 · S3 Object Ownership</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-s3.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-s3',ar:[960/520,480/520],
+  steps:[
+    {"s": ["S3", "S3"], "t": ["通过 HTTP(S) 存取对象", "Store and fetch objects over HTTP(S)"], "d": ["VAST 实现了 AWS S3 REST API 的一个子集，客户端用桶名和键标识对象。", "VAST implements a subset of the AWS S3 REST API. Clients identify an object by bucket and key."], "b": [["<p>S3 桶存放对象，每个键在桶内唯一。对象键可用斜杠组织前缀，客户端可通过 HTTP 或 HTTPS 发送 PUT、GET 与 DELETE 等请求。</p>", "<p>VAST 5.5 的认证请求支持 AWS Signature Version 2 和 Version 4。VAST 管理系统（VMS）为特定租户中的用户管理 S3 密钥对。</p>"], ["<p>S3 buckets hold objects, and each key is unique within a bucket. Slashes in keys can organize prefixes. Clients can send requests such as PUT, GET and DELETE over HTTP or HTTPS.</p>", "<p>VAST 5.5 supports AWS Signature Version 2 and Version 4 for authenticated requests. The VAST Management System (VMS) manages S3 key pairs for users in a specific tenant.</p>"]]},
+    {"s": ["CNode 直接处理", "Handled by CNodes"], "t": ["CNode 处理 S3 请求", "CNodes handle S3 requests"], "d": ["S3 客户端连接虚拟 IP，由提供该地址服务的 CNode 访问 Element Store。", "An S3 client connects to a virtual IP. The CNode serving that address accesses the Element Store."], "b": [["<p>CNode 处理发往集群数据接口的 S3 请求。NFS、SMB 和 S3 客户端可通过各自的协议访问同一个配置了相应协议的 view。</p>"], ["<p>CNodes process S3 requests sent to cluster data endpoints. NFS, SMB and S3 clients can use their respective protocols to access a view configured for those protocols.</p>"]]},
+    {"s": ["Element Store", "Element Store"], "t": ["Element Store 的共享命名空间", "The shared namespace in the Element Store"], "d": ["多协议 view 可将同一个元素呈现为目录里的文件和桶里的对象。", "A multiprotocol view can expose the same element as a file in a directory and an object in a bucket."], "b": [["<p>Element Store 为文件和对象协议提供共享命名空间。同一个目录可通过 view 暴露为 NFS 导出、SMB 共享和 S3 桶。各协议可以引用同一元素，无需为每种协议另存一份。</p>"], ["<p>The Element Store provides a shared namespace for file and object protocols. A view can expose a directory as an NFS export, an SMB share and an S3 bucket. Each protocol can address the same element without a separate copy for that protocol.</p>"]]},
+    {"s": ["文件进，对象出", "File in, object out"], "t": ["通过 NFS 写入文件，通过 S3 读取对象", "Write a file over NFS and read it over S3"], "d": ["S3 客户端使用文件相对于 view 根目录的路径作为对象键。", "The S3 client uses the file path relative to the view root as its object key."], "b": [["<p>以同时启用 NFS 和 S3 的 view /dev 为例，NFS 客户端写入 src 目录下的 component 后，S3 客户端可在对应的桶里用键 src/component 读取该文件。</p>", "<p>具有兼容路径和访问权限的 S3 对象也可通过文件协议读取。S3 创建的对象若使用以斜杠开头或结尾的键，或键中包含连续斜杠，只能通过 S3 访问。</p>"], ["<p>Consider a view at /dev with NFS and S3 enabled. After an NFS client writes component in the src directory, an S3 client can read it from the corresponding bucket using the key src/component.</p>", "<p>S3 objects with compatible paths and permissions can also be read through file protocols. Objects created over S3 with a leading, trailing or repeated slash in the key are accessible only through S3.</p>"]]},
+    {"s": ["security flavor", "Security flavor"], "t": ["Security flavor 决定权限检查方式", "Security flavor selects the permission rules"], "d": ["view 策略中的 security flavor 决定如何检查权限，以及哪些协议能设置权限。", "The security flavor in the view policy determines how permissions are checked and which protocols can set them."], "b": [["<p>使用 NFS flavor 时，S3 请求按 NFS 权限位检查，通过 S3 修改桶或对象 ACL 的请求会被忽略。</p>", "<p>S3 Native 优先检查身份策略和桶策略，启用 ACL 时还可检查 S3 ACL。通过 NFS 或 SMB 修改文件和目录权限的请求会被忽略。其他选项包括 SMB 与 Mixed Last Wins，可用选项取决于 view 启用的协议。</p>"], ["<p>With the NFS flavor, S3 requests are checked against NFS mode bits. Requests to change bucket or object ACLs through S3 are ignored.</p>", "<p>S3 Native checks identity and bucket policies first, and can also check S3 ACLs when they are enabled. Attempts to change file or directory permissions through NFS or SMB are ignored. SMB and Mixed Last Wins are also available where supported by the protocols enabled on the view.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

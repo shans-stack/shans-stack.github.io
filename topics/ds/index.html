@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>训练数据集怎么组织 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明如何固定样本版本、划分数据、组织分片、分配读取并预取训练批次。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/ds.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="ds">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="How training datasets are organised">训练数据集怎么组织</h1>
+        <p class="meta"><span data-en="5 steps · samples, shards, prefetch">5 步 · 样本、分片、预取</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://huggingface.co/docs/datasets/loading">Hugging Face Datasets Documentation — Load</a></li>
+      <li><a href="https://huggingface.co/docs/datasets/stream">Hugging Face Datasets Documentation — Stream</a></li>
+      <li><a href="https://docs.pytorch.org/docs/stable/data.html">PyTorch Documentation — torch.utils.data</a></li>
+      <li><a href="https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data">scikit-learn User Guide — Cross-validation iterators for grouped data</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/ds.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'ds',ar:[900/340,360/420],
+  steps:[
+    {t:["固定样本版本", "Pin a dataset version"],
+     d:["数据集版本固定样本集合及其解释方式，便于重现一次训练的输入。", "A dataset version fixes the sample set and how it is interpreted so training inputs can be reproduced."],
+     b:[["<p>训练数据集是模型学习所用的样本集合。样本可以是文本，也可以是图像及其标签。数据集版本通常记录数据文件的具体版本、字段定义和处理规则，使训练作业按同一方式解释选定样本。</p>"], ["<p>A training dataset is the collection of samples a model learns from. A sample can be text or an image with a label. A dataset version typically records data file versions, field definitions and processing rules so a training job interprets the selected samples consistently.</p>"]]},
+    {t:["划分训练与验证数据", "Separate training and validation data"],
+     d:["训练集用于更新模型，验证集用于评估模型在留出样本上的表现。", "The training split updates the model, and the validation split assesses it on held-out samples."],
+     b:[["<p>同一份源数据可按固定规则划入训练集和验证集。若同一文档产生多个相关样本，按文档整体划分可将它们留在同一侧，减少关联样本跨集合造成的评估偏差。训练和验证分别调用各自的样本集合。</p>"], ["<p>A fixed rule can assign source data to training and validation splits. If one document produces multiple related samples, splitting by document keeps those samples together and reduces evaluation bias from related samples crossing splits. Training and validation read from their respective collections.</p>"]]},
+    {t:["把小样本组装成分片", "Bundle small samples into shards"],
+     d:["分片把一组样本放进同一文件，便于成组读取和分配。", "A shard stores a group of samples in one file for grouped reads and assignment."],
+     b:[["<p>分片是数据集的一部分，可以把许多小样本封装成一个可独立读取的文件。这种组织方式可以减少逐样本打开小文件的操作，并给多个加载进程提供可分配的读取单元。分片的划分还要给这些进程留下足够独立的读取任务。</p>"], ["<p>A shard is a portion of a dataset that can package many small samples into one independently readable file. This reduces individual file opens and provides units of work that can be assigned to multiple loading processes. The sharding scheme also needs to leave enough independent reads for those processes.</p>"]]},
+    {t:["给训练进程分配样本", "Assign samples to training processes"],
+     d:["分布式采样器把一轮中的样本索引分配给各训练进程。", "A distributed sampler assigns sample indices to training processes for a pass through the dataset."],
+     b:[["<p>采样器决定读取哪些样本及其顺序。在数据并行训练中，多个训练进程处理各自的批次并合并参数更新所需的信息。采样器可以依进程编号分配索引，并在每轮调整打乱顺序。对无法整除的样本数，实现可按配置舍弃尾部索引或补齐索引。</p>"], ["<p>A sampler determines which samples to read and in what order. In data-parallel training, processes handle their own batches and combine information used for model updates. A sampler can assign indices by process and reshuffle them each epoch. When the sample count is uneven, implementations can drop or pad trailing indices according to configuration.</p>"]]},
+    {t:["预取下一批", "Prefetch the next batch"],
+     d:["GPU 计算当前批次时，加载进程可读取并准备下一批。", "While the GPU computes the current batch, loaders can read and prepare the next one."],
+     b:[["<p>数据加载可以包含读取、解码和将样本合并为批次。预取是提前准备将来要消费的批次，使部分准备工作与 GPU 计算重叠。队列中的批次会占用内存。如果存储和解码持续供不上训练消耗，预取队列最终也会耗尽。</p>"], ["<p>Data loading can include reading, decoding and combining samples into a batch. Prefetch prepares future batches ahead of consumption so some preparation overlaps GPU computation. Queued batches use memory. If storage and decoding continually supply batches more slowly than training consumes them, the queue eventually runs dry.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

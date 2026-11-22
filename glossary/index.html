@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>术语表 · Shan's Stack</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/palette.css">
+<link rel="stylesheet" href="../assets/site.css">
+<script>window.SS_ROOT='../';</script>
+</head>
+<body>
+<script src="../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../index.html"><svg aria-hidden="true"><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../index.html#map" data-en="Main map">总图</a><a href="../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap glossary">
+  <div class="mhero"><h1 data-en="Glossary">术语表</h1></div>
+  <label class="glossary-search"><span data-en="Filter terms">筛选术语</span><input id="term-filter" type="search" autocomplete="off"></label>
+  <div id="term-list"></div>
+  <p id="no-terms" role="status" data-en="No matching terms." hidden>没有匹配的术语。</p>
+</main>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../data/stations.js"></script>
+<script src="../data/terms.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(function(){
+  var groups=new Map(),list=document.getElementById('term-list'),input=document.getElementById('term-filter'),empty=document.getElementById('no-terms');
+  var entries=Object.entries(SS.terms).sort(function(a,b){return a[1].en.localeCompare(b[1].en,'en')});
+  entries.forEach(function(entry){
+    var letter=entry[1].en[0].toUpperCase();
+    if(!groups.has(letter))groups.set(letter,[]);
+    groups.get(letter).push(entry);
+  });
+  var sections=[];
+  function filter(){
+    var query=input.value.trim().toLowerCase(),count=0;
+    sections.forEach(function(section){var found=false;
+      Array.from(section.children).slice(1).forEach(function(row){
+        var t=SS.terms[row.id],words=[t.zh,t.en].concat(t.alias||[],row.textContent).join(' ').toLowerCase();
+        row.hidden=!words.includes(query);
+        if(!row.hidden){found=true;count++}
+      });
+      section.hidden=!found;
+    });
+    empty.hidden=count>0;
+  }
+  function jump(){
+    var target=document.getElementById(location.hash.slice(1));
+    if(!target||!target.classList.contains('glossary-term'))return;
+    if(target.hidden){input.value='';filter()}
+    target.scrollIntoView();
+  }
+  input.addEventListener('input',filter);
+  addEventListener('hashchange',jump);
+  document.addEventListener('ss-lang',function(){
+    var en=SS.lang()==='en',esc=SS.esc,first=!sections.length;
+    document.title=SS.L('术语表','Glossary')+" · Shan's Stack";
+    list.innerHTML=Array.from(groups,function(group){
+      return '<section class="glossary-group"><h2>'+esc(group[0])+'</h2>'+group[1].map(function(entry){
+        var id=entry[0],t=entry[1],name=SS.T(t),alt=en?t.zh:t.en,see=SS.termSee(t);
+        return '<article class="glossary-term" id="'+esc(id)+'"><h3>'+esc(name)+
+          (name===alt?'':'<span lang="'+(en?'zh-CN':'en')+'">'+esc(alt)+'</span>')+'</h3><p>'+esc(SS.T(t.d))+'</p>'+
+          (see?'<a href="'+esc(see)+'">'+esc(SS.L('详见：','See: ')+SS.title(t.see))+'</a>':'')+'</article>';
+      }).join('')+'</section>';
+    }).join('');
+    sections=Array.from(list.children);
+    try{var q0=new URLSearchParams(location.search).get('q');if(q0)input.value=q0}catch(e){}
+    filter();
+    if(first&&location.hash)requestAnimationFrame(jump);
+  });
+})();
+</script>
+</body>
+</html>

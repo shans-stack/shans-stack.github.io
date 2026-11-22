@@ -1,0 +1,25 @@
+.march-figure { position: relative; }
+.march-figure svg { display: block; width: 100%; height: auto; font: 16px var(--f); }
+.march-figure text { fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+.march-figure .march-heading { font-size: 20px; font-weight: 600; }
+.march-figure .march-value { font-size: 18px; font-weight: 500; }
+.march-figure .march-muted { fill: var(--ink3); }
+.march-figure .march-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1; }
+.march-figure .march-active { fill: color-mix(in srgb, var(--l2) 15%, var(--surface)); stroke: var(--l2); }
+.march-figure .march-cool { fill: color-mix(in srgb, var(--l4) 19%, var(--surface)); stroke: var(--l4); }
+.march-figure .march-ready { fill: color-mix(in srgb, var(--l5) 22%, var(--surface)); stroke: var(--l5); }
+.march-figure .march-busy { fill: color-mix(in srgb, var(--l1) 20%, var(--surface)); stroke: var(--l1); }
+.march-figure .march-idle { fill: var(--bg); stroke: var(--rule2); stroke-dasharray: 3 3; }
+.march-figure .march-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.march-figure .march-wire.march-active { stroke: var(--l2); }
+.march-figure .march-wire.march-cool { stroke: var(--l4); }
+.march-figure .march-wire.march-ready { stroke: var(--l5); }
+.march-figure .march-wire.march-busy { stroke: var(--l1); }
+.march-figure .march-wire.march-idle { stroke: var(--rule2); }
+.march-figure .march-packet { fill: var(--l2); stroke: var(--surface); stroke-width: 1; }
+.march-figure .march-packet.march-cool { fill: var(--l4); }
+.march-figure .march-packet.march-ready { fill: var(--l5); }
+.march-figure .march-packet.march-busy { fill: var(--l1); }
+@media (min-width: 641px) and (max-width: 720px) {
+  main[data-station="march"] .mhost { aspect-ratio: var(--ar); }
+}

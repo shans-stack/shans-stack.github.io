@@ -1,0 +1,43 @@
+.quant-figure { position: relative; }
+.quant-figure svg { display: block; width: 100%; height: auto; font: 16px var(--f); }
+.quant-figure text { fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+.quant-figure .quant-heading { font-size: 20px; font-weight: 600; }
+.quant-figure .quant-value { font-size: 18px; font-weight: 500; }
+.quant-figure .quant-muted { fill: var(--ink3); }
+.quant-figure .quant-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1; }
+.quant-figure .quant-active { fill: color-mix(in srgb, var(--l2) 15%, var(--surface)); stroke: var(--l2); }
+.quant-figure .quant-cool { fill: color-mix(in srgb, var(--l4) 19%, var(--surface)); stroke: var(--l4); }
+.quant-figure .quant-ready { fill: color-mix(in srgb, var(--l5) 22%, var(--surface)); stroke: var(--l5); }
+.quant-figure .quant-busy { fill: color-mix(in srgb, var(--l1) 20%, var(--surface)); stroke: var(--l1); }
+.quant-figure .quant-idle { fill: var(--bg); stroke: var(--rule2); stroke-dasharray: 3 3; }
+.quant-figure .quant-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.quant-figure .quant-wire.quant-active { stroke: var(--l2); }
+.quant-figure .quant-wire.quant-cool { stroke: var(--l4); }
+.quant-figure .quant-wire.quant-ready { stroke: var(--l5); }
+.quant-figure .quant-wire.quant-busy { stroke: var(--l1); }
+.quant-figure .quant-wire.quant-idle { stroke: var(--rule2); }
+.quant-figure .quant-packet { fill: var(--l2); stroke: var(--surface); stroke-width: 1; }
+.quant-figure .quant-packet.quant-cool { fill: var(--l4); }
+.quant-figure .quant-packet.quant-ready { fill: var(--l5); }
+.quant-figure .quant-packet.quant-busy { fill: var(--l1); }
+@media (min-width: 641px) and (max-width: 720px) {
+  main[data-station="quant"] .mhost { aspect-ratio: var(--ar); }
+}
+
+.quant-toggle {
+  position: absolute;
+  top: 88%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-height: 38px;
+  border: 1px solid var(--rule2);
+  padding: 4px 14px;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
+  white-space: nowrap;
+  font: 500 16px var(--f);
+  cursor: pointer;
+}
+.quant-toggle[aria-pressed="true"] { border-color: var(--l5); background: color-mix(in srgb, var(--l5) 16%, var(--surface)); }
+@media (max-width: 640px) { .quant-toggle { top: 93%; min-height: 32px; font-size: 14px; } }

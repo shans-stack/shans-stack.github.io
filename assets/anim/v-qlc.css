@@ -1,0 +1,83 @@
+/* QLC 闪存：动画区样式。由 assets/anim/v-qlc.js 使用，只作用于 .ssa-v-qlc 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-qlc{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-qlc .v-qlc-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-qlc .v-qlc-scene text{dominant-baseline:central}
+.ssa-v-qlc .v-qlc-scene .vis{transition:opacity .4s}
+.ssa-v-qlc .v-qlc-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-qlc .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-qlc .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-qlc .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-qlc .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-qlc .vwm-d{display:inline}
+.ssa-v-qlc .ssa-tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-qlc .ssa-tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.ssa-v-qlc .ssa-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-qlc .ssa-tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-qlc .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s,fill .3s}
+.ssa-v-qlc .box.soft{stroke:var(--rule)}
+.ssa-v-qlc .box.dash{stroke-dasharray:6 5}
+.ssa-v-qlc .box.on{stroke:var(--slate);stroke-width:3}
+.ssa-v-qlc .box.ok{stroke:var(--sage);stroke-width:3}
+.ssa-v-qlc .box.hot{stroke:var(--rose);stroke-width:3}
+.ssa-v-qlc .box.dead{opacity:.35}
+.ssa-v-qlc .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-qlc .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-qlc .b7{font-weight:700}
+.ssa-v-qlc .st{font-weight:600;transition:opacity .25s}
+.ssa-v-qlc .rose-t{fill:var(--rose)}
+.ssa-v-qlc .sage-t{fill:var(--sage)}
+.ssa-v-qlc .slate-t{fill:var(--slate)}
+.ssa-v-qlc .ochre-t{fill:var(--ochre)}
+.ssa-v-qlc .violet-t{fill:var(--violet)}
+.ssa-v-qlc .ink-t{fill:var(--ink)}
+.ssa-v-qlc .ink2-t{fill:var(--ink2)}
+.ssa-v-qlc .ink3-t{fill:var(--ink3)}
+.ssa-v-qlc .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-qlc .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:3;transition:stroke .3s,opacity .3s}
+.ssa-v-qlc .ln.thin{stroke-width:2}
+.ssa-v-qlc .ln.thick{stroke-width:4}
+.ssa-v-qlc .ln.lit{stroke:var(--slate)}
+.ssa-v-qlc .ln.ok{stroke:var(--sage)}
+.ssa-v-qlc .ln.hot{stroke:var(--rose)}
+.ssa-v-qlc .ln.vio{stroke:var(--violet)}
+.ssa-v-qlc .ln.och{stroke:var(--ochre)}
+.ssa-v-qlc .ln.dash{stroke-dasharray:7 6}
+.ssa-v-qlc .ln.dead{opacity:.3}
+.ssa-v-qlc .pkt{fill:var(--slate);stroke:var(--card);stroke-width:1.5;transition:fill .25s}
+.ssa-v-qlc .pkt.ochre{fill:var(--ochre)}
+.ssa-v-qlc .pkt.rose{fill:var(--rose)}
+.ssa-v-qlc .pkt.sage{fill:var(--sage)}
+.ssa-v-qlc .pkt.violet{fill:var(--violet)}
+.ssa-v-qlc .pkt.ghost{fill:none;stroke:var(--rule2);stroke-width:1.5;stroke-dasharray:3 3}
+.ssa-v-qlc .pkt.cp{stroke:var(--rose);stroke-width:3}
+.ssa-v-qlc .dot{fill:var(--slate)}
+.ssa-v-qlc .dot.ok{fill:var(--sage)}
+.ssa-v-qlc .dot.rose{fill:var(--rose)}
+.ssa-v-qlc .dot.vio{fill:var(--violet)}
+.ssa-v-qlc .dot.ochre{fill:var(--ochre)}
+.ssa-v-qlc .cel{fill:var(--card);stroke:var(--rule2);stroke-width:1.5;transition:fill .25s,stroke .25s,opacity .3s}
+.ssa-v-qlc .cel.s{fill:var(--slate);stroke:var(--slate)}
+.ssa-v-qlc .cel.o{fill:var(--ochre);stroke:var(--ochre)}
+.ssa-v-qlc .cel.r{fill:var(--rose);stroke:var(--rose)}
+.ssa-v-qlc .cel.g{fill:var(--sage);stroke:var(--sage)}
+.ssa-v-qlc .cel.v{fill:var(--violet);stroke:var(--violet)}
+.ssa-v-qlc .cel.x{fill:var(--rule);stroke:var(--rule2)}
+.ssa-v-qlc .cel.flash{stroke:var(--rose);stroke-width:3}
+.ssa-v-qlc .track{fill:var(--rule)}
+.ssa-v-qlc .fill{fill:var(--slate)}
+.ssa-v-qlc .fill.rose{fill:var(--rose)}
+.ssa-v-qlc .fill.sage{fill:var(--sage)}
+.ssa-v-qlc .fill.ochre{fill:var(--ochre)}
+.ssa-v-qlc .fill.violet{fill:var(--violet)}
+.ssa-v-qlc .fill.ink3{fill:var(--ink3)}
+.ssa-v-qlc .xmark{stroke:var(--rose);stroke-width:3.5;stroke-linecap:round;fill:none}
+.ssa-v-qlc .sep{stroke:var(--rule);stroke-width:1.5}
+
+.stage .figbox:has(.ssa-v-qlc){margin-block:12px}
+@media (max-width:720px){
+  body.present .stage:has(.ssa-v-qlc){padding:12px}
+  .stage:has(.ssa-v-qlc) .cap{display:block}
+  .stage:has(.ssa-v-qlc) h2{font-size:24px}
+  .stage:has(.ssa-v-qlc) .desc{font-size:17px}
+  .stage .figbox:has(.ssa-v-qlc){margin-block:8px}
+}

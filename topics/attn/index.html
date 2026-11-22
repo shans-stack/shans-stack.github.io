@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>注意力如何加权汇总上下文 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明注意力如何生成相关性权重、汇总上下文并复用历史键值。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/attn.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="attn">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="How attention combines context">注意力如何加权汇总上下文</h1>
+        <p class="meta"><span data-en="6 steps · Q/K/V, causal masking, KV cache">6 步 · Q/K/V、因果掩码、KV Cache</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li>Attention Is All You Need</li>
+      <li>GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints</li>
+      <li>Efficient Memory Management for Large Language Model Serving with PagedAttention</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap"><span>© 2026 Shan's Stack</span></div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/attn.js"></script>
+<script>
+window.SS_TOPIC_CFG = { anim: 'attn', ar: [960/334, 400/544], steps: [
+    { t: ["为每个位置生成 Q、K、V", "Project each position into Q, K and V"],
+      d: ["每个位置的输入向量经过三套可学习变换，得到查询、键和值。", "Three learned projections turn each input vector into a query, a key, and a value."],
+      b: [["<p>自注意力从同一序列生成三类向量。查询（Q）用于衡量当前要找什么，键（K）用于与查询比较，值（V）携带将被汇总的信息。同一位置的三类向量来自不同的线性变换。</p>"], ["<p>Self-attention derives three kinds of vectors from the same sequence. A query (Q) is used to look for relevant positions, a key (K) is compared with a query, and a value (V) carries the information that will be combined. Separate linear projections produce the three vectors at each position.</p>"]] },
+    { t: ["用查询和键算分", "Score keys against the query"],
+      d: ["当前查询分别与各位置的键做缩放点积，得到一组相关性分数。", "The current query takes a scaled dot product with each key to produce a set of relevance scores."],
+      b: [["<p>点积把两组向量对应分量相乘后相加，得到一个数。缩放点积注意力将这个数除以键向量维度的平方根，以抑制维度增大时分数幅度的增长。每个查询会得到一行分数，每项对应一个可比较的位置。</p>"], ["<p>A dot product multiplies matching vector components and sums the products. Scaled dot-product attention divides the result by the square root of the key dimension to control score magnitude as the dimension grows. Each query produces a row of scores, with one entry per compared position.</p>"]] },
+    { t: ["屏蔽未来位置", "Mask future positions"],
+      d: ["因果掩码使当前位置只从自己和先前的位置取信息。", "A causal mask lets each position read itself and earlier positions."],
+      b: [["<p>自回归语言模型用因果掩码限制分数表中的可见位置。位置二可以使用位置一和位置二，位置三在这一行被屏蔽。归一化后，屏蔽位置的注意力权重为零，训练时并行处理多个位置仍能遵守生成顺序。</p>"], ["<p>Autoregressive language models use a causal mask to restrict visibility in the score matrix. Position two can use positions one and two, while position three is masked in that row. Masked positions receive zero attention weight after normalization, so parallel training can preserve the order required for generation.</p>"]] },
+    { t: ["将分数转成权重并汇总 V", "Normalize scores and combine values"],
+      d: ["Softmax 把可见分数变为总和为一的权重，输出是值向量的加权和。", "Softmax turns visible scores into weights that sum to one, and the output is the weighted sum of the values."],
+      b: [["<p>Softmax 先对分数取指数，再除以指数和，使权重非负且总和为一。每个位置的值向量乘以自己的权重，随后逐分量相加。分数影响的是各位置对输出的贡献大小。</p>"], ["<p>Softmax exponentiates each score and divides by the sum of the exponentials, yielding nonnegative weights that sum to one. Each value vector is multiplied by its weight, then the vectors are added component by component. The scores control how much each position contributes to the output.</p>"]] },
+    { t: ["让多个注意力头并行计算", "Compute attention with multiple heads"],
+      d: ["不同的查询投影形成多个注意力头，头的输出拼接后再经线性变换。", "Separate query projections form multiple attention heads, and their outputs are concatenated and projected."],
+      b: [["<p>注意力头是一组独立计算注意力权重的通道。标准多头注意力为各头提供各自的 Q、K 和 V 投影。分组查询注意力（GQA）让一组查询头共享同一组键和值，保留各自的查询，同时减少需要保存的键值组数。</p>"], ["<p>An attention head is a channel that computes its own attention weights. Standard multi-head attention gives each head its own Q, K, and V projections. Grouped-query attention (GQA) lets several query heads share one set of keys and values, preserving separate queries while reducing the number of key-value sets to retain.</p>"]] },
+    { t: ["缓存已经计算的 K、V", "Cache keys and values already computed"],
+      d: ["逐 token 生成时，新查询读取缓存的历史 K、V，同时把新位置的 K、V 加入缓存。", "During token-by-token generation, the new query reads earlier keys and values, and the new position appends its keys and values to the cache."],
+      b: [["<p>在因果注意力中，追加 token 后，历史位置的表示保持有效。KV Cache 按层保留历史位置的键和值，省去重新计算这些向量的工作。当前查询仍在可见键上计算新权重，并对可见值做加权求和。</p>"], ["<p>In causal attention, appending tokens leaves earlier representations valid. The KV cache retains earlier keys and values for each layer, avoiding recomputation of those vectors. The new query still computes new weights over visible keys and combines their values.</p>"]] }
+] };
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>机柜与布线：VAST 集群的网络拓扑 · Shan's Stack</title>
+<meta name="description" content="VAST 集群的机柜设备、四类逻辑网络、双路径连接和叶脊拓扑。" data-en-content="VAST cluster racks, four logical networks, dual links and leaf-spine topology.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-rack.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language" data-noconv>
+      <button type="button" data-lang-set="zh" data-en="SC" aria-label="简体中文" data-en-label="Simplified Chinese" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" data-en="TC" aria-label="繁體中文" data-en-label="Traditional Chinese" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" aria-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-rack">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Racks and cabling: VAST cluster topology">机柜与布线：VAST 集群的网络拓扑</h1>
+        <p class="meta"><span data-en="6 steps · switches, four networks, MLAG, leaf-spine">6 步 · 交换机、四张网、MLAG、叶脊</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): Networking in DASE (Connect via Switch, Connect via CNode, Leaf-Spine for Large Clusters).">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：Networking in DASE（Connect via Switch、Connect via CNode、Leaf-Spine for Large Clusters）。</li>
+      <li data-en="VAST Data documentation (docs.vastdata.com, as of November 2026): Software Installation Guide; VAST Cluster Concepts and Terminology; Configuring Network Access; Rack Resiliency (version 5.5); knowledge base articles VastOS Network Configuration Guide and External Ethernet Connectivity Supported Configurations.">VAST Data 官方文档（docs.vastdata.com，截至 2026-11）：Software Installation Guide、VAST Cluster Concepts and Terminology、Configuring Network Access、Rack Resiliency（5.5 版）；知识库 VastOS Network Configuration Guide、External Ethernet Connectivity Supported Configurations。</li>
+      <li data-en="Animations are schematic. The number of devices, rack positions and links shown are not real configurations, and no measured numbers are shown.">动画为示意，画面中的设备台数、U 位和连线数量不代表实际配置，也不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-rack.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-rack',ar:[960/504,480/470],
+  steps:[
+    {"t": ["机柜中的设备", "Equipment in the rack"], "d": ["柜顶交换机连接 CBox 与 DBox。安装时为集群设备登记机柜与 U 位。", "Top-of-rack switches connect CBoxes and DBoxes. Cluster appliances are assigned rack and unit positions at installation."], "b": [["<p>CBox 与 DBox 部署中，柜顶交换机连接两种设备。CBox 是容纳四个 CNode 的机箱，DBox 是接入 NVMe 网络的全闪存储箱。</p>", "<p>VAST Cluster Install 可将发现的设备分配到机柜和 U 位，并按机柜配置管理网及 IPMI 地址池。U1 是机柜底部的单元位。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/software-installation-guide\">VAST 5.5，Software Installation Guide</a></p>"], ["<p>In a CBox and DBox deployment, top-of-rack switches connect the two appliance types. A CBox houses four CNodes, and a DBox is an all-flash enclosure attached to the NVMe fabric.</p>", "<p>VAST Cluster Install assigns discovered appliances to racks and rack units and can allocate management and IPMI pools per rack. U1 is the lowest rack unit. <a href=\"https://docs.vastdata.com/docs-5-5/docs/software-installation-guide\">VAST 5.5, Software Installation Guide</a></p>"]]},
+    {"t": ["四类逻辑网络", "Four logical networks"], "d": ["后端连接 CNode 与 DNode，前端连接客户端。管理网与 IPMI 分别承载集群管理和硬件管理。", "The back end connects CNodes to DNodes, and the front end connects clients. Management and IPMI handle cluster and hardware administration, respectively."], "b": [["<p>后端 NVMe 网络承载 CNode 与 DNode 之间的 NVMe over RDMA 流量，可使用以太网或 InfiniBand。前端承载客户端到 CNode 的协议流量，例如 NFS、SMB 和 S3。</p>", "<p>管理网承载集群管理流量，以及 DNS 和身份认证等服务的通信。IPMI 用于硬件管理与监控。这些网络可使用专用端口或通过 VLAN 共用端口。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=38\">VAST 白皮书，第 38 页</a></p>"], ["<p>The back-end NVMe fabric carries NVMe over RDMA traffic between CNodes and DNodes over Ethernet or InfiniBand. The front end carries client protocol traffic to CNodes, including NFS, SMB and S3.</p>", "<p>The management network carries cluster administration traffic and communication with services such as DNS and authentication. IPMI handles hardware management and monitoring. These networks can use dedicated ports or share ports through VLANs. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=38\">VAST white paper, p. 38</a></p>"]]},
+    {"t": ["双链路与交换机对", "Dual links and switch pairs"], "d": ["在以太网 MLAG 拓扑中，每个节点有一条链路接到交换机对中的每一台。", "In an Ethernet MLAG topology, each node has one link to each switch in the pair."], "b": [["<p>在图示的以太网部署中，节点分别连接两台后端交换机。两台交换机之间用至少两条对等链路（IPL）相连，配置多机箱链路聚合（MLAG），为上联提供链路聚合、高可用与负载均衡。</p>", "<p>一台交换机离线时，图示的后端流量经剩余交换机传送。 <a href=\"https://docs.vastdata.com/kb/docs/external-ethernet-connectivity-supported-configurations\">VAST 知识库，以太网上联</a></p>"], ["<p>In the illustrated Ethernet deployment, nodes attach to both back-end switches. At least two inter-peer links (IPLs) connect the switches, which use multi-chassis link aggregation (MLAG) for uplink aggregation, availability and load balancing.</p>", "<p>If one switch goes offline, the illustrated back-end traffic uses the surviving switch. <a href=\"https://docs.vastdata.com/kb/docs/external-ethernet-connectivity-supported-configurations\">VAST KB, Ethernet connectivity</a></p>"]]},
+    {"t": ["前端经交换机接入", "Connect via Switch"], "d": ["CNode 的链路可通过不同 VLAN 同时承载前端与后端流量。", "A CNode link can carry front-end and back-end traffic on separate VLANs."], "b": [["<p>Connect via Switch 在集群交换机上使用不同 VLAN 承载前端主机流量和后端 NVMe 流量。以太网内部网络默认使用 VLAN 69 与外部数据网络隔离。</p>", "<p>白皮书的接法以 MLAG 将集群交换机接到上联交换机。以太网上联也可采用三层路由。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/software-installation-guide\">VAST 5.5，Data VLAN</a></p>"], ["<p>Connect via Switch carries front-end host traffic and back-end NVMe traffic over the cluster switches on separate VLANs. By default, the internal Ethernet network uses VLAN 69 to separate it from the external data network.</p>", "<p>The white-paper topology uses MLAG to connect cluster switches to the upstream network. Ethernet uplinks can also use Layer 3 routing. <a href=\"https://docs.vastdata.com/docs-5-5/docs/software-installation-guide\">VAST 5.5, Data VLAN</a></p>"]]},
+    {"t": ["前端直连 CNode", "Connect via CNode"], "d": ["CNode 可通过第二张网卡接入另一套客户端网络。", "A second NIC can connect the CNode to another client network."], "b": [["<p>Connect via CNode 使用第二张网卡将 CNode 接到它需要服务的网络。该方式可以接入不同的网络技术或安全区。</p>", "<p>两种接法可在同一集群中使用。例如，一组 CNode 连接 InfiniBand 主机，其余以太网客户端继续经后端交换机接入。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=40\">VAST 白皮书，第 40–41 页</a></p>"], ["<p>Connect via CNode uses a second NIC to attach the CNode to the network it serves. This can connect different network technologies or security zones.</p>", "<p>The two approaches can coexist in a cluster. For example, a group of CNodes can serve InfiniBand hosts while Ethernet clients continue to connect through the fabric switches. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=40\">VAST white paper, pp. 40–41</a></p>"]]},
+    {"t": ["多机柜的叶脊网络", "Multi-rack leaf-spine network"], "d": ["各机柜的叶交换机冗余连接脊交换机。图示的以太网上联接在脊层。", "Leaf switches in each rack connect redundantly to the spines. The Ethernet uplink in this design is at the spine layer."], "b": [["<p>当一对交换机无法提供足够的后端端口时，各机柜的设备接到本柜的叶交换机，叶交换机再冗余连接脊交换机。图示采用 VAST 知识库中的以太网上联方式，外部网络接到脊交换机。</p>", "<p>DBox 机柜级保护在部署时把机柜配置为故障域，并将条带分布到各故障域。一个机柜故障后仍可访问数据，重建取决于其余故障域的可用空间。VAST 5.5 要求至少七个 DBox 机柜故障域。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/rack-resiliency\">VAST 5.5，Rack Resiliency</a></p>"], ["<p>When one switch pair cannot provide enough back-end ports, appliances connect to local leaf switches, which have redundant links to the spines. The diagram uses the VAST KB Ethernet design, with the external uplink at the spine switches.</p>", "<p>DBox rack resiliency assigns racks as failure domains at deployment and distributes stripes across them. Data remains available after one rack failure, and rebuild depends on available space in the remaining domains. VAST 5.5 requires at least seven DBox rack failure domains. <a href=\"https://docs.vastdata.com/docs-5-5/docs/rack-resiliency\">VAST 5.5, Rack Resiliency</a></p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+<script>
+document.addEventListener('ss-lang', function () {
+  document.title = document.querySelector('h1').textContent + " · Shan's Stack";
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.zhContent ??= description.content;
+  description.content = window.SS_LANG === 'en' ? description.dataset.enContent : description.dataset.zhContent;
+});
+</script>
+</body>
+</html>

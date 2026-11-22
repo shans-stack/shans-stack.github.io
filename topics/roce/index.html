@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoCE：以太网上的 RDMA · Shan's Stack</title>
+<meta name="description" content="分 5 步说明RoCEv1 和 RoCEv2 的封装、可靠连接及以太网流控。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/roce.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="roce">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="RoCE: RDMA over Ethernet">RoCE：以太网上的 RDMA</h1>
+        <p class="meta"><span data-en="5 steps · Ethernet, UDP/IP, reliable connection">5 步 · 以太网、UDP/IP、可靠连接</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="InfiniBand Trade Association, RoCEv2 specification announcement">InfiniBand Trade Association，RoCEv2 规范发布公告</li>
+      <li data-en="NVIDIA MLNX_OFED documentation, RDMA over Converged Ethernet">NVIDIA MLNX_OFED 文档，RDMA over Converged Ethernet</li>
+      <li data-en="NVIDIA RDMA Aware Networks Programming User Manual, Transport Modes">NVIDIA RDMA Aware Networks Programming User Manual，Transport Modes</li>
+      <li data-en="IEEE 802.1Qbb, Priority-based Flow Control">IEEE 802.1Qbb，Priority-based Flow Control</li>
+      <li data-en="SIGCOMM, Congestion Control for Large-Scale RDMA Deployments">SIGCOMM，Congestion Control for Large-Scale RDMA Deployments</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/roce.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'roce',ar:[900/360,360/520],
+  steps:[
+    {t:["以太网承载 RDMA", "Ethernet carries RDMA"],
+     d:["两端网卡处理内存操作，以太网负责转发报文。", "The adapters handle memory operations and Ethernet carries the packets."],
+     b:[["<p>RoCE 全称 RDMA over Converged Ethernet。RDMA 是远程直接内存访问，由支持 RDMA 的网卡读写已注册的内存。RoCE 把这些操作的传输报文承载在以太网上。交换机根据报文的外层头部转发，两端网卡处理里面的 RDMA 传输字段。</p>"], ["<p>RoCE stands for RDMA over Converged Ethernet. Remote Direct Memory Access (RDMA) uses capable network adapters to read or write registered memory. RoCE carries packets for these operations over Ethernet. Switches forward them using the outer headers, and the adapters handle the enclosed RDMA transport fields.</p>"]]},
+    {t:["RoCEv1 在二层转发", "RoCEv1 uses Layer 2 forwarding"],
+     d:["RoCEv1 把 RDMA 传输报文直接封装进以太网帧，转发范围限于同一二层域。", "RoCEv1 places the RDMA transport inside an Ethernet frame and stays within a Layer 2 domain."],
+     b:[["<p>封装是在报文外添加供网络转发的头部。RoCEv1 使用专用以太网类型字段标识其载荷。交换机在同一二层域内按目的 MAC 地址转发，该地址标识以太网接口。二层域是一组能够通过以太网交换彼此到达的端口。</p>"], ["<p>Encapsulation adds the headers a network uses for forwarding. RoCEv1 uses a dedicated EtherType to identify its payload. Switches forward frames by destination media access control (MAC) address, which identifies an Ethernet interface. This forwarding stays within a Layer 2 domain, a set of ports that can reach one another through Ethernet switching.</p>"]]},
+    {t:["RoCEv2 可跨 IP 子网", "RoCEv2 can cross IP subnets"],
+     d:["RoCEv2 在 RDMA 传输报文外添加 UDP 和 IP 头，路由设备按目的 IP 转发。", "RoCEv2 wraps the RDMA transport in UDP and IP headers so routers can forward it by destination IP."],
+     b:[["<p>网际协议（IP）头提供可路由地址。UDP 是用户数据报协议，负责提供端口字段和数据报封装。封装成 UDP/IP 后，RoCEv2 报文可经路由设备跨越 IP 子网。链路上的以太网头随下一跳更新，目的网卡仍按内部的 RDMA 传输字段处理报文。</p>"], ["<p>The Internet Protocol (IP) header provides routable addresses. User Datagram Protocol (UDP) adds port fields and datagram encapsulation. With UDP/IP headers, RoCEv2 packets can cross IP subnets through routers. The Ethernet header changes with the next hop, and the destination adapter still processes the enclosed RDMA transport.</p>"]]},
+    {t:["可靠连接由网卡维护", "Adapters maintain reliable connections"],
+     d:["在可靠连接上，网卡通过报文序号、确认和重传维护传输状态。", "With Reliable Connection, adapters use packet sequence numbers, acknowledgments and retries to maintain transport state."],
+     b:[["<p>可靠连接（RC）是 RDMA 的一种传输服务。发送端网卡编号并跟踪报文，接收端网卡检查顺序并返回确认。检测到缺包或发生超时时，发送端网卡按 RC 规则重传。RoCEv2 的 UDP 外层提供封装，传输可靠性由内层 RC 服务实现。</p>"], ["<p>Reliable Connection (RC) is an RDMA transport service. The sending adapter numbers and tracks packets, and the receiving adapter checks their sequence and returns acknowledgments. If a gap is detected or a timeout expires, the sending adapter retries as specified by RC. The outer UDP header provides encapsulation, while the inner RC service provides reliability.</p>"]]},
+    {t:["链路暂停与端到端反馈", "Link pauses and end-to-end feedback"],
+     d:["PFC 可以逐跳保护指定优先级，ECN 可触发反馈，让源网卡降低发送速率。", "PFC can protect a selected priority hop by hop, while ECN can trigger feedback that slows the source adapter."],
+     b:[["<p>基于优先级的流量控制（PFC）可让直接相连的上游端口暂停发送某一优先级的帧。显式拥塞通知（ECN）把拥塞标记写入 IP 头。在启用此类反馈的 RoCEv2 网络里，接收网卡看到标记后返回拥塞通知报文（CNP），源网卡据此调整发送速率。</p>"], ["<p>Priority-based Flow Control (PFC) can pause frames of a selected priority at the directly connected upstream port. Explicit Congestion Notification (ECN) marks congestion in the IP header. With this feedback enabled in a RoCEv2 network, the receiving adapter responds to a mark with a Congestion Notification Packet (CNP), and the source adapter adjusts its send rate.</p>"]]}
+  ]};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

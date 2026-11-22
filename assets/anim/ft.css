@@ -1,0 +1,25 @@
+.ft-figure { position: relative; }
+.ft-figure svg { display: block; width: 100%; height: auto; font: 16px var(--f); }
+.ft-figure text { fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+.ft-figure .ft-heading { font-size: 20px; font-weight: 600; }
+.ft-figure .ft-value { font-size: 18px; font-weight: 500; }
+.ft-figure .ft-muted { fill: var(--ink3); }
+.ft-figure .ft-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1; }
+.ft-figure .ft-active { fill: color-mix(in srgb, var(--l2) 15%, var(--surface)); stroke: var(--l2); }
+.ft-figure .ft-cool { fill: color-mix(in srgb, var(--l4) 19%, var(--surface)); stroke: var(--l4); }
+.ft-figure .ft-ready { fill: color-mix(in srgb, var(--l5) 22%, var(--surface)); stroke: var(--l5); }
+.ft-figure .ft-busy { fill: color-mix(in srgb, var(--l1) 20%, var(--surface)); stroke: var(--l1); }
+.ft-figure .ft-idle { fill: var(--bg); stroke: var(--rule2); stroke-dasharray: 3 3; }
+.ft-figure .ft-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.ft-figure .ft-wire.ft-active { stroke: var(--l2); }
+.ft-figure .ft-wire.ft-cool { stroke: var(--l4); }
+.ft-figure .ft-wire.ft-ready { stroke: var(--l5); }
+.ft-figure .ft-wire.ft-busy { stroke: var(--l1); }
+.ft-figure .ft-wire.ft-idle { stroke: var(--rule2); }
+.ft-figure .ft-packet { fill: var(--l2); stroke: var(--surface); stroke-width: 1; }
+.ft-figure .ft-packet.ft-cool { fill: var(--l4); }
+.ft-figure .ft-packet.ft-ready { fill: var(--l5); }
+.ft-figure .ft-packet.ft-busy { fill: var(--l1); }
+@media (min-width: 641px) and (max-width: 720px) {
+  main[data-station="ft"] .mhost { aspect-ratio: var(--ar); }
+}

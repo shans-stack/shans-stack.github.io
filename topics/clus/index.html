@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一个训练集群由什么组成 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明训练集群的计算节点、网络职责和作业调度。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/clus.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="clus">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="What makes up a training cluster">一个训练集群由什么组成</h1>
+        <p class="meta"><span data-en="5 steps · compute fabric, storage fabric, management, scheduling">5 步 · 计算网、存储网、管理网、调度</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li>NVIDIA DGX SuperPOD Reference Architecture — Key Components and Storage Architecture</li>
+      <li>Slurm Workload Manager — Overview</li>
+      <li>PyTorch Distributed Checkpoint documentation</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/clus.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'clus',ar:[840/390,360/520],steps:[
+  {t:["计算节点组成可重复部署的单元", "Compute nodes form repeatable deployment units"],
+   d:["训练集群把多台 GPU 节点组织成部署单元，并为各单元配置网络接入。", "A training cluster groups GPU nodes into deployment units with planned network connections."],
+   b:[["<p>计算节点是运行训练进程的服务器，包含 CPU（中央处理器）、内存、GPU 和网卡。由多个节点及其网络接入组成的部署单元，可以按相同的连接方式扩展，便于部署和验证。多节点作业同时使用若干计算节点，节点内的 GPU 互联承担本地通信，节点外的链路把各节点连接起来。</p>"], ["<p>A compute node is a server that runs training processes and contains processors (CPUs), host memory, GPUs and network adapters. A deployment unit groups nodes with their network connections so a consistent design can be deployed and validated repeatedly. A multi-node job uses several compute nodes at once. On-node GPU links carry local transfers, while external links connect the nodes.</p>"]]},
+  {t:["计算网传递训练进程之间的数据", "The compute fabric carries data between training processes"],
+   d:["分布在不同节点的训练进程通过计算网交换梯度或模型中间结果。", "Training processes on different nodes exchange gradients or intermediate results over the compute fabric."],
+   b:[["<p>梯度表示损失（对预测误差的度量）随模型参数变化的速率，用于更新权重。分布式训练进程常在每步集中交换梯度，模型拆分时也会交换层的中间结果。这些进程之间的通信经过网卡和计算网交换机。节点之间的带宽与拥塞会影响等待同步的时间。</p>"], ["<p>A gradient expresses how the loss, a measure of prediction error, changes with model parameters and guides weight updates. Distributed training processes often exchange gradients during each step. Partitioned models may also exchange intermediate results between layers. Network adapters and compute switches carry these transfers. Bandwidth and congestion between nodes affect how long processes wait to synchronise.</p>"]]},
+  {t:["存储网承担读样本与写检查点", "The storage fabric carries samples and checkpoints"],
+   d:["训练进程从共享存储读取样本，并把用于恢复的训练状态写回存储。", "Training processes read samples from shared storage and write training state that can be used for recovery."],
+   b:[["<p>检查点是某个训练阶段保存的状态，通常包括模型权重和恢复更新所需的优化器状态。优化器是依据梯度调整模型参数的算法。样本读取可持续发生，检查点写入则常形成突发负载。集群可用专用存储网络或共享网络上的逻辑隔离来管理这类流量。</p>"], ["<p>A checkpoint is saved training state. It typically contains model weights and the optimiser state needed to resume updates. An optimiser is an algorithm that updates parameters using gradients. Sample reads can be continuous, while checkpoint writes often arrive in bursts. Clusters can manage this traffic using a dedicated storage fabric or logical separation on shared infrastructure.</p>"]]},
+  {t:["管理网负责下发控制与回传状态", "The management network carries control and status traffic"],
+   d:["管理服务向节点分发配置，并从节点接收运行状态。", "Management services distribute configuration to nodes and receive operational status."],
+   b:[["<p>管理流量通常包括节点部署、状态监控与作业控制。带内管理使用操作系统可访问的网络。带外管理通过独立的管理接口访问硬件控制器，在节点操作系统不可用时仍能进行硬件状态查询或电源控制。计算、存储和管理是网络的不同职责，可以由物理网络或逻辑隔离来实现。</p>"], ["<p>Management traffic typically includes node provisioning, health monitoring and job control. In-band management uses a network accessible to the operating system. Out-of-band management uses a dedicated management interface to reach a hardware controller, allowing status checks or power control when the node operating system is unavailable. Compute, storage and management are network roles that can be implemented through physical networks or logical separation.</p>"]]},
+  {t:["调度器给同一个作业分配多台节点", "A scheduler allocates several nodes to one job"],
+   d:["调度器根据作业的资源请求分配节点和 GPU，再启动参与同一作业的进程。", "The scheduler allocates nodes and GPUs according to a resource request, then launches the processes that belong to the same job."],
+   b:[["<p>调度器维护可用资源和待运行作业队列。一个分布式作业需要同时获得足够的资源，以便各个进程建立通信并共同执行训练。训练启动后，计算网承担同步，存储网承担数据读写，管理面追踪作业与节点状态。中断后的作业可在获得资源后从可用检查点恢复。</p>"], ["<p>The scheduler tracks available resources and queued jobs. A distributed job needs its allocation together so its processes can establish communication and train jointly. Once the job starts, the compute fabric carries synchronisation, the storage fabric carries reads and writes, and the management plane tracks job and node status. An interrupted job can resume from an available checkpoint after receiving an allocation.</p>"]]}
+]};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

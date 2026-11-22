@@ -1,0 +1,17 @@
+.nvl-anim{position:relative}
+.nvl-anim svg{display:block;width:100%;height:auto;overflow:hidden}
+.nvl-label,.nvl-note{font:600 20px var(--f);fill:var(--ink);pointer-events:none}
+.nvl-note{font:500 17px var(--f);fill:var(--ink2)}
+.nvl-device,.nvl-active,.nvl-idle,.nvl-storage,.nvl-rose,.nvl-frame{stroke:var(--rule2);fill:var(--surface);stroke-width:1.5}
+.nvl-active{fill:color-mix(in srgb,var(--l5) 13%,var(--surface));stroke:var(--l5)}
+.nvl-storage{fill:color-mix(in srgb,var(--l4) 14%,var(--surface));stroke:var(--l4)}
+.nvl-rose{fill:color-mix(in srgb,var(--l1) 13%,var(--surface));stroke:var(--l1)}
+.nvl-idle{fill:var(--bg);stroke-dasharray:5 4}
+.nvl-frame{fill:var(--bg);stroke-dasharray:5 5}
+.nvl-wire{fill:none;stroke:var(--rule2);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.nvl-good{stroke:var(--l5)}
+.nvl-blue{stroke:var(--l4)}
+.nvl-burden{stroke:var(--l1)}
+.nvl-moving{fill:var(--l5);stroke:var(--surface);stroke-width:1}
+.nvl-data{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.nvl-load{fill:var(--l1);stroke:var(--surface);stroke-width:1}

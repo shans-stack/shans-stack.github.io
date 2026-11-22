@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InsightEngine：文件一写进来，就能被检索 · Shan's Stack</title>
+<meta name="description" content="分 7 步说明 VAST InsightEngine：写入产生事件，DataEngine 函数按内容类型切块、调用嵌入模型，结果写进带向量索引的 DataBase 表，检索时按提问人的身份过滤，删除即清理，就地修改由定时任务补算。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-ie.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-ie">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="InsightEngine: files become searchable as they are written">InsightEngine：文件一写进来，就能被检索</h1>
+        <p class="meta"><span data-en="7 steps · RAG, embeddings, permission filtering">7 步 · RAG、向量化、权限过滤</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): the InsightEngine section of The VAST DataEngine chapter (Architecture and Data Flow, Vector Search, Consistency and Cleanup, Simplified Data Governance for RAG).">VAST Data，《VAST AI Operating System》白皮书（2026-04 版），The VAST DataEngine 章节中的 InsightEngine 一节（Architecture and Data Flow、Vector Search、Consistency and Cleanup、Simplified Data Governance for RAG）。</li>
+      <li data-en="VAST documentation (docs.vastdata.com), VAST Cluster 5.5: Vector Search, Vector Database Index, Row and Column Security.">VAST 官方文档（docs.vastdata.com），VAST Cluster 5.5：Vector Search、Vector Database Index、Row and Column Security。</li>
+      <li data-en="Animations are schematic: they show the flow only, with no measured numbers.">动画为示意，只画流程，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-ie.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-ie',ar:[960/500,480/660],
+  steps:[
+    {"t": ["RAG 需要一整套部件", "RAG takes a whole set of parts"], "d": ["检索增强生成需要存储、嵌入模型、向量库、同步逻辑和权限控制；InsightEngine 用 VAST 已有的部件，把它们做在一个系统里。", "RAG needs storage, embeddings, a vector database, sync and access control; InsightEngine builds them from parts already in VAST."], "b": [["<p>检索增强生成（RAG）在回答问题之前，先从机构自己的数据里找出相关内容，和问题一起交给模型。要在生产环境做到这一点，需要存原文的存储、把内容变成向量的嵌入模型、做相似度检索的向量库、让索引跟上数据变化的编排逻辑，以及控制谁能看到什么的权限系统。白皮书指出，这些部件常常是独立的系统，靠定制代码连接，数据要在系统之间复制，权限要在不同的权限模型之间同步。</p>", "<p>InsightEngine 是 VAST AI OS 里的原生 RAG 服务：数据写进 DataStore 时触发 DataEngine 的函数切块、向量化，结果存进 DataBase 里带向量索引的表，检索时按同一套身份和权限过滤。后面几步沿着一份文件，从写入到被检索的路径逐段说明。</p>"], ["<p>Retrieval-augmented generation (RAG) finds relevant content in an organisation's own data and hands it to the model along with the question. Doing this in production takes storage for the source content, an embedding model that turns content into vectors, a vector database for similarity search, orchestration that keeps the index current as data changes, and a permission system that controls who sees what. The white paper notes that these parts are often separate systems joined by custom code, with data copied between them and permissions synced across different access models.</p>", "<p>InsightEngine is a native RAG service in the VAST AI OS: a write to DataStore triggers DataEngine functions that chunk and embed the content, the results go into a DataBase table with a vector index, and searches are filtered by one shared notion of identity and permission. The following steps follow one file from the moment it is written to the moment it is found.</p>"]]},
+    {"t": ["写入就是事件", "A write is an event"], "d": ["数据写进 DataStore，DataStore 向 Event Broker 发一条事件通知，DataEngine 的触发器据此启动处理流程。", "When data is written to DataStore, DataStore publishes an event to the Event Broker, and a DataEngine trigger starts the processing."], "b": [["<p>对象写入 bucket 时，DataStore 向 VAST Event Broker（兼容 Kafka，底层是 DataBase 表）发出一条结构化、自带描述的事件。DataEngine 的触发器把事件交给 InsightEngine 的函数；多个对象到来时，多条处理流程并行启动。</p>", "<p>向量化和写入是异步的：写入不必等向量算完，事件在 Event Broker 里持久排队，即使 GPU 一时跟不上写入速度，向量最终也会算完。通过 NFSv4 写入的文件，在第一次关闭时开始处理。</p>"], ["<p>When an object is written to a bucket, DataStore publishes a structured, self-describing event to VAST Event Broker (Kafka-compatible and built on DataBase tables). A DataEngine trigger hands the event to InsightEngine's function, and when many objects arrive, many processing flows start in parallel.</p>", "<p>Embedding is asynchronous to the write: the write does not wait for vectors, and events are queued durably in the Event Broker, so vectors are eventually computed even if GPUs temporarily fall behind the rate of writes. For files written over NFSv4, processing starts when the file is first closed.</p>"]]},
+    {"t": ["按内容类型切块，再算向量", "Chunk by content type, then embed"], "d": ["函数按文件类型选流水线：PDF 抽出文字、表格和图，视频切段后用视觉语言模型打标签，再分块送进嵌入模型。", "PDFs yield text, tables and figures; videos become segments labelled by a vision-language model; chunks go to an embedding model."], "b": [["<p>处理新对象的函数和其他 DataEngine 函数一样，用 Python 编写，镜像放在外部仓库。它按内容类型启动不同的流水线：文本文档解析 PDF 结构，抽出文字、表格和信息图；视频切成片段，先用视觉语言模型打标签再向量化；带格式的文档、电子表格等格式各有对应的流水线。块的大小和重叠可以配置，它们影响向量的质量。</p>", "<p>嵌入模型不限定：可以是外部的托管推理服务（如 OpenAI、Anthropic、Google 提供的服务），也可以是本地运行的微服务，如 NVIDIA NIM。为了降低每个事件的开销，函数可以一次处理一批事件、成批计算向量（micro-batching）。</p>"], ["<p>The function that handles new objects is like any other DataEngine function: written in Python, with its image in an external registry. It starts a different pipeline for each content type: for text documents it parses the PDF structure and extracts text, tables and infographics; videos are split into segments and labelled with a vision-language model before embedding; formatted documents, spreadsheets and other formats have pipelines of their own. Chunk size and overlap are configurable and affect embedding quality.</p>", "<p>The embedding model is not prescribed: it can be an external hosted inference service (such as those from OpenAI, Anthropic or Google) or a locally run microservice such as NVIDIA NIM. To cut per-event overhead, functions can take events in batches and compute embeddings in batches (micro-batching).</p>"]]},
+    {"t": ["写成一张表：片段、向量、元数据各占一列", "One table: chunk, vector and metadata columns"], "d": ["结果插入 DataBase 表：一列存片段，一列存带近似最近邻索引的向量，其余列存来源和元数据。", "Each chunk becomes a row: the chunk, its vector (with an ANN index), and its source and metadata."], "b": [["<p>每个片段成为表里的一行。片段列存从原对象里抽出来的内容，这部分内容和 DataStore 里的原文重复，由 Element Store 去重；向量列使用向量索引，近似最近邻（ANN）算法可以配置；其他列存 S3 对象元数据和内容相关的属性，用来做带过滤的检索和元数据查询。</p>", "<p>原文、向量和元数据在同一个系统里，用同一个租户密钥加密。白皮书还指出，表的事务语义让更换嵌入模型时可以重新计算向量，而不需要重新导入原文。</p>"], ["<p>Each chunk becomes a row in the table. The chunk column holds content extracted from the source object, which duplicates the original in DataStore and is deduplicated by the Element Store; the vector column uses a vector index with a configurable approximate-nearest-neighbour (ANN) algorithm; further columns hold S3 object metadata and content-specific attributes for filtered search and metadata queries.</p>", "<p>Source content, vectors and metadata live in one system and are encrypted with one tenant key. The white paper adds that the table's transactional semantics allow vectors to be recomputed with a new embedding model without re-ingesting the source data.</p>"]]},
+    {"t": ["检索时按提问人的身份过滤", "Search is filtered by who is asking"], "d": ["提问先用同一个嵌入模型变成向量，再做相似度检索和元数据过滤，只返回提问人有权查看的片段。", "The question is embedded with the same model and searched; only chunks the asker may see come back."], "b": [["<p>一次检索的流程是：先确认发起请求的身份，在执行查询时套用它的访问策略；用生成存量向量的同一个嵌入模型把问题变成向量；做向量相似度检索找出候选片段，叠加请求里带的元数据过滤；如果要求重排（rerank），再对候选片段重新打分。</p>", "<p>返回的是语义相关、并且提问人有权访问的片段及其元数据（来源、S3 位置等）。原对象的权限一改，下一次检索就按新权限过滤，不需要等重新索引或同步元数据。</p>"], ["<p>A search runs like this: the requesting identity is checked and its access policies are applied during the query; the question is turned into a vector with the same embedding model that produced the stored vectors; a vector similarity search finds candidate chunks, combined with any metadata filters in the request; and if reranking is requested, the candidates are scored again.</p>", "<p>What comes back are chunks, with their metadata such as source and S3 location, that are both relevant and readable by the asker. When an object's permissions change, the next search applies them immediately, with no wait for reindexing or metadata sync.</p>"]]},
+    {"t": ["两个接口：直接要答案，或只要片段", "Two interfaces: an answer, or just the chunks"], "d": ["RAG 检索接口接收自然语言问题，返回生成的回答和来源；向量检索接口接收现成的向量，只返回片段。", "The RAG API takes a question and returns an answer with sources; the vector search API takes a vector and returns chunks."], "b": [["<p>RAG 检索接口（RAG retrieval API）是最上层的接口：接收自然语言问题，检索相关片段，交给大模型生成回答，返回回答、来源，以及嵌入耗时、检索耗时、相关度分数等检索遥测信息。</p>", "<p>向量检索接口（vector search API）接收调用方算好的向量，只返回检索到的片段，不调用大模型。它适合自带嵌入流水线、做多模态处理，或者自己负责提示词和生成的应用。两个接口在底层都通过 DataBase 的 SQL 接口做相似度检索。</p>"], ["<p>The RAG retrieval API is the highest-level interface: it takes a natural-language question, retrieves relevant chunks, has a large language model write an answer from them, and returns the answer, the sources and retrieval telemetry such as embedding time, search time and accuracy scores.</p>", "<p>The vector search API takes vectors computed by the caller and returns the matching chunks without calling a language model. It suits applications with their own embedding pipelines, multimodal workflows, or applications that handle prompting and generation themselves. Both interfaces run their similarity searches through DataBase's SQL interface.</p>"]]},
+    {"t": ["删除即清理，就地修改不自动重算", "Deletes are cleaned up; in-place edits catch up later"], "d": ["对象删除会触发清理函数删掉对应的行；文件被就地修改时不会立即重算，由定时任务对照 Catalog 找出过期的向量。", "Deleting an object removes its rows; files edited in place are re-embedded later by a scheduled Catalog check."], "b": [["<p>删除对象同样会在 Event Broker 里产生事件，InsightEngine 据此触发清理函数，找出引用这个对象的所有片段和向量行并删除，之后的检索不会再返回已经不存在的数据。对象过期被删除时，对应的向量也随之删除。</p>", "<p>InsightEngine 按对象语义设计：数据被创建或删除，但不被修改。文件被就地修改时不会立即重算向量，以免在频繁改动的文件系统上产生大量重复计算；改由 DataEngine 的定时触发器运行，用 VAST Catalog 对比文件的最后修改时间和向量的生成时间，找出需要重算的部分。因此，对正在被反复修改的文件，向量不保证实时。</p>"], ["<p>Deleting an object also produces an event in the Event Broker, which triggers a clean-up function that finds every chunk and vector row referring to that object and removes it, so later searches never return data that no longer exists. When an object expires and is deleted, its vectors go with it.</p>", "<p>InsightEngine is designed around object semantics, where data is created or deleted but not modified. A file edited in place is not re-embedded straight away, to avoid heavy recomputation on busy file systems; instead a DataEngine schedule trigger runs a job that uses the VAST Catalog to compare each file's last-modified time with its embedding time and find what needs recomputing. Vectors for files that are being edited in place are therefore not kept real-time.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

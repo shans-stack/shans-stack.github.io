@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VMS 集群管理与监控 · Shan’s Stack</title>
+<meta name="description" content="VMS 集群管理与监控。独立运行的管理容器。网页和 CLI 共用 REST API。指标采集与分级保留。按客户端、VIP 和 CNode 分析负载。告警通知与 Prometheus 指标。VMS 宿主故障后的恢复">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-mgmt.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-mgmt">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="VMS cluster management and monitoring">VMS 集群管理与监控</h1>
+        <p class="meta"><span data-en="VMS, REST API, monitoring">VMS、REST API、监控</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), Managing the Platform chapter.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版），Managing the Platform 一章。</li>
+      <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5): The VAST REST API, Using the VAST CLI, Overview of Analytics Reports, Data Flow Overview.">VAST Data 官方文档（docs.vastdata.com，5.5 版）：The VAST REST API、Using the VAST CLI、Overview of Analytics Reports、Data Flow Overview。</li>
+      <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5): Overview of Alarms and Events, Managing Alarms and Events, Exporting Metrics to Prometheus, Overview of Uplink.">VAST Data 官方文档（docs.vastdata.com，5.5 版）：Overview of Alarms and Events、Managing Alarms and Events、Exporting Metrics to Prometheus、Overview of Uplink。</li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-mgmt.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-mgmt',ar:[960/420,480/452],
+  steps:[
+    {"t": ["独立运行的管理容器", "A separate management container"], "d": ["VMS 在 CNode 上运行，负责管理集群。协议服务处理客户端读写。", "VMS runs on a CNode and manages the cluster. Protocol services handle client I/O."], "b": [["<p>VMS（VAST Management Service）在一台 CNode 上以 Linux 容器运行，与 CNode 和协议管理进程所在的容器分开。VMS 提供管理界面、收集集群指标并协调软件升级和扩容。</p>"], ["<p>VAST Management Service (VMS) runs in a Linux container on one CNode, separate from the container that runs the CNode and protocol manager processes. It provides management interfaces, collects cluster metrics and coordinates software upgrades and expansion.</p>"]]},
+    {"t": ["网页和 CLI 共用 REST API", "A shared REST API for the web UI and CLI"], "d": ["VAST 网页控制台与 CLI 都调用 VMS 的 REST API，自动化脚本可以直接调用这套接口。", "The VAST web UI and CLI call the VMS REST API. Automation scripts can call the same API directly."], "b": [["<p>集群管理操作通过 REST API 提供，包括创建 NFS 导出和扩容。Swagger 接口文档可在管理网络内访问，路径为管理 VIP 上的 <code>/docs/index.html</code>。VAST CLI 可通过 SSH 连接 CNode 后运行 <code>vcli</code> 使用。</p>"], ["<p>The REST API exposes cluster management operations, including creating NFS exports and expanding the cluster. The Swagger reference is available at <code>/docs/index.html</code> on the management VIP. To use the VAST CLI, connect to a CNode over SSH and run <code>vcli</code>.</p>"]]},
+    {"t": ["指标采集与分级保留", "Metrics collection and retention"], "d": ["VMS 的性能分析每 10 秒采样，历史指标按不同时间粒度保留。", "VMS performance analytics sample every 10 seconds and retain historical metrics at several resolutions."], "b": [["<p>VAST 5.5 的性能报表从集群中的 CNode 采集原始数据，可分别查看读写 IOPS、带宽、延迟及协议和元数据指标。10 秒样本保留 24 小时，5 分钟汇总保留一周，每小时汇总保留一个月，每日汇总保留一年。</p>", "<p>注册到 VAST Uplink 的集群可以启用加密遥测上报，由 VAST 支持团队用于远程监控。</p>"], ["<p>VAST 5.5 performance reports poll raw data from the cluster’s CNodes. Reports show read and write IOPS, bandwidth and latency, with protocol and metadata breakdowns. Ten-second samples are retained for 24 hours, five-minute aggregates for one week, hourly aggregates for one month, and daily aggregates for one year.</p>", "<p>Clusters registered with VAST Uplink can enable encrypted telemetry for remote monitoring by VAST Support.</p>"]]},
+    {"t": ["按客户端、VIP 和 CNode 分析负载", "Tracing load across clients, VIPs and CNodes"], "d": ["User Activity 用于查看用户活动，Data Flow 用于分析采样期间的 I/O 分布。", "User Activity shows user traffic. Data Flow shows the I/O distribution over a sampling period."], "b": [["<p>User Activity 按用户、导出路径和客户端查看流量。Data Flow 将客户端、VIP、CNode 和视图关联起来，便于定位负载集中在哪个节点。</p>", "<p>VIP 是可在 CNode 间迁移的服务地址。过多客户端挂载到同一个 VIP 时，I/O 可能集中到承载该 VIP 的 CNode。</p>"], ["<p>User Activity shows traffic by user, export and client. Data Flow correlates clients, VIPs, CNodes and views so administrators can identify where the load is concentrated.</p>", "<p>A VIP is a service address that can move between CNodes. When too many clients mount the same VIP, their I/O can concentrate on the CNode hosting it.</p>"]]},
+    {"t": ["告警通知与 Prometheus 指标", "Alarm notifications and Prometheus metrics"], "d": ["VMS 可通过邮件、Webhook 或 Syslog 发送告警。Prometheus 定期从 VMS REST API 抓取指标。", "VMS can send alarms by email, webhook or syslog. Prometheus periodically scrapes metrics from the VMS REST API."], "b": [["<p>VAST 5.5 记录系统及用户事件。VMS 根据事件定义触发告警并设置严重级别，问题解决后自动清除告警。事件日志最多保留 150 万条或 30 天，先达到的上限生效。</p>", "<p>邮件通知需要外发 SMTP 服务。Webhook 经 HTTP 发送告警，Syslog 将告警转发到远程日志服务。VMS REST API 的 Prometheus exporter 提供监控指标。</p>"], ["<p>VAST 5.5 logs system and user events. Event definitions determine which alarms are raised and their severity. Alarms clear when the underlying issue is resolved. Events are retained until the log reaches 1.5 million entries or 30 days, whichever comes first.</p>", "<p>Email notifications require an outbound SMTP service. Webhooks deliver alarms over HTTP, and syslog forwards alarms to a remote logging service. The VMS REST API exposes monitoring metrics through a Prometheus exporter.</p>"]]},
+    {"t": ["VMS 宿主故障后的恢复", "VMS recovery after a host failure"], "d": ["其余节点确认宿主失联后选出新宿主，VMS 从持久化状态恢复。", "The surviving nodes confirm the host failure and elect a new host. VMS resumes from persisted state."], "b": [["<p>新宿主启动 VMS 容器并从持久化的 SCM 读取管理状态。客户端 I/O 由存活 CNode 上的协议服务处理。</p>"], ["<p>The new host starts a VMS container and loads management state from persistent SCM. Protocol services on surviving CNodes handle client I/O.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

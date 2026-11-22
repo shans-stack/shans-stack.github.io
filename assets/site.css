@@ -340,5 +340,26 @@ a.tm:hover h3{text-decoration:underline}
 @media (max-width:440px){.nav a{padding:10px 4px;font-size:13px}.brand{font-size:15px;gap:8px}.langs button{min-width:28px;padding:0 5px}}
 .no-talks #pick,.no-talks #talks,.no-talks a[href$="#talks"],.no-talks #intalks{display:none!important}
 .views{margin-left:12px}
-@media (max-width:440px){.nav a{display:none}.views{margin-left:0}}
+@media (441px <= width <= 490px){.hd .wrap{gap:8px}.nav{gap:2px}.nav a{padding-inline:2px;font-size:13px}}
+@media (max-width:440px){.nav a:not(.glossary-link){display:none}.views{margin-left:0}}
 .soon{font-size:13px;font-weight:400;color:var(--ink3);margin-left:6px}
+.mtopics{margin-top:72px}
+.mtopics .sh{margin-bottom:24px}
+
+.glossary{max-width:840px}
+.glossary-search{display:block;margin:28px 0 40px}
+.glossary-search span{display:block;color:var(--ink2);font-size:15px;margin-bottom:6px}
+.glossary-search input{width:min(100%,26rem);min-height:44px;border:1px solid var(--rule2);border-radius:2px;padding:0 12px;background:var(--bg);color:var(--ink);font:inherit}
+.glossary-search input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.glossary-group{margin-top:36px}
+.glossary-group h2{font-size:22px;border-bottom:1px solid var(--rule);padding-bottom:5px}
+.glossary-term{padding:14px 0;scroll-margin-top:16px}
+.glossary-term:target{outline:1px solid var(--rule2);outline-offset:6px}
+.glossary-term h3{font-size:19px;font-weight:600}
+.glossary-term h3 span{font-size:15px;font-weight:400;color:var(--ink2);margin-inline-start:.5em}
+.glossary-term p{color:var(--ink2);margin-top:3px}
+.glossary-term a{display:inline-block;margin-top:4px;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+.tsearch{display:flex;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+.tsearch input{width:240px;max-width:100%;min-height:40px;padding:0 12px;border:1px solid var(--rule2);border-radius:2px;background:var(--surface);color:var(--ink);font:15px var(--f)}
+.tsearch .btn{min-height:40px}
+.tsearch .tcount{font-size:14px;color:var(--ink3)}

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全局命名空间：几地看到同一个文件夹 · Shan's Stack</title>
+<meta name="description" content="VAST Global Access 的源站和卫星站如何共享路径、缓存读取、维护一致性并转发写入。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-gns.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-gns">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Global namespace: one folder, many sites">全局命名空间：几地看到同一个文件夹</h1>
+        <p class="meta"><span data-en="6 steps · VAST, DataSpace, global namespace, caching">6 步 · VAST、DataSpace、全局命名空间、缓存</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=98" data-en="VAST AI Operating System white paper (April 2026), Global Access, Read and Write Leases Ensure Consistency and Managing Global Access">VAST AI Operating System 白皮书（2026 年 4 月），Global Access、Read and Write Leases Ensure Consistency 与 Managing Global Access</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/global-namespace-overview" data-en="VAST Administrator’s Guide, Global Namespace Overview">VAST 管理员文档 · Global Namespace Overview</a></li>
+      <li><a href="https://docs.vastdata.com/docs-5-5/docs/configuring-global-access" data-en="VAST Administrator’s Guide, Configuring Global Access">VAST 管理员文档 · Configuring Global Access</a></li>
+      <li data-en="Animations are schematic. Published figures are identified by their sources.">动画为示意。引用的公开数字均标明出处。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-gns.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-gns',ar:[960/480,480/600],
+  steps:[
+    {"s": ["跨站点访问", "Cross-site access"], "t": ["远程客户端经广域网访问集群", "Remote clients reach a cluster over the WAN"], "d": ["客户端直接访问远程集群时，请求和响应都要经过站点间网络。", "When a client accesses a distant cluster directly, the request and response both cross the inter-site network."], "b": [["<p>单集群命名空间组织该集群内的数据。多个站点共享这一数据时，广域网往返会增加直接访问的延迟。</p>"], ["<p>A cluster namespace organizes the data in that cluster. With several sites sharing that data, the WAN round trip adds latency to direct access.</p>"]]},
+    {"s": ["全局文件夹", "Global folders"], "t": ["源站维护完整内容，卫星站呈现路径", "The origin keeps the full contents, and satellites expose a path"], "d": ["Global Access 将源站上的路径呈现在卫星站，卫星站客户端可以就近访问，所需数据按需获取。", "Global Access exposes an origin path at satellites, where local clients can access it and data is fetched on demand."], "b": [["<p>管理员在源站将已有路径配置为 Global Access 保护路径，并选择用于呈现目标路径的对等集群。各卫星站的本地路径名可以不同。</p>", "<p>源站维护全局文件夹的完整内容。卫星站建立路径后便可处理对它的读写请求。</p>"], ["<p>An administrator configures an existing origin path as a Global Access protected path and selects peer clusters to present it. Each satellite can use a different local destination path.</p>", "<p>The origin maintains the global folder’s complete contents. Once a satellite path is created, clients can issue reads and writes there.</p>"]]},
+    {"s": ["读取与缓存", "Reads and caching"], "t": ["缓存未命中时从源站取数", "Cache misses fetch data from the origin"], "d": ["卫星站从源站读取未缓存的数据并存入本地。已缓存且受有效读租约覆盖的数据可就地返回。", "A satellite retrieves uncached data from the origin and caches it locally. Cached data covered by a valid read lease can be served locally."], "b": [["<p>卫星站可预取相关数据和元数据。管理员也可以在目标站点为指定目录发起预取。</p>", "<p>管理员文档描述的是重复访问时申请或续约。租约过期或源站内容变更时，卫星站会使相关缓存失效，并在下次请求时重新取数。</p>"], ["<p>A satellite can prefetch related data and metadata. Administrators can also initiate prefetch for selected directories at the destination.</p>", "<p>The administrator’s guide describes requesting or renewing a lease on repeated access. If the lease expires or the source changes, the satellite invalidates its cache entry and refetches the data on the next request.</p>"]]},
+    {"s": ["同步与版本", "Sync and versions"], "t": ["定期同步会留下版本不一致的窗口", "Periodic sync can leave versions out of step"], "d": ["采用周期同步的模型中，站点可以在同步前看到不同版本，版本冲突需要另行解决。", "In a periodic-sync model, sites can see different versions before the next sync, and version conflicts need a resolution rule."], "b": [["<p>一种冲突处理策略是将时间戳较晚的版本作为当前版本，并把其他版本保留为历史版本。图示展示的是这一种策略。</p>"], ["<p>One conflict-resolution policy makes the newer version current and retains the other versions as history. The diagram illustrates that policy.</p>"]]},
+    {"s": ["读写租约", "Read and write leases"], "t": ["用租约控制写入权和缓存有效性", "Leases govern write access and cache validity"], "d": ["源站协调租约。对同一个数据元素，同一时刻由一个集群持有写租约。发放写租约时，相关读租约失效。", "The origin coordinates leases. One cluster holds the write lease for a given element at a time. Granting it invalidates related read leases."], "b": [["<p>读租约覆盖期间，卫星站可直接提供有效缓存。租约失效后，再次读取前须重新校验缓存，并刷新已变更的数据。</p>"], ["<p>A satellite can serve valid cached data under a read lease. Once the lease becomes invalid, a later read requires revalidation and a refresh of any changed data.</p>"]]},
+    {"s": ["写入转发", "Write forwarding"], "t": ["卫星站将写入请求转发到源站", "The satellite forwards writes to the origin"], "d": ["在管理员文档描述的路径上，卫星站把写入请求发往源站，源站确认后再向客户端确认。", "On the path described in the administrator’s guide, the satellite sends writes to the origin and acknowledges the client after the origin confirms."], "b": [["<p>这一写入路径使用绕写缓存。新数据在源站提交，卫星站随后读取时可以从源站取回并缓存。</p>"], ["<p>This path uses write-around caching. New data is committed at the origin. On a subsequent read, the satellite can fetch it from the origin and cache it.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

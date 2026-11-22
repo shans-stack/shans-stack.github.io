@@ -1,0 +1,75 @@
+/* 四种存储范式：盘归谁管，状态放在哪：动画区样式。由 assets/anim/v-paradigm.js 使用，只作用于 .ssa-v-paradigm 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-paradigm{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-paradigm .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-paradigm .vwm-d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-paradigm .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-paradigm .vwm-d{display:inline}}
+:root[data-theme=dark] .ssa-v-paradigm .vwm-l{display:none}
+:root[data-theme=dark] .ssa-v-paradigm .vwm-d{display:inline}
+.ssa-v-paradigm .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-paradigm .tgl[hidden]{display:none}
+.ssa-v-paradigm .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-paradigm .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-paradigm .ssa-scene text{dominant-baseline:central}
+.ssa-v-paradigm .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-paradigm .ssa-scene .hid{opacity:0;visibility:hidden;transition:none}
+.ssa-v-paradigm .ssa-scene .dim{opacity:.22}
+.ssa-v-paradigm .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-paradigm .box.soft{stroke:var(--rule)}
+.ssa-v-paradigm .box.on{stroke:var(--slate)}
+.ssa-v-paradigm .box.hot{stroke:var(--rose)}
+.ssa-v-paradigm .box.ok{stroke:var(--sage)}
+.ssa-v-paradigm .box.vio{stroke:var(--violet)}
+.ssa-v-paradigm .box.ochre{stroke:var(--ochre)}
+.ssa-v-paradigm .box.dead{opacity:.35}
+.ssa-v-paradigm .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-paradigm .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-paradigm .b7{font-weight:700}
+.ssa-v-paradigm .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:500}
+.ssa-v-paradigm .rose-t{fill:var(--rose)}
+.ssa-v-paradigm .sage-t{fill:var(--sage)}
+.ssa-v-paradigm .slate-t{fill:var(--slate)}
+.ssa-v-paradigm .violet-t{fill:var(--violet)}
+.ssa-v-paradigm .ochre-t{fill:var(--ochre)}
+.ssa-v-paradigm .ink3-t{fill:var(--ink3)}
+.ssa-v-paradigm .ink2-t{fill:var(--ink2)}
+.ssa-v-paradigm .st{font-weight:600;transition:opacity .25s}
+.ssa-v-paradigm .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-paradigm .ln.thin{stroke-width:3}
+.ssa-v-paradigm .ln.lit{stroke:var(--slate)}
+.ssa-v-paradigm .ln.ok{stroke:var(--sage)}
+.ssa-v-paradigm .ln.hot{stroke:var(--rose)}
+.ssa-v-paradigm .ln.vio{stroke:var(--violet)}
+.ssa-v-paradigm .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-paradigm .ln.dead{opacity:.3}
+.ssa-v-paradigm .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-paradigm .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-paradigm .disk.lit{stroke:var(--slate)}
+.ssa-v-paradigm .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-paradigm .disk.scm{stroke:var(--ochre)}
+.ssa-v-paradigm .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-paradigm .pkt.rose{fill:var(--rose)}
+.ssa-v-paradigm .pkt.ok{fill:var(--sage)}
+.ssa-v-paradigm .pkt.vio{fill:var(--violet)}
+.ssa-v-paradigm .pkt.ochre{fill:var(--ochre)}
+.ssa-v-paradigm .dot{fill:var(--slate)}
+.ssa-v-paradigm .dot.v{fill:var(--violet)}
+.ssa-v-paradigm .dot.ok{fill:var(--sage)}
+.ssa-v-paradigm .dot.rose{fill:var(--rose)}
+.ssa-v-paradigm .dot.ochre{fill:var(--ochre)}
+.ssa-v-paradigm .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-paradigm .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-paradigm .track{fill:var(--rule)}
+.ssa-v-paradigm .fill{fill:var(--rose)}
+.ssa-v-paradigm .fill.sage{fill:var(--sage)}
+.ssa-v-paradigm .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-paradigm .chip{fill:var(--card);stroke:var(--rule2);stroke-width:2}
+
+
+@media (max-width:640px){
+  body.present:has(main[data-station="v-paradigm"]) .stage{padding:12px}
+  main[data-station="v-paradigm"] ~ .stage .figbox{margin:8px 0}
+  main[data-station="v-paradigm"] ~ .stage .cap{margin-top:8px}
+  main[data-station="v-paradigm"] ~ .stage h2{font-size:22px}
+  main[data-station="v-paradigm"] ~ .stage .desc{font-size:16px;line-height:1.45}
+}

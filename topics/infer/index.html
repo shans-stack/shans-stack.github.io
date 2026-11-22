@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>推理服务怎么把模型跑起来 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明推理服务如何接收请求、管理 KV Cache、逐 token 生成并流式返回结果。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/infer.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="infer">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="How inference serving runs a model">推理服务怎么把模型跑起来</h1>
+        <p class="meta"><span data-en="6 steps · prefill, decoding, continuous batching">6 步 · 预填充、解码、连续批处理</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="Efficient Memory Management for Large Language Model Serving with PagedAttention">论文《Efficient Memory Management for Large Language Model Serving with PagedAttention》</li>
+      <li data-en="DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving">论文《DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving》</li>
+      <li data-en="vLLM documentation: Automatic Prefix Caching">vLLM 文档《Automatic Prefix Caching》</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/infer.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'infer',ar:[920/376,360/482],steps:[
+  {t:["请求从接口进入推理引擎", "Requests enter the inference engine through an API"],
+   d:["服务把输入转换成 token，并把请求交给调度器。", "The service tokenizes the input and hands the request to a scheduler."],
+   b:[
+     ["<p>推理服务把已经训练好的模型提供给应用调用。应用通过 API（应用程序接口）提交提示词与生成参数。服务把文本切成 token，即模型可以识别的文字或符号单位，并转换成对应的编号。</p>", "<p>调度器根据可用的计算和显存，将请求放入等待队列或安排给推理引擎。引擎加载模型权重（训练得到的参数），并执行模型计算。</p>"],
+     ["<p>The serving system makes a trained model callable by applications. An application submits a prompt and generation settings through an application programming interface (API). The service splits the text into tokens, units of text or symbols the model recognizes, and converts them to numeric IDs.</p>", "<p>The scheduler queues the request or admits it based on available compute and accelerator memory. The inference engine loads the model weights, the parameters learned during training, and runs the model.</p>"]
+   ]},
+  {t:["预填充处理整个提示词", "Prefill processes the prompt"],
+   d:["模型处理输入 token，计算首个输出 token 的分布，并建立 KV Cache。", "The model processes the input tokens, computes the distribution for the first output token, and builds the KV cache."],
+   b:[
+     ["<p>预填充（prefill）是模型首次处理提示词的阶段。对于因果语言模型，同一段输入中的多个位置可以并行计算。末尾位置的计算结果给出首个输出 token 的概率分布。</p>", "<p>引擎同时保存各输入位置的键和值，即注意力机制稍后还要读取的中间结果。这组数据称为 KV Cache。保留它可以省掉后续生成时对提示词的重复计算。</p>"],
+     ["<p>Prefill is the first phase in which the model processes the prompt. In a causal language model, multiple positions in a prompt segment can be processed in parallel. The final input position produces the probability distribution for the first output token.</p>", "<p>The engine also saves the keys and values for the input positions. Attention will read these intermediate results again during generation. They form the KV cache, which avoids recomputing the prompt during subsequent steps.</p>"]
+   ]},
+  {t:["解码逐步生成输出", "Decoding generates output one step at a time"],
+   d:["每轮解码读取已有 KV，加入新的 KV，并计算下一个 token。", "A decode iteration reads existing KV, appends new KV, and computes the next token."],
+   b:[
+     ["<p>解码（decode）沿着已经生成的序列继续预测。每轮处理上次选中的 token，读取当前上下文的 KV，再把这一位置的键和值加入缓存，供下一轮使用。</p>", "<p>新 token 可以在生成过程中陆续返回给应用，这称为流式输出。达到结束条件后，调度器移除该请求，释放其正在使用的计算与缓存配额。</p>"],
+     ["<p>Decoding continues prediction along the generated sequence. An iteration processes the previous token, reads KV for the current context, and appends that position’s key and value for the next iteration.</p>", "<p>The service can return new tokens to the application as they are generated. This is called streaming. At a stopping condition, the scheduler removes the request and releases its active compute and cache allocation.</p>"]
+   ]},
+  {t:["连续批处理在迭代之间换入请求", "Continuous batching admits requests between iterations"],
+   d:["一个请求完成后，调度器可以在下一轮用新请求填入空位。", "When a request finishes, the scheduler can admit another at the next iteration."],
+   b:[
+     ["<p>批处理是把多个请求组合起来执行模型计算。连续批处理（continuous batching）在迭代边界重新选择本轮参与的请求，因此已经完成的序列可以退出，新请求则在计算和显存预算允许时加入。</p>", "<p>同一批中的请求可以有不同长度。调度器同时约束每轮要处理的 token 和需要保留的 KV，避免等待最长的请求结束才调整批次。</p>"],
+     ["<p>Batching combines work from multiple requests into a model operation. Continuous batching changes the participating requests at iteration boundaries. A finished sequence can leave, and a waiting request can enter when compute and memory budgets allow.</p>", "<p>Requests in a batch can have different lengths. The scheduler budgets tokens to process and KV to retain, allowing the batch to change while longer requests are still generating.</p>"]
+   ]},
+  {t:["相同的输入前缀可以复用 KV", "Matching prompt prefixes can reuse KV"],
+   d:["引擎保留可复用的前缀 KV，新的请求只需计算未覆盖的输入。", "The engine keeps reusable prefix KV and computes the uncovered input for a new request."],
+   b:[
+     ["<p>前缀缓存保留已经计算的提示词开头，例如多轮对话中保持不变的历史。对同一模型，新请求的对应前缀 token 与缓存匹配时，引擎可用已有 KV 跳过部分预填充工作。</p>", "<p>多个请求可以引用相同的前缀块，同时各自保存后续序列的状态。缓存容量有限，服务会根据自身的管理策略回收可替换的条目。</p>"],
+     ["<p>A prefix cache retains work for the beginning of a prompt, such as the unchanged history of a conversation. For the same model, matching prefix tokens let the engine skip part of prefill by reusing existing KV.</p>", "<p>Several requests can reference the same prefix blocks while keeping separate state for their remaining sequences. Cache capacity is finite, so the service reclaims eligible entries according to its cache policy.</p>"]
+   ]},
+  {t:["分别观测首个 token 和后续节奏", "Measure first-token delay and streaming cadence"],
+   d:["首 token 时延覆盖第一次等待，token 间时延衡量后续生成间隔。", "Time to first token measures the initial wait, and inter-token latency measures later gaps."],
+   b:[
+     ["<p>首 token 时延（TTFT）是从发出请求到收到第一个 token 的时间。在服务端观测时，可以分别记录排队、提示词处理和首个输出的开销，从而定位等待发生在哪一段。</p>", "<p>token 间时延（ITL）是流式输出中相邻 token 的到达间隔。它与首 token 时延一起描述用户体验，吞吐则衡量服务在一段时间内处理的工作量。</p>"],
+     ["<p>Time to first token (TTFT) is the time from sending a request to receiving its first token. Server-side measurements can break out queueing, prompt processing, and first-output overhead to locate the wait.</p>", "<p>Inter-token latency (ITL) is the gap between adjacent token arrivals in a stream. It describes the user experience alongside TTFT, while throughput measures how much work the service handles over time.</p>"]
+   ]},
+]};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>
