@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Training checkpoints">训练检查点</h1>
+      <div><h1 data-en="Training Checkpoints">训练检查点</h1>
         <p class="meta"><span data-en="5 steps · training state, sharded writes, recovery">5 步 · 训练状态、分片写入、故障恢复</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,12 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html">PyTorch Tutorials — Saving and Loading Models</a></li>
-      <li><a href="https://docs.pytorch.org/docs/stable/distributed.checkpoint.html">PyTorch Documentation — Distributed Checkpoint</a></li>
-      <li><a href="https://docs.pytorch.org/tutorials/recipes/distributed_async_checkpoint_recipe.html">PyTorch Tutorials — Asynchronous Saving with Distributed Checkpoint</a></li>
     </ul></div>
   </div>
 </main>
@@ -74,24 +71,101 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/ckpt.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'ckpt',ar:[900/340,360/420],
-  steps:[
-    {t:["保存继续训练所需状态", "Save the state needed to resume"],
-     d:["检查点保存模型参数、优化器状态和训练进度。", "A checkpoint saves model parameters, optimizer state and training progress."],
-     b:[["<p>检查点是训练在选定时刻保存的一组可恢复状态。模型参数决定模型如何计算，优化器根据训练信号更新这些参数。保存模型参数和优化器的累积状态，使重启后能够按原来的更新规则继续训练。为续接学习率、随机过程或输入顺序，训练代码还可以保存相应的调度、随机数和数据读取状态。</p>"], ["<p>A checkpoint is a recoverable set of training state saved at a selected point. Model parameters determine the model’s computation, and the optimizer updates them using training signals. Saving parameters and accumulated optimizer state lets a restarted run continue with the same update rule. Training code can also save scheduling, random-number and data-loading state to resume learning rates, random processes or input order.</p>"]]},
-    {t:["各进程写入所负责的分片", "Write shards from their owning processes"],
-     d:["分布式训练进程可以把各自负责的状态并行写入检查点目录。", "Distributed training processes can write their portions of the state into a checkpoint directory in parallel."],
-     b:[["<p>当模型和优化器状态分布在多个进程中，一个分片可以代表其中一部分状态。分布式检查点可以让参与进程各自写入分片，并记录位置和范围。恢复时，读取器据此定位各进程所需的状态。</p>"], ["<p>When model and optimizer state are distributed across processes, a shard can hold a portion of that state. Distributed checkpointing can have participating processes write their own shards and record locations and ranges. At recovery time, the reader uses this information to locate the state needed by each process.</p>"]]},
-    {t:["分片齐备后登记为可恢复", "Mark a checkpoint complete after all shards arrive"],
-     d:["写入过程保留上一个完整检查点，新版本在全部分片就绪后才可用于恢复。", "The previous complete checkpoint stays available while the new version is written and marked ready for recovery."],
-     b:[["<p>新检查点可以先写入独立位置，并在存储写入成功后记录完成状态。例如，协调进程可在参与进程报告成功后发布完成记录。如果有分片写入失败，恢复流程可以选择先前已完成的版本。</p>"], ["<p>A new checkpoint can be written to a separate location and marked complete after storage writes succeed. A coordinating process can, for example, publish a completion record after participants report success. If a shard fails to write, recovery can select an earlier complete version.</p>"]]},
-    {t:["暂存后在后台写入", "Stage a copy for background writes"],
-     d:["把状态复制到暂存缓冲区后，后台写入可以与后续训练重叠。", "After state is copied into a staging buffer, background writes can overlap later training."],
-     b:[["<p>暂存把当前检查点所需状态复制到独立缓冲区，让训练可以继续修改工作状态。后台任务再从暂存区写入存储。复制、缓冲区内存以及后台写入的资源占用都需要计入开销，写入完成后，检查点才成为可用的恢复点。</p>"], ["<p>Staging copies checkpoint state into a separate buffer so training can continue changing the working state. A background task then writes from that buffer to storage. The copy, buffer memory and background I/O all contribute to overhead. The checkpoint becomes a recovery point when the write completes.</p>"]]},
-    {t:["从最近的完整版本继续训练", "Resume from the latest complete checkpoint"],
-     d:["重启后先还原状态，再执行检查点之后的训练步骤。", "After restart, the job restores its state and runs the steps after the checkpoint."],
-     b:[["<p>恢复流程选择最新的完整版本，将模型和优化器状态加载到训练进程，并按保存的进度与输入状态继续取样。中断前在这一检查点之后完成的工作需要重新执行。保存得更频繁可以缩短可能重做的区间，同时增加保存操作。</p>"], ["<p>Recovery selects the latest complete version, loads model and optimizer state into the training processes, and resumes sampling from the saved progress and input state. Work completed after that checkpoint before the interruption must run again. More frequent checkpoints shorten the potential replay interval and increase the number of saves.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "ckpt",
+ "ar": [900/340,360/420],
+ "steps": [
+  {
+   "t": [
+    "保存继续训练所需状态",
+    "Save the State Needed to Resume"
+   ],
+   "d": [
+    "检查点保存模型参数、优化器状态和训练进度。",
+    "A checkpoint saves model parameters, optimizer state and training progress."
+   ],
+   "b": [
+    [
+     "<p>检查点是训练在选定时刻保存的一组可恢复状态。模型参数决定模型如何计算，优化器根据训练信号更新这些参数。保存模型参数和优化器的累积状态，使重启后能够按原来的更新规则继续训练。为续接学习率、随机过程或输入顺序，训练代码还可以保存相应的调度、随机数和数据读取状态。</p>"
+    ],
+    [
+     "<p>A checkpoint is a recoverable set of training state saved at a selected point. Model parameters determine the model’s computation, and the optimizer updates them using training signals. Saving parameters and accumulated optimizer state lets a restarted run continue with the same update rule. Training code can also save scheduling, random-number and data-loading state to resume learning rates, random processes or input order.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "各进程写入所负责的分片",
+    "Write Shards from Their Owning Processes"
+   ],
+   "d": [
+    "分布式训练进程可以把各自负责的状态并行写入检查点目录。",
+    "Distributed training processes can write their portions of the state into a checkpoint directory in parallel."
+   ],
+   "b": [
+    [
+     "<p>当模型和优化器状态分布在多个进程中，一个分片可以代表其中一部分状态。分布式检查点可以让参与进程各自写入分片，并记录位置和范围。恢复时，读取器据此定位各进程所需的状态。</p>"
+    ],
+    [
+     "<p>When model and optimizer state are distributed across processes, a shard can hold a portion of that state. Distributed checkpointing can have participating processes write their own shards and record locations and ranges. At recovery time, the reader uses this information to locate the state needed by each process.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "分片齐备后登记为可恢复",
+    "Mark a Checkpoint Complete After All Shards Arrive"
+   ],
+   "d": [
+    "写入过程保留上一个完整检查点，新版本在全部分片就绪后才可用于恢复。",
+    "The previous complete checkpoint stays available while the new version is written and marked ready for recovery."
+   ],
+   "b": [
+    [
+     "<p>新检查点可以先写入独立位置，并在存储写入成功后记录完成状态。例如，协调进程可在参与进程报告成功后发布完成记录。如果有分片写入失败，恢复流程可以选择先前已完成的版本。</p>"
+    ],
+    [
+     "<p>A new checkpoint can be written to a separate location and marked complete after storage writes succeed. A coordinating process can, for example, publish a completion record after participants report success. If a shard fails to write, recovery can select an earlier complete version.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "暂存后在后台写入",
+    "Stage a Copy for Background Writes"
+   ],
+   "d": [
+    "把状态复制到暂存缓冲区后，后台写入可以与后续训练重叠。",
+    "After state is copied into a staging buffer, background writes can overlap later training."
+   ],
+   "b": [
+    [
+     "<p>暂存把当前检查点所需状态复制到独立缓冲区，让训练可以继续修改工作状态。后台任务再从暂存区写入存储。复制、缓冲区内存以及后台写入的资源占用都需要计入开销，写入完成后，检查点才成为可用的恢复点。</p>"
+    ],
+    [
+     "<p>Staging copies checkpoint state into a separate buffer so training can continue changing the working state. A background task then writes from that buffer to storage. The copy, buffer memory and background I/O all contribute to overhead. The checkpoint becomes a recovery point when the write completes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从最近的完整版本继续训练",
+    "Resume from the Latest Complete Checkpoint"
+   ],
+   "d": [
+    "重启后先还原状态，再执行检查点之后的训练步骤。",
+    "After restart, the job restores its state and runs the steps after the checkpoint."
+   ],
+   "b": [
+    [
+     "<p>恢复流程选择最新的完整版本，将模型和优化器状态加载到训练进程，并按保存的进度与输入状态继续取样。中断前在这一检查点之后完成的工作需要重新执行。保存得更频繁可以缩短可能重做的区间，同时增加保存操作。</p>"
+    ],
+    [
+     "<p>Recovery selects the latest complete version, loads model and optimizer state into the training processes, and resumes sampling from the saved progress and input state. Work completed after that checkpoint before the interruption must run again. More frequent checkpoints shorten the potential replay interval and increase the number of saves.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

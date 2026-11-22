@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="KV Cache in inference">推理里的 KV Cache</h1>
+      <div><h1 data-en="KV Cache in Inference">推理里的 KV Cache</h1>
         <p class="meta"><span data-en="6 steps · prefill, decode, prefix caching, TTFT">6 步 · 预填充、解码、前缀缓存、首字时延</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="vLLM documentation: Automatic Prefix Caching, PagedAttention.">vLLM 官方文档：Automatic Prefix Caching、PagedAttention。</li>
       <li data-en="LMCache documentation.">LMCache 官方文档。</li>
@@ -74,153 +74,155 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/kv.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'kv',ar:[960/476,480/560],
-  steps:[
-   {
-    "s": [
-     "先读，再逐字写",
-     "Read, then write"
+window.SS_TOPIC_CFG={
+ "anim": "kv",
+ "ar": [960/476,480/560],
+ "steps": [
+  {
+   "s": [
+    "先读，再逐字写",
+    "Read, then write"
+   ],
+   "t": [
+    "推理分两段：先读，再逐字写",
+    "Inference in Two Phases: Read First, Then Write Token by Token"
+   ],
+   "d": [
+    "模型先一次读完整段提示词（预填充），再逐字生成回答（解码）。",
+    "The model first reads the whole prompt in one go (prefill), then generates the answer one token at a time (decode)."
+   ],
+   "b": [
+    [
+     "<p>大模型回答一个问题分两个阶段。预填充（Prefill）：把整段提示词一次性读进去做注意力计算，计算量大，提示词越长越重。解码（Decode）：一个词一个词地生成回答，每一步计算相对轻，但要反复读取前面的中间结果，受显存带宽限制。</p>",
+     "<p>用户感受到的「第一个字出来之前的等待」（首字时延，TTFT），大部分花在预填充上。</p>"
     ],
-    "t": [
-     "推理分两段：先读，再逐字写",
-     "Inference in two phases: read first, then write token by token"
-    ],
-    "d": [
-     "模型先一次读完整段提示词（预填充），再逐字生成回答（解码）。",
-     "The model first reads the whole prompt in one go (prefill), then generates the answer one token at a time (decode)."
-    ],
-    "b": [
-     [
-      "<p>大模型回答一个问题分两个阶段。预填充（Prefill）：把整段提示词一次性读进去做注意力计算，计算量大，提示词越长越重。解码（Decode）：一个词一个词地生成回答，每一步计算相对轻，但要反复读取前面的中间结果，受显存带宽限制。</p>",
-      "<p>用户感受到的「第一个字出来之前的等待」（首字时延，TTFT），大部分花在预填充上。</p>"
-     ],
-     [
-      "<p>A large model answers a question in two phases. Prefill reads the whole prompt at once and runs the attention computation over it; it is compute-heavy, and the longer the prompt the heavier it gets. Decode generates the answer one token at a time; each step is relatively light, but it reads the earlier intermediate results again and again, so it is limited by GPU memory bandwidth.</p>",
-      "<p>The wait a user feels before the first word appears (time to first token, TTFT) is mostly spent in prefill.</p>"
-     ]
+    [
+     "<p>A large model answers a question in two phases. Prefill reads the whole prompt at once and runs the attention computation over it; it is compute-heavy, and the longer the prompt the heavier it gets. Decode generates the answer one token at a time; each step is relatively light, but it reads the earlier intermediate results again and again, so it is limited by GPU memory bandwidth.</p>",
+     "<p>The wait a user feels before the first word appears (time to first token, TTFT) is mostly spent in prefill.</p>"
     ]
-   },
-   {
-    "s": [
-     "每个词一份 K、V",
-     "A K and V per token"
+   ]
+  },
+  {
+   "s": [
+    "每个词一份 K、V",
+    "A K and V per token"
+   ],
+   "t": [
+    "读提示词时，每个词算出一份 K 和 V",
+    "Reading the Prompt, Each Token Gets a K and a V"
+   ],
+   "d": [
+    "预填充时，每个词都算出一份 Key 和 Value，存进 GPU 显存，这就是 KV Cache。",
+    "During prefill, each token produces a Key and a Value, which are stored in GPU memory. That is the KV cache."
+   ],
+   "b": [
+    [
+     "<p>注意力计算会为每个词（token，模型处理文字的最小单位）算出三样东西：Query、Key、Value。其中 Key 和 Value 描述「这个词是什么、和别的词怎么关联」，算出来之后不会再变，于是被存进 GPU 显存，这份存起来的结果就叫 KV Cache。</p>",
+     "<p>KV Cache 按模型的每一层分别存，所以一段提示词对应的 KV Cache 并不小，而且随提示词长度增长。</p>"
     ],
-    "t": [
-     "读提示词时，每个词算出一份 K 和 V",
-     "Reading the prompt, each token gets a K and a V"
-    ],
-    "d": [
-     "预填充时，每个词都算出一份 Key 和 Value，存进 GPU 显存，这就是 KV Cache。",
-     "During prefill, each token produces a Key and a Value, which are stored in GPU memory. That is the KV cache."
-    ],
-    "b": [
-     [
-      "<p>注意力计算会为每个词（token，模型处理文字的最小单位）算出三样东西：Query、Key、Value。其中 Key 和 Value 描述「这个词是什么、和别的词怎么关联」，算出来之后不会再变，于是被存进 GPU 显存，这份存起来的结果就叫 KV Cache。</p>",
-      "<p>KV Cache 按模型的每一层分别存，所以一段提示词对应的 KV Cache 并不小，而且随提示词长度增长。</p>"
-     ],
-     [
-      "<p>Attention computes three things for each token (the smallest unit of text a model processes): a Query, a Key and a Value. The Key and Value describe what the token is and how it relates to other tokens; once computed they never change, so they are stored in GPU memory. That stored result is called the KV cache.</p>",
-      "<p>The KV cache is kept separately for every layer of the model, so the KV cache for one prompt is far from small, and it grows with the prompt's length.</p>"
-     ]
+    [
+     "<p>Attention computes three things for each token (the smallest unit of text a model processes): a Query, a Key and a Value. The Key and Value describe what the token is and how it relates to other tokens; once computed they never change, so they are stored in GPU memory. That stored result is called the KV cache.</p>",
+     "<p>The KV cache is kept separately for every layer of the model, so the KV cache for one prompt is far from small, and it grows with the prompt's length.</p>"
     ]
-   },
-   {
-    "s": [
-     "只算新字",
-     "Only the new token"
+   ]
+  },
+  {
+   "s": [
+    "只算新字",
+    "Only the new token"
+   ],
+   "t": [
+    "生成新字时，只算新的，旧的从缓存读",
+    "For Each New Token, Compute Only the New One and Read the Rest from Cache"
+   ],
+   "d": [
+    "每生成一个新字，只为它算一份 K 和 V，前面所有词的 K 和 V 直接从 KV Cache 读，不用重算。",
+    "For each new token, only its own K and V are computed; the K and V of every earlier token are read from the KV cache, not recomputed."
+   ],
+   "b": [
+    [
+     "<p>解码阶段每走一步，新词要和前面所有的词做注意力计算。前面那些词的 Key 和 Value 早已存在 KV Cache 里，直接读出即可；只有新词需要计算，算完也追加进 KV Cache。</p>",
+     "<p>这就是 KV Cache 最基本的作用：不缓存的话，每生成一个字都要把整段话重算一遍。也因为每一步都要读整份 KV Cache，解码阶段受显存带宽限制。</p>"
     ],
-    "t": [
-     "生成新字时，只算新的，旧的从缓存读",
-     "For each new token, compute only the new one and read the rest from cache"
-    ],
-    "d": [
-     "每生成一个新字，只为它算一份 K 和 V，前面所有词的 K 和 V 直接从 KV Cache 读，不用重算。",
-     "For each new token, only its own K and V are computed; the K and V of every earlier token are read from the KV cache, not recomputed."
-    ],
-    "b": [
-     [
-      "<p>解码阶段每走一步，新词要和前面所有的词做注意力计算。前面那些词的 Key 和 Value 早已存在 KV Cache 里，直接读出即可；只有新词需要计算，算完也追加进 KV Cache。</p>",
-      "<p>这就是 KV Cache 最基本的作用：不缓存的话，每生成一个字都要把整段话重算一遍。也因为每一步都要读整份 KV Cache，解码阶段受显存带宽限制。</p>"
-     ],
-     [
-      "<p>At every decode step, the new token has to run attention against all the tokens before it. Their Keys and Values are already in the KV cache and can simply be read; only the new token needs computing, and its result is appended to the KV cache too.</p>",
-      "<p>That is the KV cache's most basic job: without it, every new token would mean recomputing the whole text. And because every step reads the entire KV cache, decode is bound by GPU memory bandwidth.</p>"
-     ]
+    [
+     "<p>At every decode step, the new token has to run attention against all the tokens before it. Their Keys and Values are already in the KV cache and can simply be read; only the new token needs computing, and its result is appended to the KV cache too.</p>",
+     "<p>That is the KV cache's most basic job: without it, every new token would mean recomputing the whole text. And because every step reads the entire KV cache, decode is bound by GPU memory bandwidth.</p>"
     ]
-   },
-   {
-    "s": [
-     "开头相同就复用",
-     "Reuse a shared start"
+   ]
+  },
+  {
+   "s": [
+    "开头相同就复用",
+    "Reuse a shared start"
+   ],
+   "t": [
+    "开头相同的请求，可以直接复用",
+    "Requests with the Same Start Can Reuse It"
+   ],
+   "d": [
+    "新请求和旧请求的开头相同时，直接用存好的 KV Cache，跳过这一段预填充，第一个字出来得更快。",
+    "When a new request starts the same way as an earlier one, the stored KV cache is used directly and that part of prefill is skipped, so the first token arrives sooner."
+   ],
+   "b": [
+    [
+     "<p>很多请求的开头是一样的：同一段系统提示词、同一份 FAQ 前缀、多轮对话里前面几轮的历史。推理服务把提示词开头算一个哈希去查 KV Cache 索引：命中，就加载已有的 KV，只为后面新增的部分做预填充；没命中，就完整预填充，并把新算出的 KV 存起来供下次用。</p>",
+     "<p>命中率越高，省下的 GPU 计算越多，首字时延越短，同一批 GPU 能服务更多用户。这也是推理框架做「前缀缓存」的原因。</p>"
     ],
-    "t": [
-     "开头相同的请求，可以直接复用",
-     "Requests with the same start can reuse it"
-    ],
-    "d": [
-     "新请求和旧请求的开头相同时，直接用存好的 KV Cache，跳过这一段预填充，第一个字出来得更快。",
-     "When a new request starts the same way as an earlier one, the stored KV cache is used directly and that part of prefill is skipped, so the first token arrives sooner."
-    ],
-    "b": [
-     [
-      "<p>很多请求的开头是一样的：同一段系统提示词、同一份 FAQ 前缀、多轮对话里前面几轮的历史。推理服务把提示词开头算一个哈希去查 KV Cache 索引：命中，就加载已有的 KV，只为后面新增的部分做预填充；没命中，就完整预填充，并把新算出的 KV 存起来供下次用。</p>",
-      "<p>命中率越高，省下的 GPU 计算越多，首字时延越短，同一批 GPU 能服务更多用户。这也是推理框架做「前缀缓存」的原因。</p>"
-     ],
-     [
-      "<p>Many requests start the same way: the same system prompt, the same FAQ prefix, the earlier turns of a multi-turn conversation. The inference service hashes the start of the prompt and looks it up in a KV cache index. On a hit, it loads the existing KV and runs prefill only for the new part; on a miss, it runs the full prefill and stores the newly computed KV for next time.</p>",
-      "<p>The higher the hit rate, the more GPU computation is saved, the shorter the time to first token, and the more users the same GPUs can serve. That is why inference frameworks implement prefix caching.</p>"
-     ]
+    [
+     "<p>Many requests start the same way: the same system prompt, the same FAQ prefix, the earlier turns of a multi-turn conversation. The inference service hashes the start of the prompt and looks it up in a KV cache index. On a hit, it loads the existing KV and runs prefill only for the new part; on a miss, it runs the full prefill and stores the newly computed KV for next time.</p>",
+     "<p>The higher the hit rate, the more GPU computation is saved, the shorter the time to first token, and the more users the same GPUs can serve. That is why inference frameworks implement prefix caching.</p>"
     ]
-   },
-   {
-    "s": [
-     "越长越久",
-     "Longer, slower"
+   ]
+  },
+  {
+   "s": [
+    "越长越久",
+    "Longer, slower"
+   ],
+   "t": [
+    "上下文越长，KV 越大，等得越久",
+    "Longer Context, Bigger KV, Longer Wait"
+   ],
+   "d": [
+    "提示词越长，KV Cache 占得越多，预填充也越久，而且时间比长度涨得更快。",
+    "The longer the prompt, the more space the KV cache takes and the longer prefill runs, and the time grows faster than the length."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 的大小大致和上下文长度成正比；预填充的计算量则随上下文长度近似平方增长，因为每个词都要和前面所有词做注意力计算。所以长上下文（长文档问答、RAG、agent 多轮调用）里，首字时延会明显变长，复用 KV Cache 的价值也随之变大。</p>",
+     "<p>上下文越长，第一个字出来越慢，主要慢在预填充，这正是复用 KV Cache 能省下的那一段。</p>"
     ],
-    "t": [
-     "上下文越长，KV 越大，等得越久",
-     "Longer context, bigger KV, longer wait"
-    ],
-    "d": [
-     "提示词越长，KV Cache 占得越多，预填充也越久，而且时间比长度涨得更快。",
-     "The longer the prompt, the more space the KV cache takes and the longer prefill runs, and the time grows faster than the length."
-    ],
-    "b": [
-     [
-      "<p>KV Cache 的大小大致和上下文长度成正比；预填充的计算量则随上下文长度近似平方增长，因为每个词都要和前面所有词做注意力计算。所以长上下文（长文档问答、RAG、agent 多轮调用）里，首字时延会明显变长，复用 KV Cache 的价值也随之变大。</p>",
-      "<p>上下文越长，第一个字出来越慢，主要慢在预填充，这正是复用 KV Cache 能省下的那一段。</p>"
-     ],
-     [
-      "<p>KV cache size grows roughly in proportion to context length, while prefill computation grows roughly with its square, because every token runs attention against all the tokens before it. So with long contexts (long-document Q&A, RAG, multi-step agent calls), time to first token grows noticeably, and so does the value of reusing KV cache.</p>",
-      "<p>The first word takes longer as the context grows mostly because of prefill, which is exactly the part that reusing KV cache saves.</p>"
-     ]
+    [
+     "<p>KV cache size grows roughly in proportion to context length, while prefill computation grows roughly with its square, because every token runs attention against all the tokens before it. So with long contexts (long-document Q&A, RAG, multi-step agent calls), time to first token grows noticeably, and so does the value of reusing KV cache.</p>",
+     "<p>The first word takes longer as the context grows mostly because of prefill, which is exactly the part that reusing KV cache saves.</p>"
     ]
-   },
-   {
-    "s": [
-     "放不下就重算",
-     "Evicted, recomputed"
+   ]
+  },
+  {
+   "s": [
+    "放不下就重算",
+    "Evicted, recomputed"
+   ],
+   "t": [
+    "显存放不下：旧的被挤掉，回头只能重算",
+    "GPU Memory Fills up: Old KV Is Evicted and Must Be Recomputed"
+   ],
+   "d": [
+    "显存里先放模型权重，留给 KV Cache 的地方有限；放满了，最早的 KV 被挤掉，那个请求再来时只能重新预填充。",
+    "GPU memory holds the model weights first, leaving limited room for KV cache. When it is full, the oldest KV is evicted, and when that request comes back it has to be prefilled again."
+   ],
+   "b": [
+    [
+     "<p>GPU 显存（HBM）最快也最小，要同时放模型权重和正在用的 KV Cache。权重往往就占去一大块，留给 KV Cache 的空间有限。请求一多、上下文一长，显存很快放满，推理服务只能淘汰较旧的 KV；被淘汰的前缀再次出现时，没有别处可读，只能重算，又一次占用 GPU 计算。</p>",
+     "<p>这就引出下一站：把放不下的 KV Cache 下放到主机内存、本地盘或共享存储，用读取代替重算。</p>"
     ],
-    "t": [
-     "显存放不下：旧的被挤掉，回头只能重算",
-     "GPU memory fills up: old KV is evicted and must be recomputed"
-    ],
-    "d": [
-     "显存里先放模型权重，留给 KV Cache 的地方有限；放满了，最早的 KV 被挤掉，那个请求再来时只能重新预填充。",
-     "GPU memory holds the model weights first, leaving limited room for KV cache. When it is full, the oldest KV is evicted, and when that request comes back it has to be prefilled again."
-    ],
-    "b": [
-     [
-      "<p>GPU 显存（HBM）最快也最小，要同时放模型权重和正在用的 KV Cache。权重往往就占去一大块，留给 KV Cache 的空间有限。请求一多、上下文一长，显存很快放满，推理服务只能淘汰较旧的 KV；被淘汰的前缀再次出现时，没有别处可读，只能重算，又一次占用 GPU 计算。</p>",
-      "<p>这就引出下一站：把放不下的 KV Cache 下放到主机内存、本地盘或共享存储，用读取代替重算。</p>"
-     ],
-     [
-      "<p>GPU memory (HBM) is the fastest tier and the smallest, and it has to hold both the model weights and the KV cache in use. The weights often take a large share, leaving limited space for KV cache. With many requests and long contexts, memory fills quickly and the inference service has to evict older KV. When an evicted prefix shows up again there is nowhere else to read it from, so it has to be recomputed, using GPU compute once more.</p>",
-      "<p>That leads to the next stop: moving the KV cache that does not fit down to host memory, local drives or shared storage, so it is read back instead of recomputed.</p>"
-     ]
+    [
+     "<p>GPU memory (HBM) is the fastest tier and the smallest, and it has to hold both the model weights and the KV cache in use. The weights often take a large share, leaving limited space for KV cache. With many requests and long contexts, memory fills quickly and the inference service has to evict older KV. When an evicted prefix shows up again there is nowhere else to read it from, so it has to be recomputed, using GPU compute once more.</p>",
+     "<p>That leads to the next stop: moving the KV cache that does not fit down to host memory, local drives or shared storage, so it is read back instead of recomputed.</p>"
     ]
-   }
-  ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

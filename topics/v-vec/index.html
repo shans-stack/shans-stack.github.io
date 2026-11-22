@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Vector search: vectors in the same table as the data">向量检索：向量和原数据存在同一张表里</h1>
+      <div><h1 data-en="Vector Search: Vectors in the Same Table as the Data">向量检索：向量和原数据存在同一张表里</h1>
         <p class="meta"><span data-en="6 steps · vectors, nearest neighbours, VAST DataBase">6 步 · 向量、最近邻、VAST DataBase</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="VAST documentation (docs.vastdata.com), VAST Cluster 5.5: Vector Search, Vector Database Index, Row and Column Security, The VAST DataBase.">VAST 官方文档（docs.vastdata.com），VAST Cluster 5.5：Vector Search、Vector Database Index、Row and Column Security、The VAST DataBase。</li>
       <li data-en="VAST documentation, VAST Cluster 5.5.0 Release Notes: the vector index section.">VAST 官方文档，VAST Cluster 5.5.0 Release Notes：向量索引一节。</li>
@@ -75,15 +75,131 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-vec.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-vec',ar:[960/500,480/660],
-  steps:[
-    {"t": ["向量与最近邻", "Vectors and nearest neighbours"], "d": ["嵌入模型把一段内容变成一串数字（向量），意思相近的内容，向量也相近；检索就是找离提问向量最近的几个。", "An embedding model turns content into a vector; similar content gets nearby vectors, and search finds the nearest ones."], "b": [["<p>向量（embedding）是一个固定长度的浮点数数组，由嵌入模型从文本、图片等内容计算出来。VAST 官方文档的描述是：向量空间里距离近，通常意味着它们代表的内容在原来的领域里也相近。</p>", "<p>检索分三步：先把要找的内容也算成向量，再在库里找离它最近的若干个向量（最近邻，nearest neighbours），最后把这些向量映射回它们代表的原始内容。衡量远近常用欧氏距离或余弦相似度。</p>"], ["<p>A vector (an embedding) is a fixed-length array of floating-point numbers that an embedding model computes from text, images or other content. In VAST's documentation, closeness in vector space usually means the items behind the vectors are also close in their original domain.</p>", "<p>Search takes three steps: compute a vector for what is being looked for, find the few vectors in the store closest to it (its nearest neighbours), then map those vectors back to the content they stand for. Closeness is commonly measured by Euclidean distance or cosine similarity.</p>"]]},
-    {"t": ["常见做法：向量和原文分两处放", "A common layout: vectors and content kept apart"], "d": ["向量放在专门的向量库，原文放在存储里；一次检索要先查一处、再去另一处取，两边还要一直保持同步。", "Vectors sit in a vector database and content in storage; a search queries one, fetches from the other, and both must stay in sync."], "b": [["<p>常见的检索系统由几部分拼起来：存原文的存储、存向量的向量数据库、生成向量的流水线，以及管权限的系统。白皮书描述了这种结构：各部件往往是独立的系统，靠定制代码连接。一次检索先在向量库里找到最近邻，再拿结果里的引用去存储系统取原文。</p>", "<p>两处数据需要持续对齐：原文改了或删了，向量库里对应的条目要跟着更新；原文的访问权限变了，向量库里的权限也要同步。同步一旦跟不上，检索就可能返回过期的内容，或者把片段返回给本来无权查看原文的人。</p>"], ["<p>A typical retrieval system is assembled from several parts: storage for the source content, a vector database for the vectors, a pipeline that generates the vectors, and a system that manages permissions. The white paper describes this structure, in which the parts are often independent systems joined by custom code. A search first finds nearest neighbours in the vector database, then uses the references in the results to fetch the source content from storage.</p>", "<p>The two sets of data must stay aligned: when source content changes or is deleted, the matching vector entries must be updated; when its access permissions change, the vector database must follow. When syncing falls behind, a search can return stale content, or return chunks to someone who has no right to see the source.</p>"]]},
-    {"t": ["VAST：向量就是表里的一列", "VAST: the vector is a column in the table"], "d": ["VAST DataBase 有向量数据类型，向量和文本片段、来源路径等元数据放在同一行，一次事务写入。", "VAST DataBase has a vector type, so a vector shares a row with its chunk, source path and metadata, written in one transaction."], "b": [["<p>VAST DataBase 支持向量类型：一个固定维度的浮点数数组，建表时和其他列一起定义。一行里可以同时放片段编号、文本片段、来源对象的路径、时间等元数据，以及这段内容的向量。</p>", "<p>插入一行是一个事务，向量和它的元数据同时生效，不会出现向量已经写入、元数据还没到的中间状态。原文本身也在同一个 Element Store 里，行里记着它的路径，检索结果可以直接指回原文。</p>"], ["<p>VAST DataBase supports a vector type: a fixed-dimension array of floats, defined with the other columns when the table is created. A single row can hold a chunk ID, the text chunk, the path of the source object, a timestamp and other metadata, together with the vector for that content.</p>", "<p>Inserting a row is one transaction, so a vector and its metadata take effect together, with no moment where the vector is written but the metadata has not arrived. The source content lives in the same Element Store, and the row records its path, so search results point straight back to it.</p>"]]},
-    {"t": ["用 SQL 找最近邻，同时做过滤", "Nearest neighbours in SQL, with filters"], "d": ["按向量距离排序、取前几行，就是一次最近邻检索；同一条 SQL 里可以加 WHERE 条件，先筛掉不相关的行。", "Sorting by vector distance and taking the top rows is a nearest-neighbour search; WHERE can rule out rows first."], "b": [["<p>向量运算由 VAST 原生查询引擎执行。官方文档提供三个距离函数：欧氏距离 array_distance、余弦距离 array_cosine_distance 和负内积。写法就是普通 SQL：ORDER BY array_distance(向量列, 提问向量) LIMIT k。</p>", "<p>因为元数据和向量在同一张表，检索可以直接加普通过滤条件，例如只在某个日期之后、某个来源目录下的片段里找最近邻。动画里离提问最近的片段 A 和 D 早于筛选日期，被 WHERE 排除，结果是剩下行里最近的 C 和 F。过滤和相似度排序在同一次查询里完成，不需要分别从两个系统取结果再合并。</p>"], ["<p>Vector operations run in VAST's native query engine. The documentation provides three distance functions: Euclidean distance (array_distance), cosine distance (array_cosine_distance) and negative inner product. The query is ordinary SQL: ORDER BY array_distance(vector_column, query_vector) LIMIT k.</p>", "<p>Because metadata and vectors share a table, the search can take ordinary filters directly, for example finding nearest neighbours only among chunks after a given date or under a given source directory. In the animation, chunks A and D are closest to the query but predate the cut-off, so WHERE removes them and the result is C and F, the nearest of the remaining rows. Filtering and similarity ranking happen in one query, with no merging of results fetched from two systems.</p>"]]},
-    {"t": ["按提问人的权限过滤", "Filtered by the asker's permissions"], "d": ["行级安全规则让同一条检索对不同用户返回不同的行，没有权限的向量不会出现在结果里。", "Row-level security makes the same search return different rows to different users, and vectors a user may not see never appear in the results."], "b": [["<p>VAST DataBase 的权限走 S3 身份策略，支持行级和列级安全：按条件放行或拒绝行，屏蔽或掩码列。官方文档说明，向量检索可以叠加这类行过滤，由发起检索的用户的权限决定哪些行（也就是哪些向量）可见。</p>", "<p>其中一种行过滤按授权路径执行：每行在一个保留列里记录对应对象的路径，查询时逐行检查该用户对这个对象有没有读取权限，有权限的行才返回。这样，原文的权限直接决定了它的片段和向量能不能被检索到。</p>"], ["<p>Permissions in VAST DataBase go through S3 identity policies and include row- and column-level security: rows can be allowed or denied by condition, and columns can be blocked or masked. The documentation states that vector search can apply these row filters, so the permissions of the user running the search decide which rows, and therefore which vectors, are visible.</p>", "<p>One form of row filtering works by authorisation path: each row records the path of its object in a reserved column, and at query time each row is checked against the user's read permission on that object; only rows the user may read are returned. In this way the permissions on the source content decide whether its chunks and vectors can be found at all.</p>"]]},
-    {"t": ["向量索引：建表时就要指定", "Vector index: chosen when the table is created"], "d": ["为一列向量建索引，大规模检索时不必逐行计算距离；索引只能在建表时指定，选定后不能更改距离度量，也不能删除。", "An index spares large searches from scoring every row; it is set at table creation, and neither it nor its metric can change later."], "b": [["<p>表很大时，逐行计算距离的代价很高。5.5 版起可以为向量列建索引：索引把向量组织起来，让最近邻查找快速、准确、节省计算资源，而不必和每一行比一遍（截至 5.5 版官方文档）。每张表只能为一个向量列建索引，同时指定距离度量：欧氏距离，或余弦（负）内积。</p>", "<p>索引在建表时指定，之后不能再加，也不能删除，距离度量也不能更改；带向量索引的表不能同时开启排序或分区。新插入的向量立即可以被检索到，索引在后台更新，可能需要一段时间才完成（据 5.5.0 版发行说明）。</p>"], ["<p>When a table is large, computing the distance to every row is expensive. From version 5.5 a vector column can be indexed: the index organises the vectors so that nearest-neighbour lookups are fast, accurate and economical with compute, without comparing against every row (VAST Cluster 5.5 documentation). Each table can index one vector column, chosen together with a distance metric: Euclidean, or cosine (negative) inner product.</p>", "<p>The index is set when the table is created; it cannot be added later or removed, and its metric cannot change. A table with a vector index cannot also be sorted or partitioned. Newly inserted vectors can be searched immediately, while the index updates in the background and may take some time to complete (VAST Cluster 5.5.0 release notes).</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-vec",
+ "ar": [960/500,480/660],
+ "steps": [
+  {
+   "t": [
+    "向量与最近邻",
+    "Vectors and Nearest Neighbours"
+   ],
+   "d": [
+    "嵌入模型把一段内容变成一串数字（向量），意思相近的内容，向量也相近；检索就是找离提问向量最近的几个。",
+    "An embedding model turns content into a vector; similar content gets nearby vectors, and search finds the nearest ones."
+   ],
+   "b": [
+    [
+     "<p>向量（embedding）是一个固定长度的浮点数数组，由嵌入模型从文本、图片等内容计算出来。VAST 官方文档的描述是：向量空间里距离近，通常意味着它们代表的内容在原来的领域里也相近。</p>",
+     "<p>检索分三步：先把要找的内容也算成向量，再在库里找离它最近的若干个向量（最近邻，nearest neighbours），最后把这些向量映射回它们代表的原始内容。衡量远近常用欧氏距离或余弦相似度。</p>"
+    ],
+    [
+     "<p>A vector (an embedding) is a fixed-length array of floating-point numbers that an embedding model computes from text, images or other content. In VAST's documentation, closeness in vector space usually means the items behind the vectors are also close in their original domain.</p>",
+     "<p>Search takes three steps: compute a vector for what is being looked for, find the few vectors in the store closest to it (its nearest neighbours), then map those vectors back to the content they stand for. Closeness is commonly measured by Euclidean distance or cosine similarity.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "常见做法：向量和原文分两处放",
+    "A Common Layout: Vectors and Content Kept Apart"
+   ],
+   "d": [
+    "向量放在专门的向量库，原文放在存储里；一次检索要先查一处、再去另一处取，两边还要一直保持同步。",
+    "Vectors sit in a vector database and content in storage; a search queries one, fetches from the other, and both must stay in sync."
+   ],
+   "b": [
+    [
+     "<p>常见的检索系统由几部分拼起来：存原文的存储、存向量的向量数据库、生成向量的流水线，以及管权限的系统。白皮书描述了这种结构：各部件往往是独立的系统，靠定制代码连接。一次检索先在向量库里找到最近邻，再拿结果里的引用去存储系统取原文。</p>",
+     "<p>两处数据需要持续对齐：原文改了或删了，向量库里对应的条目要跟着更新；原文的访问权限变了，向量库里的权限也要同步。同步一旦跟不上，检索就可能返回过期的内容，或者把片段返回给本来无权查看原文的人。</p>"
+    ],
+    [
+     "<p>A typical retrieval system is assembled from several parts: storage for the source content, a vector database for the vectors, a pipeline that generates the vectors, and a system that manages permissions. The white paper describes this structure, in which the parts are often independent systems joined by custom code. A search first finds nearest neighbours in the vector database, then uses the references in the results to fetch the source content from storage.</p>",
+     "<p>The two sets of data must stay aligned: when source content changes or is deleted, the matching vector entries must be updated; when its access permissions change, the vector database must follow. When syncing falls behind, a search can return stale content, or return chunks to someone who has no right to see the source.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "VAST：向量就是表里的一列",
+    "VAST: The Vector Is a Column in the Table"
+   ],
+   "d": [
+    "VAST DataBase 有向量数据类型，向量和文本片段、来源路径等元数据放在同一行，一次事务写入。",
+    "VAST DataBase has a vector type, so a vector shares a row with its chunk, source path and metadata, written in one transaction."
+   ],
+   "b": [
+    [
+     "<p>VAST DataBase 支持向量类型：一个固定维度的浮点数数组，建表时和其他列一起定义。一行里可以同时放片段编号、文本片段、来源对象的路径、时间等元数据，以及这段内容的向量。</p>",
+     "<p>插入一行是一个事务，向量和它的元数据同时生效，不会出现向量已经写入、元数据还没到的中间状态。原文本身也在同一个 Element Store 里，行里记着它的路径，检索结果可以直接指回原文。</p>"
+    ],
+    [
+     "<p>VAST DataBase supports a vector type: a fixed-dimension array of floats, defined with the other columns when the table is created. A single row can hold a chunk ID, the text chunk, the path of the source object, a timestamp and other metadata, together with the vector for that content.</p>",
+     "<p>Inserting a row is one transaction, so a vector and its metadata take effect together, with no moment where the vector is written but the metadata has not arrived. The source content lives in the same Element Store, and the row records its path, so search results point straight back to it.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用 SQL 找最近邻，同时做过滤",
+    "Nearest Neighbours in SQL, with Filters"
+   ],
+   "d": [
+    "按向量距离排序、取前几行，就是一次最近邻检索；同一条 SQL 里可以加 WHERE 条件，先筛掉不相关的行。",
+    "Sorting by vector distance and taking the top rows is a nearest-neighbour search; WHERE can rule out rows first."
+   ],
+   "b": [
+    [
+     "<p>向量运算由 VAST 原生查询引擎执行。官方文档提供三个距离函数：欧氏距离 array_distance、余弦距离 array_cosine_distance 和负内积。写法就是普通 SQL：ORDER BY array_distance(向量列, 提问向量) LIMIT k。</p>",
+     "<p>因为元数据和向量在同一张表，检索可以直接加普通过滤条件，例如只在某个日期之后、某个来源目录下的片段里找最近邻。动画里离提问最近的片段 A 和 D 早于筛选日期，被 WHERE 排除，结果是剩下行里最近的 C 和 F。过滤和相似度排序在同一次查询里完成，不需要分别从两个系统取结果再合并。</p>"
+    ],
+    [
+     "<p>Vector operations run in VAST's native query engine. The documentation provides three distance functions: Euclidean distance (array_distance), cosine distance (array_cosine_distance) and negative inner product. The query is ordinary SQL: ORDER BY array_distance(vector_column, query_vector) LIMIT k.</p>",
+     "<p>Because metadata and vectors share a table, the search can take ordinary filters directly, for example finding nearest neighbours only among chunks after a given date or under a given source directory. In the animation, chunks A and D are closest to the query but predate the cut-off, so WHERE removes them and the result is C and F, the nearest of the remaining rows. Filtering and similarity ranking happen in one query, with no merging of results fetched from two systems.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按提问人的权限过滤",
+    "Filtered by the Asker's Permissions"
+   ],
+   "d": [
+    "行级安全规则让同一条检索对不同用户返回不同的行，没有权限的向量不会出现在结果里。",
+    "Row-level security makes the same search return different rows to different users, and vectors a user may not see never appear in the results."
+   ],
+   "b": [
+    [
+     "<p>VAST DataBase 的权限走 S3 身份策略，支持行级和列级安全：按条件放行或拒绝行，屏蔽或掩码列。官方文档说明，向量检索可以叠加这类行过滤，由发起检索的用户的权限决定哪些行（也就是哪些向量）可见。</p>",
+     "<p>其中一种行过滤按授权路径执行：每行在一个保留列里记录对应对象的路径，查询时逐行检查该用户对这个对象有没有读取权限，有权限的行才返回。这样，原文的权限直接决定了它的片段和向量能不能被检索到。</p>"
+    ],
+    [
+     "<p>Permissions in VAST DataBase go through S3 identity policies and include row- and column-level security: rows can be allowed or denied by condition, and columns can be blocked or masked. The documentation states that vector search can apply these row filters, so the permissions of the user running the search decide which rows, and therefore which vectors, are visible.</p>",
+     "<p>One form of row filtering works by authorisation path: each row records the path of its object in a reserved column, and at query time each row is checked against the user's read permission on that object; only rows the user may read are returned. In this way the permissions on the source content decide whether its chunks and vectors can be found at all.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "向量索引：建表时就要指定",
+    "Vector Index: Chosen When the Table Is Created"
+   ],
+   "d": [
+    "为一列向量建索引，大规模检索时不必逐行计算距离；索引只能在建表时指定，选定后不能更改距离度量，也不能删除。",
+    "An index spares large searches from scoring every row; it is set at table creation, and neither it nor its metric can change later."
+   ],
+   "b": [
+    [
+     "<p>表很大时，逐行计算距离的代价很高。5.5 版起可以为向量列建索引：索引把向量组织起来，让最近邻查找快速、准确、节省计算资源，而不必和每一行比一遍（截至 5.5 版官方文档）。每张表只能为一个向量列建索引，同时指定距离度量：欧氏距离，或余弦（负）内积。</p>",
+     "<p>索引在建表时指定，之后不能再加，也不能删除，距离度量也不能更改；带向量索引的表不能同时开启排序或分区。新插入的向量立即可以被检索到，索引在后台更新，可能需要一段时间才完成（据 5.5.0 版发行说明）。</p>"
+    ],
+    [
+     "<p>When a table is large, computing the distance to every row is expensive. From version 5.5 a vector column can be indexed: the index organises the vectors so that nearest-neighbour lookups are fast, accurate and economical with compute, without comparing against every row (VAST Cluster 5.5 documentation). Each table can index one vector column, chosen together with a distance metric: Euclidean, or cosine (negative) inner product.</p>",
+     "<p>The index is set when the table is created; it cannot be added later or removed, and its metric cannot change. A table with a vector index cannot also be sorted or partitioned. Newly inserted vectors can be searched immediately, while the index updates in the background and may take some time to complete (VAST Cluster 5.5.0 release notes).</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

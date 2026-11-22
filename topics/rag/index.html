@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="RAG: retrieve, then answer">RAG：先检索，再回答</h1>
+      <div><h1 data-en="RAG: Retrieve, Then Answer">RAG：先检索，再回答</h1>
         <p class="meta"><span data-en="5 steps · knowledge bases, retrieval, evidence">5 步 · 知识库、候选检索、证据</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks">论文《Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks》</li>
       <li data-en="Dense Passage Retrieval for Open-Domain Question Answering">论文《Dense Passage Retrieval for Open-Domain Question Answering》</li>
@@ -73,38 +73,112 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/rag.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'rag',ar:[920/376,360/482],steps:[
-  {t:["把资料整理成可检索的片段", "Prepare source material as searchable passages"],
-   d:["知识库保存文本片段及其出处，索引帮助应用定位相关段落。", "The knowledge base keeps passages and their origins, and an index helps locate relevant text."],
-   b:[
-     ["<p>检索增强生成（RAG）把外部资料引入模型作答过程。常见做法是先解析文档，再按段落、标题或语义边界切片，为每个片段保留来源与位置。</p>", "<p>检索索引保存便于搜索的表示，例如词项或向量。向量是用一组数字表达内容特征的表示，可用于按语义匹配。索引记录指向可取回的原文片段。</p>"],
-     ["<p>Retrieval-augmented generation (RAG) brings external material into model answers. A common preparation step parses documents, splits them at paragraph, section, or semantic boundaries, and records the source and location of each passage.</p>", "<p>A search index stores searchable representations, such as terms or vectors. A vector encodes features as a list of numbers and can be used for semantic matching. Index records point back to the original passages.</p>"]
-   ]},
-  {t:["用问题检索候选片段", "Retrieve candidate passages for the question"],
-   d:["检索器按问题从索引中找回一组候选，为模型提供外部信息。", "The retriever searches the index with the question and returns candidates for external context."],
-   b:[
-     ["<p>收到问题后，检索器生成索引支持的查询。它可以按关键词匹配，也可以将问题映射为向量，并搜索相近的片段。</p>", "<p>候选集提供一个可筛选的范围。相关片段是否进入候选集取决于切片质量、查询表达和索引范围。</p>"],
-     ["<p>On receiving a question, the retriever builds a query supported by the index. It can match keywords or map the question to a vector and look for nearby passages.</p>", "<p>The candidate set establishes what can be considered in the next stage. Whether a relevant passage makes it into that set depends on chunking, the query representation, and index coverage.</p>"]
-   ]},
-  {t:["重排候选并控制上下文用量", "Rerank candidates and control context size"],
-   d:["应用可进一步比较问题和候选片段，只保留相关内容。", "The application can compare the question with each passage again and keep relevant context."],
-   b:[
-     ["<p>重排是在初步检索后对候选重新打分排序。重排器可以联合读取问题与片段，以更细致地判断候选是否包含所需信息。</p>", "<p>生成模型接收的输入有长度上限。应用从排名中选择可用的片段，必要时去除重复内容，把输入预算留给更相关的证据。</p>"],
-     ["<p>Reranking scores and orders passages after the initial retrieval. A reranker can read the question and passage together to assess whether the passage contains the needed information.</p>", "<p>The generator accepts a bounded input. The application selects usable passages from the ranking and can remove duplicates to reserve input space for more relevant evidence.</p>"]
-   ]},
-  {t:["把问题与来源片段交给模型", "Give the model the question and source passages"],
-   d:["应用把选中的片段及其来源加入输入，模型基于这些信息生成回答。", "The application puts selected passages and their source information into the model input."],
-   b:[
-     ["<p>应用组装生成上下文，将问题、所选片段及可引用的来源标识放在一起提交给模型。模型据此抽取和综合信息。</p>", "<p>更新知识库和索引可以改变之后检索到的资料。生成阶段从本次输入中读取这些资料，模型权重保持原有状态。</p>"],
-     ["<p>The application assembles the generation context by submitting the question, selected passages, and citable source identifiers together. The model can extract and combine information from that context.</p>", "<p>Updating the corpus and index changes what later queries can retrieve. During generation the model reads the material from the current input, with its weights left as they were.</p>"]
-   ]},
-  {t:["用证据核对回答", "Check the answer against the evidence"],
-   d:["回答可以附上片段出处，证据不足时由应用标出缺口。", "The response can cite passages and surface gaps where evidence is insufficient."],
-   b:[
-     ["<p>可追溯的回答保留结论与来源片段的关系。应用可以逐项检查引用是否对应相关原文，并确认原文能否支持结论。</p>", "<p>检索与生成需要分别核对。遗漏相关片段属于检索问题，已有片段却得出不受支持的结论属于生成问题。两类问题需要在不同环节修正。</p>"],
-     ["<p>A traceable answer preserves the relationship between claims and source passages. The application can check whether the references identify relevant text and whether that text supports each claim.</p>", "<p>Retrieval and generation can be evaluated separately. A missing relevant passage indicates a retrieval problem, while an unsupported claim despite available evidence indicates a generation problem. The fixes apply at different stages.</p>"]
-   ]},
-]};
+window.SS_TOPIC_CFG={
+ "anim": "rag",
+ "ar": [920/376,360/482],
+ "steps": [
+  {
+   "t": [
+    "把资料整理成可检索的片段",
+    "Prepare Source Material as Searchable Passages"
+   ],
+   "d": [
+    "知识库保存文本片段及其出处，索引帮助应用定位相关段落。",
+    "The knowledge base keeps passages and their origins, and an index helps locate relevant text."
+   ],
+   "b": [
+    [
+     "<p>检索增强生成（RAG）把外部资料引入模型作答过程。常见做法是先解析文档，再按段落、标题或语义边界切片，为每个片段保留来源与位置。</p>",
+     "<p>检索索引保存便于搜索的表示，例如词项或向量。向量是用一组数字表达内容特征的表示，可用于按语义匹配。索引记录指向可取回的原文片段。</p>"
+    ],
+    [
+     "<p>Retrieval-augmented generation (RAG) brings external material into model answers. A common preparation step parses documents, splits them at paragraph, section, or semantic boundaries, and records the source and location of each passage.</p>",
+     "<p>A search index stores searchable representations, such as terms or vectors. A vector encodes features as a list of numbers and can be used for semantic matching. Index records point back to the original passages.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用问题检索候选片段",
+    "Retrieve Candidate Passages for the Question"
+   ],
+   "d": [
+    "检索器按问题从索引中找回一组候选，为模型提供外部信息。",
+    "The retriever searches the index with the question and returns candidates for external context."
+   ],
+   "b": [
+    [
+     "<p>收到问题后，检索器生成索引支持的查询。它可以按关键词匹配，也可以将问题映射为向量，并搜索相近的片段。</p>",
+     "<p>候选集提供一个可筛选的范围。相关片段是否进入候选集取决于切片质量、查询表达和索引范围。</p>"
+    ],
+    [
+     "<p>On receiving a question, the retriever builds a query supported by the index. It can match keywords or map the question to a vector and look for nearby passages.</p>",
+     "<p>The candidate set establishes what can be considered in the next stage. Whether a relevant passage makes it into that set depends on chunking, the query representation, and index coverage.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "重排候选并控制上下文用量",
+    "Rerank Candidates and Control Context Size"
+   ],
+   "d": [
+    "应用可进一步比较问题和候选片段，只保留相关内容。",
+    "The application can compare the question with each passage again and keep relevant context."
+   ],
+   "b": [
+    [
+     "<p>重排是在初步检索后对候选重新打分排序。重排器可以联合读取问题与片段，以更细致地判断候选是否包含所需信息。</p>",
+     "<p>生成模型接收的输入有长度上限。应用从排名中选择可用的片段，必要时去除重复内容，把输入预算留给更相关的证据。</p>"
+    ],
+    [
+     "<p>Reranking scores and orders passages after the initial retrieval. A reranker can read the question and passage together to assess whether the passage contains the needed information.</p>",
+     "<p>The generator accepts a bounded input. The application selects usable passages from the ranking and can remove duplicates to reserve input space for more relevant evidence.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "把问题与来源片段交给模型",
+    "Give the Model the Question and Source Passages"
+   ],
+   "d": [
+    "应用把选中的片段及其来源加入输入，模型基于这些信息生成回答。",
+    "The application puts selected passages and their source information into the model input."
+   ],
+   "b": [
+    [
+     "<p>应用组装生成上下文，将问题、所选片段及可引用的来源标识放在一起提交给模型。模型据此抽取和综合信息。</p>",
+     "<p>更新知识库和索引可以改变之后检索到的资料。生成阶段从本次输入中读取这些资料，模型权重保持原有状态。</p>"
+    ],
+    [
+     "<p>The application assembles the generation context by submitting the question, selected passages, and citable source identifiers together. The model can extract and combine information from that context.</p>",
+     "<p>Updating the corpus and index changes what later queries can retrieve. During generation the model reads the material from the current input, with its weights left as they were.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用证据核对回答",
+    "Check the Answer Against the Evidence"
+   ],
+   "d": [
+    "回答可以附上片段出处，证据不足时由应用标出缺口。",
+    "The response can cite passages and surface gaps where evidence is insufficient."
+   ],
+   "b": [
+    [
+     "<p>可追溯的回答保留结论与来源片段的关系。应用可以逐项检查引用是否对应相关原文，并确认原文能否支持结论。</p>",
+     "<p>检索与生成需要分别核对。遗漏相关片段属于检索问题，已有片段却得出不受支持的结论属于生成问题。两类问题需要在不同环节修正。</p>"
+    ],
+    [
+     "<p>A traceable answer preserves the relationship between claims and source passages. The application can check whether the references identify relevant text and whether that text supports each claim.</p>",
+     "<p>Retrieval and generation can be evaluated separately. A missing relevant passage indicates a retrieval problem, while an unsupported claim despite available evidence indicates a generation problem. The fixes apply at different stages.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

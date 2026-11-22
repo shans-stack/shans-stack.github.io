@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="How agents call tools">Agent 怎么调用工具</h1>
+      <div><h1 data-en="How Agents Call Tools">Agent 怎么调用工具</h1>
         <p class="meta"><span data-en="5 steps · tool calls, execution permissions, feedback loops">5 步 · 工具调用、执行权限、反馈循环</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="Anthropic Building effective agents">Anthropic 技术文章《Building effective agents》</li>
       <li data-en="Model Context Protocol specification on Tools">Model Context Protocol 规范《Tools》</li>
@@ -73,38 +73,112 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/agent.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'agent',ar:[920/376,360/482],steps:[
-  {t:["应用将任务和可用工具交给模型", "The application gives the model a task and available tools"],
-   d:["Agent 的运行程序维护任务状态，并为当前推理提供工具说明。", "The agent runtime tracks task state and supplies tool descriptions for the current inference call."],
-   b:[
-     ["<p>Agent 是由模型和运行程序组成的应用。运行程序接收任务，组织历史和当前目标，把可用工具的名称、用途和输入格式随提示词一并交给模型。</p>", "<p>模型根据这些信息选择生成回答或提出工具调用。例如在查找一篇资料时，模型可先请求目录搜索，再根据结果判断是否需要读取正文。</p>"],
-     ["<p>An agent is an application that combines a model with a runtime. The runtime receives a task, assembles its history and current goal, and describes available tools by name, purpose, and input format.</p>", "<p>The model uses this context to answer or propose a tool call. To locate a reference, it might first request a catalog search and then decide whether to read the selected document.</p>"]
-   ]},
-  {t:["模型提出结构化调用", "The model proposes a structured call"],
-   d:["工具请求包含名称和参数，运行程序校验格式与调用权限。", "A tool request names the tool and supplies arguments. The runtime validates the format and permission to call it."],
-   b:[
-     ["<p>工具调用通常是结构化数据，例如目录搜索的名称和查询词。输入模式规定参数的类型和必填项。运行程序验证调用格式、工具可用性和调用者权限，然后决定是否执行。</p>", "<p>会改变外部状态的调用可以设置额外流转条件，例如要求审批。校验或审批未通过时，运行程序阻止执行，并记录拒绝结果。</p>"],
-     ["<p>A tool call is generally structured data, such as the name of a catalog search tool and a query string. An input schema defines the parameter types and required fields. The runtime checks the format, tool availability, and caller permissions before deciding whether to execute the call.</p>", "<p>Calls that change external state can have additional controls, such as approval. A failed validation or approval blocks execution and produces a rejection result.</p>"]
-   ]},
-  {t:["工具执行并返回观察结果", "The tool runs and returns an observation"],
-   d:["运行程序发出获准调用，将结果或错误放回任务状态。", "The runtime executes the approved call and records its result or error in task state."],
-   b:[
-     ["<p>工具是执行查询、读取文件或计算等操作的外部组件。运行程序调用工具并接收响应。返回的数据、空结果和错误都可成为观察结果，即下一次决策所用的执行反馈。</p>", "<p>工具结果可以附带状态与来源，便于区分成功、空结果和失败。运行程序将内容作为数据提供给模型，工具权限仍由运行程序控制。</p>"],
-     ["<p>A tool is an external component that runs an operation such as a query, a file read, or a calculation. The runtime invokes it and receives a response. Returned records, empty results, and errors can all become observations, the execution feedback used for the next decision.</p>", "<p>Tool responses can carry status and provenance to distinguish success, empty results, and failure. The runtime supplies the content as data and continues to enforce tool permissions.</p>"]
-   ]},
-  {t:["反馈触发下一轮推理", "Feedback starts another inference call"],
-   d:["模型读入追加的观察结果，决定再调用工具还是作答。", "The model reads the new observation and decides whether to call another tool or answer."],
-   b:[
-     ["<p>运行程序把调用记录和观察结果加入上下文，再发起一次模型推理。目录搜索返回文档标识时，模型可用该标识请求读取原文。读到正文之后，模型可结合原文和初始任务给出答案。</p>", "<p>串行依赖会让工具运行时间和下一轮推理时间依次累积。服务保留相同输入前缀的 KV Cache（注意力计算的中间状态）时，可减少后续模型调用的重复计算。</p>"],
-     ["<p>The runtime adds the call and its observation to context and invokes the model again. If the catalog returns a document ID, the model can use it to request the document. With the text available, it can answer using that text and the original goal.</p>", "<p>Serial dependencies add the tool’s runtime and the next inference call to the critical path. Reusing the KV cache, the model’s intermediate attention state for an unchanged prefix, can reduce repeated work across calls.</p>"]
-   ]},
-  {t:["任务满足停止条件后结束", "The task ends at a stopping condition"],
-   d:["运行程序在模型提交结果、达到任务条件或用完预算时停止循环。", "The runtime stops on a final response, a completion condition, or a budget limit."],
-   b:[
-     ["<p>停止条件由应用定义，例如返回有出处的结论、达到最大调用轮次或超时。运行程序可以区分正常完成与提前停止，保留已有的观察结果和执行状态。</p>", "<p>应用可把最终结果或待处理状态交还调用方。调用记录保留工具名称、执行状态和相关结果，供后续核对。</p>"],
-     ["<p>The application defines the stopping conditions, such as a sourced conclusion, a limit on calls, or a timeout. The runtime can distinguish completion from an early stop and retain the observations and execution state already available.</p>", "<p>The application can return the final result or a pending status to the caller. A record of the tools used, their execution statuses, and relevant results supports later review.</p>"]
-   ]},
-]};
+window.SS_TOPIC_CFG={
+ "anim": "agent",
+ "ar": [920/376,360/482],
+ "steps": [
+  {
+   "t": [
+    "应用将任务和可用工具交给模型",
+    "The Application Gives the Model a Task and Available Tools"
+   ],
+   "d": [
+    "Agent 的运行程序维护任务状态，并为当前推理提供工具说明。",
+    "The agent runtime tracks task state and supplies tool descriptions for the current inference call."
+   ],
+   "b": [
+    [
+     "<p>Agent 是由模型和运行程序组成的应用。运行程序接收任务，组织历史和当前目标，把可用工具的名称、用途和输入格式随提示词一并交给模型。</p>",
+     "<p>模型根据这些信息选择生成回答或提出工具调用。例如在查找一篇资料时，模型可先请求目录搜索，再根据结果判断是否需要读取正文。</p>"
+    ],
+    [
+     "<p>An agent is an application that combines a model with a runtime. The runtime receives a task, assembles its history and current goal, and describes available tools by name, purpose, and input format.</p>",
+     "<p>The model uses this context to answer or propose a tool call. To locate a reference, it might first request a catalog search and then decide whether to read the selected document.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "模型提出结构化调用",
+    "The Model Proposes a Structured Call"
+   ],
+   "d": [
+    "工具请求包含名称和参数，运行程序校验格式与调用权限。",
+    "A tool request names the tool and supplies arguments. The runtime validates the format and permission to call it."
+   ],
+   "b": [
+    [
+     "<p>工具调用通常是结构化数据，例如目录搜索的名称和查询词。输入模式规定参数的类型和必填项。运行程序验证调用格式、工具可用性和调用者权限，然后决定是否执行。</p>",
+     "<p>会改变外部状态的调用可以设置额外流转条件，例如要求审批。校验或审批未通过时，运行程序阻止执行，并记录拒绝结果。</p>"
+    ],
+    [
+     "<p>A tool call is generally structured data, such as the name of a catalog search tool and a query string. An input schema defines the parameter types and required fields. The runtime checks the format, tool availability, and caller permissions before deciding whether to execute the call.</p>",
+     "<p>Calls that change external state can have additional controls, such as approval. A failed validation or approval blocks execution and produces a rejection result.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "工具执行并返回观察结果",
+    "The Tool Runs and Returns an Observation"
+   ],
+   "d": [
+    "运行程序发出获准调用，将结果或错误放回任务状态。",
+    "The runtime executes the approved call and records its result or error in task state."
+   ],
+   "b": [
+    [
+     "<p>工具是执行查询、读取文件或计算等操作的外部组件。运行程序调用工具并接收响应。返回的数据、空结果和错误都可成为观察结果，即下一次决策所用的执行反馈。</p>",
+     "<p>工具结果可以附带状态与来源，便于区分成功、空结果和失败。运行程序将内容作为数据提供给模型，工具权限仍由运行程序控制。</p>"
+    ],
+    [
+     "<p>A tool is an external component that runs an operation such as a query, a file read, or a calculation. The runtime invokes it and receives a response. Returned records, empty results, and errors can all become observations, the execution feedback used for the next decision.</p>",
+     "<p>Tool responses can carry status and provenance to distinguish success, empty results, and failure. The runtime supplies the content as data and continues to enforce tool permissions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "反馈触发下一轮推理",
+    "Feedback Starts Another Inference Call"
+   ],
+   "d": [
+    "模型读入追加的观察结果，决定再调用工具还是作答。",
+    "The model reads the new observation and decides whether to call another tool or answer."
+   ],
+   "b": [
+    [
+     "<p>运行程序把调用记录和观察结果加入上下文，再发起一次模型推理。目录搜索返回文档标识时，模型可用该标识请求读取原文。读到正文之后，模型可结合原文和初始任务给出答案。</p>",
+     "<p>串行依赖会让工具运行时间和下一轮推理时间依次累积。服务保留相同输入前缀的 KV Cache（注意力计算的中间状态）时，可减少后续模型调用的重复计算。</p>"
+    ],
+    [
+     "<p>The runtime adds the call and its observation to context and invokes the model again. If the catalog returns a document ID, the model can use it to request the document. With the text available, it can answer using that text and the original goal.</p>",
+     "<p>Serial dependencies add the tool’s runtime and the next inference call to the critical path. Reusing the KV cache, the model’s intermediate attention state for an unchanged prefix, can reduce repeated work across calls.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "任务满足停止条件后结束",
+    "The Task Ends at a Stopping Condition"
+   ],
+   "d": [
+    "运行程序在模型提交结果、达到任务条件或用完预算时停止循环。",
+    "The runtime stops on a final response, a completion condition, or a budget limit."
+   ],
+   "b": [
+    [
+     "<p>停止条件由应用定义，例如返回有出处的结论、达到最大调用轮次或超时。运行程序可以区分正常完成与提前停止，保留已有的观察结果和执行状态。</p>",
+     "<p>应用可把最终结果或待处理状态交还调用方。调用记录保留工具名称、执行状态和相关结果，供后续核对。</p>"
+    ],
+    [
+     "<p>The application defines the stopping conditions, such as a sourced conclusion, a limit on calls, or a timeout. The runtime can distinguish completion from an early stop and retain the observations and execution state already available.</p>",
+     "<p>The application can return the final result or a pending status to the caller. A record of the tools used, their execution statuses, and relevant results supports later review.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

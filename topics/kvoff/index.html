@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="KV cache offload and retrieval">KV Cache 卸载与回读</h1>
+      <div><h1 data-en="KV Cache Offload and Retrieval">KV Cache 卸载与回读</h1>
         <p class="meta"><span data-en="5 steps · GPU memory, Prefix matching, Cache tiers">5 步 · 显存、前缀匹配、缓存分层</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,13 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>vLLM Documentation — Automatic Prefix Caching</li>
-      <li>vLLM Developer Documentation — Automatic Prefix Caching Design</li>
-      <li>LMCache Documentation — Local storage</li>
-      <li>LMCache Documentation — Architecture Overview</li>
     </ul></div>
   </div>
 </main>
@@ -74,29 +70,101 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/kvoff.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'kvoff',ar:[900/388,360/482],
-  steps:[
-    {t:["历史 token 的 KV 占用显存", "KV for earlier tokens occupies GPU memory"],
-     d:["推理保存前面 token 的键和值，让后续生成可以复用注意力计算所需的状态。", "Inference retains keys and values for earlier tokens, letting later generation reuse attention state."],
-     b:[["<p>Token 是模型处理的文本单位。Transformer 是一种模型架构，其中的注意力机制根据当前 token 与历史 token 的关系汇总信息。模型为已处理的 token 生成键（K）和值（V），并将这些中间结果存入 KV Cache，供逐个生成后续 token 时读取。并发请求或更长的上下文会增加需要保留的 KV 数据。</p>"],
-        ["<p>A token is a unit of text processed by the model. Transformer is a model architecture whose attention mechanism aggregates information based on how the current token relates to earlier tokens. The model generates keys (K) and values (V) for processed tokens and keeps them in the KV cache, where they can be read as later tokens are generated one at a time. More concurrent requests or longer contexts can increase the amount of KV state to retain.</p>"]]},
-    {t:["将可复用的块保存到低层", "Reusable blocks can move to a lower tier"],
-     d:["可复用但暂时不用的块可以复制到主机内存、盘或共享存储，再回收显存槽位。", "Reusable blocks outside the active set can be copied to host memory, a drive, or shared storage before reclaiming GPU slots."],
-     b:[["<p>卸载是将缓存块移出显存工作集的过程。工作集是当前计算需要保留的状态。主机内存提供本机缓存层，本地 SSD 或可共享的存储可以提供更大的保留空间。一个分层设计可以在低层副本保存完成后回收对应显存，同时保留正在使用的块。</p>"],
-        ["<p>Offloading moves cached blocks out of the GPU working set, the state needed by current computation. Host memory provides a local cache tier. A local SSD or shared store can offer more room for retained blocks. A tiered design can reclaim the corresponding GPU slots once it has stored the lower-tier copy, while retaining active blocks.</p>"]]},
-    {t:["用相同前缀匹配可复用状态", "Matching prefixes identify reusable state"],
-     d:["新请求按输入前缀查找可兼容的 KV 块，命中时将块读回显存。", "A new request looks up compatible KV blocks for its input prefix and loads matching blocks back into GPU memory."],
-     b:[["<p>前缀是输入开头的一段连续 token。前缀缓存可以用当前块的 token 和先前前缀共同生成缓存键，并结合模型、配置及隔离范围区分可复用状态。命中低层缓存后，推理引擎把相应 KV 块放回显存，后续计算可直接使用这些结果。</p>"],
-        ["<p>A prefix is a contiguous sequence of tokens at the start of an input. A prefix cache can build a key from the block's tokens and the preceding prefix, while accounting for model, configuration, and isolation scope. On a lower-tier hit, the engine loads the corresponding KV blocks into GPU memory for subsequent computation.</p>"]]},
-    {t:["未命中部分通过预填充计算", "Prefill computes the uncached suffix"],
-     d:["已命中的前缀沿回读路径复用，其余输入仍由 GPU 计算。", "The engine reloads a cached prefix and computes the remaining input on the GPU."],
-     b:[["<p>预填充（prefill）是模型处理输入提示并建立 KV 状态的阶段。如果只有一段前缀命中缓存，推理引擎复用该前缀的状态，并对后续未命中的 token 执行预填充。完全未命中时，整个输入走预填充路径。</p>"],
-        ["<p>Prefill is the stage in which the model processes the input prompt and builds KV state. If only an initial portion is cached, the inference engine reuses that prefix state and runs prefill for the uncached tokens that follow. A complete miss sends the entire input through prefill.</p>"]]},
-    {t:["回读成本与重算成本决定收益", "The benefit depends on retrieval and recomputation cost"],
-     d:["缓存命中采用回读仍有代价，只有回读路径比被替代的计算更快时才会缩短这一段等待。", "Even a cache hit costs time to retrieve. It reduces the wait for this stage when retrieval is faster than the computation it replaces."],
-     b:[["<p>回读时间取决于数据量、读取路径的等待与有效带宽，以及将块放入显存的开销。重算时间取决于要重新处理的前缀和 GPU 上的计算负载。预取是在需要前发起读取，可以把一部分等待与其他处理重叠。示例中的两条路径都以生成阶段可用的 KV 块为终点。</p>"],
-        ["<p>Retrieval time depends on the amount of data, the read path's latency and effective bandwidth, and the cost of placing blocks in GPU memory. Recomputation time depends on the prefix to be processed again and the GPU workload. Prefetching starts a read before the blocks are needed and can overlap some of the wait with other work. Both paths end with KV blocks available for generation.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "kvoff",
+ "ar": [900/388,360/482],
+ "steps": [
+  {
+   "t": [
+    "历史 token 的 KV 占用显存",
+    "KV for Earlier Tokens Occupies GPU Memory"
+   ],
+   "d": [
+    "推理保存前面 token 的键和值，让后续生成可以复用注意力计算所需的状态。",
+    "Inference retains keys and values for earlier tokens, letting later generation reuse attention state."
+   ],
+   "b": [
+    [
+     "<p>Token 是模型处理的文本单位。Transformer 是一种模型架构，其中的注意力机制根据当前 token 与历史 token 的关系汇总信息。模型为已处理的 token 生成键（K）和值（V），并将这些中间结果存入 KV Cache，供逐个生成后续 token 时读取。并发请求或更长的上下文会增加需要保留的 KV 数据。</p>"
+    ],
+    [
+     "<p>A token is a unit of text processed by the model. Transformer is a model architecture whose attention mechanism aggregates information based on how the current token relates to earlier tokens. The model generates keys (K) and values (V) for processed tokens and keeps them in the KV cache, where they can be read as later tokens are generated one at a time. More concurrent requests or longer contexts can increase the amount of KV state to retain.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "将可复用的块保存到低层",
+    "Reusable Blocks Can Move to a Lower Tier"
+   ],
+   "d": [
+    "可复用但暂时不用的块可以复制到主机内存、盘或共享存储，再回收显存槽位。",
+    "Reusable blocks outside the active set can be copied to host memory, a drive, or shared storage before reclaiming GPU slots."
+   ],
+   "b": [
+    [
+     "<p>卸载是将缓存块移出显存工作集的过程。工作集是当前计算需要保留的状态。主机内存提供本机缓存层，本地 SSD 或可共享的存储可以提供更大的保留空间。一个分层设计可以在低层副本保存完成后回收对应显存，同时保留正在使用的块。</p>"
+    ],
+    [
+     "<p>Offloading moves cached blocks out of the GPU working set, the state needed by current computation. Host memory provides a local cache tier. A local SSD or shared store can offer more room for retained blocks. A tiered design can reclaim the corresponding GPU slots once it has stored the lower-tier copy, while retaining active blocks.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用相同前缀匹配可复用状态",
+    "Matching Prefixes Identify Reusable State"
+   ],
+   "d": [
+    "新请求按输入前缀查找可兼容的 KV 块，命中时将块读回显存。",
+    "A new request looks up compatible KV blocks for its input prefix and loads matching blocks back into GPU memory."
+   ],
+   "b": [
+    [
+     "<p>前缀是输入开头的一段连续 token。前缀缓存可以用当前块的 token 和先前前缀共同生成缓存键，并结合模型、配置及隔离范围区分可复用状态。命中低层缓存后，推理引擎把相应 KV 块放回显存，后续计算可直接使用这些结果。</p>"
+    ],
+    [
+     "<p>A prefix is a contiguous sequence of tokens at the start of an input. A prefix cache can build a key from the block's tokens and the preceding prefix, while accounting for model, configuration, and isolation scope. On a lower-tier hit, the engine loads the corresponding KV blocks into GPU memory for subsequent computation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "未命中部分通过预填充计算",
+    "Prefill Computes the Uncached Suffix"
+   ],
+   "d": [
+    "已命中的前缀沿回读路径复用，其余输入仍由 GPU 计算。",
+    "The engine reloads a cached prefix and computes the remaining input on the GPU."
+   ],
+   "b": [
+    [
+     "<p>预填充（prefill）是模型处理输入提示并建立 KV 状态的阶段。如果只有一段前缀命中缓存，推理引擎复用该前缀的状态，并对后续未命中的 token 执行预填充。完全未命中时，整个输入走预填充路径。</p>"
+    ],
+    [
+     "<p>Prefill is the stage in which the model processes the input prompt and builds KV state. If only an initial portion is cached, the inference engine reuses that prefix state and runs prefill for the uncached tokens that follow. A complete miss sends the entire input through prefill.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "回读成本与重算成本决定收益",
+    "The Benefit Depends on Retrieval and Recomputation Cost"
+   ],
+   "d": [
+    "缓存命中采用回读仍有代价，只有回读路径比被替代的计算更快时才会缩短这一段等待。",
+    "Even a cache hit costs time to retrieve. It reduces the wait for this stage when retrieval is faster than the computation it replaces."
+   ],
+   "b": [
+    [
+     "<p>回读时间取决于数据量、读取路径的等待与有效带宽，以及将块放入显存的开销。重算时间取决于要重新处理的前缀和 GPU 上的计算负载。预取是在需要前发起读取，可以把一部分等待与其他处理重叠。示例中的两条路径都以生成阶段可用的 KV 块为终点。</p>"
+    ],
+    [
+     "<p>Retrieval time depends on the amount of data, the read path's latency and effective bandwidth, and the cost of placing blocks in GPU memory. Recomputation time depends on the prefix to be processed again and the GPU workload. Prefetching starts a read before the blocks are needed and can overlap some of the wait with other work. Both paths end with KV blocks available for generation.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

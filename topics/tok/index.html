@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="From text to the next token">从文字到下一个 Token</h1>
+      <div><h1 data-en="From Text to the Next Token">从文字到下一个 Token</h1>
         <p class="meta"><span data-en="6 steps · Tokenization, embeddings, autoregression">6 步 · 分词、嵌入、自回归</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,13 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>Neural Machine Translation of Rare Words with Subword Units</li>
-      <li>SentencePiece: A simple and language independent subword tokenizer and detokenizer for Neural Text Processing</li>
-      <li>Attention Is All You Need</li>
-      <li>Language Models are Few-Shot Learners</li>
     </ul></div>
   </div>
 </main>
@@ -72,26 +68,120 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/tok.js"></script>
 <script>
-window.SS_TOPIC_CFG = { anim: 'tok', ar: [960/334, 400/544], steps: [
-    { t: ["切出 Token", "Split text into tokens"],
-      d: ["分词器按词表和切分规则，把文字转换成一串 token。", "A tokenizer splits text into a sequence of tokens using a vocabulary and segmentation rules."],
-      b: [["<p>分词器负责在文本和离散符号之间转换。Token 是模型读写的基本单位，可以对应一个词、一段子词、标点，或由字节构成的片段。子词切分让少见的词也能由词表里的常见片段组成。</p>"], ["<p>A tokenizer converts between text and discrete symbols. A token is a unit the model reads or writes. It may represent a word, a subword, punctuation, or a span of bytes. Subword tokenization allows rare words to be assembled from pieces already in the vocabulary.</p>"]] },
-    { t: ["给每个 Token 查编号", "Look up each token ID"],
-      d: ["词表为每个 token 分配整数编号，输入顺序保留在编号序列里。", "The vocabulary assigns each token an integer ID, and the ID sequence preserves input order."],
-      b: [["<p>词表把每个可用的 token 映射为一个整数。编号是查表用的索引。同一段文字交给词表或切分规则不同的分词器，可能得到不同的 token 数和编号。</p>"], ["<p>The vocabulary maps each available token to an integer. The ID serves as a lookup index. Tokenizers with different vocabularies or segmentation rules can produce different IDs and token counts for the same text.</p>"]] },
-    { t: ["用编号查嵌入向量", "Look up embedding vectors"],
-      d: ["嵌入表按 token 编号取出向量，位置机制让后续计算区分先后顺序。", "An embedding table maps token IDs to vectors, and a positional mechanism gives later computations access to sequence order."],
-      b: [["<p>嵌入是模型训练得到的数值表示。输入层按编号从嵌入表取一行数，这组数叫向量。同一 token 的查表向量相同。位置机制会提供顺序信息，例如把位置向量加到输入表示，或在注意力计算中引入位置信息。</p>"], ["<p>An embedding is a learned numerical representation. The input layer uses each ID to select one row of numbers, called a vector. Repeated tokens retrieve the same embedding. Position can be supplied by adding a position vector to the input or by incorporating position into attention.</p>"]] },
-    { t: ["Transformer 逐层处理向量", "Process vectors through Transformer layers"],
-      d: ["注意力混合同一序列中各位置的信息，前馈网络分别变换各位置的向量。", "Attention combines information across positions, and a feed-forward network transforms each position's vector separately."],
-      b: [["<p>Transformer 是由多层重复模块构成的神经网络。在常见的自回归语言模型里，因果注意力按权重汇总当前位置及其之前的位置。前馈网络是各位置独立执行的可学习变换。经过多层处理，向量带有上下文信息。</p>"], ["<p>A Transformer is a neural network built from repeated layers. In a typical autoregressive language model, causal attention combines information from the current position and earlier positions. A feed-forward network applies a learned transformation to each position independently. Passing through multiple layers produces context-dependent vectors.</p>"]] },
-    { t: ["从词表里选下一个 Token", "Select the next token from the vocabulary"],
-      d: ["输出层为词表里的候选打分，解码策略据此选出一个 token。", "The output layer scores vocabulary entries, and a decoding strategy selects a token from those scores."],
-      b: [["<p>当前序列最后一个位置的向量经输出层映射，得到每个候选 token 的原始分数，称为 logits。解码可以选最高分，也可以按分数转换出的概率抽样。每次生成选择的是词表中的一个 token。</p>"], ["<p>The output layer maps the final position&#x27;s vector to raw scores, called logits, for entries in the vocabulary. Decoding can pick the highest score or sample from probabilities derived from the scores. Each generation step selects one vocabulary token.</p>"]] },
-    { t: ["把输出接回序列", "Append the output to the sequence"],
-      d: ["新 token 成为下一轮的输入，反分词把生成的编号序列转换回文字。", "Each new token becomes input for the next round, while detokenization turns the generated IDs into text."],
-      b: [["<p>根据已有序列预测下一个 token、追加后再重复的过程称为自回归生成。生成可在结束 token、输出长度上限或其他停止条件处结束。反分词按分词器定义把生成的编号序列还原成可显示的文本。</p>"], ["<p>Autoregressive generation predicts a token from the existing sequence, appends it, and repeats. Generation can stop at an end token, an output-length limit, or another stopping condition. Detokenization converts the generated IDs into displayable text using the tokenizer&#x27;s decoding rules.</p>"]] }
-] };
+window.SS_TOPIC_CFG = {
+ "anim": "tok",
+ "ar": [960/334, 400/544],
+ "steps": [
+  {
+   "t": [
+    "切出 Token",
+    "Split Text into Tokens"
+   ],
+   "d": [
+    "分词器按词表和切分规则，把文字转换成一串 token。",
+    "A tokenizer splits text into a sequence of tokens using a vocabulary and segmentation rules."
+   ],
+   "b": [
+    [
+     "<p>分词器负责在文本和离散符号之间转换。Token 是模型读写的基本单位，可以对应一个词、一段子词、标点，或由字节构成的片段。子词切分让少见的词也能由词表里的常见片段组成。</p>"
+    ],
+    [
+     "<p>A tokenizer converts between text and discrete symbols. A token is a unit the model reads or writes. It may represent a word, a subword, punctuation, or a span of bytes. Subword tokenization allows rare words to be assembled from pieces already in the vocabulary.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "给每个 Token 查编号",
+    "Look up Each Token ID"
+   ],
+   "d": [
+    "词表为每个 token 分配整数编号，输入顺序保留在编号序列里。",
+    "The vocabulary assigns each token an integer ID, and the ID sequence preserves input order."
+   ],
+   "b": [
+    [
+     "<p>词表把每个可用的 token 映射为一个整数。编号是查表用的索引。同一段文字交给词表或切分规则不同的分词器，可能得到不同的 token 数和编号。</p>"
+    ],
+    [
+     "<p>The vocabulary maps each available token to an integer. The ID serves as a lookup index. Tokenizers with different vocabularies or segmentation rules can produce different IDs and token counts for the same text.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用编号查嵌入向量",
+    "Look up Embedding Vectors"
+   ],
+   "d": [
+    "嵌入表按 token 编号取出向量，位置机制让后续计算区分先后顺序。",
+    "An embedding table maps token IDs to vectors, and a positional mechanism gives later computations access to sequence order."
+   ],
+   "b": [
+    [
+     "<p>嵌入是模型训练得到的数值表示。输入层按编号从嵌入表取一行数，这组数叫向量。同一 token 的查表向量相同。位置机制会提供顺序信息，例如把位置向量加到输入表示，或在注意力计算中引入位置信息。</p>"
+    ],
+    [
+     "<p>An embedding is a learned numerical representation. The input layer uses each ID to select one row of numbers, called a vector. Repeated tokens retrieve the same embedding. Position can be supplied by adding a position vector to the input or by incorporating position into attention.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Transformer 逐层处理向量",
+    "Process Vectors Through Transformer Layers"
+   ],
+   "d": [
+    "注意力混合同一序列中各位置的信息，前馈网络分别变换各位置的向量。",
+    "Attention combines information across positions, and a feed-forward network transforms each position's vector separately."
+   ],
+   "b": [
+    [
+     "<p>Transformer 是由多层重复模块构成的神经网络。在常见的自回归语言模型里，因果注意力按权重汇总当前位置及其之前的位置。前馈网络是各位置独立执行的可学习变换。经过多层处理，向量带有上下文信息。</p>"
+    ],
+    [
+     "<p>A Transformer is a neural network built from repeated layers. In a typical autoregressive language model, causal attention combines information from the current position and earlier positions. A feed-forward network applies a learned transformation to each position independently. Passing through multiple layers produces context-dependent vectors.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从词表里选下一个 Token",
+    "Select the Next Token from the Vocabulary"
+   ],
+   "d": [
+    "输出层为词表里的候选打分，解码策略据此选出一个 token。",
+    "The output layer scores vocabulary entries, and a decoding strategy selects a token from those scores."
+   ],
+   "b": [
+    [
+     "<p>当前序列最后一个位置的向量经输出层映射，得到每个候选 token 的原始分数，称为 logits。解码可以选最高分，也可以按分数转换出的概率抽样。每次生成选择的是词表中的一个 token。</p>"
+    ],
+    [
+     "<p>The output layer maps the final position&#x27;s vector to raw scores, called logits, for entries in the vocabulary. Decoding can pick the highest score or sample from probabilities derived from the scores. Each generation step selects one vocabulary token.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "把输出接回序列",
+    "Append the Output to the Sequence"
+   ],
+   "d": [
+    "新 token 成为下一轮的输入，反分词把生成的编号序列转换回文字。",
+    "Each new token becomes input for the next round, while detokenization turns the generated IDs into text."
+   ],
+   "b": [
+    [
+     "<p>根据已有序列预测下一个 token、追加后再重复的过程称为自回归生成。生成可在结束 token、输出长度上限或其他停止条件处结束。反分词按分词器定义把生成的编号序列还原成可显示的文本。</p>"
+    ],
+    [
+     "<p>Autoregressive generation predicts a token from the existing sequence, appends it, and repeats. Generation can stop at an end token, an output-length limit, or another stopping condition. Detokenization converts the generated IDs into displayable text using the tokenizer&#x27;s decoding rules.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

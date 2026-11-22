@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Data on MDT: why small files live on the metadata tier">DoM：小文件为什么要放在元数据层</h1>
+      <div><h1 data-en="Data on MDT: Why Small Files Live on the Metadata Tier">DoM：小文件为什么要放在元数据层</h1>
         <p class="meta"><span data-en="6 steps · EXAScaler, Lustre, metadata">6 步 · EXAScaler、Lustre、元数据</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="Lustre Operations Manual (doc.lustre.org), chapter &quot;Data on MDT (DoM)&quot;.">Lustre Operations Manual（doc.lustre.org），「Data on MDT (DoM)」一章。</li>
       <li data-en="Lustre Wiki (wiki.lustre.org), entries on Data on MDT and Progressive File Layouts.">Lustre Wiki（wiki.lustre.org），Data on MDT 与 Progressive File Layouts 条目。</li>
@@ -74,153 +74,155 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/d-dom.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'d-dom',ar:[960/476,480/692],
-  steps:[
-   {
-    "s": [
-     "两次来回",
-     "Two round trips"
+window.SS_TOPIC_CFG={
+ "anim": "d-dom",
+ "ar": [960/476,480/692],
+ "steps": [
+  {
+   "s": [
+    "两次来回",
+    "Two round trips"
+   ],
+   "t": [
+    "普通布局：读一个小文件要跑两个地方",
+    "Normal Layout: Reading One Small File Means Visiting Two Places"
+   ],
+   "d": [
+    "客户端先问元数据服务器要属性和布局，再去数据服务器拿内容，一共两次来回。",
+    "The client first asks the metadata server for attributes and layout, then fetches the content from a data server: two round trips in all."
+   ],
+   "b": [
+    [
+     "<p>如前所述，Lustre 把元数据和文件内容分开放：元数据服务器（MDS）管文件名、属性和布局，内容放在数据服务器的存储目标（OST）上。所以读任何一个文件，客户端都要先找元数据服务器，再找数据服务器。</p>",
+     "<p>这里说的「一次来回」，是客户端发出一个请求、收到对方回复的整个过程。大文件读取耗时长，开头多一次来回影响很小；文件很小时则不同。</p>"
     ],
-    "t": [
-     "普通布局：读一个小文件要跑两个地方",
-     "Normal layout: reading one small file means visiting two places"
-    ],
-    "d": [
-     "客户端先问元数据服务器要属性和布局，再去数据服务器拿内容，一共两次来回。",
-     "The client first asks the metadata server for attributes and layout, then fetches the content from a data server: two round trips in all."
-    ],
-    "b": [
-     [
-      "<p>如前所述，Lustre 把元数据和文件内容分开放：元数据服务器（MDS）管文件名、属性和布局，内容放在数据服务器的存储目标（OST）上。所以读任何一个文件，客户端都要先找元数据服务器，再找数据服务器。</p>",
-      "<p>这里说的「一次来回」，是客户端发出一个请求、收到对方回复的整个过程。大文件读取耗时长，开头多一次来回影响很小；文件很小时则不同。</p>"
-     ],
-     [
-      "<p>As described earlier, Lustre keeps metadata and file content apart: the metadata server (MDS) handles names, attributes and layout, while the content sits on object storage targets (OSTs) on the data servers. So to read any file, the client goes to the metadata server first and then to a data server.</p>",
-      "<p>A round trip here is the whole exchange of the client sending a request and getting the reply. A large file takes a long time to read, so one extra round trip at the start has little effect. For a very small file, the effect is different.</p>"
-     ]
+    [
+     "<p>As described earlier, Lustre keeps metadata and file content apart: the metadata server (MDS) handles names, attributes and layout, while the content sits on object storage targets (OSTs) on the data servers. So to read any file, the client goes to the metadata server first and then to a data server.</p>",
+     "<p>A round trip here is the whole exchange of the client sending a request and getting the reply. A large file takes a long time to read, so one extra round trip at the start has little effect. For a very small file, the effect is different.</p>"
     ]
-   },
-   {
-    "s": [
-     "小文件多了",
-     "Many small files"
+   ]
+  },
+  {
+   "s": [
+    "小文件多了",
+    "Many small files"
+   ],
+   "t": [
+    "小文件多了，来回次数翻倍",
+    "More Small Files, Twice the Round Trips"
+   ],
+   "d": [
+    "文件很小时，真正传数据的时间很短，大部分时间花在来回通讯上；文件越多，来回越多。",
+    "When files are tiny, moving the data takes very little time and most of it goes on round trips; more files mean more round trips."
+   ],
+   "b": [
+    [
+     "<p>一个很小的文件，数据本身传输很快，花时间的是两次来回：每次都要经过网络、协议处理和服务器排队。读一万个小文件，就是两万次来回，而且要与两类不同的服务器交互。</p>",
+     "<p>这就是并行文件系统处理海量小文件时的老问题：大文件靠多台服务器叠带宽很占优势，小文件却受通讯延迟限制，甚至可能不如只与一台服务器交互的单机 NFS。基因组的小片段、代码仓库、日志、训练开始时成批的 <code>stat</code> / <code>open</code>，都是这类负载。</p>"
     ],
-    "t": [
-     "小文件多了，来回次数翻倍",
-     "More small files, twice the round trips"
-    ],
-    "d": [
-     "文件很小时，真正传数据的时间很短，大部分时间花在来回通讯上；文件越多，来回越多。",
-     "When files are tiny, moving the data takes very little time and most of it goes on round trips; more files mean more round trips."
-    ],
-    "b": [
-     [
-      "<p>一个很小的文件，数据本身传输很快，花时间的是两次来回：每次都要经过网络、协议处理和服务器排队。读一万个小文件，就是两万次来回，而且要与两类不同的服务器交互。</p>",
-      "<p>这就是并行文件系统处理海量小文件时的老问题：大文件靠多台服务器叠带宽很占优势，小文件却受通讯延迟限制，甚至可能不如只与一台服务器交互的单机 NFS。基因组的小片段、代码仓库、日志、训练开始时成批的 <code>stat</code> / <code>open</code>，都是这类负载。</p>"
-     ],
-     [
-      "<p>For a very small file the data itself is sent almost at once; the time goes on the two round trips, each passing through the network, protocol processing and server queues. Reading ten thousand small files means twenty thousand round trips, with two different kinds of server.</p>",
-      "<p>This is the long-standing problem of parallel file systems with huge numbers of small files: large files gain a lot from stacking the bandwidth of many servers, but small files are held back by communication latency and may even do worse than a single-server NFS. Small genome fragments, code repositories, logs and the bursts of <code>stat</code> / <code>open</code> at the start of training are all this kind of workload.</p>"
-     ]
+    [
+     "<p>For a very small file the data itself is sent almost at once; the time goes on the two round trips, each passing through the network, protocol processing and server queues. Reading ten thousand small files means twenty thousand round trips, with two different kinds of server.</p>",
+     "<p>This is the long-standing problem of parallel file systems with huge numbers of small files: large files gain a lot from stacking the bandwidth of many servers, but small files are held back by communication latency and may even do worse than a single-server NFS. Small genome fragments, code repositories, logs and the bursts of <code>stat</code> / <code>open</code> at the start of training are all this kind of workload.</p>"
     ]
-   },
-   {
-    "s": [
-     "放进元数据层",
-     "Into the metadata tier"
+   ]
+  },
+  {
+   "s": [
+    "放进元数据层",
+    "Into the metadata tier"
+   ],
+   "t": [
+    "DoM：小文件直接放进元数据服务器",
+    "DoM: Small Files Go Straight into the Metadata Server"
+   ],
+   "d": [
+    "Data on MDT 把小文件的内容直接存在元数据服务器的闪存上，和它的属性放在一起。",
+    "Data on MDT stores a small file's content directly on the metadata server's flash, next to its attributes."
+   ],
+   "b": [
+    [
+     "<p><b>DoM</b>（Data on MDT）的做法是：既然每次访问都先经过元数据服务器，就把小文件的内容也存放在那里。元数据目标（MDT）通常是闪存，写入时小文件的数据和它的属性、布局存在同一处，数据服务器这次不用参与。</p>",
+     "<p>哪些文件这样放，是在文件布局里设定的：管理员可以给目录设一个布局，规定文件开头多大的一段放在 MDT 上。</p>"
     ],
-    "t": [
-     "DoM：小文件直接放进元数据服务器",
-     "DoM: small files go straight into the metadata server"
-    ],
-    "d": [
-     "Data on MDT 把小文件的内容直接存在元数据服务器的闪存上，和它的属性放在一起。",
-     "Data on MDT stores a small file's content directly on the metadata server's flash, next to its attributes."
-    ],
-    "b": [
-     [
-      "<p><b>DoM</b>（Data on MDT）的做法是：既然每次访问都先经过元数据服务器，就把小文件的内容也存放在那里。元数据目标（MDT）通常是闪存，写入时小文件的数据和它的属性、布局存在同一处，数据服务器这次不用参与。</p>",
-      "<p>哪些文件这样放，是在文件布局里设定的：管理员可以给目录设一个布局，规定文件开头多大的一段放在 MDT 上。</p>"
-     ],
-     [
-      "<p><b>DoM</b> (Data on MDT) takes this approach: since every access goes to the metadata server first, the small file's content is stored there too. The metadata target (MDT) is usually flash. On write, the small file's data is stored in the same place as its attributes and layout, and the data servers are not involved this time.</p>",
-      "<p>Which files are stored this way is set in the file layout: an administrator can give a directory a layout that says how large a leading part of each file goes on the MDT.</p>"
-     ]
+    [
+     "<p><b>DoM</b> (Data on MDT) takes this approach: since every access goes to the metadata server first, the small file's content is stored there too. The metadata target (MDT) is usually flash. On write, the small file's data is stored in the same place as its attributes and layout, and the data servers are not involved this time.</p>",
+     "<p>Which files are stored this way is set in the file layout: an administrator can give a directory a layout that says how large a leading part of each file goes on the MDT.</p>"
     ]
-   },
-   {
-    "s": [
-     "一次来回",
-     "One round trip"
+   ]
+  },
+  {
+   "s": [
+    "一次来回",
+    "One round trip"
+   ],
+   "t": [
+    "一次来回拿到属性和内容",
+    "One Round Trip Returns Attributes and Content"
+   ],
+   "d": [
+    "读这样的文件时，客户端只找元数据服务器一次，属性和内容一起回来，数据服务器不参与。",
+    "To read such a file the client goes to the metadata server once; attributes and content come back together, and the data servers stay out of it."
+   ],
+   "b": [
+    [
+     "<p>读一个 DoM 文件，客户端发给元数据服务器的那一次请求，回来的就同时有属性和内容。原来两次来回、两类服务器，现在变成一次来回、一台服务器，小文件的访问延迟因此明显降低。</p>",
+     "<p>和第 1 步比，变的不是带宽，而是来回的次数：对小文件来说，这才是瓶颈所在。</p>"
     ],
-    "t": [
-     "一次来回拿到属性和内容",
-     "One round trip returns attributes and content"
-    ],
-    "d": [
-     "读这样的文件时，客户端只找元数据服务器一次，属性和内容一起回来，数据服务器不参与。",
-     "To read such a file the client goes to the metadata server once; attributes and content come back together, and the data servers stay out of it."
-    ],
-    "b": [
-     [
-      "<p>读一个 DoM 文件，客户端发给元数据服务器的那一次请求，回来的就同时有属性和内容。原来两次来回、两类服务器，现在变成一次来回、一台服务器，小文件的访问延迟因此明显降低。</p>",
-      "<p>和第 1 步比，变的不是带宽，而是来回的次数：对小文件来说，这才是瓶颈所在。</p>"
-     ],
-     [
-      "<p>When the client reads a DoM file, the single request it sends to the metadata server returns both attributes and content. Two round trips to two kinds of server become one round trip to one server, so access latency for small files drops markedly.</p>",
-      "<p>Compared with step 1, what changes is not bandwidth but the number of round trips, and for small files that is where the bottleneck lies.</p>"
-     ]
+    [
+     "<p>When the client reads a DoM file, the single request it sends to the metadata server returns both attributes and content. Two round trips to two kinds of server become one round trip to one server, so access latency for small files drops markedly.</p>",
+     "<p>Compared with step 1, what changes is not bandwidth but the number of round trips, and for small files that is where the bottleneck lies.</p>"
     ]
-   },
-   {
-    "s": [
-     "一批同时跑",
-     "A batch side by side"
+   ]
+  },
+  {
+   "s": [
+    "一批同时跑",
+    "A batch side by side"
+   ],
+   "t": [
+    "一批小文件同时跑",
+    "A Batch of Small Files, Side by Side"
+   ],
+   "d": [
+    "同样一段时间，用 DoM 读完的小文件比普通布局多。",
+    "In the same time, DoM finishes more small files than the normal layout."
+   ],
+   "b": [
+    [
+     "<p>把两种方式放在一起跑一批小文件：普通布局每个文件要两次来回，DoM 只要一次，同样时间内读完的文件数差距明显。画面是示意，不代表实测数字。</p>",
+     "<p>小文件都放到元数据服务器上，可能使它成为新的瓶颈。DNE3 解决的正是这一点：把元数据分散到多台元数据服务器上，加服务器就加处理能力。EXAScaler 把 DNE3 和 DoM 放在一起介绍，原因即在于此。</p>"
     ],
-    "t": [
-     "一批小文件同时跑",
-     "A batch of small files, side by side"
-    ],
-    "d": [
-     "同样一段时间，用 DoM 读完的小文件比普通布局多。",
-     "In the same time, DoM finishes more small files than the normal layout."
-    ],
-    "b": [
-     [
-      "<p>把两种方式放在一起跑一批小文件：普通布局每个文件要两次来回，DoM 只要一次，同样时间内读完的文件数差距明显。画面是示意，不代表实测数字。</p>",
-      "<p>小文件都放到元数据服务器上，可能使它成为新的瓶颈。DNE3 解决的正是这一点：把元数据分散到多台元数据服务器上，加服务器就加处理能力。EXAScaler 把 DNE3 和 DoM 放在一起介绍，原因即在于此。</p>"
-     ],
-     [
-      "<p>Run a batch of small files both ways: the normal layout needs two round trips per file and DoM needs one, so the number of files finished in the same time differs markedly. The animation is schematic, not measured.</p>",
-      "<p>Putting small files on the metadata server can make it the new bottleneck. That is what DNE3 addresses: metadata is spread over several metadata servers, so adding servers adds capacity. That is why EXAScaler presents DNE3 and DoM together.</p>"
-     ]
+    [
+     "<p>Run a batch of small files both ways: the normal layout needs two round trips per file and DoM needs one, so the number of files finished in the same time differs markedly. The animation is schematic, not measured.</p>",
+     "<p>Putting small files on the metadata server can make it the new bottleneck. That is what DNE3 addresses: metadata is spread over several metadata servers, so adding servers adds capacity. That is why EXAScaler presents DNE3 and DoM together.</p>"
     ]
-   },
-   {
-    "s": [
-     "大文件的开头",
-     "Start of a large file"
+   ]
+  },
+  {
+   "s": [
+    "大文件的开头",
+    "Start of a large file"
+   ],
+   "t": [
+    "大文件只把开头放进去",
+    "Large Files Put Only Their Start There"
+   ],
+   "d": [
+    "大文件的开头一小段放在元数据服务器上，后面照常条带到数据服务器上。",
+    "The first small chunk of a large file sits on the metadata server; the rest is striped across data servers as usual."
+   ],
+   "b": [
+    [
+     "<p>DoM 不只给小文件用。在渐进布局（PFL）里，第一段可以设成 DoM：文件开头一小段（例如文件头）放在 MDT 闪存上，读文件头很快；超过这个大小的部分，自动进入后面的布局，照常条带化到数据服务器。小文件因为没超过第一段，就整个留在 MDT 上。</p>",
+     "<p>这样同一个目录里，小文件和大文件都不用单独设置：小的整个走 DoM，大的开头走 DoM、后面走条带。</p>"
     ],
-    "t": [
-     "大文件只把开头放进去",
-     "Large files put only their start there"
-    ],
-    "d": [
-     "大文件的开头一小段放在元数据服务器上，后面照常条带到数据服务器上。",
-     "The first small chunk of a large file sits on the metadata server; the rest is striped across data servers as usual."
-    ],
-    "b": [
-     [
-      "<p>DoM 不只给小文件用。在渐进布局（PFL）里，第一段可以设成 DoM：文件开头一小段（例如文件头）放在 MDT 闪存上，读文件头很快；超过这个大小的部分，自动进入后面的布局，照常条带化到数据服务器。小文件因为没超过第一段，就整个留在 MDT 上。</p>",
-      "<p>这样同一个目录里，小文件和大文件都不用单独设置：小的整个走 DoM，大的开头走 DoM、后面走条带。</p>"
-     ],
-     [
-      "<p>DoM is not only for small files. In a progressive file layout (PFL) the first component can be DoM: the first small chunk of a file (such as its header) sits on MDT flash, so reading the header is fast, and anything beyond that size goes into the later components and is striped across data servers as usual. A small file never goes past the first component, so it stays entirely on the MDT.</p>",
-      "<p>So within one directory neither small nor large files need separate settings: small files go entirely to DoM, and large files put their start on DoM and stripe the rest.</p>"
-     ]
+    [
+     "<p>DoM is not only for small files. In a progressive file layout (PFL) the first component can be DoM: the first small chunk of a file (such as its header) sits on MDT flash, so reading the header is fast, and anything beyond that size goes into the later components and is striped across data servers as usual. A small file never goes past the first component, so it stays entirely on the MDT.</p>",
+     "<p>So within one directory neither small nor large files need separate settings: small files go entirely to DoM, and large files put their start on DoM and stripe the rest.</p>"
     ]
-   }
-  ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

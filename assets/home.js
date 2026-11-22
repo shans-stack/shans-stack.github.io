@@ -4,7 +4,6 @@ var SS=window.SS,L=SS.L,$=function(id){return document.getElementById(id)};
 var HOME='home',map=SS.mapById[HOME];
 function lead(){
   var n=SS.stationsOf(HOME).length,x=SS.stationsOf(HOME).filter(function(id){return SS.linesIn(id,HOME).length>1}).length;
-  var tc=$('tcount');if(tc&&SS.terms){var k=Object.keys(SS.terms).length;tc.textContent=L('共 '+k+' 个术语',k+' terms')}
   var el=$('lead');if(!el)return;
   el.textContent=L('六条线、'+SS.zhNum(n)+'个站，每站五到七步讲完。',
     'Six lines, '+n+' stops, each told in 5 to 7 steps.');

@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Dense Transformers and mixture-of-experts models">稠密 Transformer 与混合专家模型</h1>
+      <div><h1 data-en="Dense Transformers and Mixture-of-Experts Models">稠密 Transformer 与混合专家模型</h1>
         <p class="meta"><span data-en="6 steps · Dense layers, MoE, expert parallelism">6 步 · 稠密层、MoE、专家并行</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,12 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>Attention Is All You Need</li>
-      <li>Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity</li>
-      <li>Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer</li>
     </ul></div>
   </div>
 </main>
@@ -71,26 +68,120 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/march.js"></script>
 <script>
-window.SS_TOPIC_CFG = { anim: 'march', ar: [960/334, 400/544], steps: [
-    { t: ["Transformer 块的共同结构", "Shared structure of a Transformer block"],
-      d: ["注意力混合上下文，前馈部分再变换每个位置的向量。", "Attention mixes context, then the feed-forward part transforms the vector at each position."],
-      b: [["<p>常见 Transformer 块包含注意力和前馈网络。注意力在不同位置之间汇总信息。前馈网络是每个位置单独执行的可学习变换。许多混合专家 Transformer 把部分块的前馈网络替换为专家层，并保留注意力部分。</p>"], ["<p>A typical Transformer block contains attention and a feed-forward network. Attention combines information across positions. The feed-forward network applies a learned transformation at each position independently. Many mixture-of-experts Transformers retain attention and replace the feed-forward networks in some blocks with expert layers.</p>"]] },
-    { t: ["稠密前馈层使用同一组权重", "Dense feed-forward layers reuse the same weights"],
-      d: ["每个位置的输入都经过同一个前馈网络，各自得到输出。", "Every position passes through the same feed-forward network and produces its own output."],
-      b: [["<p>稠密前馈层对每个 token 的向量执行相同的一组矩阵运算。各位置具有不同的输入，使用同一组层权重。多个 token 可以打成一批由同一个前馈网络计算。</p>"], ["<p>A dense feed-forward layer applies the same matrix operations to every token vector. Positions have different inputs and share the layer&#x27;s weights. Multiple tokens can be batched for execution by the same feed-forward network.</p>"]] },
-    { t: ["专家层按 Token 选择路径", "Expert layers route each token separately"],
-      d: ["路由器根据输入评分，只选出部分专家参与该 token 的计算。", "A router scores each input and selects a subset of experts to process that token."],
-      b: [["<p>混合专家（Mixture of Experts，MoE）层包含多套前馈网络，每套称为一个专家。路由器是根据输入向量给专家打分的子模块。常见稀疏路由选择排名靠前的一个或几个专家，未选中的专家留给其他 token。</p>"], ["<p>A mixture-of-experts (MoE) layer contains several feed-forward networks, each called an expert. The router is a learned component that scores experts from the input vector. A common sparse routing method selects one or several top-scoring experts and leaves the others available for other tokens.</p>"]] },
-    { t: ["汇合专家的输出", "Combine the selected experts' outputs"],
-      d: ["同一个 token 可以发给多个专家，返回的向量按路由权重汇总到原位置。", "A token can be sent to multiple experts, whose returned vectors are combined using routing weights."],
-      b: [["<p>每个选中专家独立处理输入。多专家路由会按路由器给出的组合权重汇总结果，随后恢复 token 的序列位置。当专家分布在不同设备上时，分发输入与收集输出都会产生设备间通信。</p>"], ["<p>Each selected expert transforms the input independently. With multiple selected experts, the layer combines their outputs with routing weights and restores the token&#x27;s sequence position. When experts are placed on different devices, dispatching inputs and collecting outputs require inter-device communication.</p>"]] },
-    { t: ["区分总参数和活跃参数", "Separate total from active parameters"],
-      d: ["总参数包含全部专家，单个 token 的计算只经过共享部分和被选中的专家。", "The total includes every expert, while an individual token uses shared components and the selected experts."],
-      b: [["<p>总参数量影响模型权重的整体存储需求。活跃参数指一个 token 在一次前向计算中使用的参数，包含共享部分和被选中的专家。扩大专家池可以增加总参数，同时保持每个 token 选中的专家数量固定。</p>"], ["<p>Total parameter count affects the storage required by the full set of weights. Active parameters are those a token uses during a forward pass, including shared components and the selected experts. A larger expert pool can increase total parameters while keeping the number selected per token fixed.</p>"]] },
-    { t: ["路由分布影响专家负载", "Routing distribution controls expert load"],
-      d: ["当多个 token 被分给同一专家时，该专家的计算负载和排队压力随之上升。", "When many tokens are sent to one expert, its compute load and queuing pressure rise."],
-      b: [["<p>批内各专家收到的 token 数可能不同。专家并行把专家分布到多个设备上，单批完成时间同时受最忙专家和数据交换影响。训练可加入负载均衡目标，鼓励路由器把 token 分散到更多专家。</p>"], ["<p>Experts can receive different numbers of tokens in a batch. Expert parallelism places experts on different devices, so batch completion depends in part on the busiest expert and on data exchange. A training objective can encourage the router to distribute tokens across more experts.</p>"]] }
-] };
+window.SS_TOPIC_CFG = {
+ "anim": "march",
+ "ar": [960/334, 400/544],
+ "steps": [
+  {
+   "t": [
+    "Transformer 块的共同结构",
+    "Shared Structure of a Transformer Block"
+   ],
+   "d": [
+    "注意力混合上下文，前馈部分再变换每个位置的向量。",
+    "Attention mixes context, then the feed-forward part transforms the vector at each position."
+   ],
+   "b": [
+    [
+     "<p>常见 Transformer 块包含注意力和前馈网络。注意力在不同位置之间汇总信息。前馈网络是每个位置单独执行的可学习变换。许多混合专家 Transformer 把部分块的前馈网络替换为专家层，并保留注意力部分。</p>"
+    ],
+    [
+     "<p>A typical Transformer block contains attention and a feed-forward network. Attention combines information across positions. The feed-forward network applies a learned transformation at each position independently. Many mixture-of-experts Transformers retain attention and replace the feed-forward networks in some blocks with expert layers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "稠密前馈层使用同一组权重",
+    "Dense Feed-Forward Layers Reuse the Same Weights"
+   ],
+   "d": [
+    "每个位置的输入都经过同一个前馈网络，各自得到输出。",
+    "Every position passes through the same feed-forward network and produces its own output."
+   ],
+   "b": [
+    [
+     "<p>稠密前馈层对每个 token 的向量执行相同的一组矩阵运算。各位置具有不同的输入，使用同一组层权重。多个 token 可以打成一批由同一个前馈网络计算。</p>"
+    ],
+    [
+     "<p>A dense feed-forward layer applies the same matrix operations to every token vector. Positions have different inputs and share the layer&#x27;s weights. Multiple tokens can be batched for execution by the same feed-forward network.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "专家层按 Token 选择路径",
+    "Expert Layers Route Each Token Separately"
+   ],
+   "d": [
+    "路由器根据输入评分，只选出部分专家参与该 token 的计算。",
+    "A router scores each input and selects a subset of experts to process that token."
+   ],
+   "b": [
+    [
+     "<p>混合专家（Mixture of Experts，MoE）层包含多套前馈网络，每套称为一个专家。路由器是根据输入向量给专家打分的子模块。常见稀疏路由选择排名靠前的一个或几个专家，未选中的专家留给其他 token。</p>"
+    ],
+    [
+     "<p>A mixture-of-experts (MoE) layer contains several feed-forward networks, each called an expert. The router is a learned component that scores experts from the input vector. A common sparse routing method selects one or several top-scoring experts and leaves the others available for other tokens.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "汇合专家的输出",
+    "Combine the Selected Experts' Outputs"
+   ],
+   "d": [
+    "同一个 token 可以发给多个专家，返回的向量按路由权重汇总到原位置。",
+    "A token can be sent to multiple experts, whose returned vectors are combined using routing weights."
+   ],
+   "b": [
+    [
+     "<p>每个选中专家独立处理输入。多专家路由会按路由器给出的组合权重汇总结果，随后恢复 token 的序列位置。当专家分布在不同设备上时，分发输入与收集输出都会产生设备间通信。</p>"
+    ],
+    [
+     "<p>Each selected expert transforms the input independently. With multiple selected experts, the layer combines their outputs with routing weights and restores the token&#x27;s sequence position. When experts are placed on different devices, dispatching inputs and collecting outputs require inter-device communication.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "区分总参数和活跃参数",
+    "Separate Total from Active Parameters"
+   ],
+   "d": [
+    "总参数包含全部专家，单个 token 的计算只经过共享部分和被选中的专家。",
+    "The total includes every expert, while an individual token uses shared components and the selected experts."
+   ],
+   "b": [
+    [
+     "<p>总参数量影响模型权重的整体存储需求。活跃参数指一个 token 在一次前向计算中使用的参数，包含共享部分和被选中的专家。扩大专家池可以增加总参数，同时保持每个 token 选中的专家数量固定。</p>"
+    ],
+    [
+     "<p>Total parameter count affects the storage required by the full set of weights. Active parameters are those a token uses during a forward pass, including shared components and the selected experts. A larger expert pool can increase total parameters while keeping the number selected per token fixed.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "路由分布影响专家负载",
+    "Routing Distribution Controls Expert Load"
+   ],
+   "d": [
+    "当多个 token 被分给同一专家时，该专家的计算负载和排队压力随之上升。",
+    "When many tokens are sent to one expert, its compute load and queuing pressure rise."
+   ],
+   "b": [
+    [
+     "<p>批内各专家收到的 token 数可能不同。专家并行把专家分布到多个设备上，单批完成时间同时受最忙专家和数据交换影响。训练可加入负载均衡目标，鼓励路由器把 token 分散到更多专家。</p>"
+    ],
+    [
+     "<p>Experts can receive different numbers of tokens in a batch. Expert parallelism places experts on different devices, so batch completion depends in part on the busiest expert and on data exchange. A training objective can encourage the router to distribute tokens across more experts.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Declustered RAID: many drives rebuild together when one fails">分簇 RAID：坏一块盘时，让很多盘一起重建</h1>
+      <div><h1 data-en="Declustered RAID: Many Drives Rebuild Together When One Fails">分簇 RAID：坏一块盘时，让很多盘一起重建</h1>
         <p class="meta"><span data-en="6 steps · RAID, rebuild, spare space">6 步 · RAID、重建、备用空间</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,13 +40,13 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="Mark Holland and Garth A. Gibson, Parity Declustering for Continuous Operation in Redundant Disk Arrays, ASPLOS V, 1992 (the general principle of declustering).">Mark Holland、Garth A. Gibson，Parity Declustering for Continuous Operation in Redundant Disk Arrays，ASPLOS V，1992（分簇的一般原理）。</li>
       <li data-en="IBM documentation, Declustered RAID (IBM Spectrum Scale RAID): data, redundancy and spare space spread across all disks; rebuild uses all operational disks.">IBM 文档，Declustered RAID（IBM Spectrum Scale RAID）：数据、冗余和备用空间打散到所有盘上，重建由所有在线盘一起完成。</li>
       <li data-en="DDN SFA200X2 / SFA400X2 data sheet: lists DeClustered RAID (DCR) as a system feature.">DDN SFA200X2 / SFA400X2 数据表：系统功能里列有 DeClustered RAID（DCR）。</li>
-      <li data-en="DDN SFA18KX data sheet: DCR supports RAID 6 8+2, with pools from 2 to 900 drives.">DDN SFA18KX 数据表：DCR 支持 RAID 6 8+2，池可以从 2 块盘到 900 块盘。</li>
+      <li data-en="DDN SFA18KX data sheet: DCR supports RAID 6 8+2 and 4+2, with pools from 2 to 900 drives.">DDN SFA18KX 数据表：DCR 支持 RAID 6 8+2 和 4+2，池可以从 2 块盘到 900 块盘。</li>
       <li data-en="Animations are schematic. Drive counts, stripe widths and speeds are illustrative, not measured.">动画为示意，盘数、条带宽度和速度都不代表实测。</li>
     </ul></div>
   </div>
@@ -76,45 +76,155 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/d-dcr.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'d-dcr',ar:[960/476,480/420],
-  steps:[
-    {s:['传统 RAID','Traditional RAID'],t:['传统 RAID：固定几块盘一组，外加整块热备盘','Traditional RAID: fixed groups of drives, plus whole hot-spare drives'],
-     d:['每个 RAID 组是固定的几块盘，另有整块热备盘平时闲着。','Each RAID group is a fixed set of drives, and whole hot-spare drives sit idle.'],
-     b:[['<p>传统 RAID 把几块盘绑成一个 RAID 组，组里的盘一起存数据和校验（校验：按数据算出来的额外信息，坏一块盘时能把丢的数据算回来）。为了坏盘后能马上恢复，还要另外放一块或几块热备盘：平时不存数据，只等着顶替坏盘。</p>',
-         '<p>这个结构简单好懂，但有两个代价：一组的读写只落在固定那几块盘上；热备盘平时完全闲着。下一步看坏盘时这两点怎么变成问题。</p>'],
-        ['<p>Traditional RAID binds a few drives into a RAID group, and the drives in the group store data and parity together (parity: extra information computed from the data, which lets lost data be recalculated when a drive fails). To recover right away after a failure, one or more hot-spare drives are added as well: they hold no data and just wait to replace a failed drive.</p>',
-         '<p>The structure is simple to understand, but it has two costs: a group\'s reads and writes land only on its fixed set of drives, and the hot spares sit completely idle. The next step shows how these two points become a problem when a drive fails.</p>']]},
-    {s:['传统重建','Traditional rebuild'],t:['传统重建：所有写都压在那一块热备盘上','Traditional rebuild: every write lands on one hot spare'],
-     d:['坏一块盘，组里剩下的盘负责读，算出来的数据全部写进同一块热备盘，它成了瓶颈。','When a drive fails, the rest of the group does the reading, and all the rebuilt data is written to one hot spare, which becomes the bottleneck.'],
-     b:[['<p>一块盘坏了，它所在的 RAID 组进入降级状态（还能用，但冗余少了一份）。重建时，系统从组里剩下的盘读数据和校验，把坏盘上的内容算回来，再一块一块写进热备盘。</p>',
-         '<p>参与的只有这一组的几块盘，而写全部集中在一块热备盘上，重建速度受这一块盘的写入能力限制，盘越大重建越久。重建期间如果同组再坏盘，数据就有风险。池里其他盘这时完全不参与。</p>'],
-        ['<p>When a drive fails, its RAID group becomes degraded (still usable, but with one less level of redundancy). During the rebuild, the system reads data and parity from the remaining drives in the group, recalculates the failed drive\'s contents, and writes them piece by piece to the hot spare.</p>',
-         '<p>Only the drives in that one group take part, and every write goes to a single hot spare, so the rebuild is limited by how fast that one drive can write; the bigger the drive, the longer the rebuild. If another drive in the same group fails during the rebuild, data is at risk. The other drives in the pool do nothing at all.</p>']]},
-    {s:['分簇布局','Declustered layout'],t:['分簇：数据、校验和备用空间都打散到所有盘上','Declustering: data, parity and spare space are spread over every drive'],
-     d:['每块盘切成很多小段，一个条带的成员散在池里不同的盘上，备用空间也切成小段，分散在每块盘上。','Each drive is cut into many small pieces. A stripe\'s members sit on different drives across the pool, and spare space is cut into pieces on every drive too.'],
-     b:[['<p>分簇 RAID（Declustered RAID）不再按「一组固定几块盘」来组织。它把池里每块物理盘切成大量固定大小的小段，再从不同的盘上各取一段，拼成一个 RAID 条带（条带：一组数据段加上保护它们的校验段）。每个条带的成员落在哪几块盘上是打散的，不同条带用到的盘组合各不相同。DDN SFA 的 DCR 支持 RAID 6 的 8+2 条带（8 段数据加 2 段校验），一个 DCR 池可以从 2 块盘到 900 块盘。</p>',
-         '<p>备用空间也不再是整块热备盘，而是在每块盘上都预留一些空闲小段。这样池里所有盘平时都在存数据，没有一块是闲着的。这也是可用容量看起来比传统 RAID 少的原因：备用小段占了池容量，换来的是下一步的快速重建。画面里的盘数和条带宽度只是示意。</p>'],
-        ['<p>Declustered RAID no longer organises drives into fixed groups. It cuts every physical drive in the pool into a large number of fixed-size pieces, then takes one piece from each of several different drives to form a RAID stripe (stripe: a set of data pieces plus the parity pieces that protect them). Which drives a stripe\'s members land on is scattered, and different stripes use different combinations of drives. DDN SFA DCR supports RAID 6 8+2 stripes (eight data segments and two parity segments), and a DCR pool can hold from 2 to 900 drives.</p>',
-         '<p>Spare space is no longer a whole hot-spare drive either: every drive keeps some free pieces in reserve. So every drive in the pool stores data, and none sits idle. This is also why usable capacity looks smaller than with traditional RAID: the spare pieces take up pool capacity, and in return they make the fast rebuild in the next step possible. The number of drives and the stripe width in the picture are schematic.</p>']]},
-    {s:['分簇重建','Declustered rebuild'],t:['分簇重建：很多盘一起读、一起写','Declustered rebuild: many drives read and write together'],
-     d:['坏盘上的每一段属于不同的条带，各自由不同的盘读、写进不同盘上的备用空间，很多盘同时工作。','Each piece on the failed drive belongs to a different stripe, so each is read from different drives and written to spare space on a different drive. Many drives work at once.'],
-     b:[['<p>一块盘坏了，它上面的每个小段都属于一个不同的条带。系统为每一段，从该条带剩下的成员所在的盘读取数据，算回丢失的那一段，写进另一块盘上的备用小段（这块盘不能已经有该条带的成员）。</p>',
-         '<p>因为这些条带分布在整个池里，读和写都被摊到了很多块盘上，每块盘只多一点点工作，重建窗口大幅缩短。池越大，参与重建的盘越多。重建窗口短了，「重建期间再坏一块盘」的风险也跟着降低。</p>'],
-        ['<p>When a drive fails, each piece on it belongs to a different stripe. For each piece, the system reads from the drives holding that stripe\'s remaining members, recalculates the lost piece, and writes it to a spare piece on another drive (one that does not already hold a member of that stripe).</p>',
-         '<p>Because these stripes are spread across the whole pool, the reads and writes are shared by many drives, each drive does only a little extra work, and the rebuild window becomes much shorter. The bigger the pool, the more drives take part. A shorter rebuild window also lowers the risk of another drive failing during the rebuild.</p>']]},
-    {s:['同时跑','Side by side'],t:['同时跑：同样坏一块盘，谁先恢复冗余','Side by side: one failed drive each, which regains redundancy first'],
-     d:['两种做法同时重建同样多的数据，分簇那边很多盘一起写，已重建的段数涨得快得多。','Both approaches rebuild the same amount of data at once. On the declustered side many drives write together, so the rebuilt count climbs much faster.'],
-     b:[['<p>把前两种重建放在一起看：传统做法的写入全部排队等那一块热备盘；分簇做法的写入分给池里很多块盘，几乎不用排队。画面上的计数是示意，不代表实测数字，实际速度取决于盘的数量、盘的类型和池的配置。</p>',
-         '<p>快速重建恢复的是冗余：坏盘上的数据被算回、写进备用空间之后，条带重新有了完整的保护，可以再承受下一次坏盘。</p>'],
-        ['<p>Put the two rebuilds side by side: in the traditional approach every write queues for the one hot spare; in the declustered approach the writes are shared by many drives in the pool and hardly queue at all. The counts in the picture are schematic, not measured; real speed depends on the number of drives, the drive type and the pool configuration.</p>',
-         '<p>What a fast rebuild restores is redundancy: once the failed drive\'s data has been recalculated and written into spare space, the stripes are fully protected again and can survive the next drive failure.</p>']]},
-    {s:['换盘回拷','Copyback'],t:['换上新盘后回拷，额度还回来','After the new drive goes in, copyback returns the allowance'],
-     d:['备用空间够几次快速重建是建池时定的；换上新盘后，数据从备用小段拷回新盘，布局恢复，额度还回来。','How many fast rebuilds the spare space covers is set when the pool is built. After a new drive goes in, data is copied from the spare pieces back to it, the layout is restored, and the allowance is returned.'],
-     b:[['<p>池里预留多少备用空间，决定了换盘之前能接连做几次快速重建，这在建池时就要定下。如果不预留备用空间，就只能等换上新盘再往这一块盘里重建，写入又集中到一块盘上。</p>',
-         '<p>坏盘被换下、装上新盘之后，系统做回拷（Copyback）：把暂存在各盘备用小段里的数据拷回新盘，让数据布局回到最优，同时把用掉的快速重建额度还回来。回拷比快速重建慢得多，但此时冗余已经恢复，回拷时长不影响数据保护。快速重建管恢复冗余，回拷管恢复布局。</p>'],
-        ['<p>How much spare space the pool reserves decides how many fast rebuilds can happen in a row before a drive is replaced, and it is set when the pool is built. With no spare space reserved, the rebuild has to wait for a new drive and write into that one drive, so the writes are concentrated on a single drive again.</p>',
-         '<p>Once the failed drive has been swapped for a new one, the system runs a copyback: it copies the data held in the spare pieces on each drive back to the new drive, returning the layout to its optimal state and giving back the fast-rebuild allowance that was used. Copyback is much slower than a fast rebuild, but redundancy has already been restored, so its duration does not affect data protection. The fast rebuild restores redundancy; the copyback restores the layout.</p>']]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "d-dcr",
+ "ar": [960/476,480/420],
+ "steps": [
+  {
+   "s": [
+    "传统 RAID",
+    "Traditional RAID"
+   ],
+   "t": [
+    "传统 RAID：固定几块盘一组，外加整块热备盘",
+    "Traditional RAID: Fixed Groups of Drives, Plus Whole Hot-Spare Drives"
+   ],
+   "d": [
+    "每个 RAID 组是固定的几块盘，另有整块热备盘平时闲着。",
+    "Each RAID group is a fixed set of drives, and whole hot-spare drives sit idle."
+   ],
+   "b": [
+    [
+     "<p>传统 RAID 把几块盘绑成一个 RAID 组，组里的盘一起存数据和校验（校验：按数据算出来的额外信息，坏一块盘时能把丢的数据算回来）。为了坏盘后能马上恢复，还要另外放一块或几块热备盘：平时不存数据，只等着顶替坏盘。</p>",
+     "<p>这个结构简单好懂，但有两个代价：一组的读写只落在固定那几块盘上；热备盘平时完全闲着。下一步看坏盘时这两点怎么变成问题。</p>"
+    ],
+    [
+     "<p>Traditional RAID binds a few drives into a RAID group, and the drives in the group store data and parity together (parity: extra information computed from the data, which lets lost data be recalculated when a drive fails). To recover right away after a failure, one or more hot-spare drives are added as well: they hold no data and just wait to replace a failed drive.</p>",
+     "<p>The structure is simple to understand, but it has two costs: a group's reads and writes land only on its fixed set of drives, and the hot spares sit completely idle. The next step shows how these two points become a problem when a drive fails.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "传统重建",
+    "Traditional rebuild"
+   ],
+   "t": [
+    "传统重建：所有写都压在那一块热备盘上",
+    "Traditional Rebuild: Every Write Lands on One Hot Spare"
+   ],
+   "d": [
+    "坏一块盘，组里剩下的盘负责读，算出来的数据全部写进同一块热备盘，它成了瓶颈。",
+    "When a drive fails, the rest of the group does the reading, and all the rebuilt data is written to one hot spare, which becomes the bottleneck."
+   ],
+   "b": [
+    [
+     "<p>一块盘坏了，它所在的 RAID 组进入降级状态（还能用，但冗余少了一份）。重建时，系统从组里剩下的盘读数据和校验，把坏盘上的内容算回来，再一块一块写进热备盘。</p>",
+     "<p>参与的只有这一组的几块盘，而写全部集中在一块热备盘上，重建速度受这一块盘的写入能力限制，盘越大重建越久。重建期间如果同组再坏盘，数据就有风险。池里其他盘这时完全不参与。</p>"
+    ],
+    [
+     "<p>When a drive fails, its RAID group becomes degraded (still usable, but with one less level of redundancy). During the rebuild, the system reads data and parity from the remaining drives in the group, recalculates the failed drive's contents, and writes them piece by piece to the hot spare.</p>",
+     "<p>Only the drives in that one group take part, and every write goes to a single hot spare, so the rebuild is limited by how fast that one drive can write; the bigger the drive, the longer the rebuild. If another drive in the same group fails during the rebuild, data is at risk. The other drives in the pool do nothing at all.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "分簇布局",
+    "Declustered layout"
+   ],
+   "t": [
+    "分簇：数据、校验和备用空间都打散到所有盘上",
+    "Declustering: Data, Parity and Spare Space Are Spread over Every Drive"
+   ],
+   "d": [
+    "每块盘切成很多小段，一个条带的成员散在池里不同的盘上，备用空间也切成小段，分散在每块盘上。",
+    "Each drive is cut into many small pieces. A stripe's members sit on different drives across the pool, and spare space is cut into pieces on every drive too."
+   ],
+   "b": [
+    [
+     "<p>分簇 RAID（Declustered RAID）不再按「一组固定几块盘」来组织。它把池里每块物理盘切成大量固定大小的小段，再从不同的盘上各取一段，拼成一个 RAID 条带（条带：一组数据段加上保护它们的校验段）。每个条带的成员落在哪几块盘上是打散的，不同条带用到的盘组合各不相同。DDN SFA 的 DCR 支持 RAID 6 的 8+2 和 4+2 条带（8+2 即 8 段数据加 2 段校验），一个 DCR 池可以从 2 块盘到 900 块盘。</p>",
+     "<p>备用空间也不再是整块热备盘，而是在每块盘上都预留一些空闲小段。这样池里所有盘平时都在存数据，没有一块是闲着的。这也是可用容量看起来比传统 RAID 少的原因：备用小段占了池容量，换来的是下一步的快速重建。画面里的盘数和条带宽度只是示意。</p>"
+    ],
+    [
+     "<p>Declustered RAID no longer organises drives into fixed groups. It cuts every physical drive in the pool into a large number of fixed-size pieces, then takes one piece from each of several different drives to form a RAID stripe (stripe: a set of data pieces plus the parity pieces that protect them). Which drives a stripe's members land on is scattered, and different stripes use different combinations of drives. DDN SFA DCR supports RAID 6 8+2 and 4+2 stripes (8+2 means eight data segments and two parity segments), and a DCR pool can hold from 2 to 900 drives.</p>",
+     "<p>Spare space is no longer a whole hot-spare drive either: every drive keeps some free pieces in reserve. So every drive in the pool stores data, and none sits idle. This is also why usable capacity looks smaller than with traditional RAID: the spare pieces take up pool capacity, and in return they make the fast rebuild in the next step possible. The number of drives and the stripe width in the picture are schematic.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "分簇重建",
+    "Declustered rebuild"
+   ],
+   "t": [
+    "分簇重建：很多盘一起读、一起写",
+    "Declustered Rebuild: Many Drives Read and Write Together"
+   ],
+   "d": [
+    "坏盘上的每一段属于不同的条带，各自由不同的盘读、写进不同盘上的备用空间，很多盘同时工作。",
+    "Each piece on the failed drive belongs to a different stripe, so each is read from different drives and written to spare space on a different drive. Many drives work at once."
+   ],
+   "b": [
+    [
+     "<p>一块盘坏了，它上面的每个小段都属于一个不同的条带。系统为每一段，从该条带剩下的成员所在的盘读取数据，算回丢失的那一段，写进另一块盘上的备用小段（这块盘不能已经有该条带的成员）。</p>",
+     "<p>因为这些条带分布在整个池里，读和写都被摊到了很多块盘上，每块盘只多一点点工作，重建窗口大幅缩短。池越大，参与重建的盘越多。重建窗口短了，「重建期间再坏一块盘」的风险也跟着降低。</p>"
+    ],
+    [
+     "<p>When a drive fails, each piece on it belongs to a different stripe. For each piece, the system reads from the drives holding that stripe's remaining members, recalculates the lost piece, and writes it to a spare piece on another drive (one that does not already hold a member of that stripe).</p>",
+     "<p>Because these stripes are spread across the whole pool, the reads and writes are shared by many drives, each drive does only a little extra work, and the rebuild window becomes much shorter. The bigger the pool, the more drives take part. A shorter rebuild window also lowers the risk of another drive failing during the rebuild.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "同时跑",
+    "Side by side"
+   ],
+   "t": [
+    "同时跑：同样坏一块盘，谁先恢复冗余",
+    "Side by Side: One Failed Drive Each, Which Regains Redundancy First"
+   ],
+   "d": [
+    "两种做法同时重建同样多的数据，分簇那边很多盘一起写，已重建的段数涨得快得多。",
+    "Both approaches rebuild the same amount of data at once. On the declustered side many drives write together, so the rebuilt count climbs much faster."
+   ],
+   "b": [
+    [
+     "<p>把前两种重建放在一起看：传统做法的写入全部排队等那一块热备盘；分簇做法的写入分给池里很多块盘，几乎不用排队。画面上的计数是示意，不代表实测数字，实际速度取决于盘的数量、盘的类型和池的配置。</p>",
+     "<p>快速重建恢复的是冗余：坏盘上的数据被算回、写进备用空间之后，条带重新有了完整的保护，可以再承受下一次坏盘。</p>"
+    ],
+    [
+     "<p>Put the two rebuilds side by side: in the traditional approach every write queues for the one hot spare; in the declustered approach the writes are shared by many drives in the pool and hardly queue at all. The counts in the picture are schematic, not measured; real speed depends on the number of drives, the drive type and the pool configuration.</p>",
+     "<p>What a fast rebuild restores is redundancy: once the failed drive's data has been recalculated and written into spare space, the stripes are fully protected again and can survive the next drive failure.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "换盘回拷",
+    "Copyback"
+   ],
+   "t": [
+    "换上新盘后回拷，额度还回来",
+    "After the New Drive Goes in, Copyback Returns the Allowance"
+   ],
+   "d": [
+    "备用空间够几次快速重建是建池时定的；换上新盘后，数据从备用小段拷回新盘，布局恢复，额度还回来。",
+    "How many fast rebuilds the spare space covers is set when the pool is built. After a new drive goes in, data is copied from the spare pieces back to it, the layout is restored, and the allowance is returned."
+   ],
+   "b": [
+    [
+     "<p>池里预留多少备用空间，决定了换盘之前能接连做几次快速重建，这在建池时就要定下。如果不预留备用空间，就只能等换上新盘再往这一块盘里重建，写入又集中到一块盘上。</p>",
+     "<p>坏盘被换下、装上新盘之后，系统做回拷（Copyback）：把暂存在各盘备用小段里的数据拷回新盘，让数据布局回到最优，同时把用掉的快速重建额度还回来。回拷比快速重建慢得多，但此时冗余已经恢复，回拷时长不影响数据保护。快速重建管恢复冗余，回拷管恢复布局。</p>"
+    ],
+    [
+     "<p>How much spare space the pool reserves decides how many fast rebuilds can happen in a row before a drive is replaced, and it is set when the pool is built. With no spare space reserved, the rebuild has to wait for a new drive and write into that one drive, so the writes are concentrated on a single drive again.</p>",
+     "<p>Once the failed drive has been swapped for a new one, the system runs a copyback: it copies the data held in the spare pieces on each drive back to the new drive, returning the layout to its optimal state and giving back the fast-rebuild allowance that was used. Copyback is much slower than a fast rebuild, but redundancy has already been restored, so its duration does not affect data protection. The fast rebuild restores redundancy; the copyback restores the layout.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Data reduction: Compression and deduplication">数据缩减：压缩与去重</h1>
+      <div><h1 data-en="Data Reduction: Compression and Deduplication">数据缩减：压缩与去重</h1>
         <p class="meta"><span data-en="5 steps · Lossless compression, Chunking, Fingerprint index">5 步 · 无损压缩、分块、指纹索引</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,12 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>RFC 8878 — Zstandard Compression and the &#x27;application/zstd&#x27; Media Type</li>
-      <li>Borg Documentation — Data structures and file formats</li>
-      <li>Borg Documentation — Frequently asked questions</li>
     </ul></div>
   </div>
 </main>
@@ -73,29 +70,101 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/dr.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'dr',ar:[900/388,360/482],
-  steps:[
-    {t:["内容保持不变，落盘表示可以更小", "The same content can use a smaller stored representation"],
-     d:["压缩缩短一段数据的表示，去重合并多处引用的相同数据。", "Compression shortens the representation of data. Deduplication shares identical data across references."],
-     b:[["<p>逻辑数据量是应用读写的原始字节数，存储系统记录的表示可以更小。压缩利用一段数据内部的规律，以较短的编码保存内容。去重在其查找范围内识别相同数据，并把多个文件或版本映射到同一份数据。</p>"],
-        ["<p>Logical data size counts the original bytes applications read and write. A storage system may represent those bytes in less space. Compression encodes patterns within a piece of data. Deduplication finds identical data within its lookup scope, so several files or versions can reference one stored copy.</p>"]]},
-    {t:["无损压缩可以还原原始字节", "Lossless compression restores the original bytes"],
-     d:["编码器用较短表示记录可压缩的数据，解码器按表示恢复每个字节。", "An encoder represents compressible data more compactly. A decoder recovers every original byte."],
-     b:[["<p>无损压缩要求解码后的内容逐字节等于输入。一种例子是游程编码，即将连续重复的值与重复次数一起记录。实际压缩格式还可以使用其他编码方式，以适应各种数据分布。</p>"],
-        ["<p>Lossless compression reproduces the input byte for byte. Run-length encoding, for example, can store a repeated value with its repeat count. Compression formats can also use other encodings for different data distributions.</p>"]]},
-    {t:["去重保留共享数据和各自的引用", "Deduplication keeps shared chunks and separate references"],
-     d:["两个文件包含相同的块时，可以各自保留引用，共用一份已存储数据。", "When two files contain an identical chunk, their separate references can point to one stored copy."],
-     b:[["<p>分块是将文件内容划为可单独比较的数据区间。去重系统可以计算块的指纹，即根据块内容生成的短标识，然后查询索引寻找已有块。确认命中时，新的文件记录只需添加对该块的引用。读取时，系统按文件记录中的顺序取回各块。</p>"],
-        ["<p>Chunking divides file content into regions that can be compared separately. A deduplication system can use a fingerprint, a compact identifier derived from a chunk's contents, to look up existing data. On a match, the new file record can reference the existing chunk. Reads retrieve the chunks in the order recorded for that file.</p>"]]},
-    {t:["唯一块还可以继续压缩", "Unique chunks can also be compressed"],
-     d:["一种组合方式是先在原始内容上识别重复块，再压缩要保存的唯一块。", "One approach finds duplicates in the original data, then compresses the unique chunks before storing them."],
-     b:[["<p>以基于块的流程为例，系统对原始块进行指纹查找。命中的块复用已有记录，未命中的块可在存储前压缩。读回时根据引用定位块，解压后按原顺序拼接。实际占用还包括块索引、文件映射等元数据，以及部署所需的数据保护开销。</p>"],
-        ["<p>In one chunk-based workflow, the system checks fingerprints of the original chunks. A match reuses an existing entry. A new chunk can be compressed before storage. Reads follow the references, decompress the chunks, and assemble them in order. Physical usage also includes metadata such as indexes and file mappings, plus any data protection overhead.</p>"]]},
-    {t:["缩减收益取决于数据的重复性", "Savings depend on repetition in the data"],
-     d:["版本之间的相同块可复用，已压缩且彼此不同的数据往往占用更多空间。", "Identical chunks across versions can be shared. Distinct data that is already compressed often takes more storage."],
-     b:[["<p>有大量相同区间的版本或备份容易命中去重。对包含重复模式的唯一块，压缩还可能减少每块占用。已经压缩的数据通常缺少适合再次压缩的模式，但完全相同的压缩块仍可去重。缩减处理还需要计算和索引访问，其成本与数据分布和实现有关。</p>"],
-        ["<p>Versions or backups with many identical regions tend to produce deduplication hits. Compression can further shrink unique chunks with repeated patterns. Previously compressed data usually offers fewer patterns for another compression pass, although identical compressed chunks can still be deduplicated. Data reduction also uses computation and index access, with costs shaped by the data and the implementation.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "dr",
+ "ar": [900/388,360/482],
+ "steps": [
+  {
+   "t": [
+    "内容保持不变，落盘表示可以更小",
+    "The Same Content Can Use a Smaller Stored Representation"
+   ],
+   "d": [
+    "压缩缩短一段数据的表示，去重合并多处引用的相同数据。",
+    "Compression shortens the representation of data. Deduplication shares identical data across references."
+   ],
+   "b": [
+    [
+     "<p>逻辑数据量是应用读写的原始字节数，存储系统记录的表示可以更小。压缩利用一段数据内部的规律，以较短的编码保存内容。去重在其查找范围内识别相同数据，并把多个文件或版本映射到同一份数据。</p>"
+    ],
+    [
+     "<p>Logical data size counts the original bytes applications read and write. A storage system may represent those bytes in less space. Compression encodes patterns within a piece of data. Deduplication finds identical data within its lookup scope, so several files or versions can reference one stored copy.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "无损压缩可以还原原始字节",
+    "Lossless Compression Restores the Original Bytes"
+   ],
+   "d": [
+    "编码器用较短表示记录可压缩的数据，解码器按表示恢复每个字节。",
+    "An encoder represents compressible data more compactly. A decoder recovers every original byte."
+   ],
+   "b": [
+    [
+     "<p>无损压缩要求解码后的内容逐字节等于输入。一种例子是游程编码，即将连续重复的值与重复次数一起记录。实际压缩格式还可以使用其他编码方式，以适应各种数据分布。</p>"
+    ],
+    [
+     "<p>Lossless compression reproduces the input byte for byte. Run-length encoding, for example, can store a repeated value with its repeat count. Compression formats can also use other encodings for different data distributions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "去重保留共享数据和各自的引用",
+    "Deduplication Keeps Shared Chunks and Separate References"
+   ],
+   "d": [
+    "两个文件包含相同的块时，可以各自保留引用，共用一份已存储数据。",
+    "When two files contain an identical chunk, their separate references can point to one stored copy."
+   ],
+   "b": [
+    [
+     "<p>分块是将文件内容划为可单独比较的数据区间。去重系统可以计算块的指纹，即根据块内容生成的短标识，然后查询索引寻找已有块。确认命中时，新的文件记录只需添加对该块的引用。读取时，系统按文件记录中的顺序取回各块。</p>"
+    ],
+    [
+     "<p>Chunking divides file content into regions that can be compared separately. A deduplication system can use a fingerprint, a compact identifier derived from a chunk's contents, to look up existing data. On a match, the new file record can reference the existing chunk. Reads retrieve the chunks in the order recorded for that file.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "唯一块还可以继续压缩",
+    "Unique Chunks Can Also Be Compressed"
+   ],
+   "d": [
+    "一种组合方式是先在原始内容上识别重复块，再压缩要保存的唯一块。",
+    "One approach finds duplicates in the original data, then compresses the unique chunks before storing them."
+   ],
+   "b": [
+    [
+     "<p>以基于块的流程为例，系统对原始块进行指纹查找。命中的块复用已有记录，未命中的块可在存储前压缩。读回时根据引用定位块，解压后按原顺序拼接。实际占用还包括块索引、文件映射等元数据，以及部署所需的数据保护开销。</p>"
+    ],
+    [
+     "<p>In one chunk-based workflow, the system checks fingerprints of the original chunks. A match reuses an existing entry. A new chunk can be compressed before storage. Reads follow the references, decompress the chunks, and assemble them in order. Physical usage also includes metadata such as indexes and file mappings, plus any data protection overhead.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "缩减收益取决于数据的重复性",
+    "Savings Depend on Repetition in the Data"
+   ],
+   "d": [
+    "版本之间的相同块可复用，已压缩且彼此不同的数据往往占用更多空间。",
+    "Identical chunks across versions can be shared. Distinct data that is already compressed often takes more storage."
+   ],
+   "b": [
+    [
+     "<p>有大量相同区间的版本或备份容易命中去重。对包含重复模式的唯一块，压缩还可能减少每块占用。已经压缩的数据通常缺少适合再次压缩的模式，但完全相同的压缩块仍可去重。缩减处理还需要计算和索引访问，其成本与数据分布和实现有关。</p>"
+    ],
+    [
+     "<p>Versions or backups with many identical regions tend to produce deduplication hits. Compression can further shrink unique chunks with repeated patterns. Previously compressed data usually offers fewer patterns for another compression pass, although identical compressed chunks can still be deduplicated. Data reduction also uses computation and index access, with costs shaped by the data and the implementation.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

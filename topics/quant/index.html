@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Model quantization and numerical precision">模型量化与数值精度</h1>
+      <div><h1 data-en="Model Quantization and Numerical Precision">模型量化与数值精度</h1>
         <p class="meta"><span data-en="6 steps · Bit width, INT8, PTQ">6 步 · 位宽、INT8、PTQ</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,12 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>ONNX Runtime documentation, Quantize ONNX Models</li>
-      <li>Integer Quantization for Deep Learning Inference: Principles and Empirical Evaluation</li>
-      <li>vLLM documentation, Quantized KV Cache</li>
     </ul></div>
   </div>
 </main>
@@ -71,26 +68,120 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/quant.js"></script>
 <script>
-window.SS_TOPIC_CFG = { anim: 'quant', ar: [960/334, 400/544], steps: [
-    { t: ["同一组权重采用更低位宽", "Lower bit width for the same weights"],
-      d: ["量化将数值映射到较低位宽的表示，缩小权重等张量的存储体积。", "Quantization maps values to a lower-bit representation, reducing storage for tensors such as model weights."],
-      b: [["<p>位宽是每个数值使用的二进制位数。以相同数量的权重为例，16 位浮点权重每项需要 16 位，INT8 权重的整数编码每项需要 8 位。量化后的实际占用还包含尺度等元数据，可能也保留部分高精度权重。</p>"], ["<p>Bit width is the number of binary digits used per value. For the same number of weights, a 16-bit floating-point format uses 16 bits per weight, while INT8 uses an 8-bit integer code. The actual footprint also includes metadata such as scales and can include weights retained at higher precision.</p>"]] },
-    { t: ["将数值舍入到整数网格", "Round values onto an integer grid"],
-      d: ["线性整数量化以尺度定义网格间距，舍入令邻近的原值可能落在同一个编码。", "Linear integer quantization uses a scale to set grid spacing, and rounding can map nearby inputs to the same code."],
-      b: [["<p>线性整数量化用尺度和零点在整数编码与原数值之间建立映射。尺度定义相邻可表示值的间距，零点是原值零对应的编码。编码时将原值舍入到网格并限制到可用范围，解量化再用尺度换回近似值。</p>"], ["<p>Linear integer quantization uses a scale and a zero point to map between integer codes and real values. The scale sets the spacing between representable values, and the zero point is the code for real zero. Encoding rounds onto the grid and clamps to the available range. Dequantization maps the code back to an approximation.</p>"]] },
-    { t: ["选择量化作用的张量", "Choose which tensors to quantize"],
-      d: ["仅权重量化降低模型权重占用，激活和 KV Cache 可以采用独立精度。", "Weight-only quantization reduces weight storage, while activations and the KV cache can use separate formats."],
-      b: [["<p>激活是计算中产生的中间值。仅权重量化把权重用低位宽保存，激活仍可保留较高精度。权重和激活也可一起量化。生成推理的 KV Cache 保存历史 token 的键和值，其精度选择可以与权重分开。</p>"], ["<p>Activations are intermediate values created during computation. Weight-only quantization stores weights at a lower bit width and can retain higher precision for activations. Approaches that quantize both weights and activations are also available. The generation KV cache saves keys and values from earlier tokens and can use a format selected separately from the weights.</p>"]] },
-    { t: ["用代表性输入做静态校准", "Calibrate with representative inputs"],
-      d: ["静态激活量化先用代表性样本观察激活分布，再为部署固定量化参数。", "Static activation quantization observes activations on representative inputs, then fixes quantization parameters for deployment."],
-      b: [["<p>训练后量化（PTQ）从完成训练的模型出发。静态激活量化用校准样本观测中间值的分布，选择尺度和零点。范围过宽时，固定数量的网格点分得更开。范围过窄时，更多超范围数值会被截到边界。</p>"], ["<p>Post-training quantization (PTQ) starts from an already trained model. Static activation quantization runs calibration samples to observe intermediate values and select scales and zero points. A wider range spreads the available grid points apart. A narrower range clips more out-of-range values to the endpoints.</p>"]] },
-    { t: ["在训练中模拟量化误差", "Simulate quantization error during training"],
-      d: ["量化感知训练把舍入和截断的影响带入前向计算，使权重能适应部署精度。", "Quantization-aware training introduces rounding and clipping effects in the forward pass so weights can adapt to deployment precision."],
-      b: [["<p>量化感知训练（QAT）在训练的前向计算中模拟目标数值格式，继续使用训练数据和梯度调整参数。训练完成后再导出对应的低精度表示。部署质量应在代表性任务上与原模型比较，尤其关注对数值误差敏感的输出。</p>"], ["<p>Quantization-aware training (QAT) simulates the target format during the training forward pass, allowing data and gradients to adjust parameters. The trained model is then exported to the corresponding lower-precision representation. Quality evaluation compares it with the original model on representative tasks, including outputs sensitive to numerical error.</p>"]] },
-    { t: ["低位宽部署取决于计算路径", "Deployment depends on the execution path"],
-      d: ["低位宽减少读取的权重字节数，实际计算路径取决于硬件和算子实现。", "Fewer bits reduce the weight bytes read, while the execution path depends on hardware and operator support."],
-      b: [["<p>推理算子是运行具体计算的实现，例如矩阵乘法。某些算子直接使用低精度乘法，另一些先将权重解量化再执行计算。单次推理的耗时和吞吐还受格式转换、激活精度和工作负载影响。</p>"], ["<p>An inference operator implements a computation such as matrix multiplication. Some operators multiply in a lower-precision format, while others dequantize weights before computing. Format conversion, activation precision, and workload shape also affect latency and throughput.</p>"]] }
-] };
+window.SS_TOPIC_CFG = {
+ "anim": "quant",
+ "ar": [960/334, 400/544],
+ "steps": [
+  {
+   "t": [
+    "同一组权重采用更低位宽",
+    "Lower Bit Width for the Same Weights"
+   ],
+   "d": [
+    "量化将数值映射到较低位宽的表示，缩小权重等张量的存储体积。",
+    "Quantization maps values to a lower-bit representation, reducing storage for tensors such as model weights."
+   ],
+   "b": [
+    [
+     "<p>位宽是每个数值使用的二进制位数。以相同数量的权重为例，16 位浮点权重每项需要 16 位，INT8 权重的整数编码每项需要 8 位。量化后的实际占用还包含尺度等元数据，可能也保留部分高精度权重。</p>"
+    ],
+    [
+     "<p>Bit width is the number of binary digits used per value. For the same number of weights, a 16-bit floating-point format uses 16 bits per weight, while INT8 uses an 8-bit integer code. The actual footprint also includes metadata such as scales and can include weights retained at higher precision.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "将数值舍入到整数网格",
+    "Round Values onto an Integer Grid"
+   ],
+   "d": [
+    "线性整数量化以尺度定义网格间距，舍入令邻近的原值可能落在同一个编码。",
+    "Linear integer quantization uses a scale to set grid spacing, and rounding can map nearby inputs to the same code."
+   ],
+   "b": [
+    [
+     "<p>线性整数量化用尺度和零点在整数编码与原数值之间建立映射。尺度定义相邻可表示值的间距，零点是原值零对应的编码。编码时将原值舍入到网格并限制到可用范围，解量化再用尺度换回近似值。</p>"
+    ],
+    [
+     "<p>Linear integer quantization uses a scale and a zero point to map between integer codes and real values. The scale sets the spacing between representable values, and the zero point is the code for real zero. Encoding rounds onto the grid and clamps to the available range. Dequantization maps the code back to an approximation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "选择量化作用的张量",
+    "Choose Which Tensors to Quantize"
+   ],
+   "d": [
+    "仅权重量化降低模型权重占用，激活和 KV Cache 可以采用独立精度。",
+    "Weight-only quantization reduces weight storage, while activations and the KV cache can use separate formats."
+   ],
+   "b": [
+    [
+     "<p>激活是计算中产生的中间值。仅权重量化把权重用低位宽保存，激活仍可保留较高精度。权重和激活也可一起量化。生成推理的 KV Cache 保存历史 token 的键和值，其精度选择可以与权重分开。</p>"
+    ],
+    [
+     "<p>Activations are intermediate values created during computation. Weight-only quantization stores weights at a lower bit width and can retain higher precision for activations. Approaches that quantize both weights and activations are also available. The generation KV cache saves keys and values from earlier tokens and can use a format selected separately from the weights.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用代表性输入做静态校准",
+    "Calibrate with Representative Inputs"
+   ],
+   "d": [
+    "静态激活量化先用代表性样本观察激活分布，再为部署固定量化参数。",
+    "Static activation quantization observes activations on representative inputs, then fixes quantization parameters for deployment."
+   ],
+   "b": [
+    [
+     "<p>训练后量化（PTQ）从完成训练的模型出发。静态激活量化用校准样本观测中间值的分布，选择尺度和零点。范围过宽时，固定数量的网格点分得更开。范围过窄时，更多超范围数值会被截到边界。</p>"
+    ],
+    [
+     "<p>Post-training quantization (PTQ) starts from an already trained model. Static activation quantization runs calibration samples to observe intermediate values and select scales and zero points. A wider range spreads the available grid points apart. A narrower range clips more out-of-range values to the endpoints.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "在训练中模拟量化误差",
+    "Simulate Quantization Error During Training"
+   ],
+   "d": [
+    "量化感知训练把舍入和截断的影响带入前向计算，使权重能适应部署精度。",
+    "Quantization-aware training introduces rounding and clipping effects in the forward pass so weights can adapt to deployment precision."
+   ],
+   "b": [
+    [
+     "<p>量化感知训练（QAT）在训练的前向计算中模拟目标数值格式，继续使用训练数据和梯度调整参数。训练完成后再导出对应的低精度表示。部署质量应在代表性任务上与原模型比较，尤其关注对数值误差敏感的输出。</p>"
+    ],
+    [
+     "<p>Quantization-aware training (QAT) simulates the target format during the training forward pass, allowing data and gradients to adjust parameters. The trained model is then exported to the corresponding lower-precision representation. Quality evaluation compares it with the original model on representative tasks, including outputs sensitive to numerical error.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "低位宽部署取决于计算路径",
+    "Deployment Depends on the Execution Path"
+   ],
+   "d": [
+    "低位宽减少读取的权重字节数，实际计算路径取决于硬件和算子实现。",
+    "Fewer bits reduce the weight bytes read, while the execution path depends on hardware and operator support."
+   ],
+   "b": [
+    [
+     "<p>推理算子是运行具体计算的实现，例如矩阵乘法。某些算子直接使用低精度乘法，另一些先将权重解量化再执行计算。单次推理的耗时和吞吐还受格式转换、激活精度和工作负载影响。</p>"
+    ],
+    [
+     "<p>An inference operator implements a computation such as matrix multiplication. Some operators multiply in a lower-precision format, while others dequantize weights before computing. Format conversion, activation precision, and workload shape also affect latency and throughput.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

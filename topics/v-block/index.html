@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Block storage over NVMe/TCP">Block：使用 NVMe/TCP 的块存储</h1>
+      <div><h1 data-en="Block Storage over NVMe/TCP">Block：使用 NVMe/TCP 的块存储</h1>
         <p class="meta"><span data-en="6 steps · NVMe/TCP, subsystems, volumes, multipath">6 步 · NVMe/TCP、子系统、卷、多路径</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,13 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://www.vastdata.com/whitepaper" data-en="VAST AI Operating System white paper · NVMe-Over TCP Block Services">VAST AI Operating System 白皮书 · NVMe-Over TCP Block Services</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/overview-of-block-storage-on-vast-cluster" data-en="VAST 5.5 · Overview of Block Storage">VAST 5.5 · 块存储概览</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/provisioning-block-storage-with-vms" data-en="VAST 5.5 · Provisioning Block Storage with VMS">VAST 5.5 · 配置块存储</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/configuring-an-nvme-tcp-client-on-linux-for-vast-cluster-block-storage" data-en="VAST 5.5 · Configuring an NVMe/TCP Client on Linux">VAST 5.5 · 配置 Linux NVMe/TCP 客户端</a></li>
       <li data-en="Schematic illustrations.">动画为示意。</li>
     </ul></div>
   </div>
@@ -76,15 +72,153 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-block.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-block',ar:[960/520,480/600],
-  steps:[
-    {"s": ["一块盘", "A disk"], "t": ["块存储：主机看到的是块设备", "Block storage presents a block device"], "d": ["VAST 通过 NVMe/TCP 将卷呈现为主机上的块设备。", "VAST exposes a volume to the host as a block device over NVMe/TCP."], "b": [["<p>块卷以 NVMe 命名空间呈现给已映射的主机。主机可以将其作为磁盘使用，例如在卷上创建文件系统。文件视图则由存储服务提供目录和文件。</p>"], ["<p>A mapped host sees the volume as an NVMe namespace and can use it as a disk, for example by creating a file system. A file view exposes directories and files through the storage service.</p>"]]},
-    {"s": ["NVMe/TCP", "NVMe/TCP"], "t": ["主机通过 NVMe/TCP 访问卷", "Hosts reach volumes over NVMe/TCP"], "d": ["NVMe 命令经 TCP 在以太网上传输。", "NVMe commands travel over TCP on Ethernet."], "b": [["<p>NVMe over Fabrics（NVMe-oF）将 NVMe 命令与数据传输扩展到网络。VAST 块存储使用 NVMe/TCP 作为主机端传输方式。</p>", "<p>Linux 主机配置文档使用 nvme-cli 发现和连接子系统，内核模块提供 NVMe/TCP 传输。</p>"], ["<p>NVMe over Fabrics (NVMe-oF) carries NVMe commands and data across a network. VAST block storage uses NVMe/TCP for host connectivity.</p>", "<p>The Linux setup uses nvme-cli to discover and connect to subsystems, with kernel modules providing the NVMe/TCP transport.</p>"]]},
-    {"s": ["三样东西", "Three objects"], "t": ["配置子系统、卷和主机映射", "Configure subsystems, volumes, and host mappings"], "d": ["子系统包含卷。主机以自己的 NQN 登记，再与卷建立映射。", "A subsystem contains volumes. Hosts register with their own NQN and are mapped to volumes."], "b": [["<p>在空的专用路径上创建只启用 Block 的视图，即可配置子系统。子系统有自己的 NVMe Qualified Name（NQN），卷则有相对子系统的路径，并以 NVMe 命名空间呈现。</p>", "<p>主机以自身的 host NQN 注册。一个卷可映射到多个主机，一个主机也可映射到多个卷。</p>"], ["<p>A block-only view on an empty, dedicated path defines a subsystem. The subsystem has its own NVMe Qualified Name (NQN). Each volume has a path relative to the subsystem and is presented as an NVMe namespace.</p>", "<p>Each host registers with its host NQN. A volume can be mapped to several hosts, and a host can be mapped to several volumes.</p>"]]},
-    {"s": ["多条路径", "Many paths"], "t": ["发现子系统并建立多条路径", "Discover the subsystem and connect its paths"], "d": ["主机向集群 VIP 发起发现，再连接发现的路径。", "The host starts discovery at a cluster VIP and connects the discovered paths."], "b": [["<p>Linux 配置示例用端口 8009 向集群虚拟 IP（VIP）发起发现，再用 <code>nvme connect-all</code> 建立连接。VAST 5.5 文档给出的发现上限是 16 条路径，每个被选中的 VIP 对应一条。</p>", "<p>路径可分布到不同的 CNode。图示采用文档 Linux 配置中的轮询 I/O 策略。</p>"], ["<p>The Linux example sends discovery to a cluster virtual IP (VIP) on port 8009 and uses <code>nvme connect-all</code> to connect. The VAST 5.5 guide specifies up to 16 paths, one per selected VIP.</p>", "<p>Paths can reach different CNodes. The diagram uses the round-robin I/O policy from the Linux configuration example.</p>"]]},
-    {"s": ["任一 CNode", "Any CNode"], "t": ["多路径提供卷的备用访问路径", "Multipath provides alternate access to a volume"], "d": ["某条路径失效时，主机多路径可通过仍可用的路径继续 I/O。", "When a path fails, host multipathing can continue I/O on the surviving paths."], "b": [["<p>块卷存储为 Element Store 中的元素。CNode 都能处理对该卷的 I/O，主机可使用操作系统的原生 NVMe 多路径。</p>", "<p>采用 Linux 配置时，VAST 文档要求启用 NVMe 命令重试，以便在路径失效时用剩余路径处理 I/O。</p>"], ["<p>A block volume is an element in the Element Store. CNodes can each serve I/O for the volume, and the host can use its operating system’s native NVMe multipathing.</p>", "<p>For the Linux configuration, VAST requires NVMe command retries so the host can handle I/O over surviving paths if a path fails.</p>"]]},
-    {"s": ["同一套系统", "One system"], "t": ["块、文件和对象视图可共处于同一租户", "Block, file, and object views can share a tenant"], "d": ["块子系统占用专用路径，卷的快照可作为卷映射给主机。", "Block subsystems use dedicated paths. A volume from a snapshot can be mapped to a host."], "b": [["<p>同一个集群、同一个租户可同时配置块子系统以及文件、对象视图。块子系统的专用路径只提供块访问。</p>", "<p>快照可覆盖子系统路径、单卷路径或包含多个卷的路径。恢复数据时，可以将快照中的卷映射给主机。</p>"], ["<p>A cluster and tenant can contain block subsystems alongside file and object views. A block subsystem’s dedicated path provides block access only.</p>", "<p>A snapshot can cover the subsystem path, one volume path, or a path containing several volumes. A volume from the snapshot can be mapped to a host for recovery.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-block",
+ "ar": [960/520,480/600],
+ "steps": [
+  {
+   "s": [
+    "一块盘",
+    "A disk"
+   ],
+   "t": [
+    "块存储：主机看到的是块设备",
+    "Block Storage Presents a Block Device"
+   ],
+   "d": [
+    "VAST 通过 NVMe/TCP 将卷呈现为主机上的块设备。",
+    "VAST exposes a volume to the host as a block device over NVMe/TCP."
+   ],
+   "b": [
+    [
+     "<p>块卷以 NVMe 命名空间呈现给已映射的主机。主机可以将其作为磁盘使用，例如在卷上创建文件系统。文件视图则由存储服务提供目录和文件。</p>"
+    ],
+    [
+     "<p>A mapped host sees the volume as an NVMe namespace and can use it as a disk, for example by creating a file system. A file view exposes directories and files through the storage service.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "NVMe/TCP",
+    "NVMe/TCP"
+   ],
+   "t": [
+    "主机通过 NVMe/TCP 访问卷",
+    "Hosts Reach Volumes over NVMe/TCP"
+   ],
+   "d": [
+    "NVMe 命令经 TCP 在以太网上传输。",
+    "NVMe commands travel over TCP on Ethernet."
+   ],
+   "b": [
+    [
+     "<p>NVMe over Fabrics（NVMe-oF）将 NVMe 命令与数据传输扩展到网络。VAST 块存储使用 NVMe/TCP 作为主机端传输方式。</p>",
+     "<p>Linux 主机配置文档使用 nvme-cli 发现和连接子系统，内核模块提供 NVMe/TCP 传输。</p>"
+    ],
+    [
+     "<p>NVMe over Fabrics (NVMe-oF) carries NVMe commands and data across a network. VAST block storage uses NVMe/TCP for host connectivity.</p>",
+     "<p>The Linux setup uses nvme-cli to discover and connect to subsystems, with kernel modules providing the NVMe/TCP transport.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "三样东西",
+    "Three objects"
+   ],
+   "t": [
+    "配置子系统、卷和主机映射",
+    "Configure Subsystems, Volumes, and Host Mappings"
+   ],
+   "d": [
+    "子系统包含卷。主机以自己的 NQN 登记，再与卷建立映射。",
+    "A subsystem contains volumes. Hosts register with their own NQN and are mapped to volumes."
+   ],
+   "b": [
+    [
+     "<p>在空的专用路径上创建只启用 Block 的视图，即可配置子系统。子系统有自己的 NVMe Qualified Name（NQN），卷则有相对子系统的路径，并以 NVMe 命名空间呈现。</p>",
+     "<p>主机以自身的 host NQN 注册。一个卷可映射到多个主机，一个主机也可映射到多个卷。</p>"
+    ],
+    [
+     "<p>A block-only view on an empty, dedicated path defines a subsystem. The subsystem has its own NVMe Qualified Name (NQN). Each volume has a path relative to the subsystem and is presented as an NVMe namespace.</p>",
+     "<p>Each host registers with its host NQN. A volume can be mapped to several hosts, and a host can be mapped to several volumes.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "多条路径",
+    "Many paths"
+   ],
+   "t": [
+    "发现子系统并建立多条路径",
+    "Discover the Subsystem and Connect Its Paths"
+   ],
+   "d": [
+    "主机向集群 VIP 发起发现，再连接发现的路径。",
+    "The host starts discovery at a cluster VIP and connects the discovered paths."
+   ],
+   "b": [
+    [
+     "<p>Linux 配置示例用端口 8009 向集群虚拟 IP（VIP）发起发现，再用 <code>nvme connect-all</code> 建立连接。VAST 5.5 文档给出的发现上限是 16 条路径，每个被选中的 VIP 对应一条。</p>",
+     "<p>路径可分布到不同的 CNode。图示采用文档 Linux 配置中的轮询 I/O 策略。</p>"
+    ],
+    [
+     "<p>The Linux example sends discovery to a cluster virtual IP (VIP) on port 8009 and uses <code>nvme connect-all</code> to connect. The VAST 5.5 guide specifies up to 16 paths, one per selected VIP.</p>",
+     "<p>Paths can reach different CNodes. The diagram uses the round-robin I/O policy from the Linux configuration example.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "任一 CNode",
+    "Any CNode"
+   ],
+   "t": [
+    "多路径提供卷的备用访问路径",
+    "Multipath Provides Alternate Access to a Volume"
+   ],
+   "d": [
+    "某条路径失效时，主机多路径可通过仍可用的路径继续 I/O。",
+    "When a path fails, host multipathing can continue I/O on the surviving paths."
+   ],
+   "b": [
+    [
+     "<p>块卷存储为 Element Store 中的元素。CNode 都能处理对该卷的 I/O，主机可使用操作系统的原生 NVMe 多路径。</p>",
+     "<p>采用 Linux 配置时，VAST 文档要求启用 NVMe 命令重试，以便在路径失效时用剩余路径处理 I/O。</p>"
+    ],
+    [
+     "<p>A block volume is an element in the Element Store. CNodes can each serve I/O for the volume, and the host can use its operating system’s native NVMe multipathing.</p>",
+     "<p>For the Linux configuration, VAST requires NVMe command retries so the host can handle I/O over surviving paths if a path fails.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "同一套系统",
+    "One system"
+   ],
+   "t": [
+    "块、文件和对象视图可共处于同一租户",
+    "Block, File, and Object Views Can Share a Tenant"
+   ],
+   "d": [
+    "块子系统占用专用路径，卷的快照可作为卷映射给主机。",
+    "Block subsystems use dedicated paths. A volume from a snapshot can be mapped to a host."
+   ],
+   "b": [
+    [
+     "<p>同一个集群、同一个租户可同时配置块子系统以及文件、对象视图。块子系统的专用路径只提供块访问。</p>",
+     "<p>快照可覆盖子系统路径、单卷路径或包含多个卷的路径。恢复数据时，可以将快照中的卷映射给主机。</p>"
+    ],
+    [
+     "<p>A cluster and tenant can contain block subsystems alongside file and object views. A block subsystem’s dedicated path provides block access only.</p>",
+     "<p>A snapshot can cover the subsystem path, one volume path, or a path containing several volumes. A volume from the snapshot can be mapped to a host for recovery.</p>"
+    ]
+   ]
+  }
+ ]
 };
 const heading = document.querySelector('h1');
 window.SS.stations[window.SS_TOPIC_CFG.anim].t = [heading.textContent, heading.dataset.en];

@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="NVMe: Parallel access to solid-state drives">NVMe：主机如何并行访问固态盘</h1>
+      <div><h1 data-en="NVMe: Parallel Access to Solid-State Drives">NVMe：主机如何并行访问固态盘</h1>
         <p class="meta"><span data-en="5 steps · PCIe, Logical blocks, I/O queues">5 步 · PCIe、逻辑块、I/O 队列</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,12 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>NVM Express Base Specification</li>
-      <li>NVMe over PCIe Transport Specification</li>
-      <li>NVM Express NVM Command Set Specification</li>
     </ul></div>
   </div>
 </main>
@@ -73,29 +70,103 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/nvme.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'nvme',ar:[900/388,360/482],
-  steps:[
-    {t:["协议、总线和介质", "Protocol, bus, and media"],
-     d:["NVMe 定义读写命令，本地设备通过 PCIe 与主机交换命令和数据。", "NVMe defines read and write commands. A local device exchanges commands and data with the host over PCIe."],
-     b:[["<p>NVMe（Non-Volatile Memory Express）是一套存储协议规范。以本地闪存固态盘为例，主机驱动通过 PCIe（连接处理器系统与外设的总线）向设备控制器发出 NVMe 命令。控制器管理盘内的 NAND 闪存，闪存在断电后保留已写入的数据。</p>"],
-        ["<p>NVMe (Non-Volatile Memory Express) is a family of storage protocol specifications. In a local flash SSD, the host driver issues NVMe commands to the device controller over PCIe, a bus that connects the processor system to peripherals. The controller manages NAND flash, which retains data written to it when power is removed.</p>"]]},
-    {t:["用逻辑块地址指定读写范围", "Addressing data by logical block"],
-     d:["一次块读取指定命名空间、起始逻辑块地址和读取长度。", "A block read specifies a namespace, a starting logical block address, and a length."],
-     b:[["<p>主机通过命名空间访问控制器提供的逻辑存储空间。对 NVMe 的 NVM 块命令集而言，每个命名空间由可独立编号的逻辑块组成，块是主机寻址的单位。驱动用命名空间标识和逻辑块地址描述读写位置，盘内的闪存位置由控制器管理。</p>"],
-        ["<p>A namespace is a logical storage space exposed through a controller. In the NVMe NVM block command set, each namespace has its own numbered logical blocks, the units the host can address. The driver specifies a namespace identifier and logical block address, and the controller manages placement in flash.</p>"]]},
-    {t:["主机把命令写进提交队列", "The host posts commands to a submission queue"],
-     d:["主机先在内存里写好命令，再更新门铃寄存器，通知控制器取走新条目。", "The host writes commands in memory, then updates a doorbell register to notify the controller of new entries."],
-     b:[["<p>提交队列是主机发出命令的环形缓冲区。以本地 PCIe 路径为例，驱动可先填入多条命令，再更新提交队列尾部的门铃寄存器。这个寄存器携带新的队尾位置。控制器据此读取尚未取走的条目，一次通知可以提交多条命令。</p>"],
-        ["<p>A submission queue is a ring buffer for commands issued by the host. Over local PCIe, the driver can fill several entries before updating the queue's tail doorbell register. The register carries the new tail position, which tells the controller which entries are ready to fetch. One doorbell update can submit multiple commands.</p>"]]},
-    {t:["控制器把结果写进完成队列", "The controller posts results to a completion queue"],
-     d:["控制器完成读取后把状态写入完成队列，主机按命令标识找到对应请求。", "After a read completes, the controller posts its status to a completion queue. The host matches it to the request by command ID."],
-     b:[["<p>读取数据交付到主机指定的缓冲区，完成记录则写到完成队列。记录带有命令标识和状态，主机可以轮询队列，也可以在收到控制器中断后处理新条目。驱动消费条目后更新完成队列头部的门铃寄存器，释放已处理的槽位。</p>"],
-        ["<p>The controller delivers read data to the designated host buffer and posts a separate completion entry with the command ID and status. The host can poll the queue or process new entries after an interrupt from the controller. After consuming entries, the driver updates the completion queue's head doorbell to release those slots.</p>"]]},
-    {t:["多条队列可同时提交 I/O", "Multiple queues can submit I/O concurrently"],
-     d:["不同主机核心可以使用各自的提交队列，同时将请求交给同一个控制器。", "Different host cores can use separate submission queues to send requests to the same controller concurrently."],
-     b:[["<p>I/O 指读写等输入输出操作。驱动可以把不同核心或线程的 I/O 分配到不同提交队列，减少争用同一队列的机会。控制器在队列之间安排取命令，并把结果写入关联的完成队列。</p>", "<p>多队列让更多独立请求保持在途。实际处理能力还受控制器、闪存、本地 PCIe 链路及工作负载约束。NVMe-oF 将 NVMe 命令模型延伸到网络传输。</p>"],
-        ["<p>I/O means input and output operations such as reads and writes. A driver can assign I/O from different cores or threads to different submission queues, reducing contention for one queue. The controller arbitrates among the queues and posts results to the associated completion queues.</p>", "<p>Multiple queues allow more independent requests to stay in flight. The controller, flash, local PCIe link, and workload still determine how much I/O the system can process. NVMe over Fabrics extends the NVMe command model to network transports.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "nvme",
+ "ar": [900/388,360/482],
+ "steps": [
+  {
+   "t": [
+    "协议、总线和介质",
+    "Protocol, Bus, and Media"
+   ],
+   "d": [
+    "NVMe 定义读写命令，本地设备通过 PCIe 与主机交换命令和数据。",
+    "NVMe defines read and write commands. A local device exchanges commands and data with the host over PCIe."
+   ],
+   "b": [
+    [
+     "<p>NVMe（Non-Volatile Memory Express）是一套存储协议规范。以本地闪存固态盘为例，主机驱动通过 PCIe（连接处理器系统与外设的总线）向设备控制器发出 NVMe 命令。控制器管理盘内的 NAND 闪存，闪存在断电后保留已写入的数据。</p>"
+    ],
+    [
+     "<p>NVMe (Non-Volatile Memory Express) is a family of storage protocol specifications. In a local flash SSD, the host driver issues NVMe commands to the device controller over PCIe, a bus that connects the processor system to peripherals. The controller manages NAND flash, which retains data written to it when power is removed.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用逻辑块地址指定读写范围",
+    "Addressing Data by Logical Block"
+   ],
+   "d": [
+    "一次块读取指定命名空间、起始逻辑块地址和读取长度。",
+    "A block read specifies a namespace, a starting logical block address, and a length."
+   ],
+   "b": [
+    [
+     "<p>主机通过命名空间访问控制器提供的逻辑存储空间。对 NVMe 的 NVM 块命令集而言，每个命名空间由可独立编号的逻辑块组成，块是主机寻址的单位。驱动用命名空间标识和逻辑块地址描述读写位置，盘内的闪存位置由控制器管理。</p>"
+    ],
+    [
+     "<p>A namespace is a logical storage space exposed through a controller. In the NVMe NVM block command set, each namespace has its own numbered logical blocks, the units the host can address. The driver specifies a namespace identifier and logical block address, and the controller manages placement in flash.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "主机把命令写进提交队列",
+    "The Host Posts Commands to a Submission Queue"
+   ],
+   "d": [
+    "主机先在内存里写好命令，再更新门铃寄存器，通知控制器取走新条目。",
+    "The host writes commands in memory, then updates a doorbell register to notify the controller of new entries."
+   ],
+   "b": [
+    [
+     "<p>提交队列是主机发出命令的环形缓冲区。以本地 PCIe 路径为例，驱动可先填入多条命令，再更新提交队列尾部的门铃寄存器。这个寄存器携带新的队尾位置。控制器据此读取尚未取走的条目，一次通知可以提交多条命令。</p>"
+    ],
+    [
+     "<p>A submission queue is a ring buffer for commands issued by the host. Over local PCIe, the driver can fill several entries before updating the queue's tail doorbell register. The register carries the new tail position, which tells the controller which entries are ready to fetch. One doorbell update can submit multiple commands.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "控制器把结果写进完成队列",
+    "The Controller Posts Results to a Completion Queue"
+   ],
+   "d": [
+    "控制器完成读取后把状态写入完成队列，主机按命令标识找到对应请求。",
+    "After a read completes, the controller posts its status to a completion queue. The host matches it to the request by command ID."
+   ],
+   "b": [
+    [
+     "<p>读取数据交付到主机指定的缓冲区，完成记录则写到完成队列。记录带有命令标识和状态，主机可以轮询队列，也可以在收到控制器中断后处理新条目。驱动消费条目后更新完成队列头部的门铃寄存器，释放已处理的槽位。</p>"
+    ],
+    [
+     "<p>The controller delivers read data to the designated host buffer and posts a separate completion entry with the command ID and status. The host can poll the queue or process new entries after an interrupt from the controller. After consuming entries, the driver updates the completion queue's head doorbell to release those slots.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "多条队列可同时提交 I/O",
+    "Multiple Queues Can Submit I/O Concurrently"
+   ],
+   "d": [
+    "不同主机核心可以使用各自的提交队列，同时将请求交给同一个控制器。",
+    "Different host cores can use separate submission queues to send requests to the same controller concurrently."
+   ],
+   "b": [
+    [
+     "<p>I/O 指读写等输入输出操作。驱动可以把不同核心或线程的 I/O 分配到不同提交队列，减少争用同一队列的机会。控制器在队列之间安排取命令，并把结果写入关联的完成队列。</p>",
+     "<p>多队列让更多独立请求保持在途。实际处理能力还受控制器、闪存、本地 PCIe 链路及工作负载约束。NVMe-oF 将 NVMe 命令模型延伸到网络传输。</p>"
+    ],
+    [
+     "<p>I/O means input and output operations such as reads and writes. A driver can assign I/O from different cores or threads to different submission queues, reducing contention for one queue. The controller arbitrates among the queues and posts results to the associated completion queues.</p>",
+     "<p>Multiple queues allow more independent requests to stay in flight. The controller, flash, local PCIe link, and workload still determine how much I/O the system can process. NVMe over Fabrics extends the NVMe command model to network transports.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

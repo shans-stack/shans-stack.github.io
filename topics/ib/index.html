@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="How InfiniBand networks are built">InfiniBand 怎么组网</h1>
+      <div><h1 data-en="How InfiniBand Networks Are Built">InfiniBand 怎么组网</h1>
         <p class="meta"><span data-en="6 steps · HCA, subnet management, credit-based flow control">6 步 · HCA、子网管理、信用流控</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="InfiniBand Trade Association, InfiniBand Architecture Specification">InfiniBand Trade Association，InfiniBand Architecture Specification</li>
       <li data-en="IBM Redbooks, Implementing InfiniBand on IBM System p, Chapter 2">IBM Redbooks，Implementing InfiniBand on IBM System p，第 2 章</li>
@@ -73,27 +73,120 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/ib.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'ib',ar:[900/360,360/520],
-  steps:[
-    {t:["交换式网络", "A switched fabric"],
-     d:["两端的主机通道适配器通过 InfiniBand 交换机相连。", "Host channel adapters connect the two servers through an InfiniBand switch."],
-     b:[["<p>InfiniBand 是一种交换式互连架构。交换式互连指主机之间由交换机转发报文。主机通道适配器（HCA）是服务器接入 InfiniBand 的网卡，负责处理链路和传输协议。</p>"], ["<p>InfiniBand is a switched interconnect architecture in which switches forward packets between hosts. A host channel adapter (HCA) connects a server to the fabric and handles the link and transport protocols.</p>"]]},
-    {t:["子网管理器建立转发表", "The subnet manager builds forwarding tables"],
-     d:["子网管理器发现设备，为端口分配本地标识符，并配置交换机转发表。", "The subnet manager discovers devices, assigns local identifiers to ports and programs switch forwarding tables."],
-     b:[["<p>子网管理器（SM）负责发现和配置一个 InfiniBand 子网。它为端口分配本地标识符（LID），并根据拓扑配置转发表。转发表把目的 LID 映射到出口端口，因此交换机收到数据报文后可以逐跳转发。</p>"], ["<p>The subnet manager (SM) discovers and configures an InfiniBand subnet. It assigns local identifiers (LIDs) to ports and sets up forwarding tables based on the topology. Each table maps a destination LID to an output port, allowing a switch to forward a packet to the next hop.</p>"]]},
-    {t:["适配器执行 RDMA 写入", "Adapters execute an RDMA write"],
-     d:["发送端 HCA 读取本地缓冲区，接收端 HCA 把数据写入已授权的内存。", "The sending HCA reads the local buffer, and the receiving HCA writes the data into authorized memory."],
-     b:[["<p>远程直接内存访问（RDMA）允许网卡直接访问远端已注册的内存。应用完成内存注册、授权和请求提交后，发送端 HCA 从本地缓冲区取数据，交换机按转发表送达报文，接收端 HCA 完成内存写入。单边写入的数据路径由两端适配器和交换机承担。</p>"], ["<p>Remote Direct Memory Access (RDMA) allows an adapter to access registered memory on a remote host. After the application registers memory, grants access and posts the request, the sending HCA reads the local buffer. The switch forwards the packet and the receiving HCA writes it into memory. The two adapters and the switch carry the data for this one-sided write.</p>"]]},
-    {t:["信用控制每一跳", "Credits control each hop"],
-     d:["链路接收端通告缓冲区的可用额度，发送端据此决定何时发包。", "The receiving port advertises buffer space as credits, which govern when its peer can send."],
-     b:[["<p>信用是接收端通告的缓冲额度。发送端只有在累计的可用信用足够容纳该报文时才能发送。接收端释放缓冲区后再更新额度。信用在相邻端口间逐跳生效，避免相应接收缓冲区溢出。</p>"], ["<p>A credit represents receive buffer space advertised by the downstream port. The sender transmits a packet when enough credits are available to hold it. The receiver updates the allowance as it frees buffer space. This mechanism operates between adjacent ports and prevents overrun of the corresponding receive buffer.</p>"]]},
-    {t:["虚拟通道分开排队", "Virtual lanes separate queues"],
-     d:["同一物理链路可承载多条虚拟通道，每条数据通道分别管理队列和信用。", "One physical link can carry several virtual lanes, with separate queues and credits for each data lane."],
-     b:[["<p>虚拟通道（VL）是物理链路上的逻辑队列。对支持多条数据 VL 的链路，某条 VL 信用耗尽时，仍有信用的其他 VL 可以按链路调度继续传输。各通道共享物理链路的带宽。</p>"], ["<p>A virtual lane (VL) is a logical queue on a physical link. Where a link supports multiple data VLs, lanes with available credits remain eligible for scheduling when another lane runs out. The lanes share the bandwidth of the physical link.</p>"]]},
-    {t:["持续拥塞使队列向上游积累", "Persistent congestion backs up upstream"],
-     d:["出口持续繁忙时，信用耗尽的位置会沿转发路径向上游移动。", "A persistently busy egress can cause upstream ports to run out of credits in turn."],
-     b:[["<p>当出口排空缓冲区的速度低于报文到达的速度，交换机缓冲区逐步占满，随后能够通告给上游的可用信用减少。更多报文便留在上游排队。这种逐跳向上游传递的等待称为背压。</p>"], ["<p>When packets arrive faster than an egress can drain them, the switch buffer fills and the switch advertises fewer available credits to its upstream peer. More packets then wait upstream. This hop-by-hop buildup is known as backpressure.</p>"]]}
-  ]};
+window.SS_TOPIC_CFG={
+ "anim": "ib",
+ "ar": [900/360,360/520],
+ "steps": [
+  {
+   "t": [
+    "交换式网络",
+    "A Switched Fabric"
+   ],
+   "d": [
+    "两端的主机通道适配器通过 InfiniBand 交换机相连。",
+    "Host channel adapters connect the two servers through an InfiniBand switch."
+   ],
+   "b": [
+    [
+     "<p>InfiniBand 是一种交换式互连架构。交换式互连指主机之间由交换机转发报文。主机通道适配器（HCA）是服务器接入 InfiniBand 的网卡，负责处理链路和传输协议。</p>"
+    ],
+    [
+     "<p>InfiniBand is a switched interconnect architecture in which switches forward packets between hosts. A host channel adapter (HCA) connects a server to the fabric and handles the link and transport protocols.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "子网管理器建立转发表",
+    "The Subnet Manager Builds Forwarding Tables"
+   ],
+   "d": [
+    "子网管理器发现设备，为端口分配本地标识符，并配置交换机转发表。",
+    "The subnet manager discovers devices, assigns local identifiers to ports and programs switch forwarding tables."
+   ],
+   "b": [
+    [
+     "<p>子网管理器（SM）负责发现和配置一个 InfiniBand 子网。它为端口分配本地标识符（LID），并根据拓扑配置转发表。转发表把目的 LID 映射到出口端口，因此交换机收到数据报文后可以逐跳转发。</p>"
+    ],
+    [
+     "<p>The subnet manager (SM) discovers and configures an InfiniBand subnet. It assigns local identifiers (LIDs) to ports and sets up forwarding tables based on the topology. Each table maps a destination LID to an output port, allowing a switch to forward a packet to the next hop.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "适配器执行 RDMA 写入",
+    "Adapters Execute an RDMA Write"
+   ],
+   "d": [
+    "发送端 HCA 读取本地缓冲区，接收端 HCA 把数据写入已授权的内存。",
+    "The sending HCA reads the local buffer, and the receiving HCA writes the data into authorized memory."
+   ],
+   "b": [
+    [
+     "<p>远程直接内存访问（RDMA）允许网卡直接访问远端已注册的内存。应用完成内存注册、授权和请求提交后，发送端 HCA 从本地缓冲区取数据，交换机按转发表送达报文，接收端 HCA 完成内存写入。单边写入的数据路径由两端适配器和交换机承担。</p>"
+    ],
+    [
+     "<p>Remote Direct Memory Access (RDMA) allows an adapter to access registered memory on a remote host. After the application registers memory, grants access and posts the request, the sending HCA reads the local buffer. The switch forwards the packet and the receiving HCA writes it into memory. The two adapters and the switch carry the data for this one-sided write.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "信用控制每一跳",
+    "Credits Control Each Hop"
+   ],
+   "d": [
+    "链路接收端通告缓冲区的可用额度，发送端据此决定何时发包。",
+    "The receiving port advertises buffer space as credits, which govern when its peer can send."
+   ],
+   "b": [
+    [
+     "<p>信用是接收端通告的缓冲额度。发送端只有在累计的可用信用足够容纳该报文时才能发送。接收端释放缓冲区后再更新额度。信用在相邻端口间逐跳生效，避免相应接收缓冲区溢出。</p>"
+    ],
+    [
+     "<p>A credit represents receive buffer space advertised by the downstream port. The sender transmits a packet when enough credits are available to hold it. The receiver updates the allowance as it frees buffer space. This mechanism operates between adjacent ports and prevents overrun of the corresponding receive buffer.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "虚拟通道分开排队",
+    "Virtual Lanes Separate Queues"
+   ],
+   "d": [
+    "同一物理链路可承载多条虚拟通道，每条数据通道分别管理队列和信用。",
+    "One physical link can carry several virtual lanes, with separate queues and credits for each data lane."
+   ],
+   "b": [
+    [
+     "<p>虚拟通道（VL）是物理链路上的逻辑队列。对支持多条数据 VL 的链路，某条 VL 信用耗尽时，仍有信用的其他 VL 可以按链路调度继续传输。各通道共享物理链路的带宽。</p>"
+    ],
+    [
+     "<p>A virtual lane (VL) is a logical queue on a physical link. Where a link supports multiple data VLs, lanes with available credits remain eligible for scheduling when another lane runs out. The lanes share the bandwidth of the physical link.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "持续拥塞使队列向上游积累",
+    "Persistent Congestion Backs up Upstream"
+   ],
+   "d": [
+    "出口持续繁忙时，信用耗尽的位置会沿转发路径向上游移动。",
+    "A persistently busy egress can cause upstream ports to run out of credits in turn."
+   ],
+   "b": [
+    [
+     "<p>当出口排空缓冲区的速度低于报文到达的速度，交换机缓冲区逐步占满，随后能够通告给上游的可用信用减少。更多报文便留在上游排队。这种逐跳向上游传递的等待称为背压。</p>"
+    ],
+    [
+     "<p>When packets arrive faster than an egress can drain them, the switch buffer fills and the switch advertises fewer available credits to its upstream peer. More packets then wait upstream. This hop-by-hop buildup is known as backpressure.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Data pipelines: raw data to training samples">数据管道：从原始数据到训练样本</h1>
+      <div><h1 data-en="Data Pipelines: Raw Data to Training Samples">数据管道：从原始数据到训练样本</h1>
         <p class="meta"><span data-en="6 steps · ingest, validation, transformation, retries">6 步 · 摄取、清洗、转换、重跑</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,12 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html">Apache Airflow Documentation — Best Practices</a></li>
-      <li><a href="https://spark.apache.org/docs/latest/streaming/index.html">Apache Spark Documentation — Structured Streaming Programming Guide</a></li>
-      <li><a href="https://iceberg.apache.org/spec/">Apache Iceberg Table Specification</a></li>
     </ul></div>
   </div>
 </main>
@@ -74,27 +71,119 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/pipe.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'pipe',ar:[900/340,360/420],
-  steps:[
-    {t:["采集源数据", "Collect source data"],
-     d:["摄取作业将源记录与来源标识一起写入原始层。", "An ingest job writes source records to the raw layer with their source identifiers."],
-     b:[["<p>数据管道是一组按依赖关系运行的处理步骤。起点可以是文件、数据库或事件日志。摄取步骤读取输入并保存重新处理所需的信息，例如源文件名或输入位置。原始层形成后，其余步骤可以使用同一份输入。</p>"], ["<p>A data pipeline is a set of processing steps linked by dependencies. Its input can come from files, databases or event logs. Ingest reads the input and preserves information needed for replay, such as a source file name or input position. The raw layer then provides the same input to subsequent steps.</p>"]]},
-    {t:["按数据约定分流", "Route records by validation rules"],
-     d:["校验通过的记录继续处理，异常记录连同原因进入隔离区。", "Valid records proceed to processing, while rejected records go to quarantine with their rejection reasons."],
-     b:[["<p>校验可以根据字段的名称、类型和必填规则判断记录是否符合约定。格式错误或缺少必要字段的记录进入隔离区，保留错误原因和原始记录的引用。这样有效数据能继续流转，异常输入也可以回查和修复。</p>"], ["<p>Validation checks records against agreed field names, types and required values. Malformed records and records missing required fields go to quarantine with a reason and a reference to the source record. Valid data can proceed while rejected inputs remain available for investigation and correction.</p>"]]},
-    {t:["转成训练样本", "Transform records into training samples"],
-     d:["通过校验的记录经过字段转换和关联，形成结构一致的样本。", "Validated records are converted and joined to form samples with a consistent structure."],
-     b:[["<p>转换步骤按目标用途重新组织字段。例如，训练故障分类模型时，可将同一设备的事件与已核实的故障类别关联，得到带标签的样本。标签是模型训练时使用的目标值。把转换规则和输入版本一同保存，可以复现同一份样本。</p>"], ["<p>Transformation reshapes fields for a target use. A fault classification dataset, for example, can join each device’s events with verified fault categories to produce labelled samples. A label is the target value used during model training. Saving the transformation rules with the input version makes the samples reproducible.</p>"]]},
-    {t:["发布完整输出", "Publish complete output"],
-     d:["消费端在发布成功后取得这一批完整样本。", "Consumers receive a complete batch of samples after publication succeeds."],
-     b:[["<p>转换后的样本可以先写入暂存位置，再通过一次提交发布为可见输出。提交是对外确认某批结果可用的操作。对使用事务表的管道，表提交可以把该批输出作为一个版本发布，下游据此读取同一版本的文件集合。</p>"], ["<p>Transformed samples can be staged before a commit makes them visible. A commit is the operation that marks a set of results as available. A pipeline that writes to a transactional table can publish its output as a version, allowing downstream jobs to read the files associated with that version.</p>"]]},
-    {t:["选择批处理或流处理", "Choose batch or stream processing"],
-     d:["批处理读取边界已定的输入，流处理随着新事件到达增量更新。", "Batch processing reads bounded input, while streaming updates results as new events arrive."],
-     b:[["<p>批处理可以按日期或文件清单决定本次要读的范围，适合固定输入上的历史重算。流处理持续接收新事件，并随输入到达更新输出。两者都可以执行校验和转换，差别在于输入范围何时确定以及结果如何更新。</p>"], ["<p>A batch job can use a date or a file list to bound its input, which suits historical recomputation. A streaming job receives new events and updates its output as input arrives. Both can validate and transform records. They differ in when the input is bounded and how updates are produced.</p>"]]},
-    {t:["用同一批次标识重跑", "Retry with the same batch identifier"],
-     d:["故障恢复后，重跑使用同一批输入和输出标识，避免重复追加。", "After recovery, a retry uses the same input and output identifiers to avoid duplicate appends."],
-     b:[["<p>幂等写入指同一次逻辑操作重复执行后，结果与执行一次相同。管道可以保存输入范围，并在重试时覆盖该批次的结果，或按稳定的记录键插入或更新。读取位置应按管道与目标存储的恢复机制推进，使失败的输入可重读。</p>"], ["<p>An idempotent write has the same effect whether the same logical operation runs once or is retried. A pipeline can retain the input range and replace the corresponding batch on retry, or insert and update records by stable keys. Input progress is advanced according to the recovery mechanism of the pipeline and its destination so failed input can be reread.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "pipe",
+ "ar": [900/340,360/420],
+ "steps": [
+  {
+   "t": [
+    "采集源数据",
+    "Collect Source Data"
+   ],
+   "d": [
+    "摄取作业将源记录与来源标识一起写入原始层。",
+    "An ingest job writes source records to the raw layer with their source identifiers."
+   ],
+   "b": [
+    [
+     "<p>数据管道是一组按依赖关系运行的处理步骤。起点可以是文件、数据库或事件日志。摄取步骤读取输入并保存重新处理所需的信息，例如源文件名或输入位置。原始层形成后，其余步骤可以使用同一份输入。</p>"
+    ],
+    [
+     "<p>A data pipeline is a set of processing steps linked by dependencies. Its input can come from files, databases or event logs. Ingest reads the input and preserves information needed for replay, such as a source file name or input position. The raw layer then provides the same input to subsequent steps.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按数据约定分流",
+    "Route Records by Validation Rules"
+   ],
+   "d": [
+    "校验通过的记录继续处理，异常记录连同原因进入隔离区。",
+    "Valid records proceed to processing, while rejected records go to quarantine with their rejection reasons."
+   ],
+   "b": [
+    [
+     "<p>校验可以根据字段的名称、类型和必填规则判断记录是否符合约定。格式错误或缺少必要字段的记录进入隔离区，保留错误原因和原始记录的引用。这样有效数据能继续流转，异常输入也可以回查和修复。</p>"
+    ],
+    [
+     "<p>Validation checks records against agreed field names, types and required values. Malformed records and records missing required fields go to quarantine with a reason and a reference to the source record. Valid data can proceed while rejected inputs remain available for investigation and correction.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "转成训练样本",
+    "Transform Records into Training Samples"
+   ],
+   "d": [
+    "通过校验的记录经过字段转换和关联，形成结构一致的样本。",
+    "Validated records are converted and joined to form samples with a consistent structure."
+   ],
+   "b": [
+    [
+     "<p>转换步骤按目标用途重新组织字段。例如，训练故障分类模型时，可将同一设备的事件与已核实的故障类别关联，得到带标签的样本。标签是模型训练时使用的目标值。把转换规则和输入版本一同保存，可以复现同一份样本。</p>"
+    ],
+    [
+     "<p>Transformation reshapes fields for a target use. A fault classification dataset, for example, can join each device’s events with verified fault categories to produce labelled samples. A label is the target value used during model training. Saving the transformation rules with the input version makes the samples reproducible.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "发布完整输出",
+    "Publish Complete Output"
+   ],
+   "d": [
+    "消费端在发布成功后取得这一批完整样本。",
+    "Consumers receive a complete batch of samples after publication succeeds."
+   ],
+   "b": [
+    [
+     "<p>转换后的样本可以先写入暂存位置，再通过一次提交发布为可见输出。提交是对外确认某批结果可用的操作。对使用事务表的管道，表提交可以把该批输出作为一个版本发布，下游据此读取同一版本的文件集合。</p>"
+    ],
+    [
+     "<p>Transformed samples can be staged before a commit makes them visible. A commit is the operation that marks a set of results as available. A pipeline that writes to a transactional table can publish its output as a version, allowing downstream jobs to read the files associated with that version.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "选择批处理或流处理",
+    "Choose Batch or Stream Processing"
+   ],
+   "d": [
+    "批处理读取边界已定的输入，流处理随着新事件到达增量更新。",
+    "Batch processing reads bounded input, while streaming updates results as new events arrive."
+   ],
+   "b": [
+    [
+     "<p>批处理可以按日期或文件清单决定本次要读的范围，适合固定输入上的历史重算。流处理持续接收新事件，并随输入到达更新输出。两者都可以执行校验和转换，差别在于输入范围何时确定以及结果如何更新。</p>"
+    ],
+    [
+     "<p>A batch job can use a date or a file list to bound its input, which suits historical recomputation. A streaming job receives new events and updates its output as input arrives. Both can validate and transform records. They differ in when the input is bounded and how updates are produced.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用同一批次标识重跑",
+    "Retry with the Same Batch Identifier"
+   ],
+   "d": [
+    "故障恢复后，重跑使用同一批输入和输出标识，避免重复追加。",
+    "After recovery, a retry uses the same input and output identifiers to avoid duplicate appends."
+   ],
+   "b": [
+    [
+     "<p>幂等写入指同一次逻辑操作重复执行后，结果与执行一次相同。管道可以保存输入范围，并在重试时覆盖该批次的结果，或按稳定的记录键插入或更新。读取位置应按管道与目标存储的恢复机制推进，使失败的输入可重读。</p>"
+    ],
+    [
+     "<p>An idempotent write has the same effect whether the same logical operation runs once or is retried. A pipeline can retain the input range and replace the corresponding batch on retry, or insert and update records by stable keys. Input progress is advanced according to the recovery mechanism of the pipeline and its destination so failed input can be reread.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

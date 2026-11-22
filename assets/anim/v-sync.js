@@ -179,7 +179,7 @@ SCENE.modes[3]={enter(v){S.v.ev=v==='event';cap(S.v.ev?'事件驱动：变更通
 /* 第 5 步 */
 const DOCS=[['页面','页面.md'],['表格.xlsx','表格.md'],['报告.pdf','报告.pdf']];
 SCENE.modes[4]={enter(){cap('转成 Markdown，权限转成 S3 ACL；PDF 保留原样','ink2-t');const m=L.mobile;S.v.d=tile('',m?100:120,m?28:30,'');S.v.c=tile('',m?96:110,m?24:26,'vio',m?17:16)},
- frame(t){const s=E.s,u=t%9,k=Math.floor(u/3),v=u-k*3,p=s.p5,d=dur(p)*0.75;
+ frame(t){const s=E.s,u=t%10.8,k=Math.floor(u/3.6),v=u-k*3.6,p=s.p5,d=dur(p)*1.05;
   const pr=run(S.v.d,p,v,0.2,d,0.3);const cv=at(p,sm(clamp((v-0.2)/d,0,1)));
   const conv=pr>0.5||pr>1;setText(S.v.d,conv?DOCS[k][1]:DOCS[k][0]);setText(S.v.c,conv?'ACL：A 组':'A 组');
   S.v.d.el.querySelector('rect').setAttribute('class',conv&&DOCS[k][0]!==DOCS[k][1]?'ok':'');

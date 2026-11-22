@@ -33,7 +33,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Multi-tenancy: data paths, access and resource controls">多租户：数据路径、访问与资源控制</h1>
+      <div><h1 data-en="Multi-tenancy: Data Paths, Access and Resource Controls">多租户：数据路径、访问与资源控制</h1>
         <p class="meta"><span data-en="6 steps · tenants, VIP pools, QoS, encryption">6 步 · 租户、VIP 池、QoS、加密</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -44,8 +44,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5, updated October to November 2026): Overview of Tenants; Creating Tenants; Configuring Network Access; QoS Overview; Managing Encryption Groups and Keys; VAST Cluster Concepts and Terminology.">VAST Data 官方文档（docs.vastdata.com，5.5 版，更新于 2026-10 至 11 月）：Overview of Tenants、Creating Tenants、Configuring Network Access、QoS Overview、Managing Encryption Groups and Keys、VAST Cluster Concepts and Terminology。</li>
       <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): Networking in DASE and security chapters.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：Networking in DASE 与安全章节。</li>
@@ -78,15 +78,131 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-mt.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-mt',ar:[960/506,480/480],
-  steps:[
-    {"t": ["租户的数据路径", "Tenant data paths"], "d": ["每个租户有隔离的数据路径，可以使用相同的相对路径名。", "Tenants have isolated data paths and can use the same relative path names."], "b": [["<p>集群包含一个永久保留的默认租户。创建新租户时，Element Store 为该租户建立独立的数据路径。删除租户会连同租户目录和数据一并删除。</p>", "<p>每个视图（View）都归属一个租户，并将 Element Store 的路径暴露给所选协议。两个租户可分别使用相对路径 /data。导出、共享或桶的列表仅显示当前会话所属租户的内容。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5，租户数据路径</a></p>"], ["<p>A cluster has a permanent default tenant. Creating a tenant creates an isolated path in the Element Store. Deleting a tenant also deletes its directory and data.</p>", "<p>Every view belongs to a tenant and exposes an Element Store path to selected protocols. Two tenants can each use /data as a relative path. Listings of exports, shares or buckets contain only content from the session’s tenant. <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5, tenant data paths</a></p>"]]},
-    {"t": ["VIP 池与客户端 IP 范围", "VIP pools and client IP ranges"], "d": ["专属 VIP 池可以识别租户。配置了客户端 IP 范围时，集群还会核对来源地址。", "A dedicated VIP pool can identify a tenant. If client IP ranges are configured, the cluster also checks the source address."], "b": [["<p>集群可以用专属 VIP 池、客户端 IP 范围或 NFS mTLS 证书字段识别租户。这些条件可以组合。不同租户的客户端 IP 范围不得重叠。</p>", "<p>访问专属池时，若该租户已定义客户端 IP 范围，来源地址须在其中。VIP 未归入专属池时，集群按来源地址匹配各租户的 IP 范围。访问视图还须符合视图策略中的主机访问规则。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5，客户端访问租户</a></p>"], ["<p>The cluster can identify a tenant using a dedicated VIP pool, client IP ranges or an NFS mTLS certificate field. These criteria can be combined. Client IP ranges cannot overlap across tenants.</p>", "<p>On a dedicated pool, the source address must match the tenant’s ranges if configured. For a VIP outside tenant-specific pools, the cluster matches the source address against tenants’ configured ranges. Access to a view also requires permission under its host-based rules. <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5, client access to tenants</a></p>"]]},
-    {"t": ["VIP 池与 CNode 组", "VIP pools and CNode groups"], "d": ["可将 VIP 池限定在指定的 CNode 组，并将该池分配给特定租户。", "A VIP pool can be limited to a CNode group and assigned to a specific tenant."], "b": [["<p>池中的 VIP 均匀分配给全部在线 CNode，或限定在指定的 CNode 组。CNode 发生故障时，分配给它的虚拟 IP 会自动迁移到其他在线 CNode。</p>", "<p>图中两个池分别绑定两组 CNode，并由同一套 DBox 提供底层存储。视图访问仍须符合租户归属和主机访问规则。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/configuring-network-access\">VAST 5.5，Configuring Network Access</a></p>"], ["<p>A pool’s VIPs are distributed evenly over all active CNodes or limited to a specified CNode group. If a CNode fails, the virtual IPs assigned to it are automatically moved to other active CNodes.</p>", "<p>In the diagram, two pools use distinct CNode groups and share the same DBox storage. View access remains subject to tenant membership and host-based access rules. <a href=\"https://docs.vastdata.com/docs-5-5/docs/configuring-network-access\">VAST 5.5, Configuring Network Access</a></p>"]]},
-    {"t": ["租户容量与性能上限", "Tenant capacity and performance limits"], "d": ["容量规则限制用量，性能规则限制带宽和 IOPS。", "Capacity rules govern usage, and performance rules cap bandwidth and IOPS."], "b": [["<p>租户容量规则可设置已用容量的软、硬上限，文件与目录数量上限，以及硬限制执行的宽限期。性能规则可设置带宽和 IOPS 上限。低于常态上限时可积累额度，用于短时突发。</p>", "<p>QoS 策略也可以作用于视图、块卷或用户。一次 I/O 同时受多项策略约束时，必须满足所有适用策略。复制、Global Access 和快照操作受集群级 QoS 限制。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/qos-overview\">VAST 5.5，QoS Overview</a></p>"], ["<p>Tenant capacity rules can set soft and hard used-capacity limits, a file and directory count limit, and a grace period for enforcing hard limits. Performance rules can cap bandwidth and IOPS. Usage below the regular limit can accumulate credits for bursts.</p>", "<p>QoS policies can also apply to views, block volumes or users. An I/O operation subject to multiple policies must fit all applicable limits. Replication, Global Access and snapshot operations are governed by cluster-wide QoS limits. <a href=\"https://docs.vastdata.com/docs-5-5/docs/qos-overview\">VAST 5.5, QoS Overview</a></p>"]]},
-    {"t": ["租户加密组与外部密钥", "Tenant encryption groups and external keys"], "d": ["租户可使用外部密钥管理。吊销加密组密钥会阻止该组关联租户访问全部路径。", "Tenants can use external key management. Revoking a group’s keys blocks access to all paths of its associated tenants."], "b": [["<p>开启静态数据加密后，可在创建租户时启用外部密钥管理（EKM）并分配加密组。启用 EKM 后不能关闭，租户的加密组在创建时确定。多个租户可以共用一组。</p>", "<p>每组有两把数据加密密钥（DEK），用于保护所关联租户的路径。吊销组密钥会影响所有关联租户。默认租户使用集群内部生成的加密组。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/managing-encryption-groups-and-keys\">VAST 5.5，加密组和密钥</a></p>"], ["<p>With encryption at rest enabled, external key management (EKM) can be enabled and an encryption group assigned at tenant creation. EKM remains enabled and the group assignment is fixed. Multiple tenants can share one group.</p>", "<p>Each group has two data encryption keys (DEKs) protecting the paths of its associated tenants. Revoking the group’s keys affects every tenant assigned to that group. The default tenant uses an internally generated group. <a href=\"https://docs.vastdata.com/docs-5-5/docs/managing-encryption-groups-and-keys\">VAST 5.5, encryption groups and keys</a></p>"]]},
-    {"t": ["租户管理与审计", "Tenant administration and audit"], "d": ["租户管理员的访问范围可限制在本租户。审计记录集中存于默认租户，并保留租户归属。", "Tenant admins can be scoped to their tenant. Audit records are stored under the default tenant and identify each event’s tenant."], "b": [["<p>VAST 管理界面（VMS）使用租户域名生成登录地址。没有单独配置域名时，使用租户名。管理员的登录来源可按 IP 地址限制。</p>", "<p>身份与授权提供方可由多个租户共用，也可为租户单独配置。协议审计记录写入默认租户，每条记录标明操作归属的租户。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/creating-tenants\">VAST 5.5，租户设置</a></p>"], ["<p>The VAST management interface (VMS) uses the tenant domain to form its login URL. If a domain is omitted, it uses the tenant name. Administrator sign-in can be restricted by source IP address.</p>", "<p>Identity and authorization providers can be shared across tenants or configured separately. Protocol audit records go to the default tenant and identify the tenant for each operation. <a href=\"https://docs.vastdata.com/docs-5-5/docs/creating-tenants\">VAST 5.5, tenant settings</a></p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-mt",
+ "ar": [960/506,480/480],
+ "steps": [
+  {
+   "t": [
+    "租户的数据路径",
+    "Tenant Data Paths"
+   ],
+   "d": [
+    "每个租户有隔离的数据路径，可以使用相同的相对路径名。",
+    "Tenants have isolated data paths and can use the same relative path names."
+   ],
+   "b": [
+    [
+     "<p>集群包含一个永久保留的默认租户。创建新租户时，Element Store 为该租户建立独立的数据路径。删除租户会连同租户目录和数据一并删除。</p>",
+     "<p>每个视图（View）都归属一个租户，并将 Element Store 的路径暴露给所选协议。两个租户可分别使用相对路径 /data。导出、共享或桶的列表仅显示当前会话所属租户的内容。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5，租户数据路径</a></p>"
+    ],
+    [
+     "<p>A cluster has a permanent default tenant. Creating a tenant creates an isolated path in the Element Store. Deleting a tenant also deletes its directory and data.</p>",
+     "<p>Every view belongs to a tenant and exposes an Element Store path to selected protocols. Two tenants can each use /data as a relative path. Listings of exports, shares or buckets contain only content from the session’s tenant. <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5, tenant data paths</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "VIP 池与客户端 IP 范围",
+    "VIP Pools and Client IP Ranges"
+   ],
+   "d": [
+    "专属 VIP 池可以识别租户。配置了客户端 IP 范围时，集群还会核对来源地址。",
+    "A dedicated VIP pool can identify a tenant. If client IP ranges are configured, the cluster also checks the source address."
+   ],
+   "b": [
+    [
+     "<p>集群可以用专属 VIP 池、客户端 IP 范围或 NFS mTLS 证书字段识别租户。这些条件可以组合。不同租户的客户端 IP 范围不得重叠。</p>",
+     "<p>访问专属池时，若该租户已定义客户端 IP 范围，来源地址须在其中。VIP 未归入专属池时，集群按来源地址匹配各租户的 IP 范围。访问视图还须符合视图策略中的主机访问规则。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5，客户端访问租户</a></p>"
+    ],
+    [
+     "<p>The cluster can identify a tenant using a dedicated VIP pool, client IP ranges or an NFS mTLS certificate field. These criteria can be combined. Client IP ranges cannot overlap across tenants.</p>",
+     "<p>On a dedicated pool, the source address must match the tenant’s ranges if configured. For a VIP outside tenant-specific pools, the cluster matches the source address against tenants’ configured ranges. Access to a view also requires permission under its host-based rules. <a href=\"https://docs.vastdata.com/docs-5-5/docs/overview-of-tenants\">VAST 5.5, client access to tenants</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "VIP 池与 CNode 组",
+    "VIP Pools and CNode Groups"
+   ],
+   "d": [
+    "可将 VIP 池限定在指定的 CNode 组，并将该池分配给特定租户。",
+    "A VIP pool can be limited to a CNode group and assigned to a specific tenant."
+   ],
+   "b": [
+    [
+     "<p>池中的 VIP 均匀分配给全部在线 CNode，或限定在指定的 CNode 组。CNode 发生故障时，分配给它的虚拟 IP 会自动迁移到其他在线 CNode。</p>",
+     "<p>图中两个池分别绑定两组 CNode，并由同一套 DBox 提供底层存储。视图访问仍须符合租户归属和主机访问规则。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/configuring-network-access\">VAST 5.5，Configuring Network Access</a></p>"
+    ],
+    [
+     "<p>A pool’s VIPs are distributed evenly over all active CNodes or limited to a specified CNode group. If a CNode fails, the virtual IPs assigned to it are automatically moved to other active CNodes.</p>",
+     "<p>In the diagram, two pools use distinct CNode groups and share the same DBox storage. View access remains subject to tenant membership and host-based access rules. <a href=\"https://docs.vastdata.com/docs-5-5/docs/configuring-network-access\">VAST 5.5, Configuring Network Access</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "租户容量与性能上限",
+    "Tenant Capacity and Performance Limits"
+   ],
+   "d": [
+    "容量规则限制用量，性能规则限制带宽和 IOPS。",
+    "Capacity rules govern usage, and performance rules cap bandwidth and IOPS."
+   ],
+   "b": [
+    [
+     "<p>租户容量规则可设置已用容量的软、硬上限，文件与目录数量上限，以及硬限制执行的宽限期。性能规则可设置带宽和 IOPS 上限。低于常态上限时可积累额度，用于短时突发。</p>",
+     "<p>QoS 策略也可以作用于视图、块卷或用户。一次 I/O 同时受多项策略约束时，必须满足所有适用策略。复制、Global Access 和快照操作受集群级 QoS 限制。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/qos-overview\">VAST 5.5，QoS Overview</a></p>"
+    ],
+    [
+     "<p>Tenant capacity rules can set soft and hard used-capacity limits, a file and directory count limit, and a grace period for enforcing hard limits. Performance rules can cap bandwidth and IOPS. Usage below the regular limit can accumulate credits for bursts.</p>",
+     "<p>QoS policies can also apply to views, block volumes or users. An I/O operation subject to multiple policies must fit all applicable limits. Replication, Global Access and snapshot operations are governed by cluster-wide QoS limits. <a href=\"https://docs.vastdata.com/docs-5-5/docs/qos-overview\">VAST 5.5, QoS Overview</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "租户加密组与外部密钥",
+    "Tenant Encryption Groups and External Keys"
+   ],
+   "d": [
+    "租户可使用外部密钥管理。吊销加密组密钥会阻止该组关联租户访问全部路径。",
+    "Tenants can use external key management. Revoking a group’s keys blocks access to all paths of its associated tenants."
+   ],
+   "b": [
+    [
+     "<p>开启静态数据加密后，可在创建租户时启用外部密钥管理（EKM）并分配加密组。启用 EKM 后不能关闭，租户的加密组在创建时确定。多个租户可以共用一组。</p>",
+     "<p>每组有两把数据加密密钥（DEK），用于保护所关联租户的路径。吊销组密钥会影响所有关联租户。默认租户使用集群内部生成的加密组。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/managing-encryption-groups-and-keys\">VAST 5.5，加密组和密钥</a></p>"
+    ],
+    [
+     "<p>With encryption at rest enabled, external key management (EKM) can be enabled and an encryption group assigned at tenant creation. EKM remains enabled and the group assignment is fixed. Multiple tenants can share one group.</p>",
+     "<p>Each group has two data encryption keys (DEKs) protecting the paths of its associated tenants. Revoking the group’s keys affects every tenant assigned to that group. The default tenant uses an internally generated group. <a href=\"https://docs.vastdata.com/docs-5-5/docs/managing-encryption-groups-and-keys\">VAST 5.5, encryption groups and keys</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "租户管理与审计",
+    "Tenant Administration and Audit"
+   ],
+   "d": [
+    "租户管理员的访问范围可限制在本租户。审计记录集中存于默认租户，并保留租户归属。",
+    "Tenant admins can be scoped to their tenant. Audit records are stored under the default tenant and identify each event’s tenant."
+   ],
+   "b": [
+    [
+     "<p>VAST 管理界面（VMS）使用租户域名生成登录地址。没有单独配置域名时，使用租户名。管理员的登录来源可按 IP 地址限制。</p>",
+     "<p>身份与授权提供方可由多个租户共用，也可为租户单独配置。协议审计记录写入默认租户，每条记录标明操作归属的租户。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/creating-tenants\">VAST 5.5，租户设置</a></p>"
+    ],
+    [
+     "<p>The VAST management interface (VMS) uses the tenant domain to form its login URL. If a domain is omitted, it uses the tenant name. Administrator sign-in can be restricted by source IP address.</p>",
+     "<p>Identity and authorization providers can be shared across tenants or configured separately. Protocol audit records go to the default tenant and identify the tenant for each operation. <a href=\"https://docs.vastdata.com/docs-5-5/docs/creating-tenants\">VAST 5.5, tenant settings</a></p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

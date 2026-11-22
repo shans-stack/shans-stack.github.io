@@ -9,7 +9,7 @@
    VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
 (function(){
 var ID='v-ie',NSTEP=7;
-var EN={"存储":"Storage","嵌入流水线":"Embedding pipeline","向量库":"Vector database","权限系统":"Permission system","应用":"App","复制数据":"Copy data","同步权限":"Sync permissions","定制代码":"Custom code","拼装：数据要复制，权限要同步":"Assembled: data is copied, permissions are synced","InsightEngine：在同一个系统里完成":"InsightEngine: all inside one system","换成 InsightEngine":"Switch to InsightEngine","换成拼装方式":"Switch to assembled","切换对比，当前 ":"Switch comparison, now ","拼装方式":"assembled","DataEngine 函数":"DataEngine functions","DataBase 表":"DataBase table","检索接口":"Search API",
+var EN={"docs/合同.pdf":"docs/contract.pdf","media/会议.mp4":"media/meeting.mp4","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","手册.pdf":"Manual.pdf","存储":"Storage","嵌入流水线":"Embedding pipeline","向量库":"Vector database","权限系统":"Permission system","应用":"App","复制数据":"Copy data","同步权限":"Sync permissions","定制代码":"Custom code","拼装：数据要复制，权限要同步":"Assembled: data is copied, permissions are synced","InsightEngine：在同一个系统里完成":"InsightEngine: all inside one system","换成 InsightEngine":"Switch to InsightEngine","换成拼装方式":"Switch to assembled","切换对比，当前 ":"Switch comparison, now ","拼装方式":"assembled","DataEngine 函数":"DataEngine functions","DataBase 表":"DataBase table","检索接口":"Search API",
 "客户端":"Client","DataStore bucket":"DataStore bucket","函数实例 ":"Instance ","事件":"Event","写入即事件；向量化不阻塞写入":"A write is an event; embedding never blocks the write",
 "按内容类型分流":"Route by content type","文本流水线":"Text pipeline","文字 · 表格 · 图":"Text · tables · figures","视频流水线":"Video pipeline","切段 · 视觉语言模型":"Segments · vision-language model","嵌入模型":"Embedding model","托管服务或 NVIDIA NIM":"Hosted service or NVIDIA NIM","报告.pdf":"Report.pdf","会议.mp4":"Meeting.mp4","按内容类型切块，再送进嵌入模型":"Chunked by content type, then sent to the embedding model",
 "切块 + 向量":"Chunks + vectors","片段":"Chunk","向量":"Vector","来源":"Source","元数据":"Metadata","第 3 页正文…":"Page 3 text…","第 4 页表格…":"Page 4 table…","02:10 片段…":"02:10 segment…","05:40 片段…":"05:40 segment…","页 3":"Page 3","页 4":"Page 4","向量列带近似最近邻索引":"Vector column with an approximate-nearest-neighbour index","原文、向量、元数据共用一个租户密钥":"Source, vectors and metadata share one tenant key","片段、向量、元数据各占一列":"Chunk, vector and metadata each get a column",
@@ -198,7 +198,7 @@ const SCENE={
    box(s.tb,g,'box',10);tx(s.tb.x+14,s.tb.y+20,'DataBase 表',f.sm,'ttl','start',g);
    const D=[['a.pdf','片段 1'],['a.pdf','片段 2'],['b.docx','片段 1']];const rh=m?40:46;
    s.rows=D.map((d,k)=>{const y=s.tb.y+(m?58:66)+k*rh;const r=el('rect',{x:s.tb.x+10,y:y-rh/2+4,width:s.tb.w-20,height:rh-8,rx:4,class:'cell'},g);
-    const a=tx(s.tb.x+(m?70:60),y,d[0],f.xs,'lbl mono','middle',g),b=tx(s.tb.x+(m?190:140),y,d[1],f.xs,'lbl','middle',g),st=tx(s.tb.x+s.tb.w-16,y,'',f.xs,'st','end',g);return {r,a,b,st}});
+    const a=tx(s.tb.x+(m?70:50),y,d[0],f.xs,'lbl mono','middle',g),b=tx(s.tb.x+(m?190:116),y,d[1],f.xs,'lbl','middle',g),st=tx(s.tb.x+s.tb.w-16,y,'',f.xs,'st','end',g);return {r,a,b,st}});
   }
  },
  reset(){svg.querySelectorAll('.box').forEach(b=>b.classList.remove('on','ok','hot','off','och'));cap('','')},
@@ -255,7 +255,7 @@ SCENE.modes[5]={enter(v){const s=E.s6,rag=v==='rag';S.v.rag=rag;s.apiB.t.textCon
  frame(t){const s=E.s6,u=t%7,rag=S.v.rag;const p=cat(s.p1,s.p2);run(S.v.q,p,u,0.2,dur(p)*0.8,0.2);
   const t1=0.2+dur(p)*0.8;let tb;
   if(rag){run(S.v.c,s.p3,u,t1+0.2,dur(s.p3)*0.8,0.2);tb=t1+0.2+dur(s.p3)*0.8+0.5;s.llmB.classList.toggle('vio',u>tb-0.5&&u<tb+0.3)}else{put(S.v.c,-99,-99,0);tb=t1+0.5}
-  const b0=rag?s.bR:s.bV,back=b0.slice(0,-1).concat([L.mobile?P(s.ap.x-40,C(s.ap).y):P(C(s.ap).x,s.ap.y+s.ap.h+30)]);S.v.r.forEach((o,k)=>{if(!rag&&k===2){put(o,-99,-99,0);return}run(o,back,u,tb+k*0.5,dur(back)*0.8,0.3)})}};
+  const b0=rag?s.bR:s.bV,back=b0.slice(0,-1).concat([L.mobile?P(s.ap.x-40,C(s.ap).y):P(C(s.ap).x,s.ap.y+s.ap.h+30)]);S.v.r.forEach((o,k)=>{if(!rag&&k===2){put(o,-99,-99,0);return}run(o,back,u,tb+k*0.75,dur(back)*0.8,0.3)})}};
 /* 7 */
 SCENE.modes[6]={enter(v){const s=E.s7;S.v.del=v==='del';
   cap(S.v.del?'对象删除：对应的行随之删除':'就地修改：不自动重算，定时对照 Catalog 再补',S.v.del?'rose-t':'ochre-t');

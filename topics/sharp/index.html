@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="In-network computing: how switches reduce data">在网计算：交换机怎样归约</h1>
+      <div><h1 data-en="In-network Computing: How Switches Reduce Data">在网计算：交换机怎样归约</h1>
         <p class="meta"><span data-en="5 steps · switches, aggregation trees, all-reduce">5 步 · 交换机、聚合树、All-reduce</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,11 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>NVIDIA Scalable Hierarchical Aggregation and Reduction Protocol (SHARP) documentation — Introduction and deployment prerequisites</li>
-      <li>NVIDIA NCCL User Guide — Collective Operations</li>
     </ul></div>
   </div>
 </main>
@@ -73,23 +71,102 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/sharp.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'sharp',ar:[840/390,360/520],steps:[
-  {t:["端点接收数据并完成归约", "Endpoints receive and reduce data"],
-   d:["交换机转发输入块，端点进程将对应元素求和。", "Switches forward input blocks to an endpoint process, which adds corresponding elements."],
-   b:[["<p>归约把多个输入的对应元素按指定运算合并，例如求和。网络仅承担转发时，归约由端点进程所在的 CPU 或 GPU 完成。图示采用一棵汇聚树，由一个端点收齐原始块后求和，用于说明归约位置与链路流量的关系。集合通信还可以采用环或多级端点归约等算法。</p>"], ["<p>A reduction combines corresponding elements from several inputs with a specified operation such as addition. When the network provides only forwarding, the CPU or GPU hosting an endpoint process performs the reduction. The diagram uses a gathering tree where one endpoint receives the original blocks and adds them, illustrating how the reduction location affects link traffic. Collectives can also use rings or multilevel endpoint reductions.</p>"]]},
-  {t:["支持归约的交换机合并输入", "Reduction-capable switches combine inputs"],
-   d:["交换芯片等同一位置的输入块到齐后，将对应元素合并为一个部分结果。", "Switch hardware combines the inputs for a block position into a partial result once those inputs arrive."],
-   b:[["<p>在网计算把某些运算交给转发路径上的设备。支持集合通信卸载的网络可以在交换机上对同一归约任务中的输入块求和，并向上游发送部分和。交换机根据操作上下文和数据块的对应关系归约，同一位置的两个输入块从这一步起用一个部分结果表示。</p>"], ["<p>In-network computing assigns selected operations to devices along the forwarding path. A fabric with collective offload can add input blocks from the same reduction at a switch and send a partial sum upstream. The switch uses the operation context and matching block positions. From that point, one partial result represents the two inputs at that position.</p>"]]},
-  {t:["聚合树逐级合并部分结果", "An aggregation tree merges partial results by level"],
-   d:["叶交换机先求部分和，上层交换机再合并多个分支的部分和。", "Leaf switches produce partial sums, and a higher-level switch combines the sums from its branches."],
-   b:[["<p>聚合树定义了归约流量从参与端点向上汇总的逻辑路径。叶交换机连接端点，上层聚合节点接收来自各子树的部分结果。对求和这类可分段合并的运算，树的每一层可以先处理本分支的贡献，根聚合节点最终得到全组结果。因此，上行链路携带的是部分和，而原始输入留在各自的分支上。</p>"], ["<p>An aggregation tree defines the logical paths along which reduction traffic converges from participating endpoints. Leaf switches attach to endpoints, and higher-level aggregation nodes receive partial results from their subtrees. For operations such as addition, each level can combine the contributions of its own branch. The root aggregation node obtains the result for the whole group. Uplinks therefore carry partial sums, while the original inputs remain within their branches.</p>"]]},
-  {t:["最终结果返回所有参与端点", "The final result returns to every participant"],
-   d:["归约结果从根节点沿树向下分发，完成 all-reduce。", "The root distributes the reduction result down the tree to finish the all-reduce."],
-   b:[["<p>All-reduce 要求每个参与端点收到归约结果。树型实现先沿树向上合并，再向下复制同一结果。每个输入端点都参与提交数据和接收结果，交换机承担支持的归约与转发，端点应用接着用结果更新模型参数。</p>"], ["<p>All-reduce delivers the reduced result to every participant. A tree implementation combines inputs on the way up and replicates the result on the way down. Every participant submits input and receives output. The switches perform supported reductions and forwarding, and the endpoint application uses the result to update its model parameters.</p>"]]},
-  {t:["卸载由硬件和通信库共同支持", "Offload depends on hardware and communication library support"],
-   d:["通信库在支持的网络与操作上请求卸载，端点仍负责提交输入、接收结果和后续计算。", "The communication library requests offload on supported fabrics and operations. Endpoints still submit inputs, receive results and perform subsequent computation."],
-   b:[["<p>SHARP（可扩展分层聚合与归约协议）是这种机制的一种实现。它为通信组建立聚合资源，由支持的交换机执行归约。能否卸载取决于操作、数据类型、网络设备和通信库支持。对比同一棵树上的端点收集方案，分支提前求和可减少汇聚链路上的输入块数量。两种路径最终提供相同的集合通信语义。</p>"], ["<p>SHARP, the Scalable Hierarchical Aggregation and Reduction Protocol, is one implementation of this mechanism. It establishes aggregation resources for communication groups so supported switches can perform reductions. Offload eligibility depends on the operation, data type, network hardware and communication library. Compared with gathering at an endpoint over the same tree, reducing within branches can decrease the number of blocks on aggregation links. Both paths provide the same collective semantics.</p>"]]}
-]};
+window.SS_TOPIC_CFG={
+ "anim": "sharp",
+ "ar": [840/390,360/520],
+ "steps": [
+  {
+   "t": [
+    "端点接收数据并完成归约",
+    "Endpoints Receive and Reduce Data"
+   ],
+   "d": [
+    "交换机转发输入块，端点进程将对应元素求和。",
+    "Switches forward input blocks to an endpoint process, which adds corresponding elements."
+   ],
+   "b": [
+    [
+     "<p>归约把多个输入的对应元素按指定运算合并，例如求和。网络仅承担转发时，归约由端点进程所在的 CPU 或 GPU 完成。图示采用一棵汇聚树，由一个端点收齐原始块后求和，用于说明归约位置与链路流量的关系。集合通信还可以采用环或多级端点归约等算法。</p>"
+    ],
+    [
+     "<p>A reduction combines corresponding elements from several inputs with a specified operation such as addition. When the network provides only forwarding, the CPU or GPU hosting an endpoint process performs the reduction. The diagram uses a gathering tree where one endpoint receives the original blocks and adds them, illustrating how the reduction location affects link traffic. Collectives can also use rings or multilevel endpoint reductions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "支持归约的交换机合并输入",
+    "Reduction-capable Switches Combine Inputs"
+   ],
+   "d": [
+    "交换芯片等同一位置的输入块到齐后，将对应元素合并为一个部分结果。",
+    "Switch hardware combines the inputs for a block position into a partial result once those inputs arrive."
+   ],
+   "b": [
+    [
+     "<p>在网计算把某些运算交给转发路径上的设备。支持集合通信卸载的网络可以在交换机上对同一归约任务中的输入块求和，并向上游发送部分和。交换机根据操作上下文和数据块的对应关系归约，同一位置的两个输入块从这一步起用一个部分结果表示。</p>"
+    ],
+    [
+     "<p>In-network computing assigns selected operations to devices along the forwarding path. A fabric with collective offload can add input blocks from the same reduction at a switch and send a partial sum upstream. The switch uses the operation context and matching block positions. From that point, one partial result represents the two inputs at that position.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "聚合树逐级合并部分结果",
+    "An Aggregation Tree Merges Partial Results by Level"
+   ],
+   "d": [
+    "叶交换机先求部分和，上层交换机再合并多个分支的部分和。",
+    "Leaf switches produce partial sums, and a higher-level switch combines the sums from its branches."
+   ],
+   "b": [
+    [
+     "<p>聚合树定义了归约流量从参与端点向上汇总的逻辑路径。叶交换机连接端点，上层聚合节点接收来自各子树的部分结果。对求和这类可分段合并的运算，树的每一层可以先处理本分支的贡献，根聚合节点最终得到全组结果。因此，上行链路携带的是部分和，而原始输入留在各自的分支上。</p>"
+    ],
+    [
+     "<p>An aggregation tree defines the logical paths along which reduction traffic converges from participating endpoints. Leaf switches attach to endpoints, and higher-level aggregation nodes receive partial results from their subtrees. For operations such as addition, each level can combine the contributions of its own branch. The root aggregation node obtains the result for the whole group. Uplinks therefore carry partial sums, while the original inputs remain within their branches.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "最终结果返回所有参与端点",
+    "The Final Result Returns to Every Participant"
+   ],
+   "d": [
+    "归约结果从根节点沿树向下分发，完成 all-reduce。",
+    "The root distributes the reduction result down the tree to finish the all-reduce."
+   ],
+   "b": [
+    [
+     "<p>All-reduce 要求每个参与端点收到归约结果。树型实现先沿树向上合并，再向下复制同一结果。每个输入端点都参与提交数据和接收结果，交换机承担支持的归约与转发，端点应用接着用结果更新模型参数。</p>"
+    ],
+    [
+     "<p>All-reduce delivers the reduced result to every participant. A tree implementation combines inputs on the way up and replicates the result on the way down. Every participant submits input and receives output. The switches perform supported reductions and forwarding, and the endpoint application uses the result to update its model parameters.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "卸载由硬件和通信库共同支持",
+    "Offload Depends on Hardware and Communication Library Support"
+   ],
+   "d": [
+    "通信库在支持的网络与操作上请求卸载，端点仍负责提交输入、接收结果和后续计算。",
+    "The communication library requests offload on supported fabrics and operations. Endpoints still submit inputs, receive results and perform subsequent computation."
+   ],
+   "b": [
+    [
+     "<p>SHARP（可扩展分层聚合与归约协议）是这种机制的一种实现。它为通信组建立聚合资源，由支持的交换机执行归约。能否卸载取决于操作、数据类型、网络设备和通信库支持。对比同一棵树上的端点收集方案，分支提前求和可减少汇聚链路上的输入块数量。两种路径最终提供相同的集合通信语义。</p>"
+    ],
+    [
+     "<p>SHARP, the Scalable Hierarchical Aggregation and Reduction Protocol, is one implementation of this mechanism. It establishes aggregation resources for communication groups so supported switches can perform reductions. Offload eligibility depends on the operation, data type, network hardware and communication library. Compared with gathering at an endpoint over the same tree, reducing within branches can decrease the number of blocks on aggregation links. Both paths provide the same collective semantics.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

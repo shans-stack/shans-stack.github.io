@@ -33,7 +33,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Classic and DBox-HA: stripe layout and recovery">Classic 与 DBox-HA：条带布局与故障恢复</h1>
+      <div><h1 data-en="Classic and DBox-HA: Stripe Layout and Recovery">Classic 与 DBox-HA：条带布局与故障恢复</h1>
         <p class="meta"><span data-en="6 steps · DBox, erasure coding, stripes, high availability">6 步 · DBox、纠删码、条带、高可用</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -44,8 +44,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): Variations on DASE; Extending Resilience Beyond the DBox; Maintaining Availability through DBox Failures with DBox-HA.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：Variations on DASE、Extending Resilience Beyond the DBox、Maintaining Availability through DBox Failures with DBox-HA 章节。</li>
       <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5): DBox High Availability (updated 28 October 2026).">VAST Data 官方文档（docs.vastdata.com，5.5 版）：DBox High Availability（更新于 2026-10-28）。</li>
@@ -78,15 +78,131 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-classic.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-classic',ar:[960/470,480/560],
-  steps:[
-    {"t": ["Classic 以 SSD 为故障域", "Classic treats drives as failure domains"], "d": ["DBox 的冗余 DNode 与电源保护其余 SSD 的访问。", "Redundant DNodes and power supplies keep the remaining SSDs accessible."], "b": [["<p>Classic 将持久数据存放在高可用 DBox 中。DNode 高可用始终启用，单个 DNode 离线时，由另一 DNode 提供 SSD 访问。</p>", "<p>Classic 的条带布局以单块 SSD 为故障域。单盘故障时，纠删码可恢复该盘上的条带块。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=30\">VAST 白皮书，第 30 页</a></p>"], ["<p>Classic stores persistent data in highly available DBoxes. DNode high availability is always enabled: if one DNode goes offline, its peer provides access to the SSDs.</p>", "<p>Classic treats a single SSD as the failure domain for stripe placement. If a drive fails, erasure coding can recover its chunks. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=30\">VAST white paper, p. 30</a></p>"]]},
-    {"t": ["Classic 的宽条带", "Wide stripes in Classic"], "d": ["Classic 按 SSD 放置条带块，同一台 DBox 可以容纳一条条带的多个块。", "Classic places chunks across SSDs, so one DBox can hold several chunks of a stripe."], "b": [["<p>Classic 按 SSD 放置条带块，不以 DBox 为边界。VAST 2026 年 4 月白皮书给出的例子中，集群有超过 150 块大容量 SSD，使用 146 个数据块和 4 个校验块组成的条带，可恢复同时丢失的最多 4 个块。</p>", "<p>动画用每台 DBox 放置 5 个条带块的布局展示这一机制。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST 白皮书，第 32 页</a></p>"], ["<p>Classic places stripe chunks across SSDs without a per-DBox boundary. In VAST’s April 2026 white-paper example, a cluster with more than 150 high-capacity SSDs uses stripes with 146 data chunks and 4 parity chunks to recover up to 4 concurrent chunk losses.</p>", "<p>The animation illustrates this with 5 chunks per DBox. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST white paper, p. 32</a></p>"]]},
-    {"t": ["Classic 的整箱离线风险", "A whole DBox outage in Classic"], "d": ["整台 DBox 离线可能使条带缺失的块超过纠删码的恢复能力。", "Losing a DBox can remove more chunks from a stripe than its erasure code can recover."], "b": [["<p>机柜断电或网络中断可能同时切断一台 DBox 的全部 SSD。在白皮书的 Classic 宽条带示例中，一台 DBox 保存的块数可以超过 4 个校验块所能恢复的数量，导致集群离线。</p>", "<p>示意条带在离线的 DBox 上丢失 5 个块，超出 4 个校验块的恢复范围。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST 白皮书，第 32 页</a></p>"], ["<p>Rack power loss or a network outage can make all SSDs in a DBox inaccessible at once. In the white paper’s wide-stripe Classic example, a DBox can contain more chunks than the four parity chunks can recover, taking the cluster offline.</p>", "<p>In the diagram, the offline DBox holds five chunks, beyond the four-chunk recovery limit. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST white paper, p. 32</a></p>"]]},
-    {"t": ["DBox-HA 限制每台 DBox 的条带块数", "DBox-HA limits chunks per DBox"], "d": ["新写入的 RAID 条带在每台 DBox 上最多放两个块。", "A newly written RAID stripe places at most two chunks on each DBox."], "b": [["<p>DBox-HA 的 RAID 布局每条条带最多使用同一台 DBox 的两块盘。按 5.5 文档，在 NVRAM 写入采用双份保护时，两份放在不同的 DBox 上。</p>", "<p>新写入的条带在一台 DBox 离线时最多缺少两个块，仍处于纠删码的恢复范围内。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5，DBox High Availability</a></p>"], ["<p>The DBox-HA RAID layout uses up to two drives in a given DBox for each newly written stripe. Under the NVRAM mirroring layout documented in version 5.5, the two copies reside on different DBoxes.</p>", "<p>Losing one DBox removes at most two chunks from a newly written stripe, within the erasure code’s recovery budget. <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5, DBox High Availability</a></p>"]]},
-    {"t": ["整箱离线时继续服务并重建", "Continued access and rebuild after an outage"], "d": ["集群在提供数据访问的同时重建缺失条带块。", "The cluster rebuilds missing chunks while continuing to serve data."], "b": [["<p>一台 DBox 离线后，集群可用剩余块重构读取所需的数据，同时把重建的块写到其他 DBox。重建期间，某些条带可在一台存活的 DBox 上占用三个块。恢复完整保护后，集群可以再承受一台 DBox 离线。</p>", "<p>离线的 DBox 返回时，对应的重建停止。已经重建的条带会释放该 DBox 上的旧空间。离线期间新写入的条带按当时的在线 DBox 数确定宽度。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=33\">VAST 白皮书，第 33–34 页</a></p>"], ["<p>After one DBox goes offline, the cluster can reconstruct data for reads from surviving chunks while rebuilding onto other DBoxes. During rebuild, some stripes can occupy three chunks on a surviving DBox. Once redundancy is restored, the cluster can withstand another DBox outage.</p>", "<p>If the offline DBox returns, the corresponding rebuild stops. Old space on the returning DBox is freed for stripes already rebuilt. Stripes created during the outage are sized using the number of DBoxes online at the time. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=33\">VAST white paper, pp. 33–34</a></p>"]]},
-    {"t": ["DBox-HA 的条带开销与启用条件", "Stripe overhead and DBox-HA enablement"], "d": ["DBox-HA 至少需要 8 台 DBox。集群越小，每条条带中的校验占比通常越高。", "DBox-HA requires at least 8 DBoxes. Smaller clusters generally have a higher parity share per stripe."], "b": [["<p>VAST 5.5 文档的示例中，8 台 DBox 最多容纳 16 个条带块。按 4 个校验块计算，校验占所写条带块的 25%。</p>", "<p>DBox-HA 默认关闭，可在安装时或运行中开启。运行中启用会触发后台重写，以应用新的条带布局。重写持续至完成，启用后的配置是永久的。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5，存储效率与在线启用</a></p>"], ["<p>In the VAST 5.5 documentation example, 8 DBoxes can hold up to 16 stripe chunks. With 4 parity chunks, parity accounts for 25% of the chunks written.</p>", "<p>DBox-HA is off by default and can be enabled at installation or on a running cluster. Enabling it on a running cluster triggers a background rewrite to apply the new layout. The rewrite runs to completion, and enablement is permanent. <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5, storage efficiency and online enablement</a></p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-classic",
+ "ar": [960/470,480/560],
+ "steps": [
+  {
+   "t": [
+    "Classic 以 SSD 为故障域",
+    "Classic Treats Drives as Failure Domains"
+   ],
+   "d": [
+    "DBox 的冗余 DNode 与电源保护其余 SSD 的访问。",
+    "Redundant DNodes and power supplies keep the remaining SSDs accessible."
+   ],
+   "b": [
+    [
+     "<p>Classic 将持久数据存放在高可用 DBox 中。DNode 高可用始终启用，单个 DNode 离线时，由另一 DNode 提供 SSD 访问。</p>",
+     "<p>Classic 的条带布局以单块 SSD 为故障域。单盘故障时，纠删码可恢复该盘上的条带块。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=30\">VAST 白皮书，第 30 页</a></p>"
+    ],
+    [
+     "<p>Classic stores persistent data in highly available DBoxes. DNode high availability is always enabled: if one DNode goes offline, its peer provides access to the SSDs.</p>",
+     "<p>Classic treats a single SSD as the failure domain for stripe placement. If a drive fails, erasure coding can recover its chunks. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=30\">VAST white paper, p. 30</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Classic 的宽条带",
+    "Wide Stripes in Classic"
+   ],
+   "d": [
+    "Classic 按 SSD 放置条带块，同一台 DBox 可以容纳一条条带的多个块。",
+    "Classic places chunks across SSDs, so one DBox can hold several chunks of a stripe."
+   ],
+   "b": [
+    [
+     "<p>Classic 按 SSD 放置条带块，不以 DBox 为边界。VAST 2026 年 4 月白皮书给出的例子中，集群有超过 150 块大容量 SSD，使用 146 个数据块和 4 个校验块组成的条带，可恢复同时丢失的最多 4 个块。</p>",
+     "<p>动画用每台 DBox 放置 5 个条带块的布局展示这一机制。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST 白皮书，第 32 页</a></p>"
+    ],
+    [
+     "<p>Classic places stripe chunks across SSDs without a per-DBox boundary. In VAST’s April 2026 white-paper example, a cluster with more than 150 high-capacity SSDs uses stripes with 146 data chunks and 4 parity chunks to recover up to 4 concurrent chunk losses.</p>",
+     "<p>The animation illustrates this with 5 chunks per DBox. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST white paper, p. 32</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Classic 的整箱离线风险",
+    "A Whole DBox Outage in Classic"
+   ],
+   "d": [
+    "整台 DBox 离线可能使条带缺失的块超过纠删码的恢复能力。",
+    "Losing a DBox can remove more chunks from a stripe than its erasure code can recover."
+   ],
+   "b": [
+    [
+     "<p>机柜断电或网络中断可能同时切断一台 DBox 的全部 SSD。在白皮书的 Classic 宽条带示例中，一台 DBox 保存的块数可以超过 4 个校验块所能恢复的数量，导致集群离线。</p>",
+     "<p>示意条带在离线的 DBox 上丢失 5 个块，超出 4 个校验块的恢复范围。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST 白皮书，第 32 页</a></p>"
+    ],
+    [
+     "<p>Rack power loss or a network outage can make all SSDs in a DBox inaccessible at once. In the white paper’s wide-stripe Classic example, a DBox can contain more chunks than the four parity chunks can recover, taking the cluster offline.</p>",
+     "<p>In the diagram, the offline DBox holds five chunks, beyond the four-chunk recovery limit. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=32\">VAST white paper, p. 32</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "DBox-HA 限制每台 DBox 的条带块数",
+    "DBox-HA Limits Chunks per DBox"
+   ],
+   "d": [
+    "新写入的 RAID 条带在每台 DBox 上最多放两个块。",
+    "A newly written RAID stripe places at most two chunks on each DBox."
+   ],
+   "b": [
+    [
+     "<p>DBox-HA 的 RAID 布局每条条带最多使用同一台 DBox 的两块盘。按 5.5 文档，在 NVRAM 写入采用双份保护时，两份放在不同的 DBox 上。</p>",
+     "<p>新写入的条带在一台 DBox 离线时最多缺少两个块，仍处于纠删码的恢复范围内。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5，DBox High Availability</a></p>"
+    ],
+    [
+     "<p>The DBox-HA RAID layout uses up to two drives in a given DBox for each newly written stripe. Under the NVRAM mirroring layout documented in version 5.5, the two copies reside on different DBoxes.</p>",
+     "<p>Losing one DBox removes at most two chunks from a newly written stripe, within the erasure code’s recovery budget. <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5, DBox High Availability</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "整箱离线时继续服务并重建",
+    "Continued Access and Rebuild After an Outage"
+   ],
+   "d": [
+    "集群在提供数据访问的同时重建缺失条带块。",
+    "The cluster rebuilds missing chunks while continuing to serve data."
+   ],
+   "b": [
+    [
+     "<p>一台 DBox 离线后，集群可用剩余块重构读取所需的数据，同时把重建的块写到其他 DBox。重建期间，某些条带可在一台存活的 DBox 上占用三个块。恢复完整保护后，集群可以再承受一台 DBox 离线。</p>",
+     "<p>离线的 DBox 返回时，对应的重建停止。已经重建的条带会释放该 DBox 上的旧空间。离线期间新写入的条带按当时的在线 DBox 数确定宽度。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=33\">VAST 白皮书，第 33–34 页</a></p>"
+    ],
+    [
+     "<p>After one DBox goes offline, the cluster can reconstruct data for reads from surviving chunks while rebuilding onto other DBoxes. During rebuild, some stripes can occupy three chunks on a surviving DBox. Once redundancy is restored, the cluster can withstand another DBox outage.</p>",
+     "<p>If the offline DBox returns, the corresponding rebuild stops. Old space on the returning DBox is freed for stripes already rebuilt. Stripes created during the outage are sized using the number of DBoxes online at the time. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=33\">VAST white paper, pp. 33–34</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "DBox-HA 的条带开销与启用条件",
+    "Stripe Overhead and DBox-HA Enablement"
+   ],
+   "d": [
+    "DBox-HA 至少需要 8 台 DBox。集群越小，每条条带中的校验占比通常越高。",
+    "DBox-HA requires at least 8 DBoxes. Smaller clusters generally have a higher parity share per stripe."
+   ],
+   "b": [
+    [
+     "<p>VAST 5.5 文档的示例中，8 台 DBox 最多容纳 16 个条带块。按 4 个校验块计算，校验占所写条带块的 25%。</p>",
+     "<p>DBox-HA 默认关闭，可在安装时或运行中开启。运行中启用会触发后台重写，以应用新的条带布局。重写持续至完成，启用后的配置是永久的。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5，存储效率与在线启用</a></p>"
+    ],
+    [
+     "<p>In the VAST 5.5 documentation example, 8 DBoxes can hold up to 16 stripe chunks. With 4 parity chunks, parity accounts for 25% of the chunks written.</p>",
+     "<p>DBox-HA is off by default and can be enabled at installation or on a running cluster. Enabling it on a running cluster triggers a background rewrite to apply the new layout. The rewrite runs to completion, and enablement is permanent. <a href=\"https://docs.vastdata.com/docs-5-5/docs/dbox-high-availability\">VAST 5.5, storage efficiency and online enablement</a></p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

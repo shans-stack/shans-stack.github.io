@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="How simulation and digital twins generate training data">仿真与数字孪生如何生成训练数据</h1>
+      <div><h1 data-en="How Simulation and Digital Twins Generate Training Data">仿真与数字孪生如何生成训练数据</h1>
         <p class="meta"><span data-en="5 steps · physics simulation, synthetic data, real-world validation">5 步 · 物理仿真、合成数据、真实验证</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="MuJoCo documentation: Computation">MuJoCo 文档《Computation》</li>
       <li data-en="Isaac Sim documentation: Perception Data Generation (Replicator)">Isaac Sim 文档《Perception Data Generation (Replicator)》</li>
@@ -74,38 +74,112 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/simu.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'simu',ar:[920/376,360/482],steps:[
-  {t:["物理引擎按时间步推进场景", "A physics engine advances the scene in time steps"],
-   d:["虚拟机器人施加动作，物理引擎计算接触、运动及下一状态。", "A virtual robot takes an action and the physics engine computes contact, motion, and the next state."],
-   b:[
-     ["<p>仿真在虚拟环境中计算系统随时间的变化。以机器人抓取为例，场景包含机械臂、工件、约束与物理参数。物理引擎按时间步更新位置、速度和接触状态。</p>", "<p>场景可以从指定初始状态重新运行，用同一任务测试不同动作或条件。数字孪生进一步将虚拟模型关联到特定的真实设备或流程，并通过真实数据保持两者的对应。</p>"],
-     ["<p>Simulation computes how a system changes over time in a virtual environment. A robot grasping scene contains an arm, parts, constraints, and physical parameters. The physics engine updates positions, velocities, and contacts each time step.</p>", "<p>A simulation can restart from a chosen initial state to test different actions or conditions on the same task. A digital twin links a virtual model to a specific real asset or process and uses real data to maintain its correspondence.</p>"]
-   ]},
-  {t:["从同一状态生成传感器帧和标签", "Generate sensor frames and labels from the same state"],
-   d:["仿真从虚拟传感器导出图像，同时从场景状态生成训练标注。", "The simulator exports virtual sensor images and derives training labels from the scene state."],
-   b:[
-     ["<p>虚拟传感器模拟相机等设备对场景的观测。渲染过程把同一时刻的虚拟状态转为图像，渲染工作可以由 GPU（图形处理器）执行。</p>", "<p>仿真已掌握对象类别、位置和相机参数，因而能为同一帧生成对应标注，例如目标框或分割掩码。带有标注的虚拟观测可用作合成训练数据。</p>"],
-     ["<p>Virtual sensors simulate how devices such as cameras observe the scene. Rendering converts the virtual state at a given instant into an image, and a graphics processing unit (GPU) can perform this work.</p>", "<p>The simulator has object classes, positions, and camera parameters, allowing it to generate aligned labels such as bounding boxes or segmentation masks. The labeled virtual observations can become synthetic training data.</p>"]
-   ]},
-  {t:["改变场景条件扩大样本覆盖", "Vary scene conditions to broaden sample coverage"],
-   d:["领域随机化改变光照、材质或物理参数，产生不同条件下的观测。", "Domain randomization varies lighting, materials, or physical parameters to produce different observations."],
-   b:[
-     ["<p>领域随机化是在仿真中从指定范围抽取场景参数。例如可改变光照、背景、传感器噪声或物体摩擦，让训练数据包含同一任务在多种条件下的表现。</p>", "<p>变化范围应覆盖真实部署可能遇到的情况。样本保留场景参数与标签，有助于按条件分析模型在哪些情形容易出错。</p>"],
-     ["<p>Domain randomization samples simulation parameters from specified ranges. Varying lighting, backgrounds, sensor noise, or friction, for example, can expose training to the same task under different conditions.</p>", "<p>The ranges should cover conditions likely in deployment. Keeping scene parameters with the labels helps identify which conditions cause failures.</p>"]
-   ]},
-  {t:["用生成的观测训练模型", "Train models on the generated observations"],
-   d:["带标签的合成样本可以训练识别模型；动作和状态也可以组成学习轨迹。", "Labeled examples can train perception models, and actions with states can form learning trajectories."],
-   b:[
-     ["<p>合成图像与标签可用于训练视觉模型识别工件。控制任务可以记录轨迹，即按时间排列的观测、动作和结果，用于学习如何执行任务。</p>", "<p>仿真可重复生成难以现场采集的情况。数据可以按场景或任务条件划分，留出未参与训练的条件检验泛化能力。</p>"],
-     ["<p>Synthetic images and labels can train a vision model to recognize parts. For control, a trajectory records observations, actions, and outcomes in temporal order and can be used to learn how to perform a task.</p>", "<p>Simulation can repeatedly produce conditions that are difficult to collect in the field. Splitting examples by scenario or task conditions can reserve unseen conditions for testing generalization.</p>"]
-   ]},
-  {t:["用真实观测检验仿真覆盖", "Validate simulation coverage with real observations"],
-   d:["真实设备的测试结果用来定位仿真差距，并更新模型或场景。", "Tests on real equipment reveal simulation gaps and inform model or scene updates."],
-   b:[
-     ["<p>仿真和真实环境的差异称为仿真到现实差距。受控的真实测试可以发现摩擦、遮挡、传感器噪声等因素是否超出训练样本的覆盖。</p>", "<p>真实观测可反馈给仿真，校准物理参数或补充场景，再用新的测试检查改动。数字孪生也可用设备状态更新对应的虚拟状态，维持对实体的描述。</p>"],
-     ["<p>The sim-to-real gap is the difference between simulated and real conditions. Controlled tests on real equipment can reveal friction, occlusion, or sensor noise outside the coverage of training examples.</p>", "<p>Real observations can feed back into simulation to calibrate physical parameters or add scenarios, followed by further tests. A digital twin can use live asset state to update its representation of the physical system.</p>"]
-   ]},
-]};
+window.SS_TOPIC_CFG={
+ "anim": "simu",
+ "ar": [920/376,360/482],
+ "steps": [
+  {
+   "t": [
+    "物理引擎按时间步推进场景",
+    "A Physics Engine Advances the Scene in Time Steps"
+   ],
+   "d": [
+    "虚拟机器人施加动作，物理引擎计算接触、运动及下一状态。",
+    "A virtual robot takes an action and the physics engine computes contact, motion, and the next state."
+   ],
+   "b": [
+    [
+     "<p>仿真在虚拟环境中计算系统随时间的变化。以机器人抓取为例，场景包含机械臂、工件、约束与物理参数。物理引擎按时间步更新位置、速度和接触状态。</p>",
+     "<p>场景可以从指定初始状态重新运行，用同一任务测试不同动作或条件。数字孪生进一步将虚拟模型关联到特定的真实设备或流程，并通过真实数据保持两者的对应。</p>"
+    ],
+    [
+     "<p>Simulation computes how a system changes over time in a virtual environment. A robot grasping scene contains an arm, parts, constraints, and physical parameters. The physics engine updates positions, velocities, and contacts each time step.</p>",
+     "<p>A simulation can restart from a chosen initial state to test different actions or conditions on the same task. A digital twin links a virtual model to a specific real asset or process and uses real data to maintain its correspondence.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从同一状态生成传感器帧和标签",
+    "Generate Sensor Frames and Labels from the Same State"
+   ],
+   "d": [
+    "仿真从虚拟传感器导出图像，同时从场景状态生成训练标注。",
+    "The simulator exports virtual sensor images and derives training labels from the scene state."
+   ],
+   "b": [
+    [
+     "<p>虚拟传感器模拟相机等设备对场景的观测。渲染过程把同一时刻的虚拟状态转为图像，渲染工作可以由 GPU（图形处理器）执行。</p>",
+     "<p>仿真已掌握对象类别、位置和相机参数，因而能为同一帧生成对应标注，例如目标框或分割掩码。带有标注的虚拟观测可用作合成训练数据。</p>"
+    ],
+    [
+     "<p>Virtual sensors simulate how devices such as cameras observe the scene. Rendering converts the virtual state at a given instant into an image, and a graphics processing unit (GPU) can perform this work.</p>",
+     "<p>The simulator has object classes, positions, and camera parameters, allowing it to generate aligned labels such as bounding boxes or segmentation masks. The labeled virtual observations can become synthetic training data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "改变场景条件扩大样本覆盖",
+    "Vary Scene Conditions to Broaden Sample Coverage"
+   ],
+   "d": [
+    "领域随机化改变光照、材质或物理参数，产生不同条件下的观测。",
+    "Domain randomization varies lighting, materials, or physical parameters to produce different observations."
+   ],
+   "b": [
+    [
+     "<p>领域随机化是在仿真中从指定范围抽取场景参数。例如可改变光照、背景、传感器噪声或物体摩擦，让训练数据包含同一任务在多种条件下的表现。</p>",
+     "<p>变化范围应覆盖真实部署可能遇到的情况。样本保留场景参数与标签，有助于按条件分析模型在哪些情形容易出错。</p>"
+    ],
+    [
+     "<p>Domain randomization samples simulation parameters from specified ranges. Varying lighting, backgrounds, sensor noise, or friction, for example, can expose training to the same task under different conditions.</p>",
+     "<p>The ranges should cover conditions likely in deployment. Keeping scene parameters with the labels helps identify which conditions cause failures.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用生成的观测训练模型",
+    "Train Models on the Generated Observations"
+   ],
+   "d": [
+    "带标签的合成样本可以训练识别模型；动作和状态也可以组成学习轨迹。",
+    "Labeled examples can train perception models, and actions with states can form learning trajectories."
+   ],
+   "b": [
+    [
+     "<p>合成图像与标签可用于训练视觉模型识别工件。控制任务可以记录轨迹，即按时间排列的观测、动作和结果，用于学习如何执行任务。</p>",
+     "<p>仿真可重复生成难以现场采集的情况。数据可以按场景或任务条件划分，留出未参与训练的条件检验泛化能力。</p>"
+    ],
+    [
+     "<p>Synthetic images and labels can train a vision model to recognize parts. For control, a trajectory records observations, actions, and outcomes in temporal order and can be used to learn how to perform a task.</p>",
+     "<p>Simulation can repeatedly produce conditions that are difficult to collect in the field. Splitting examples by scenario or task conditions can reserve unseen conditions for testing generalization.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用真实观测检验仿真覆盖",
+    "Validate Simulation Coverage with Real Observations"
+   ],
+   "d": [
+    "真实设备的测试结果用来定位仿真差距，并更新模型或场景。",
+    "Tests on real equipment reveal simulation gaps and inform model or scene updates."
+   ],
+   "b": [
+    [
+     "<p>仿真和真实环境的差异称为仿真到现实差距。受控的真实测试可以发现摩擦、遮挡、传感器噪声等因素是否超出训练样本的覆盖。</p>",
+     "<p>真实观测可反馈给仿真，校准物理参数或补充场景，再用新的测试检查改动。数字孪生也可用设备状态更新对应的虚拟状态，维持对实体的描述。</p>"
+    ],
+    [
+     "<p>The sim-to-real gap is the difference between simulated and real conditions. Controlled tests on real equipment can reveal friction, occlusion, or sensor noise outside the coverage of training examples.</p>",
+     "<p>Real observations can feed back into simulation to calibrate physical parameters or add scenarios, followed by further tests. A digital twin can use live asset state to update its representation of the physical system.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

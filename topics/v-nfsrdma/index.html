@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="NFS over RDMA: transport and multipath">NFS over RDMA：传输路径与多路径</h1>
+      <div><h1 data-en="NFS over RDMA: Transport and Multipath">NFS over RDMA：传输路径与多路径</h1>
         <p class="meta"><span data-en="7 steps · NFS, RDMA, RoCE, multipath">7 步 · NFS、RDMA、RoCE、多路径</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,13 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://www.vastdata.com/whitepaper" data-en="VAST AI Operating System white paper · NFS over RDMA">VAST AI Operating System 白皮书 · NFS over RDMA</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/nfs-features-for-enhanced-performance" data-en="VAST 5.5 · NFSoRDMA and NFS Multipath">VAST 5.5 · NFSoRDMA 与 NFS 多路径</a></li>
-      <li><a href="https://docs.vastdata.com/docs/cumulus-rocev2-configuration-guide" data-en="VAST knowledge base · Cumulus RoCEv2 Configuration Guide">VAST 知识库 · Cumulus RoCEv2 配置指南</a></li>
-      <li><a href="https://docs.vastdata.com/docs/quickstart-multipathing-nfs-client-download-and-install" data-en="VAST knowledge base · Multipathing NFS client quickstart">VAST 知识库 · NFS 多路径客户端快速入门</a></li>
       <li data-en="Schematic illustrations.">动画为示意。</li>
     </ul></div>
   </div>
@@ -76,16 +72,173 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-nfsrdma.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-nfsrdma',ar:[960/520,480/620],
-  steps:[
-    {"s": ["NFS 走 TCP", "NFS over TCP"], "t": ["NFS over TCP 的数据路径", "The NFS over TCP data path"], "d": ["NFS over TCP 的数据经过两端的内核网络栈。", "NFS over TCP moves data through the kernel network stack at both ends."], "b": [["<p>NFS（Network File System）的客户端与服务端通过远程过程调用（RPC）交换请求和应答。使用 TCP 时，协议栈处理与数据复制会消耗两端的 CPU 资源。</p>"], ["<p>The NFS client and server exchange requests and replies through remote procedure calls (RPCs). With TCP, protocol processing and data copies use CPU resources at both ends.</p>"]]},
-    {"s": ["换成 RDMA", "Switch to RDMA"], "t": ["RDMA 承载 NFS 的远程调用", "RDMA carries NFS remote procedure calls"], "d": ["挂载选项 proto=rdma 选择 RDMA 传输。图中以 NFSv3 为例。", "The proto=rdma mount option selects RDMA transport. The diagram shows an NFSv3 example."], "b": [["<p>VAST 5.5 管理指南列出 NFSv3 和 NFSv4.1 的 NFSoRDMA 支持。RDMA 负责传输 NFS 的 RPC。</p>", "<p>图示采用 VAST RoCE 配置指南中的 NFSv3 流程：初始 MOUNT 请求走 TCP，后续 I/O 走 RDMA。VAST 的挂载示例使用 RDMA 端口 20049。</p>"], ["<p>The VAST 5.5 administrator guide lists NFSoRDMA for NFSv3 and NFSv4.1. RDMA carries the NFS RPCs.</p>", "<p>The diagram follows the NFSv3 example in VAST’s RoCE guide: the initial MOUNT request uses TCP, then I/O uses RDMA. The VAST mount example uses RDMA port 20049.</p>"]]},
-    {"s": ["网卡直接搬", "NIC moves data"], "t": ["RDMA 网卡直接传输数据", "RDMA NICs transfer data directly"], "d": ["RDMA 网卡在本地与远端内存间传输数据，减少 CPU 参与数据搬运。", "An RDMA NIC transfers data between local and remote memory, reducing CPU work for data movement."], "b": [["<p>支持 RDMA 的网卡负责直接内存传输，数据绕过 TCP 缓冲和复制路径。客户端与服务端仍然各自处理 NFS 协议操作。</p>"], ["<p>The RDMA-capable network adapter handles direct memory transfers, bypassing the TCP buffering and copy path. Both endpoints still process NFS protocol operations.</p>"]]},
-    {"s": ["同时跑", "Side by side"], "t": ["比较 TCP 与 RDMA 的数据路径", "TCP and RDMA data paths"], "d": ["RDMA 减少 TCP 缓冲复制，可降低 CPU 开销和延迟，并提高吞吐。", "Reducing TCP buffer copies can improve throughput while lowering CPU load and latency."], "b": [["<p>单连接 TCP 的在途数据量受发送窗口与确认机制约束。RDMA 将数据传输交给网卡，减少客户端与服务端的 CPU 搬运开销。</p>", "<p>动画中的送达计数与 CPU 负载为示意，不代表实测数字。</p>"], ["<p>The TCP window and acknowledgments limit how much data can be in flight on a connection. RDMA offloads data movement to the NIC, reducing copy overhead for the client and server.</p>", "<p>The delivery counts and CPU load in the animation are schematic.</p>"]]},
-    {"s": ["网络要求", "Network needs"], "t": ["网络：InfiniBand 或无损以太网 RoCE", "Network: InfiniBand or lossless Ethernet with RoCE"], "d": ["VAST 的无损 RoCE 配置使用流控和显式拥塞通知。", "VAST’s lossless RoCE configuration uses flow control and Explicit Congestion Notification."], "b": [["<p>NFSoRDMA 可运行在 InfiniBand 或以太网 RoCE 上。VAST 的 RoCE 指南通过显式拥塞通知（ECN）让发送端减速，通过优先级流控（PFC）逐跳暂停承载 RDMA 的优先级。</p>", "<p>当指定队列达到高水位时，交换机请求上一跳暂停该优先级。图中也演示有损网络的例子：队列溢出导致丢帧，传输可能停顿。</p>"], ["<p>NFSoRDMA can run over InfiniBand or Ethernet with RoCE. VAST’s RoCE guide uses Explicit Congestion Notification (ECN) to signal senders to slow down and Priority Flow Control (PFC) to pause the RDMA priority hop by hop.</p>", "<p>At its high-water mark, the switch queue signals the preceding hop to pause that priority. The diagram also shows a lossy example: a queue overflow drops a frame and can stall the transfer.</p>"]]},
-    {"s": ["客户端", "Client"], "t": ["Linux 客户端与 RDMA 网卡", "Linux client and RDMA NIC"], "d": ["客户端需要支持 NFSoRDMA 的 NFS 客户端、RDMA 网卡与可用的 RDMA 网络。", "The host needs an NFSoRDMA-capable NFS client, an RDMA NIC, and an RDMA-capable network."], "b": [["<p>白皮书指出，主流 Linux 发行版包含 NFSoRDMA 客户端。VAST 管理指南说明，实际的 RDMA 功能取决于发行版及驱动组合。挂载时以 <code>proto=rdma</code> 选择 RDMA。</p>"], ["<p>The white paper describes NFSoRDMA as a standard component in major Linux distributions. The VAST administrator guide describes driver and distribution requirements. The mount option <code>proto=rdma</code> selects RDMA.</p>"]]},
-    {"s": ["叠加", "Stacking"], "t": ["RDMA 可与 nconnect 和多路径组合", "RDMA with nconnect and multipath"], "d": ["nconnect 指定挂载连接数。多路径可把连接分布到多个集群 VIP。", "nconnect sets a mount’s connection count. Multipath can spread connections over cluster VIPs."], "b": [["<p>一个 VIP 由一台 CNode 提供服务。增加连接数可以在同一个挂载上使用多个连接。VAST-NFS 客户端的 <code>remoteports</code> 选项允许连接分布到多个 VIP，进而使用不同的 CNode。</p>", "<p>VAST 5.5 管理指南对 100 Gbps 网卡给出的多路径配置建议是 RDMA 使用 <code>nconnect=4</code>、TCP 使用 <code>nconnect=8</code>。</p>"], ["<p>One CNode serves a given VIP. Multiple connections can share a mount. The VAST-NFS client’s <code>remoteports</code> option spreads those connections across VIPs so they can reach different CNodes.</p>", "<p>For a 100 Gbps NIC, the VAST 5.5 administrator guide recommends <code>nconnect=4</code> with RDMA or <code>nconnect=8</code> with TCP in a multipath configuration.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-nfsrdma",
+ "ar": [960/520,480/620],
+ "steps": [
+  {
+   "s": [
+    "NFS 走 TCP",
+    "NFS over TCP"
+   ],
+   "t": [
+    "NFS over TCP 的数据路径",
+    "The NFS over TCP Data Path"
+   ],
+   "d": [
+    "NFS over TCP 的数据经过两端的内核网络栈。",
+    "NFS over TCP moves data through the kernel network stack at both ends."
+   ],
+   "b": [
+    [
+     "<p>NFS（Network File System）的客户端与服务端通过远程过程调用（RPC）交换请求和应答。使用 TCP 时，协议栈处理与数据复制会消耗两端的 CPU 资源。</p>"
+    ],
+    [
+     "<p>The NFS client and server exchange requests and replies through remote procedure calls (RPCs). With TCP, protocol processing and data copies use CPU resources at both ends.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "换成 RDMA",
+    "Switch to RDMA"
+   ],
+   "t": [
+    "RDMA 承载 NFS 的远程调用",
+    "RDMA Carries NFS Remote Procedure Calls"
+   ],
+   "d": [
+    "挂载选项 proto=rdma 选择 RDMA 传输。图中以 NFSv3 为例。",
+    "The proto=rdma mount option selects RDMA transport. The diagram shows an NFSv3 example."
+   ],
+   "b": [
+    [
+     "<p>VAST 5.5 管理指南列出 NFSv3 和 NFSv4.1 的 NFSoRDMA 支持。RDMA 负责传输 NFS 的 RPC。</p>",
+     "<p>图示采用 VAST RoCE 配置指南中的 NFSv3 流程：初始 MOUNT 请求走 TCP，后续 I/O 走 RDMA。VAST 的挂载示例使用 RDMA 端口 20049。</p>"
+    ],
+    [
+     "<p>The VAST 5.5 administrator guide lists NFSoRDMA for NFSv3 and NFSv4.1. RDMA carries the NFS RPCs.</p>",
+     "<p>The diagram follows the NFSv3 example in VAST’s RoCE guide: the initial MOUNT request uses TCP, then I/O uses RDMA. The VAST mount example uses RDMA port 20049.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "网卡直接搬",
+    "NIC moves data"
+   ],
+   "t": [
+    "RDMA 网卡直接传输数据",
+    "RDMA NICs Transfer Data Directly"
+   ],
+   "d": [
+    "RDMA 网卡在本地与远端内存间传输数据，减少 CPU 参与数据搬运。",
+    "An RDMA NIC transfers data between local and remote memory, reducing CPU work for data movement."
+   ],
+   "b": [
+    [
+     "<p>支持 RDMA 的网卡负责直接内存传输，数据绕过 TCP 缓冲和复制路径。客户端与服务端仍然各自处理 NFS 协议操作。</p>"
+    ],
+    [
+     "<p>The RDMA-capable network adapter handles direct memory transfers, bypassing the TCP buffering and copy path. Both endpoints still process NFS protocol operations.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "同时跑",
+    "Side by side"
+   ],
+   "t": [
+    "比较 TCP 与 RDMA 的数据路径",
+    "TCP and RDMA Data Paths"
+   ],
+   "d": [
+    "RDMA 减少 TCP 缓冲复制，可降低 CPU 开销和延迟，并提高吞吐。",
+    "Reducing TCP buffer copies can improve throughput while lowering CPU load and latency."
+   ],
+   "b": [
+    [
+     "<p>单连接 TCP 的在途数据量受发送窗口与确认机制约束。RDMA 将数据传输交给网卡，减少客户端与服务端的 CPU 搬运开销。</p>",
+     "<p>动画中的送达计数与 CPU 负载为示意，不代表实测数字。</p>"
+    ],
+    [
+     "<p>The TCP window and acknowledgments limit how much data can be in flight on a connection. RDMA offloads data movement to the NIC, reducing copy overhead for the client and server.</p>",
+     "<p>The delivery counts and CPU load in the animation are schematic.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "网络要求",
+    "Network needs"
+   ],
+   "t": [
+    "网络：InfiniBand 或无损以太网 RoCE",
+    "Network: InfiniBand or Lossless Ethernet with RoCE"
+   ],
+   "d": [
+    "VAST 的无损 RoCE 配置使用流控和显式拥塞通知。",
+    "VAST’s lossless RoCE configuration uses flow control and Explicit Congestion Notification."
+   ],
+   "b": [
+    [
+     "<p>NFSoRDMA 可运行在 InfiniBand 或以太网 RoCE 上。VAST 的 RoCE 指南通过显式拥塞通知（ECN）让发送端减速，通过优先级流控（PFC）逐跳暂停承载 RDMA 的优先级。</p>",
+     "<p>当指定队列达到高水位时，交换机请求上一跳暂停该优先级。图中也演示有损网络的例子：队列溢出导致丢帧，传输可能停顿。</p>"
+    ],
+    [
+     "<p>NFSoRDMA can run over InfiniBand or Ethernet with RoCE. VAST’s RoCE guide uses Explicit Congestion Notification (ECN) to signal senders to slow down and Priority Flow Control (PFC) to pause the RDMA priority hop by hop.</p>",
+     "<p>At its high-water mark, the switch queue signals the preceding hop to pause that priority. The diagram also shows a lossy example: a queue overflow drops a frame and can stall the transfer.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "客户端",
+    "Client"
+   ],
+   "t": [
+    "Linux 客户端与 RDMA 网卡",
+    "Linux Client and RDMA NIC"
+   ],
+   "d": [
+    "客户端需要支持 NFSoRDMA 的 NFS 客户端、RDMA 网卡与可用的 RDMA 网络。",
+    "The host needs an NFSoRDMA-capable NFS client, an RDMA NIC, and an RDMA-capable network."
+   ],
+   "b": [
+    [
+     "<p>白皮书指出，主流 Linux 发行版包含 NFSoRDMA 客户端。VAST 管理指南说明，实际的 RDMA 功能取决于发行版及驱动组合。挂载时以 <code>proto=rdma</code> 选择 RDMA。</p>"
+    ],
+    [
+     "<p>The white paper describes NFSoRDMA as a standard component in major Linux distributions. The VAST administrator guide describes driver and distribution requirements. The mount option <code>proto=rdma</code> selects RDMA.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "叠加",
+    "Stacking"
+   ],
+   "t": [
+    "RDMA 可与 nconnect 和多路径组合",
+    "RDMA with Nconnect and Multipath"
+   ],
+   "d": [
+    "nconnect 指定挂载连接数。多路径可把连接分布到多个集群 VIP。",
+    "nconnect sets a mount’s connection count. Multipath can spread connections over cluster VIPs."
+   ],
+   "b": [
+    [
+     "<p>一个 VIP 由一台 CNode 提供服务。增加连接数可以在同一个挂载上使用多个连接。VAST-NFS 客户端的 <code>remoteports</code> 选项允许连接分布到多个 VIP，进而使用不同的 CNode。</p>",
+     "<p>VAST 5.5 管理指南对 100 Gbps 网卡给出的多路径配置建议是 RDMA 使用 <code>nconnect=4</code>、TCP 使用 <code>nconnect=8</code>。</p>"
+    ],
+    [
+     "<p>One CNode serves a given VIP. Multiple connections can share a mount. The VAST-NFS client’s <code>remoteports</code> option spreads those connections across VIPs so they can reach different CNodes.</p>",
+     "<p>For a 100 Gbps NIC, the VAST 5.5 administrator guide recommends <code>nconnect=4</code> with RDMA or <code>nconnect=8</code> with TCP in a multipath configuration.</p>"
+    ]
+   ]
+  }
+ ]
 };
 const heading = document.querySelector('h1');
 window.SS.stations[window.SS_TOPIC_CFG.anim].t = [heading.textContent, heading.dataset.en];

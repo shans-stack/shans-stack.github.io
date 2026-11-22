@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Deduplication: identical data stored once">去重：一样的数据只存一份</h1>
+      <div><h1 data-en="Deduplication: Identical Data Stored Once">去重：一样的数据只存一份</h1>
         <p class="meta"><span data-en="6 steps · VAST, data reduction, deduplication, SCM">6 步 · VAST、数据缩减、去重、SCM</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,14 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=61" data-en="VAST AI Operating System white paper (April 2026), Beyond Deduplication and Compression, Adaptive Chunking and A Single Reduction Realm">VAST AI Operating System 白皮书（2026 年 4 月），Beyond Deduplication and Compression、Adaptive Chunking 与 A Single Reduction Realm</a></li>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=58" data-en="VAST AI Operating System white paper (April 2026), Optimized for Hyperscale Flash">VAST AI Operating System 白皮书（2026 年 4 月），Optimized for Hyperscale Flash</a></li>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=102" data-en="VAST AI Operating System white paper (April 2026), Combining Replication and Global Access">VAST AI Operating System 白皮书（2026 年 4 月），Combining Replication and Global Access</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/data-reduction" data-en="VAST Administrator’s Guide, Data Reduction">VAST 管理员文档 · Data Reduction</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/configuring-async-replication-and-global-access-on-shared-paths" data-en="VAST Administrator’s Guide, Configuring Async Replication and Global Access on Shared Paths">VAST 管理员文档 · Configuring Async Replication and Global Access on Shared Paths</a></li>
       <li data-en="Animations are schematic. Published figures are identified by their sources.">动画为示意。引用的公开数字均标明出处。</li>
     </ul></div>
   </div>
@@ -77,15 +72,149 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-dedup.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-dedup',ar:[960/480,480/600],
-  steps:[
-    {"s": ["指纹与指针", "Fingerprints and pointers"], "t": ["相同的数据块共享一份存储", "Identical chunks share one stored copy"], "d": ["系统为每个块计算内容指纹。识别出相同的块后，后续引用指向已存数据。", "The system computes a content fingerprint for each chunk. Once an identical chunk is recognized, subsequent references point to the stored data."], "b": [["<p>VAST 为去重计算抗碰撞哈希。相同内容产生相同的哈希，微小的内容变化也可以改变哈希结果。</p>", "<p>去重处理内容完全相同的块。相似性压缩另行处理内容接近的块。</p>"], ["<p>VAST uses a collision-resistant hash for deduplication. Identical content produces the same hash, and even a small change in content can change the result.</p>", "<p>Deduplication handles exact matches. Similarity reduction separately addresses chunks whose contents are similar.</p>"]]},
-    {"s": ["块大小", "Chunk size"], "t": ["块大小影响匹配粒度和索引体积", "Chunk size controls match granularity and index size"], "d": ["小块可以缩小局部改动对匹配的影响，同时需要管理更多索引项。", "Smaller chunks can limit the effect of a local edit on deduplication, while requiring more index entries."], "b": [["<p>在同一段数据中，一处改动会使包含它的块失去精确匹配。更细的分块可以保留周围未改动数据的匹配机会。</p>", "<p>VAST 使用滚动哈希确定变长块的边界。白皮书给出的平均块大小为 16 至 64 KB。</p>"], ["<p>An edit can prevent an exact match for the chunk containing it. Finer chunking can preserve matches in the surrounding unchanged data.</p>", "<p>VAST uses a rolling hash to define variable-length chunk boundaries. The white paper gives an average chunk size of 16 to 64 KB.</p>"]]},
-    {"s": ["去重范围", "Deduplication domain"], "t": ["索引覆盖范围决定哪里能共享数据块", "Index scope determines where chunks can be shared"], "d": ["各自维护指纹表的设备形成不同的去重域。同一块写入两个互相独立的域时，每个域都要保存一份。", "Devices with separate fingerprint tables form separate deduplication domains. A chunk written to two independent domains is stored in each one."], "b": [["<p>将索引放在单个控制器的 DRAM 中时，内存预算限制了索引能覆盖的范围。数据分到多个独立索引后，跨域的重复内容仍分别占用空间。</p>"], ["<p>When an index resides in one controller’s DRAM, its memory budget constrains index coverage. With independent indexes, copies across domains still occupy space separately.</p>"]]},
-    {"s": ["共享索引", "Shared index"], "t": ["共享 SCM 支持集群级去重", "Shared SCM enables cluster-wide deduplication"], "d": ["各 CNode 通过共享 SCM 访问指纹索引，整个集群构成一个数据缩减域。", "CNodes access fingerprint indexes in shared SCM, making the cluster a single data reduction realm."], "b": [["<p>白皮书以 DBox 配置说明这种布局：去重和相似性缩减的哈希表与其他 DataStore 元数据存于 SCM SSD，各 CNode 可经 NVMe-oF 访问这些共享介质。</p>"], ["<p>The white paper illustrates the layout with DBoxes: deduplication and similarity hashes live with other DataStore metadata on SCM SSDs that the CNodes can access over NVMe-oF.</p>"]]},
-    {"s": ["迁移时去重", "Deduplication during migration"], "t": ["数据从写缓冲迁移时执行去重", "Deduplication runs during migration from the write buffer"], "d": ["常规写缓冲先持久化并确认写入，后续迁往容量层时，系统先去重，再压缩剩余的数据块。", "The standard write-buffer path durably records and acknowledges writes first. On later migration to the capacity tier, the system deduplicates before compressing the remaining chunks."], "b": [["<p>启用相似性压缩后，系统在普通压缩和相似性压缩之间选择缩减收益较高的方式。变长缩减结果紧密装入纠删码子条带。</p>"], ["<p>With similarity reduction enabled, the system selects ordinary compression or similarity reduction based on which saves more space. Variable-length results are packed into erasure-coded substripes.</p>"]]},
-    {"s": ["读取共享块", "Reading shared chunks"], "t": ["按元数据引用重组逻辑数据", "Metadata references reassemble logical data"], "d": ["逻辑上相邻的块可能存于不同位置，顺序读取时也可能产生分散的后端读请求。", "Logically adjacent chunks can reside at different locations, so a sequential read can produce scattered back-end reads."], "b": [["<p>读取时，系统按元数据引用取回各块，然后重组数据。闪存处理这类分散的读取时没有机械寻道。</p>", "<p>同一集群既作为异步复制目标又作为全局访问卫星站时，配置为共享目标路径可复用已存数据。</p>"], ["<p>On a read, the system fetches the referenced chunks and reassembles the data. Flash can serve these scattered reads without mechanical seeks.</p>", "<p>When one cluster serves as both an asynchronous replication target and a Global Access satellite, configuring a shared destination path can reuse the stored data.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-dedup",
+ "ar": [960/480,480/600],
+ "steps": [
+  {
+   "s": [
+    "指纹与指针",
+    "Fingerprints and pointers"
+   ],
+   "t": [
+    "相同的数据块共享一份存储",
+    "Identical Chunks Share One Stored Copy"
+   ],
+   "d": [
+    "系统为每个块计算内容指纹。识别出相同的块后，后续引用指向已存数据。",
+    "The system computes a content fingerprint for each chunk. Once an identical chunk is recognized, subsequent references point to the stored data."
+   ],
+   "b": [
+    [
+     "<p>VAST 为去重计算抗碰撞哈希。相同内容产生相同的哈希，微小的内容变化也可以改变哈希结果。</p>",
+     "<p>去重处理内容完全相同的块。相似性压缩另行处理内容接近的块。</p>"
+    ],
+    [
+     "<p>VAST uses a collision-resistant hash for deduplication. Identical content produces the same hash, and even a small change in content can change the result.</p>",
+     "<p>Deduplication handles exact matches. Similarity reduction separately addresses chunks whose contents are similar.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "块大小",
+    "Chunk size"
+   ],
+   "t": [
+    "块大小影响匹配粒度和索引体积",
+    "Chunk Size Controls Match Granularity and Index Size"
+   ],
+   "d": [
+    "小块可以缩小局部改动对匹配的影响，同时需要管理更多索引项。",
+    "Smaller chunks can limit the effect of a local edit on deduplication, while requiring more index entries."
+   ],
+   "b": [
+    [
+     "<p>在同一段数据中，一处改动会使包含它的块失去精确匹配。更细的分块可以保留周围未改动数据的匹配机会。</p>",
+     "<p>VAST 使用滚动哈希确定变长块的边界。白皮书给出的平均块大小为 16 至 64 KB。</p>"
+    ],
+    [
+     "<p>An edit can prevent an exact match for the chunk containing it. Finer chunking can preserve matches in the surrounding unchanged data.</p>",
+     "<p>VAST uses a rolling hash to define variable-length chunk boundaries. The white paper gives an average chunk size of 16 to 64 KB.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "去重范围",
+    "Deduplication domain"
+   ],
+   "t": [
+    "索引覆盖范围决定哪里能共享数据块",
+    "Index Scope Determines Where Chunks Can Be Shared"
+   ],
+   "d": [
+    "各自维护指纹表的设备形成不同的去重域。同一块写入两个互相独立的域时，每个域都要保存一份。",
+    "Devices with separate fingerprint tables form separate deduplication domains. A chunk written to two independent domains is stored in each one."
+   ],
+   "b": [
+    [
+     "<p>将索引放在单个控制器的 DRAM 中时，内存预算限制了索引能覆盖的范围。数据分到多个独立索引后，跨域的重复内容仍分别占用空间。</p>"
+    ],
+    [
+     "<p>When an index resides in one controller’s DRAM, its memory budget constrains index coverage. With independent indexes, copies across domains still occupy space separately.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "共享索引",
+    "Shared index"
+   ],
+   "t": [
+    "共享 SCM 支持集群级去重",
+    "Shared SCM Enables Cluster-Wide Deduplication"
+   ],
+   "d": [
+    "各 CNode 通过共享 SCM 访问指纹索引，整个集群构成一个数据缩减域。",
+    "CNodes access fingerprint indexes in shared SCM, making the cluster a single data reduction realm."
+   ],
+   "b": [
+    [
+     "<p>白皮书以 DBox 配置说明这种布局：去重和相似性缩减的哈希表与其他 DataStore 元数据存于 SCM SSD，各 CNode 可经 NVMe-oF 访问这些共享介质。</p>"
+    ],
+    [
+     "<p>The white paper illustrates the layout with DBoxes: deduplication and similarity hashes live with other DataStore metadata on SCM SSDs that the CNodes can access over NVMe-oF.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "迁移时去重",
+    "Deduplication during migration"
+   ],
+   "t": [
+    "数据从写缓冲迁移时执行去重",
+    "Deduplication Runs During Migration from the Write Buffer"
+   ],
+   "d": [
+    "常规写缓冲先持久化并确认写入，后续迁往容量层时，系统先去重，再压缩剩余的数据块。",
+    "The standard write-buffer path durably records and acknowledges writes first. On later migration to the capacity tier, the system deduplicates before compressing the remaining chunks."
+   ],
+   "b": [
+    [
+     "<p>启用相似性压缩后，系统在普通压缩和相似性压缩之间选择缩减收益较高的方式。变长缩减结果紧密装入纠删码子条带。</p>"
+    ],
+    [
+     "<p>With similarity reduction enabled, the system selects ordinary compression or similarity reduction based on which saves more space. Variable-length results are packed into erasure-coded substripes.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "读取共享块",
+    "Reading shared chunks"
+   ],
+   "t": [
+    "按元数据引用重组逻辑数据",
+    "Metadata References Reassemble Logical Data"
+   ],
+   "d": [
+    "逻辑上相邻的块可能存于不同位置，顺序读取时也可能产生分散的后端读请求。",
+    "Logically adjacent chunks can reside at different locations, so a sequential read can produce scattered back-end reads."
+   ],
+   "b": [
+    [
+     "<p>读取时，系统按元数据引用取回各块，然后重组数据。闪存处理这类分散的读取时没有机械寻道。</p>",
+     "<p>同一集群既作为异步复制目标又作为全局访问卫星站时，配置为共享目标路径可复用已存数据。</p>"
+    ],
+    [
+     "<p>On a read, the system fetches the referenced chunks and reassembles the data. Flash can serve these scattered reads without mechanical seeks.</p>",
+     "<p>When one cluster serves as both an asynchronous replication target and a Global Access satellite, configuring a shared destination path can reuse the stored data.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

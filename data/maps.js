@@ -11,7 +11,7 @@
    一张地图默认显示哪些站：停靠在它任一条线上、且没有标 hidden 的站。 */
 window.SS = window.SS || {};
 SS.maps = [
-  {id:'home', kind:'main', href:'index.html', zh:'总图', en:'Main map', st:'live',
+  {id:'home', kind:'main', href:'index.html', zh:'总图', en:'Main Map', st:'live',
    lines:['a','m','d','c','n','s'], talk:'ai-basics',
    d:{zh:'六条主干线，只放通用概念。', en:'Six trunk lines, general concepts only.'}},
   {id:'vast', kind:'topic', href:'maps/vast/index.html', zh:'VAST', en:'VAST', st:'live', brand:'vast',
@@ -26,7 +26,7 @@ SS.maps = [
   {id:'rafay', kind:'topic', href:'maps/rafay/index.html', zh:'Rafay', en:'Rafay', st:'live', brand:'rafay',
    lines:['r-ai','r-self','r-gov','r-cp','r-infra'], talk:'rafay-core',
    d:{zh:'五条线：GPU 云的控制平面怎么做自助交付、多租户治理，怎么管 Kubernetes 集群和 GPU。', en:'Five lines: how a GPU cloud control plane does self-service and multi-tenant governance, and runs Kubernetes clusters and GPUs.'}},
-  {id:'nvnet', kind:'topic', href:'', zh:'NVIDIA 网络', en:'NVIDIA networking', st:'wip', brand:'nvidia',
+  {id:'nvnet', kind:'topic', href:'', zh:'NVIDIA 网络', en:'NVIDIA Networking', st:'wip', brand:'nvidia',
    lines:[], talk:null,
    d:{zh:'InfiniBand、Spectrum-X、轨道拓扑。整理中。', en:'InfiniBand, Spectrum-X, rail topologies. In preparation.'}}
 ];

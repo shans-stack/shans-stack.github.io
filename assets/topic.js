@@ -161,13 +161,13 @@
     var c=SS.vendorCompare&&SS.vendorCompare[id];if(!c)return '';
     var head='<tr><th></th>'+c.cols.map(function(v){var x=SS.vendorById[v];return '<th scope="col">'+SS.brandMark(v,'lg')+'</th>'}).join('')+'</tr>';
     var body=c.rows.map(function(r){return '<tr><th scope="row">'+SS.esc(T(r.h))+'</th>'+r.v.map(function(x){return '<td>'+SS.esc(T(x))+'</td>'}).join('')+'</tr>'}).join('');
-    return '<section class="sec vw cmp" id="compare"><div class="hd2"><h2>'+SS.esc(L('几家怎么做','How vendors do it'))+'</h2></div><div class="bd"><p>'+SS.esc(T(c.note))+'</p></div><div class="tw"><table>'+head+body+'</table></div></section>';
+    return '<section class="sec vw cmp" id="compare"><div class="hd2"><h2>'+SS.esc(L('几家怎么做','How Vendors Do It'))+'</h2></div><div class="bd"><p>'+SS.esc(T(c.note))+'</p></div><div class="tw"><table>'+head+body+'</table></div></section>';
   }
   function viewSec(){
     return compareSec()+(SS.vendors||[]).map(function(v){var n=v.notes&&v.notes[id];if(!n)return '';
       var see=(n.see||[]).filter(function(x){return SS.stations[x]}).map(function(x){var s2=SS.stations[x];
         return s2.st==='live'?'<li><a href="'+SS.url(s2.page)+'">'+SS.esc(SS.title(x))+'</a></li>':'<li class="wip">'+SS.esc(SS.title(x))+'</li>'}).join('');
-      return '<section class="sec vw" id="vendor-'+v.id+'"><div class="hd2"><h2>'+SS.esc(L(v.zh+' 怎么做','How '+v.en+' does it'))+SS.brandMark(v.id,'lg')+'</h2></div><div class="bd">'+
+      return '<section class="sec vw" id="vendor-'+v.id+'"><div class="hd2"><h2>'+SS.esc(L(v.zh+' 怎么做','How '+v.en+' Does It'))+SS.brandMark(v.id,'lg')+'</h2></div><div class="bd">'+
         T([n.zh,n.en]).map(function(t){return '<p>'+SS.esc(t)+'</p>'}).join('')+(see?'<ul class="see">'+see+'</ul>':'')+'</div></section>'}).join('');
   }
   function mountDocAnims(){

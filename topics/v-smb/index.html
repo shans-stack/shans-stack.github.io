@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="SMB: shared session state and continuously available shares">SMB：共享会话状态与持续可用共享</h1>
+      <div><h1 data-en="SMB: Shared Session State and Continuously Available Shares">SMB：共享会话状态与持续可用共享</h1>
         <p class="meta"><span data-en="6 steps · SMB, Active Directory, continuous availability">6 步 · SMB、Active Directory、持续可用</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,17 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/smb-overview">VAST 5.5 · SMB Overview</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/smb-encryption">VAST 5.5 · SMB Encryption</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/authentication-for-smb-access">VAST 5.5 · Authentication for SMB Access</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/configuring-network-access">VAST 5.5 · Configuring Network Access</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/dns-based-virtual-ip-distribution">VAST 5.5 · DNS-Based Virtual IP Distribution</a></li>
-      <li><a href="https://www.vastdata.com/whitepaper">VAST AI OS White Paper · DASE and SMB Failover</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/continuously-available-smb-shares">VAST 5.5 · Continuously Available SMB Shares</a></li>
-      <li><a href="https://docs.vastdata.com/docs-5-5/docs/smb-multi-channel">VAST 5.5 · SMB Multi-Channel</a></li>
       <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -80,15 +72,149 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-smb.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-smb',ar:[960/520,480/520],
-  steps:[
-    {"s": ["共享", "Share"], "t": ["将 SMB 共享映射为盘符", "Map an SMB share as a drive"], "d": ["VAST 通过 view 发布 SMB 共享，Windows 客户端可以将它映射为盘符。", "VAST exposes an SMB share through a view, which Windows clients can map to a drive letter."], "b": [["<p>SMB（Server Message Block）是网络文件共享协议。VAST 用 view 发布共享，同一目录也可通过 NFS 或 S3 访问。</p>", "<p>VAST 5.5 支持 SMB 2.1、SMB 3.0 和 SMB 签名。SMB 3.0 还支持加密传输。</p>"], ["<p>SMB (Server Message Block) is a network file-sharing protocol. VAST exposes shares through views, and the same directory can also be exposed through NFS or S3.</p>", "<p>VAST 5.5 supports SMB 2.1, SMB 3.0 and SMB signing. SMB 3.0 also supports encryption in transit.</p>"]]},
-    {"s": ["按域名连接", "Connect by name"], "t": ["通过 VIP 池分布客户端连接", "Distribute client connections through a VIP pool"], "d": ["VAST 集群 DNS 从 VIP 池轮询返回地址，将不同客户端的连接分散到池内的 CNode。", "VAST cluster DNS returns VIP pool addresses in round-robin order, distributing client connections across CNodes in the pool."], "b": [["<p>SMB 客户端连接 VIP 池对应的 DNS 名称。每个虚拟 IP（VIP）由池中一台 CNode 提供服务，多个 VIP 可分布在多台 CNode 上。</p>"], ["<p>SMB clients connect to the DNS name associated with a VIP pool. One CNode in the pool serves each virtual IP (VIP), and multiple VIPs can be distributed across CNodes.</p>"]]},
-    {"s": ["登录", "Sign-in"], "t": ["使用 Kerberos 票据认证", "Authenticate with a Kerberos ticket"], "d": ["Kerberos 是默认认证方式。客户端从 Active Directory 取得服务票据并出示给集群。", "Kerberos is the default authentication method. The client obtains a service ticket from Active Directory and presents it to the cluster."], "b": [["<p>Kerberos 认证要求客户端用主机名连接，并在集群的 Active Directory 机器账户中配置相应的 HOST 服务主体名称（SPN）。VAST 文档列出的条件还包括用户已登录集群加入的域。</p>", "<p>Kerberos 条件不满足时，客户端可在集群允许 NTLM 的情况下改用 NTLMv2。</p>"], ["<p>Kerberos requires the client to connect by hostname and the cluster’s Active Directory machine account to have the corresponding HOST service principal name (SPN). VAST also lists sign-in to the cluster’s joined domain among its requirements.</p>", "<p>If the Kerberos requirements are unmet, the client can fall back to NTLMv2 when NTLM is enabled on the cluster.</p>"]]},
-    {"s": ["会话状态", "Session state"], "t": ["共享 SCM 中的 SMB 状态", "SMB state in shared SCM"], "d": ["CNode 将文件句柄、租约及相关连接状态记录在共享的存储级内存（SCM）中。", "CNodes store file handles, leases and related connection state in shared storage-class memory (SCM)."], "b": [["<p>SMB 在打开文件时分配句柄，并跟踪客户端、文件和打开模式。租约描述客户端可以采用的缓存方式。共享 SCM 让接管连接的 CNode 可以读取这些状态。</p>"], ["<p>SMB assigns a handle when a file is opened and tracks the client, file and open mode. A lease governs how the client can cache the file. Shared SCM lets the CNode taking over the connection read that state.</p>"]]},
-    {"s": ["坏一台 CNode", "A CNode fails"], "t": ["持续可用共享的故障恢复", "Failover on a CA share"], "d": ["接管节点读取共享状态，SMB 3.0 客户端可在持续可用共享上重连并恢复持久句柄。", "On a continuously available (CA) share, an SMB 3.0 client can reconnect and recover its persistent handle."], "b": [["<p>CNode 故障后，在线节点接管 VIP。客户端通过同一地址重连，接管节点从 SCM 读取连接状态。</p>", "<p>在 view 策略中启用 SMB 持续可用（CA）后，SMB 3.0 客户端可请求持久文件句柄。图中用该句柄恢复对已打开文件的访问。</p>"], ["<p>When a CNode fails, an active node takes over the VIP. The client reconnects at the same address, and the new node reads connection state from SCM.</p>", "<p>Enabling SMB continuous availability (CA) in the view policy lets SMB 3.0 clients request persistent file handles. The diagram shows such a handle being used to resume access to an open file.</p>"]]},
-    {"s": ["多通道", "Multichannel"], "t": ["多通道为一个会话并行传输", "SMB Multichannel"], "d": ["SMB 3 多通道允许 Windows 客户端通过多条 TCP 连接访问同一个 VIP。", "SMB 3 Multichannel lets a Windows client access the same VIP over multiple TCP connections."], "b": [["<p>多通道可为同一会话并行传输数据，提高可用吞吐。VAST 5.5 在集群端默认启用该功能，Windows 客户端需启用多通道并使用支持接收端缩放（RSS）的网卡。</p>"], ["<p>Multichannel can increase available throughput by transferring data in parallel within a session. VAST 5.5 enables it on the cluster by default. The Windows client needs Multichannel enabled and a NIC that supports Receive Side Scaling (RSS).</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-smb",
+ "ar": [960/520,480/520],
+ "steps": [
+  {
+   "s": [
+    "共享",
+    "Share"
+   ],
+   "t": [
+    "将 SMB 共享映射为盘符",
+    "Map an SMB Share as a Drive"
+   ],
+   "d": [
+    "VAST 通过 view 发布 SMB 共享，Windows 客户端可以将它映射为盘符。",
+    "VAST exposes an SMB share through a view, which Windows clients can map to a drive letter."
+   ],
+   "b": [
+    [
+     "<p>SMB（Server Message Block）是网络文件共享协议。VAST 用 view 发布共享，同一目录也可通过 NFS 或 S3 访问。</p>",
+     "<p>VAST 5.5 支持 SMB 2.1、SMB 3.0 和 SMB 签名。SMB 3.0 还支持加密传输。</p>"
+    ],
+    [
+     "<p>SMB (Server Message Block) is a network file-sharing protocol. VAST exposes shares through views, and the same directory can also be exposed through NFS or S3.</p>",
+     "<p>VAST 5.5 supports SMB 2.1, SMB 3.0 and SMB signing. SMB 3.0 also supports encryption in transit.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "按域名连接",
+    "Connect by name"
+   ],
+   "t": [
+    "通过 VIP 池分布客户端连接",
+    "Distribute Client Connections Through a VIP Pool"
+   ],
+   "d": [
+    "VAST 集群 DNS 从 VIP 池轮询返回地址，将不同客户端的连接分散到池内的 CNode。",
+    "VAST cluster DNS returns VIP pool addresses in round-robin order, distributing client connections across CNodes in the pool."
+   ],
+   "b": [
+    [
+     "<p>SMB 客户端连接 VIP 池对应的 DNS 名称。每个虚拟 IP（VIP）由池中一台 CNode 提供服务，多个 VIP 可分布在多台 CNode 上。</p>"
+    ],
+    [
+     "<p>SMB clients connect to the DNS name associated with a VIP pool. One CNode in the pool serves each virtual IP (VIP), and multiple VIPs can be distributed across CNodes.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "登录",
+    "Sign-in"
+   ],
+   "t": [
+    "使用 Kerberos 票据认证",
+    "Authenticate with a Kerberos Ticket"
+   ],
+   "d": [
+    "Kerberos 是默认认证方式。客户端从 Active Directory 取得服务票据并出示给集群。",
+    "Kerberos is the default authentication method. The client obtains a service ticket from Active Directory and presents it to the cluster."
+   ],
+   "b": [
+    [
+     "<p>Kerberos 认证要求客户端用主机名连接，并在集群的 Active Directory 机器账户中配置相应的 HOST 服务主体名称（SPN）。VAST 文档列出的条件还包括用户已登录集群加入的域。</p>",
+     "<p>Kerberos 条件不满足时，客户端可在集群允许 NTLM 的情况下改用 NTLMv2。</p>"
+    ],
+    [
+     "<p>Kerberos requires the client to connect by hostname and the cluster’s Active Directory machine account to have the corresponding HOST service principal name (SPN). VAST also lists sign-in to the cluster’s joined domain among its requirements.</p>",
+     "<p>If the Kerberos requirements are unmet, the client can fall back to NTLMv2 when NTLM is enabled on the cluster.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "会话状态",
+    "Session state"
+   ],
+   "t": [
+    "共享 SCM 中的 SMB 状态",
+    "SMB State in Shared SCM"
+   ],
+   "d": [
+    "CNode 将文件句柄、租约及相关连接状态记录在共享的存储级内存（SCM）中。",
+    "CNodes store file handles, leases and related connection state in shared storage-class memory (SCM)."
+   ],
+   "b": [
+    [
+     "<p>SMB 在打开文件时分配句柄，并跟踪客户端、文件和打开模式。租约描述客户端可以采用的缓存方式。共享 SCM 让接管连接的 CNode 可以读取这些状态。</p>"
+    ],
+    [
+     "<p>SMB assigns a handle when a file is opened and tracks the client, file and open mode. A lease governs how the client can cache the file. Shared SCM lets the CNode taking over the connection read that state.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "坏一台 CNode",
+    "A CNode fails"
+   ],
+   "t": [
+    "持续可用共享的故障恢复",
+    "Failover on a CA Share"
+   ],
+   "d": [
+    "接管节点读取共享状态，SMB 3.0 客户端可在持续可用共享上重连并恢复持久句柄。",
+    "On a continuously available (CA) share, an SMB 3.0 client can reconnect and recover its persistent handle."
+   ],
+   "b": [
+    [
+     "<p>CNode 故障后，在线节点接管 VIP。客户端通过同一地址重连，接管节点从 SCM 读取连接状态。</p>",
+     "<p>在 view 策略中启用 SMB 持续可用（CA）后，SMB 3.0 客户端可请求持久文件句柄。图中用该句柄恢复对已打开文件的访问。</p>"
+    ],
+    [
+     "<p>When a CNode fails, an active node takes over the VIP. The client reconnects at the same address, and the new node reads connection state from SCM.</p>",
+     "<p>Enabling SMB continuous availability (CA) in the view policy lets SMB 3.0 clients request persistent file handles. The diagram shows such a handle being used to resume access to an open file.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "多通道",
+    "Multichannel"
+   ],
+   "t": [
+    "多通道为一个会话并行传输",
+    "SMB Multichannel"
+   ],
+   "d": [
+    "SMB 3 多通道允许 Windows 客户端通过多条 TCP 连接访问同一个 VIP。",
+    "SMB 3 Multichannel lets a Windows client access the same VIP over multiple TCP connections."
+   ],
+   "b": [
+    [
+     "<p>多通道可为同一会话并行传输数据，提高可用吞吐。VAST 5.5 在集群端默认启用该功能，Windows 客户端需启用多通道并使用支持接收端缩放（RSS）的网卡。</p>"
+    ],
+    [
+     "<p>Multichannel can increase available throughput by transferring data in parallel within a session. VAST 5.5 enables it on the cluster by default. The Windows client needs Multichannel enabled and a NIC that supports Receive Side Scaling (RSS).</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

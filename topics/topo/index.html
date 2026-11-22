@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Switch topology: fat-tree and rail">交换机拓扑：胖树与轨道</h1>
+      <div><h1 data-en="Switch Topology: Fat-Tree and Rail">交换机拓扑：胖树与轨道</h1>
         <p class="meta"><span data-en="5 steps · leaf–spine, ECMP, rails">5 步 · Leaf–Spine、ECMP、轨道</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="IETF RFC 7938, Use of BGP for Routing in Large-Scale Data Centers">IETF RFC 7938，Use of BGP for Routing in Large-Scale Data Centers</li>
       <li data-en="Cisco AI POD for Enterprise Training and Fine-Tuning Design Guide, Rail-optimized Design Options">Cisco AI POD for Enterprise Training and Fine-Tuning Design Guide，Rail-optimized Design Options</li>
@@ -73,24 +73,102 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/topo.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'topo',ar:[900/360,360/520],
-  steps:[
-    {t:["Leaf 汇聚服务器", "Leaf switches connect servers"],
-     d:["接在同一台 Leaf 上的服务器可以在这台交换机内完成转发。", "Servers on the same leaf can exchange traffic through that switch."],
-     b:[["<p>网络拓扑描述设备和链路如何连接。Leaf 是直接连接服务器的接入交换机。同一台 Leaf 上的服务器可以在本交换机内转发。跨 Leaf 的流量需要通过连接这些交换机的上联链路。</p>"], ["<p>A network topology describes how devices and links connect. A leaf is an access switch that connects directly to servers. Traffic between servers on the same leaf can stay on that switch. Traffic between leaves uses uplinks that connect those switches to the rest of the fabric.</p>"]]},
-    {t:["Spine 提供跨 Leaf 路径", "Spines provide paths between leaves"],
-     d:["每台 Leaf 接入每台 Spine，跨 Leaf 流量可经不同的 Spine 到达目的端。", "Each leaf connects to each spine, giving cross-leaf traffic multiple routes to its destination."],
-     b:[["<p>Spine 是在 Leaf 之间转发的上层交换机。在两层 Leaf–Spine 网络中，一个跨 Leaf 报文经源 Leaf、一个 Spine 和目的 Leaf 转发。这是折叠 Clos 拓扑的常见形式，数据中心资料也常称其为胖树。</p>"], ["<p>A spine is an upper-tier switch that forwards traffic between leaves. In a two-tier leaf–spine fabric, a cross-leaf packet traverses the source leaf, one spine and the destination leaf. This is a common form of folded Clos, also described as a fat-tree in data center literature.</p>"]]},
-    {t:["等价多路径分散流量", "Equal-cost multipath distributes flows"],
-     d:["基于流的 ECMP 把不同流量分配给多个等成本的下一跳。", "Flow-based ECMP distributes flows among next hops with equal routing cost."],
-     b:[["<p>等价多路径（ECMP）让路由设备在同一目的地有多个同等路由代价的下一跳时使用多条路径。常见做法是对源地址、目的地址等报文字段做哈希，把同一条流稳定映射到其中一个下一跳。多个大流仍可能落在同一条路径上。</p>"], ["<p>Equal-cost multipath (ECMP) allows a router to use several next hops with the same routing cost to a destination. A common implementation hashes packet fields such as source and destination addresses to keep a flow on one next hop. Several large flows can still land on the same path.</p>"]]},
-    {t:["上联容量决定超额订阅", "Uplink capacity determines oversubscription"],
-     d:["下联总容量高于上联总容量时，并发跨 Leaf 流量会争用上联。", "When downlink capacity exceeds uplink capacity, concurrent cross-leaf flows can contend for the uplinks."],
-     b:[["<p>超额订阅比是某层面向服务器方向的总链路容量与上行总链路容量之比。下联可同时送入的流量超过上联可同时送出的流量时，跨 Leaf 的数据会在上联出口排队。服务器之间留在同一台 Leaf 的流量使用本地转发路径。</p>"], ["<p>The oversubscription ratio compares the aggregate capacity toward servers with the aggregate uplink capacity. When the downlinks can offer more traffic than the uplinks can carry, cross-leaf traffic can queue on the uplink egress. Traffic between servers on the same leaf uses the local switching path.</p>"]]},
-    {t:["轨道为同组 GPU 缩短路径", "Rails shorten paths within GPU groups"],
-     d:["当同一轨道的 GPU 对应网卡接入同一台 Leaf 时，组内通信可在这台 Leaf 完成。", "When NICs for GPUs on the same rail share a leaf, their traffic can stay on that switch."],
-     b:[["<p>轨道优化按服务器上的 GPU 或网卡位置组织网络接线。GPU 是图形处理器，集群也用它执行并行计算。例如，两台服务器中对应 GPU 的网卡可以接入同一台 Leaf，形成一组轨道。落在同一台 Leaf 的通信走本地转发路径。在图示的接法中，接在不同 Leaf 的轨道之间通过 Spine 互通。</p>"], ["<p>Rail optimization aligns network connections with GPU or adapter positions in each server. A graphics processing unit (GPU) is also used for parallel computing in clusters. For example, the adapters serving corresponding GPUs in two servers can connect to the same leaf to form a rail. Traffic within a leaf uses its local switching path. In the layout shown, rails on different leaves communicate through the spine.</p>"]]}
-  ]};
+window.SS_TOPIC_CFG={
+ "anim": "topo",
+ "ar": [900/360,360/520],
+ "steps": [
+  {
+   "t": [
+    "Leaf 汇聚服务器",
+    "Leaf Switches Connect Servers"
+   ],
+   "d": [
+    "接在同一台 Leaf 上的服务器可以在这台交换机内完成转发。",
+    "Servers on the same leaf can exchange traffic through that switch."
+   ],
+   "b": [
+    [
+     "<p>网络拓扑描述设备和链路如何连接。Leaf 是直接连接服务器的接入交换机。同一台 Leaf 上的服务器可以在本交换机内转发。跨 Leaf 的流量需要通过连接这些交换机的上联链路。</p>"
+    ],
+    [
+     "<p>A network topology describes how devices and links connect. A leaf is an access switch that connects directly to servers. Traffic between servers on the same leaf can stay on that switch. Traffic between leaves uses uplinks that connect those switches to the rest of the fabric.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Spine 提供跨 Leaf 路径",
+    "Spines Provide Paths Between Leaves"
+   ],
+   "d": [
+    "每台 Leaf 接入每台 Spine，跨 Leaf 流量可经不同的 Spine 到达目的端。",
+    "Each leaf connects to each spine, giving cross-leaf traffic multiple routes to its destination."
+   ],
+   "b": [
+    [
+     "<p>Spine 是在 Leaf 之间转发的上层交换机。在两层 Leaf–Spine 网络中，一个跨 Leaf 报文经源 Leaf、一个 Spine 和目的 Leaf 转发。这是折叠 Clos 拓扑的常见形式，数据中心资料也常称其为胖树。</p>"
+    ],
+    [
+     "<p>A spine is an upper-tier switch that forwards traffic between leaves. In a two-tier leaf–spine fabric, a cross-leaf packet traverses the source leaf, one spine and the destination leaf. This is a common form of folded Clos, also described as a fat-tree in data center literature.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "等价多路径分散流量",
+    "Equal-cost Multipath Distributes Flows"
+   ],
+   "d": [
+    "基于流的 ECMP 把不同流量分配给多个等成本的下一跳。",
+    "Flow-based ECMP distributes flows among next hops with equal routing cost."
+   ],
+   "b": [
+    [
+     "<p>等价多路径（ECMP）让路由设备在同一目的地有多个同等路由代价的下一跳时使用多条路径。常见做法是对源地址、目的地址等报文字段做哈希，把同一条流稳定映射到其中一个下一跳。多个大流仍可能落在同一条路径上。</p>"
+    ],
+    [
+     "<p>Equal-cost multipath (ECMP) allows a router to use several next hops with the same routing cost to a destination. A common implementation hashes packet fields such as source and destination addresses to keep a flow on one next hop. Several large flows can still land on the same path.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "上联容量决定超额订阅",
+    "Uplink Capacity Determines Oversubscription"
+   ],
+   "d": [
+    "下联总容量高于上联总容量时，并发跨 Leaf 流量会争用上联。",
+    "When downlink capacity exceeds uplink capacity, concurrent cross-leaf flows can contend for the uplinks."
+   ],
+   "b": [
+    [
+     "<p>超额订阅比是某层面向服务器方向的总链路容量与上行总链路容量之比。下联可同时送入的流量超过上联可同时送出的流量时，跨 Leaf 的数据会在上联出口排队。服务器之间留在同一台 Leaf 的流量使用本地转发路径。</p>"
+    ],
+    [
+     "<p>The oversubscription ratio compares the aggregate capacity toward servers with the aggregate uplink capacity. When the downlinks can offer more traffic than the uplinks can carry, cross-leaf traffic can queue on the uplink egress. Traffic between servers on the same leaf uses the local switching path.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "轨道为同组 GPU 缩短路径",
+    "Rails Shorten Paths Within GPU Groups"
+   ],
+   "d": [
+    "当同一轨道的 GPU 对应网卡接入同一台 Leaf 时，组内通信可在这台 Leaf 完成。",
+    "When NICs for GPUs on the same rail share a leaf, their traffic can stay on that switch."
+   ],
+   "b": [
+    [
+     "<p>轨道优化按服务器上的 GPU 或网卡位置组织网络接线。GPU 是图形处理器，集群也用它执行并行计算。例如，两台服务器中对应 GPU 的网卡可以接入同一台 Leaf，形成一组轨道。落在同一台 Leaf 的通信走本地转发路径。在图示的接法中，接在不同 Leaf 的轨道之间通过 Spine 互通。</p>"
+    ],
+    [
+     "<p>Rail optimization aligns network connections with GPU or adapter positions in each server. A graphics processing unit (GPU) is also used for parallel computing in clusters. For example, the adapters serving corresponding GPUs in two servers can connect to the same leaf to form a rail. Traffic within a leaf uses its local switching path. In the layout shown, rails on different leaves communicate through the spine.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

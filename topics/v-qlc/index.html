@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="QLC flash: dense and cheap, with few erase cycles">QLC 闪存：容量大、价格低，擦写次数少</h1>
+      <div><h1 data-en="QLC Flash: Dense and Cheap, with Few Erase Cycles">QLC 闪存：容量大、价格低，擦写次数少</h1>
         <p class="meta"><span data-en="6 steps · VAST, flash, QLC, SSD endurance">6 步 · VAST、闪存、QLC、SSD 寿命</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,14 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=25" data-en="VAST AI Operating System white paper (April 2026), Hyperscale Flash">VAST AI Operating System 白皮书（2026 年 4 月），Hyperscale Flash</a></li>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=36" data-en="VAST AI Operating System white paper (April 2026), Write Buffer Bursting">VAST AI Operating System 白皮书（2026 年 4 月），Write Buffer Bursting</a></li>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=56" data-en="VAST AI Operating System white paper (April 2026), Challenges with Commodity Flash and Endurance Is Write Dependent">VAST AI Operating System 白皮书（2026 年 4 月），Challenges with Commodity Flash 与 Endurance Is Write Dependent</a></li>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=58" data-en="VAST AI Operating System white paper (April 2026), Optimized for Hyperscale Flash and Endurance Is Amortized">VAST AI Operating System 白皮书（2026 年 4 月），Optimized for Hyperscale Flash 与 Endurance Is Amortized</a></li>
-      <li><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=29" data-en="VAST AI Operating System white paper (April 2026), stripe allocation">VAST AI Operating System 白皮书（2026 年 4 月），条带放置策略</a></li>
       <li data-en="Animations are schematic. Published figures are identified by their sources.">动画为示意。引用的公开数字均标明出处。</li>
     </ul></div>
   </div>
@@ -77,15 +72,149 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-qlc.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-qlc',ar:[960/480,480/560],
-  steps:[
-    {"s": ["单元密度", "Cell density"], "t": ["QLC 单元存储 4 比特", "A QLC cell stores 4 bits"], "d": ["QLC 区分 16 个电荷档位，每档对应一个 4 比特值。SLC 使用两个状态存储 1 比特。", "QLC distinguishes 16 charge levels, each representing a 4-bit value. SLC uses two states to store 1 bit."], "b": [["<p>读出时，芯片根据单元的电压判定其状态。白皮书以约 0 至 3 V 的范围说明 QLC 的档位如何排列。</p>", "<p>单位闪存单元承载更多比特，同样数量的单元可以提供更大的容量。</p>"], ["<p>On a read, the chip determines the cell’s state from its voltage. The white paper illustrates QLC’s levels over a range of roughly 0 to 3 V.</p>", "<p>Storing more bits per cell increases capacity for the same number of cells.</p>"]]},
-    {"s": ["擦写耐久度", "Program/erase endurance"], "t": ["档位越密，越容易受电荷泄漏影响", "Closer levels increase sensitivity to charge leakage"], "d": ["反复擦除会磨损单元的绝缘层。档位越密，相同的电荷损失越容易改变读出的值。", "Repeated erasure wears the cell’s insulating layer. With closer levels, the same charge loss is more likely to change the value read."], "b": [["<p>白皮书以早期 SLC 的约 100,000 次擦写为参照，说明 QLC 单元的擦写耐久度约为其百分之一。这里比较的是单元擦写次数。</p>"], ["<p>The white paper uses roughly 100,000 program/erase cycles for early SLC as a reference and puts QLC at about one hundredth of that figure. The comparison concerns cell-level cycling.</p>"]]},
-    {"s": ["写缓冲", "Write buffer"], "t": ["先在 SCM 保护写入，再迁往 QLC", "Protect writes in SCM before QLC migration"], "d": ["在常规 SCM 缓冲路径上，数据受到持久化保护后即可确认写入，随后在后台迁往容量层。", "On the standard SCM-buffered path, the system acknowledges a write once it is durably protected, then migrates it to the capacity tier in the background."], "b": [["<p>QLC 写入需要精细地控制电荷，编程延迟因此较高。高耐久度 SCM 为前台写入提供持久化缓冲，也能吸收一部分短期改写。</p>"], ["<p>QLC takes longer to program because charge must be controlled precisely. High-endurance SCM provides a persistent buffer for foreground writes and can absorb some transient updates.</p>"]]},
-    {"s": ["写入负载", "Write workload"], "t": ["大块顺序写入能提高整盘耐久度", "Large sequential writes increase drive endurance"], "d": ["白皮书用 Intel P4326 说明写入负载的重要性：128 KB 顺序写的整盘耐久度约为 4 KB 随机写的 20 倍。", "The white paper uses the Intel P4326 to illustrate workload sensitivity: drive endurance for 128 KB sequential writes is about 20 times that for 4 KB random writes."], "b": [["<p>页是闪存的最小写入单位。白皮书以内部页为 128 KB、且缺少盘内 DRAM 写缓冲的超大规模 SSD 为例，说明 4 KB 写入也会消耗整页的擦写预算。</p>", "<p>整盘耐久度以累计整盘写入次数衡量。这里的比较同时改变了请求大小和访问模式。</p>"], ["<p>A page is the minimum flash programming unit. For a hyperscale SSD with 128 KB internal pages and no on-drive DRAM write buffer, the white paper shows how a 4 KB write consumes the cycling budget of an entire page.</p>", "<p>Drive endurance here is measured in cumulative full-drive writes. Both request size and access pattern change in this comparison.</p>"]]},
-    {"s": ["标称耐久度", "Endurance rating"], "t": ["标称耐久度对应特定测试负载", "Endurance ratings describe a specified workload"], "d": ["VAST 白皮书引用的 JEDEC 负载中，77% 的写入请求为 4 KB 或更小。", "In the JEDEC workload cited by the VAST white paper, 77% of write requests are 4 KB or smaller."], "b": [["<p>DWPD 表示在额定期限内每天可写入多少个整盘容量。TBW 表示累计可写入的数据量，以 TB 计。</p>", "<p>评估实际磨损时，需要把应用的写入方式与额定测试负载对应起来。较大且对齐的写入能减少部分页造成的磨损。</p>"], ["<p>DWPD expresses full-drive writes per day over the rated period. TBW expresses cumulative writable volume in terabytes.</p>", "<p>Estimating actual wear requires relating the application’s writes to the rating workload. Larger, aligned writes can reduce wear from partially filled pages.</p>"]]},
-    {"s": ["集群磨损均衡", "Cluster wear levelling"], "t": ["写缓冲、对齐和集群磨损均衡", "Write buffering, alignment and cluster-wide wear levelling"], "d": ["SCM 缓冲短期更新。容量层按页和擦除块组织数据，并在集群范围内均衡磨损。", "SCM buffers transient updates. The capacity tier aligns data to pages and erase blocks and balances wear across the cluster."], "b": [["<p>VAST 将集群内的闪存作为共享的擦除块池管理。新条带的放置考虑剩余空间和剩余耐久度，使写入磨损分散到不同 SSD。</p>"], ["<p>VAST manages the cluster’s flash as a shared pool of erase blocks. New stripe placement considers free space and remaining endurance, spreading write wear across SSDs.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-qlc",
+ "ar": [960/480,480/560],
+ "steps": [
+  {
+   "s": [
+    "单元密度",
+    "Cell density"
+   ],
+   "t": [
+    "QLC 单元存储 4 比特",
+    "A QLC Cell Stores 4 Bits"
+   ],
+   "d": [
+    "QLC 区分 16 个电荷档位，每档对应一个 4 比特值。SLC 使用两个状态存储 1 比特。",
+    "QLC distinguishes 16 charge levels, each representing a 4-bit value. SLC uses two states to store 1 bit."
+   ],
+   "b": [
+    [
+     "<p>读出时，芯片根据单元的电压判定其状态。白皮书以约 0 至 3 V 的范围说明 QLC 的档位如何排列。</p>",
+     "<p>单位闪存单元承载更多比特，同样数量的单元可以提供更大的容量。</p>"
+    ],
+    [
+     "<p>On a read, the chip determines the cell’s state from its voltage. The white paper illustrates QLC’s levels over a range of roughly 0 to 3 V.</p>",
+     "<p>Storing more bits per cell increases capacity for the same number of cells.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "擦写耐久度",
+    "Program/erase endurance"
+   ],
+   "t": [
+    "档位越密，越容易受电荷泄漏影响",
+    "Closer Levels Increase Sensitivity to Charge Leakage"
+   ],
+   "d": [
+    "反复擦除会磨损单元的绝缘层。档位越密，相同的电荷损失越容易改变读出的值。",
+    "Repeated erasure wears the cell’s insulating layer. With closer levels, the same charge loss is more likely to change the value read."
+   ],
+   "b": [
+    [
+     "<p>白皮书以早期 SLC 的约 100,000 次擦写为参照，说明 QLC 单元的擦写耐久度约为其百分之一。这里比较的是单元擦写次数。</p>"
+    ],
+    [
+     "<p>The white paper uses roughly 100,000 program/erase cycles for early SLC as a reference and puts QLC at about one hundredth of that figure. The comparison concerns cell-level cycling.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "写缓冲",
+    "Write buffer"
+   ],
+   "t": [
+    "先在 SCM 保护写入，再迁往 QLC",
+    "Protect Writes in SCM Before QLC Migration"
+   ],
+   "d": [
+    "在常规 SCM 缓冲路径上，数据受到持久化保护后即可确认写入，随后在后台迁往容量层。",
+    "On the standard SCM-buffered path, the system acknowledges a write once it is durably protected, then migrates it to the capacity tier in the background."
+   ],
+   "b": [
+    [
+     "<p>QLC 写入需要精细地控制电荷，编程延迟因此较高。高耐久度 SCM 为前台写入提供持久化缓冲，也能吸收一部分短期改写。</p>"
+    ],
+    [
+     "<p>QLC takes longer to program because charge must be controlled precisely. High-endurance SCM provides a persistent buffer for foreground writes and can absorb some transient updates.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "写入负载",
+    "Write workload"
+   ],
+   "t": [
+    "大块顺序写入能提高整盘耐久度",
+    "Large Sequential Writes Increase Drive Endurance"
+   ],
+   "d": [
+    "白皮书用 Intel P4326 说明写入负载的重要性：128 KB 顺序写的整盘耐久度约为 4 KB 随机写的 20 倍。",
+    "The white paper uses the Intel P4326 to illustrate workload sensitivity: drive endurance for 128 KB sequential writes is about 20 times that for 4 KB random writes."
+   ],
+   "b": [
+    [
+     "<p>页是闪存的最小写入单位。白皮书以内部页为 128 KB、且缺少盘内 DRAM 写缓冲的超大规模 SSD 为例，说明 4 KB 写入也会消耗整页的擦写预算。</p>",
+     "<p>整盘耐久度以累计整盘写入次数衡量。这里的比较同时改变了请求大小和访问模式。</p>"
+    ],
+    [
+     "<p>A page is the minimum flash programming unit. For a hyperscale SSD with 128 KB internal pages and no on-drive DRAM write buffer, the white paper shows how a 4 KB write consumes the cycling budget of an entire page.</p>",
+     "<p>Drive endurance here is measured in cumulative full-drive writes. Both request size and access pattern change in this comparison.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "标称耐久度",
+    "Endurance rating"
+   ],
+   "t": [
+    "标称耐久度对应特定测试负载",
+    "Endurance Ratings Describe a Specified Workload"
+   ],
+   "d": [
+    "VAST 白皮书引用的 JEDEC 负载中，77% 的写入请求为 4 KB 或更小。",
+    "In the JEDEC workload cited by the VAST white paper, 77% of write requests are 4 KB or smaller."
+   ],
+   "b": [
+    [
+     "<p>DWPD 表示在额定期限内每天可写入多少个整盘容量。TBW 表示累计可写入的数据量，以 TB 计。</p>",
+     "<p>评估实际磨损时，需要把应用的写入方式与额定测试负载对应起来。较大且对齐的写入能减少部分页造成的磨损。</p>"
+    ],
+    [
+     "<p>DWPD expresses full-drive writes per day over the rated period. TBW expresses cumulative writable volume in terabytes.</p>",
+     "<p>Estimating actual wear requires relating the application’s writes to the rating workload. Larger, aligned writes can reduce wear from partially filled pages.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "集群磨损均衡",
+    "Cluster wear levelling"
+   ],
+   "t": [
+    "写缓冲、对齐和集群磨损均衡",
+    "Write Buffering, Alignment and Cluster-Wide Wear Levelling"
+   ],
+   "d": [
+    "SCM 缓冲短期更新。容量层按页和擦除块组织数据，并在集群范围内均衡磨损。",
+    "SCM buffers transient updates. The capacity tier aligns data to pages and erase blocks and balances wear across the cluster."
+   ],
+   "b": [
+    [
+     "<p>VAST 将集群内的闪存作为共享的擦除块池管理。新条带的放置考虑剩余空间和剩余耐久度，使写入磨损分散到不同 SSD。</p>"
+    ],
+    [
+     "<p>VAST manages the cluster’s flash as a shared pool of erase blocks. New stripe placement considers free space and remaining endurance, spreading write wear across SSDs.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

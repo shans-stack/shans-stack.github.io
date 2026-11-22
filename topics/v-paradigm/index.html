@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Four storage models: drive access and persistent state">四种存储范式：设备访问与持久状态</h1>
+      <div><h1 data-en="Four Storage Models: Drive Access and Persistent State">四种存储范式：设备访问与持久状态</h1>
         <p class="meta"><span data-en="6 steps · Shared media, shared nothing, parallel file system, DASE">6 步 · 共享介质、无共享、并行文件系统、DASE</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,10 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://www.vastdata.com/whitepaper" data-en="VAST AI Operating System white paper · DASE, Asymmetric Scaling, Scale-Out Beyond Shared-Nothing, and NFS">VAST AI Operating System 白皮书 · DASE 架构、Asymmetric Scaling、Scale-Out Beyond Shared-Nothing 与 NFS 章节</a></li>
       <li data-en="Schematic illustrations.">动画为示意。</li>
     </ul></div>
   </div>
@@ -73,15 +72,149 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-paradigm.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-paradigm',ar:[960/520,480/580],
-  steps:[
-    {"s": ["两件事", "Two questions"], "t": ["盘的访问范围与持久状态", "Drive access and persistent state"], "d": ["这组架构示例按设备访问范围和持久状态的位置来读。", "The examples show who can reach storage devices and where persistent state lives."], "b": [["<p>存储架构可以从两个角度描述：哪些控制器或节点能直接访问存储设备，以及条带位置等持久元数据由哪些组件保存。这里用共享介质、无共享、分设元数据服务的并行文件系统以及 VAST DASE 举例。</p>"], ["<p>A storage architecture defines which controllers or nodes can reach storage devices directly and which components hold persistent metadata such as stripe locations. The examples cover shared media, shared nothing, a parallel file system with a separate metadata service, and VAST DASE.</p>"]]},
-    {"s": ["共享介质", "Shared media"], "t": ["共享介质：一对控制器共用盘组", "Shared media: a controller pair shares a drive set"], "d": ["控制器对连接同一组盘，图中展示其中一台故障时的接管。", "A controller pair connects to one drive set. The diagram shows takeover after a controller failure."], "b": [["<p>在双控制器高可用配置中，两台控制器都能访问同一组存储设备。图示中，备用控制器在活动控制器故障后接管访问。</p>"], ["<p>Both controllers in this high-availability configuration can access the same storage devices. The diagram shows the standby controller taking over after the active controller fails.</p>"]]},
-    {"s": ["无共享", "Shared nothing"], "t": ["无共享：节点管理本地盘", "Shared nothing: nodes manage local drives"], "d": ["每台节点直接访问自己的盘。图中展示一次跨节点转发。", "Each node directly reaches its own drives. The diagram shows a request forwarded between nodes."], "b": [["<p>无共享集群将存储处理和本地盘放在同一个节点内。数据可分布在多个节点上，图中由请求入口将操作转给保存目标数据的节点。</p>", "<p>节点故障会使其本地盘失去访问路径，集群可以通过跨节点纠删码保护数据。</p>"], ["<p>A shared-nothing cluster places storage processing and local drives in the same node. Data can span nodes. In the diagram, the receiving node forwards the operation to the node that holds the requested data.</p>", "<p>A node failure makes its local drives inaccessible. The cluster can protect data across nodes with erasure coding.</p>"]]},
-    {"s": ["并行文件系统", "Parallel file system"], "t": ["并行文件系统示例：布局与数据分路", "Parallel file system example: separate layout and data paths"], "d": ["客户端取得条带位置后，直接并行访问承载文件内容的存储目标。", "The client obtains the stripe locations, then accesses the file’s storage targets in parallel."], "b": [["<p>在图示架构中，元数据服务提供各条带对应的存储目标。专用客户端可据此同时向多个数据服务器发送 I/O。</p>"], ["<p>In the architecture shown, the metadata service supplies a layout that maps file stripes to storage targets. The file system client uses that layout to send I/O to several data servers concurrently.</p>"]]},
-    {"s": ["解耦全共享", "DASE"], "t": ["DASE：每台 CNode 访问共享盘", "DASE: every CNode reaches shared drives"], "d": ["VAST CNode 经 NVMe-oF 直接访问集群中的共享 SSD。", "VAST CNodes access the cluster’s shared SSDs directly over NVMe-oF."], "b": [["<p>在 VAST DASE（Disaggregated Shared Everything）中，CNode 处理客户端请求，DBox 承载共享存储介质。每台 CNode 启动时挂载集群中的 SSD。</p>", "<p>数据、元数据和持久系统状态位于共享介质上。接到请求的 CNode 可以直接读取共享元数据，定位并读取数据。</p>"], ["<p>In VAST DASE (Disaggregated Shared Everything), CNodes handle client requests and DBoxes house the shared storage media. Each CNode mounts the cluster’s SSDs at boot.</p>", "<p>The shared media hold data, metadata, and persistent system state. A CNode can read the shared metadata to locate and fetch the requested data directly.</p>"]]},
-    {"s": ["一块盘几台能用", "Who reaches a drive"], "t": ["图示对照：设备的访问范围", "Drive access in the four examples"], "d": ["直接访问图中选定存储设备的是控制器对、所在节点、数据服务器或全部 CNode。", "The highlighted drive is reached by a controller pair, its node, a data server, or every CNode."], "b": [["<p>共享介质示例中，两台控制器直接访问同一组盘。无共享示例中，直接访问设备的是其所在节点。并行文件系统示例中，客户端并行访问服务端目标，由对应数据服务器访问设备。</p>", "<p>DASE 中，每台 CNode 都经 NVMe-oF 直接访问共享 SSD。</p>"], ["<p>In the shared-media example, both controllers directly reach the drive set. In the shared-nothing example, the local node reaches the drive. In the parallel file system example, clients access server-side targets in parallel and the corresponding data server accesses the drive.</p>", "<p>In DASE, each CNode reaches the shared SSDs directly over NVMe-oF.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-paradigm",
+ "ar": [960/520,480/580],
+ "steps": [
+  {
+   "s": [
+    "两件事",
+    "Two questions"
+   ],
+   "t": [
+    "盘的访问范围与持久状态",
+    "Drive Access and Persistent State"
+   ],
+   "d": [
+    "这组架构示例按设备访问范围和持久状态的位置来读。",
+    "The examples show who can reach storage devices and where persistent state lives."
+   ],
+   "b": [
+    [
+     "<p>存储架构可以从两个角度描述：哪些控制器或节点能直接访问存储设备，以及条带位置等持久元数据由哪些组件保存。这里用共享介质、无共享、分设元数据服务的并行文件系统以及 VAST DASE 举例。</p>"
+    ],
+    [
+     "<p>A storage architecture defines which controllers or nodes can reach storage devices directly and which components hold persistent metadata such as stripe locations. The examples cover shared media, shared nothing, a parallel file system with a separate metadata service, and VAST DASE.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "共享介质",
+    "Shared media"
+   ],
+   "t": [
+    "共享介质：一对控制器共用盘组",
+    "Shared Media: A Controller Pair Shares a Drive Set"
+   ],
+   "d": [
+    "控制器对连接同一组盘，图中展示其中一台故障时的接管。",
+    "A controller pair connects to one drive set. The diagram shows takeover after a controller failure."
+   ],
+   "b": [
+    [
+     "<p>在双控制器高可用配置中，两台控制器都能访问同一组存储设备。图示中，备用控制器在活动控制器故障后接管访问。</p>"
+    ],
+    [
+     "<p>Both controllers in this high-availability configuration can access the same storage devices. The diagram shows the standby controller taking over after the active controller fails.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "无共享",
+    "Shared nothing"
+   ],
+   "t": [
+    "无共享：节点管理本地盘",
+    "Shared Nothing: Nodes Manage Local Drives"
+   ],
+   "d": [
+    "每台节点直接访问自己的盘。图中展示一次跨节点转发。",
+    "Each node directly reaches its own drives. The diagram shows a request forwarded between nodes."
+   ],
+   "b": [
+    [
+     "<p>无共享集群将存储处理和本地盘放在同一个节点内。数据可分布在多个节点上，图中由请求入口将操作转给保存目标数据的节点。</p>",
+     "<p>节点故障会使其本地盘失去访问路径，集群可以通过跨节点纠删码保护数据。</p>"
+    ],
+    [
+     "<p>A shared-nothing cluster places storage processing and local drives in the same node. Data can span nodes. In the diagram, the receiving node forwards the operation to the node that holds the requested data.</p>",
+     "<p>A node failure makes its local drives inaccessible. The cluster can protect data across nodes with erasure coding.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "并行文件系统",
+    "Parallel file system"
+   ],
+   "t": [
+    "并行文件系统示例：布局与数据分路",
+    "Parallel File System Example: Separate Layout and Data Paths"
+   ],
+   "d": [
+    "客户端取得条带位置后，直接并行访问承载文件内容的存储目标。",
+    "The client obtains the stripe locations, then accesses the file’s storage targets in parallel."
+   ],
+   "b": [
+    [
+     "<p>在图示架构中，元数据服务提供各条带对应的存储目标。专用客户端可据此同时向多个数据服务器发送 I/O。</p>"
+    ],
+    [
+     "<p>In the architecture shown, the metadata service supplies a layout that maps file stripes to storage targets. The file system client uses that layout to send I/O to several data servers concurrently.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "解耦全共享",
+    "DASE"
+   ],
+   "t": [
+    "DASE：每台 CNode 访问共享盘",
+    "DASE: Every CNode Reaches Shared Drives"
+   ],
+   "d": [
+    "VAST CNode 经 NVMe-oF 直接访问集群中的共享 SSD。",
+    "VAST CNodes access the cluster’s shared SSDs directly over NVMe-oF."
+   ],
+   "b": [
+    [
+     "<p>在 VAST DASE（Disaggregated Shared Everything）中，CNode 处理客户端请求，DBox 承载共享存储介质。每台 CNode 启动时挂载集群中的 SSD。</p>",
+     "<p>数据、元数据和持久系统状态位于共享介质上。接到请求的 CNode 可以直接读取共享元数据，定位并读取数据。</p>"
+    ],
+    [
+     "<p>In VAST DASE (Disaggregated Shared Everything), CNodes handle client requests and DBoxes house the shared storage media. Each CNode mounts the cluster’s SSDs at boot.</p>",
+     "<p>The shared media hold data, metadata, and persistent system state. A CNode can read the shared metadata to locate and fetch the requested data directly.</p>"
+    ]
+   ]
+  },
+  {
+   "s": [
+    "一块盘几台能用",
+    "Who reaches a drive"
+   ],
+   "t": [
+    "图示对照：设备的访问范围",
+    "Drive Access in the Four Examples"
+   ],
+   "d": [
+    "直接访问图中选定存储设备的是控制器对、所在节点、数据服务器或全部 CNode。",
+    "The highlighted drive is reached by a controller pair, its node, a data server, or every CNode."
+   ],
+   "b": [
+    [
+     "<p>共享介质示例中，两台控制器直接访问同一组盘。无共享示例中，直接访问设备的是其所在节点。并行文件系统示例中，客户端并行访问服务端目标，由对应数据服务器访问设备。</p>",
+     "<p>DASE 中，每台 CNode 都经 NVMe-oF 直接访问共享 SSD。</p>"
+    ],
+    [
+     "<p>In the shared-media example, both controllers directly reach the drive set. In the shared-nothing example, the local node reaches the drive. In the parallel file system example, clients access server-side targets in parallel and the corresponding data server accesses the drive.</p>",
+     "<p>In DASE, each CNode reaches the shared SSDs directly over NVMe-oF.</p>"
+    ]
+   ]
+  }
+ ]
 };
 const heading = document.querySelector('h1');
 window.SS.stations[window.SS_TOPIC_CFG.anim].t = [heading.textContent, heading.dataset.en];

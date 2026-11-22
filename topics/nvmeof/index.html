@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="NVMe-oF: remote drives that act local">NVMe-oF：远端的盘当本地用</h1>
+      <div><h1 data-en="NVMe-oF: Remote Drives That Act Local">NVMe-oF：远端的盘当本地用</h1>
         <p class="meta"><span data-en="6 steps · NVMe, RDMA, TCP, JBOF">6 步 · NVMe、RDMA、TCP、JBOF</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="NVM Express specification: NVMe over Fabrics (RDMA and TCP transports).">NVM Express 官方规范：NVMe over Fabrics（含 RDMA、TCP 两种传输）。</li>
       <li data-en="VAST Data public white paper, The VAST AI Operating System.">VAST Data 公开白皮书《The VAST AI Operating System》。</li>
@@ -74,153 +74,155 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/nvmeof.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'nvmeof',ar:[960/476,480/748],
-  steps:[
-   {
-    "s": [
-     "本地 NVMe",
-     "Local NVMe"
+window.SS_TOPIC_CFG={
+ "anim": "nvmeof",
+ "ar": [960/476,480/748],
+ "steps": [
+  {
+   "s": [
+    "本地 NVMe",
+    "Local NVMe"
+   ],
+   "t": [
+    "本地 NVMe：盘插在服务器里",
+    "Local NVMe: The Drive Sits Inside the Server"
+   ],
+   "d": [
+    "CPU 经 PCIe 给本机的 NVMe 盘下命令，盘把数据直接放进内存。",
+    "The CPU sends a command over PCIe to the local NVMe drive, and the drive puts the data straight into memory."
+   ],
+   "b": [
+    [
+     "<p>NVMe 是专为固态盘设计的协议，盘通过 PCIe 直接连到 CPU，不经过老式的磁盘控制器。PCIe 是服务器主板上连接 CPU、显卡、固态盘的高速通道。NVMe 支持很多条并行的命令队列，每条队列都可以排很深，所以协议本身不会限制固态盘的速度。</p>",
+     "<p>这一步只看一台服务器：CPU 往队列里放一条读命令，盘把数据写进内存，读完通知 CPU。后面所有步骤要做的事，都是想让「别处的盘」也能这样用。</p>"
     ],
-    "t": [
-     "本地 NVMe：盘插在服务器里",
-     "Local NVMe: the drive sits inside the server"
-    ],
-    "d": [
-     "CPU 经 PCIe 给本机的 NVMe 盘下命令，盘把数据直接放进内存。",
-     "The CPU sends a command over PCIe to the local NVMe drive, and the drive puts the data straight into memory."
-    ],
-    "b": [
-     [
-      "<p>NVMe 是专为固态盘设计的协议，盘通过 PCIe 直接连到 CPU，不经过老式的磁盘控制器。PCIe 是服务器主板上连接 CPU、显卡、固态盘的高速通道。NVMe 支持很多条并行的命令队列，每条队列都可以排很深，所以协议本身不会限制固态盘的速度。</p>",
-      "<p>这一步只看一台服务器：CPU 往队列里放一条读命令，盘把数据写进内存，读完通知 CPU。后面所有步骤要做的事，都是想让「别处的盘」也能这样用。</p>"
-     ],
-     [
-      "<p>NVMe is a protocol designed for solid-state drives. The drive connects to the CPU directly over PCIe, without an old-style disk controller in between. PCIe is the high-speed channel on a server board that links the CPU, graphics cards and solid-state drives. NVMe supports many command queues in parallel, and each queue can hold many commands, so the protocol itself does not hold the drive back.</p>",
-      "<p>This step looks at a single server: the CPU puts a read command in a queue, the drive writes the data into memory and tells the CPU when it is done. Every step that follows is about letting a drive somewhere else be used the same way.</p>"
-     ]
+    [
+     "<p>NVMe is a protocol designed for solid-state drives. The drive connects to the CPU directly over PCIe, without an old-style disk controller in between. PCIe is the high-speed channel on a server board that links the CPU, graphics cards and solid-state drives. NVMe supports many command queues in parallel, and each queue can hold many commands, so the protocol itself does not hold the drive back.</p>",
+     "<p>This step looks at a single server: the CPU puts a read command in a queue, the drive writes the data into memory and tells the CPU when it is done. Every step that follows is about letting a drive somewhere else be used the same way.</p>"
     ]
-   },
-   {
-    "s": [
-     "请别人转交",
-     "Ask another server"
+   ]
+  },
+  {
+   "s": [
+    "请别人转交",
+    "Ask another server"
+   ],
+   "t": [
+    "别的服务器要用，只能请它转交",
+    "Another Server Can Only Ask for the Data to Be Passed On"
+   ],
+   "d": [
+    "盘关在服务器 A 里，服务器 B 要读，只能请 A 的 CPU 读出来再经网络转过去。",
+    "The drive is locked inside server A. For server B to read it, A's CPU has to read the data and pass it over the network."
+   ],
+   "b": [
+    [
+     "<p>盘插在哪台服务器里，就只有那台能直接下 NVMe 命令。服务器 B 想要这块盘上的数据，只能发请求给 A，由 A 的 CPU 读盘、再把数据经网络发回 B。A 的 CPU 因此要替其他服务器承担工作。</p>",
+     "<p>故障的影响更大：在这种「各管各的盘」的架构里，一台服务器停机，它下面的所有盘随之无法访问。这也是把盘从服务器中分离出来的出发点。</p>"
     ],
-    "t": [
-     "别的服务器要用，只能请它转交",
-     "Another server can only ask for the data to be passed on"
-    ],
-    "d": [
-     "盘关在服务器 A 里，服务器 B 要读，只能请 A 的 CPU 读出来再经网络转过去。",
-     "The drive is locked inside server A. For server B to read it, A's CPU has to read the data and pass it over the network."
-    ],
-    "b": [
-     [
-      "<p>盘插在哪台服务器里，就只有那台能直接下 NVMe 命令。服务器 B 想要这块盘上的数据，只能发请求给 A，由 A 的 CPU 读盘、再把数据经网络发回 B。A 的 CPU 因此要替其他服务器承担工作。</p>",
-      "<p>故障的影响更大：在这种「各管各的盘」的架构里，一台服务器停机，它下面的所有盘随之无法访问。这也是把盘从服务器中分离出来的出发点。</p>"
-     ],
-     [
-      "<p>Only the server a drive is plugged into can send it NVMe commands. If server B wants data on that drive, it has to send a request to A; A's CPU reads the drive and sends the data back to B over the network. A's CPU ends up doing work on behalf of another server.</p>",
-      "<p>Failures make it worse. In this \"each server owns its drives\" design, when a server goes down, every drive behind it becomes unreachable too. This is the starting point for taking drives out of the servers.</p>"
-     ]
+    [
+     "<p>Only the server a drive is plugged into can send it NVMe commands. If server B wants data on that drive, it has to send a request to A; A's CPU reads the drive and sends the data back to B over the network. A's CPU ends up doing work on behalf of another server.</p>",
+     "<p>Failures make it worse. In this \"each server owns its drives\" design, when a server goes down, every drive behind it becomes unreachable too. This is the starting point for taking drives out of the servers.</p>"
     ]
-   },
-   {
-    "s": [
-     "NVMe-oF",
-     "NVMe-oF"
+   ]
+  },
+  {
+   "s": [
+    "NVMe-oF",
+    "NVMe-oF"
+   ],
+   "t": [
+    "NVMe-oF：把 NVMe 命令通过网络送过去",
+    "NVMe-oF: Sending NVMe Commands over the Network"
+   ],
+   "d": [
+    "盘放进网络上的存储箱，服务器 B 直接把 NVMe 命令发过去，在 B 看来它就是一块本地盘。",
+    "The drives move into a storage box on the network. Server B sends NVMe commands to it directly, and to B it looks like a local drive."
+   ],
+   "b": [
+    [
+     "<p>NVMe-oF（NVMe over Fabrics）是建在 NVMe 之上的块存储协议：同样的读写命令，不再走机箱里的 PCIe，而是经网络送到远端的盘。服务器这一端叫发起端（initiator），常用操作系统自带；盘那一端叫目标端（target）。对服务器来说，远端盘挂上来以后和本地盘一样，按块读写。</p>",
+     "<p>和第 2 步比，中间不再有一台「替人转交」的服务器：命令直达存储箱里的盘，数据直接回到 B 的内存。</p>"
     ],
-    "t": [
-     "NVMe-oF：把 NVMe 命令通过网络送过去",
-     "NVMe-oF: sending NVMe commands over the network"
-    ],
-    "d": [
-     "盘放进网络上的存储箱，服务器 B 直接把 NVMe 命令发过去，在 B 看来它就是一块本地盘。",
-     "The drives move into a storage box on the network. Server B sends NVMe commands to it directly, and to B it looks like a local drive."
-    ],
-    "b": [
-     [
-      "<p>NVMe-oF（NVMe over Fabrics）是建在 NVMe 之上的块存储协议：同样的读写命令，不再走机箱里的 PCIe，而是经网络送到远端的盘。服务器这一端叫发起端（initiator），常用操作系统自带；盘那一端叫目标端（target）。对服务器来说，远端盘挂上来以后和本地盘一样，按块读写。</p>",
-      "<p>和第 2 步比，中间不再有一台「替人转交」的服务器：命令直达存储箱里的盘，数据直接回到 B 的内存。</p>"
-     ],
-     [
-      "<p>NVMe-oF (NVMe over Fabrics) is a block storage protocol built on NVMe: the same read and write commands no longer travel over PCIe inside the chassis but over the network to a remote drive. The server side is called the initiator and usually comes with the operating system; the drive side is called the target. Once a remote drive is attached, the server reads and writes it in blocks just like a local drive.</p>",
-      "<p>Compared with step 2, there is no longer a server in the middle passing data along: commands go straight to the drive in the storage box, and data comes straight back to B's memory.</p>"
-     ]
+    [
+     "<p>NVMe-oF (NVMe over Fabrics) is a block storage protocol built on NVMe: the same read and write commands no longer travel over PCIe inside the chassis but over the network to a remote drive. The server side is called the initiator and usually comes with the operating system; the drive side is called the target. Once a remote drive is attached, the server reads and writes it in blocks just like a local drive.</p>",
+     "<p>Compared with step 2, there is no longer a server in the middle passing data along: commands go straight to the drive in the storage box, and data comes straight back to B's memory.</p>"
     ]
-   },
-   {
-    "s": [
-     "RDMA 或 TCP",
-     "RDMA or TCP"
+   ]
+  },
+  {
+   "s": [
+    "RDMA 或 TCP",
+    "RDMA or TCP"
+   ],
+   "t": [
+    "跑在 RDMA 上，也能跑在 TCP 上",
+    "It Runs over RDMA, and over TCP Too"
+   ],
+   "d": [
+    "NVMe-oF 可以跑在 RDMA 网络上，也可以跑在普通以太网的 TCP 上。",
+    "NVMe-oF can run over an RDMA network or over TCP on standard Ethernet."
+   ],
+   "b": [
+    [
+     "<p>NVMe-oF 只规定命令怎么走网络，底下用什么传输可以选。跑在 RDMA 上（InfiniBand 或以太网上的 RoCE）时，网卡把数据直接放进应用内存，CPU 只发起，不搬数据。RDMA 是让网卡直接读写对方内存的技术，见「RDMA 为什么快」。跑在 TCP 上（NVMe/TCP）时，数据要经过操作系统内核，由 CPU 复制一次；好处是任何以太网都能用，不需要专门调网络。</p>",
+     "<p>「支持 NVMe-oF」需要明确是哪种传输：两者部署难度、CPU 开销和适用场景都不一样。</p>"
     ],
-    "t": [
-     "跑在 RDMA 上，也能跑在 TCP 上",
-     "It runs over RDMA, and over TCP too"
-    ],
-    "d": [
-     "NVMe-oF 可以跑在 RDMA 网络上，也可以跑在普通以太网的 TCP 上。",
-     "NVMe-oF can run over an RDMA network or over TCP on standard Ethernet."
-    ],
-    "b": [
-     [
-      "<p>NVMe-oF 只规定命令怎么走网络，底下用什么传输可以选。跑在 RDMA 上（InfiniBand 或以太网上的 RoCE）时，网卡把数据直接放进应用内存，CPU 只发起，不搬数据。RDMA 是让网卡直接读写对方内存的技术，见「RDMA 为什么快」。跑在 TCP 上（NVMe/TCP）时，数据要经过操作系统内核，由 CPU 复制一次；好处是任何以太网都能用，不需要专门调网络。</p>",
-      "<p>「支持 NVMe-oF」需要明确是哪种传输：两者部署难度、CPU 开销和适用场景都不一样。</p>"
-     ],
-     [
-      "<p>NVMe-oF only defines how commands travel over the network; the transport underneath is a choice. Over RDMA (InfiniBand, or RoCE on Ethernet), the network card puts data straight into application memory, and the CPU only starts the transfer without moving data. RDMA lets a network card read and write the other side's memory directly; see \"Why RDMA is fast\". Over TCP (NVMe/TCP), data passes through the operating system kernel and the CPU copies it once; the upside is that any Ethernet works, with no special network tuning.</p>",
-      "<p>NVMe-oF support should be qualified by transport: the two differ in how hard they are to deploy, in CPU overhead and in where they fit.</p>"
-     ]
+    [
+     "<p>NVMe-oF only defines how commands travel over the network; the transport underneath is a choice. Over RDMA (InfiniBand, or RoCE on Ethernet), the network card puts data straight into application memory, and the CPU only starts the transfer without moving data. RDMA lets a network card read and write the other side's memory directly; see \"Why RDMA is fast\". Over TCP (NVMe/TCP), data passes through the operating system kernel and the CPU copies it once; the upside is that any Ethernet works, with no special network tuning.</p>",
+     "<p>NVMe-oF support should be qualified by transport: the two differ in how hard they are to deploy, in CPU overhead and in where they fit.</p>"
     ]
-   },
-   {
-    "s": [
-     "存储箱只转发",
-     "The box only forwards"
+   ]
+  },
+  {
+   "s": [
+    "存储箱只转发",
+    "The box only forwards"
+   ],
+   "t": [
+    "存储箱只负责把盘接到网络上",
+    "The Storage Box Only Connects Drives to the Network"
+   ],
+   "d": [
+    "一箱盘配一个很轻的转发模块，它只把盘接上网络，不跑文件系统，也不算纠删码。",
+    "A box of drives gets a very light forwarding module. It only puts the drives on the network; it runs no file system and computes no erasure coding."
+   ],
+   "b": [
+    [
+     "<p>有了 NVMe-oF，存储箱可以做成「一箱盘 + 转发」的形态，业内叫 JBOF（Just a Bunch of Flash）。箱子里的控制器只负责把每块盘暴露到网络上，文件系统、数据保护这些逻辑都放在前面的服务器上。</p>",
+     "<p>控制器只做转发，所以不需要大算力，有的产品直接用 DPU（网卡上带处理器的智能网卡）来当控制器，箱子更小、更省电。加新功能时，箱子里的 CPU 也不会成为瓶颈，因为功能本来就不在这里。</p>"
     ],
-    "t": [
-     "存储箱只负责把盘接到网络上",
-     "The storage box only connects drives to the network"
-    ],
-    "d": [
-     "一箱盘配一个很轻的转发模块，它只把盘接上网络，不跑文件系统，也不算纠删码。",
-     "A box of drives gets a very light forwarding module. It only puts the drives on the network; it runs no file system and computes no erasure coding."
-    ],
-    "b": [
-     [
-      "<p>有了 NVMe-oF，存储箱可以做成「一箱盘 + 转发」的形态，业内叫 JBOF（Just a Bunch of Flash）。箱子里的控制器只负责把每块盘暴露到网络上，文件系统、数据保护这些逻辑都放在前面的服务器上。</p>",
-      "<p>控制器只做转发，所以不需要大算力，有的产品直接用 DPU（网卡上带处理器的智能网卡）来当控制器，箱子更小、更省电。加新功能时，箱子里的 CPU 也不会成为瓶颈，因为功能本来就不在这里。</p>"
-     ],
-     [
-      "<p>With NVMe-oF, a storage box can be just \"a box of drives plus forwarding\", known in the industry as JBOF (Just a Bunch of Flash). The controller in the box only exposes each drive to the network; logic such as the file system and data protection lives on the servers in front.</p>",
-      "<p>Because the controller only forwards, it needs little computing power. Some products use a DPU (a smart network card with its own processor) as the controller, which makes the box smaller and more power-efficient. Adding features does not turn the CPU in the box into a bottleneck either, because the features were never there.</p>"
-     ]
+    [
+     "<p>With NVMe-oF, a storage box can be just \"a box of drives plus forwarding\", known in the industry as JBOF (Just a Bunch of Flash). The controller in the box only exposes each drive to the network; logic such as the file system and data protection lives on the servers in front.</p>",
+     "<p>Because the controller only forwards, it needs little computing power. Some products use a DPU (a smart network card with its own processor) as the controller, which makes the box smaller and more power-efficient. Adding features does not turn the CPU in the box into a bottleneck either, because the features were never there.</p>"
     ]
-   },
-   {
-    "s": [
-     "服务器停了，盘还在",
-     "Server down, drives remain"
+   ]
+  },
+  {
+   "s": [
+    "服务器停了，盘还在",
+    "Server down, drives remain"
+   ],
+   "t": [
+    "一台服务器停了，盘还在网上",
+    "A Server Goes Down, the Drives Stay on the Network"
+   ],
+   "d": [
+    "服务器 A 写进去的数据，A 停机后服务器 B 照样能直接读到。",
+    "Data written by server A can still be read directly by server B after A goes down."
+   ],
+   "b": [
+    [
+     "<p>盘不再属于某一台服务器，每台服务器都能直接读写每一块盘。于是服务器坏了，盘上的数据还在网上，别的服务器接着用；坏的那台换掉即可。这正好解决了第 2 步的问题。</p>",
+     "<p>到远端盘的路径足够短，一些存储系统让前端服务器完全不在本地缓存数据，所有状态都落在共享的盘上，服务器本身可以随时替换。</p>"
     ],
-    "t": [
-     "一台服务器停了，盘还在网上",
-     "A server goes down, the drives stay on the network"
-    ],
-    "d": [
-     "服务器 A 写进去的数据，A 停机后服务器 B 照样能直接读到。",
-     "Data written by server A can still be read directly by server B after A goes down."
-    ],
-    "b": [
-     [
-      "<p>盘不再属于某一台服务器，每台服务器都能直接读写每一块盘。于是服务器坏了，盘上的数据还在网上，别的服务器接着用；坏的那台换掉即可。这正好解决了第 2 步的问题。</p>",
-      "<p>到远端盘的路径足够短，一些存储系统让前端服务器完全不在本地缓存数据，所有状态都落在共享的盘上，服务器本身可以随时替换。</p>"
-     ],
-     [
-      "<p>Drives no longer belong to one server, and every server can read and write every drive directly. So when a server fails, the data on the drives is still on the network and other servers carry on; the failed one is simply replaced. This solves exactly the problem from step 2.</p>",
-      "<p>Because the path to remote drives is short enough, some storage systems keep no data cached locally on the front-end servers at all. All state lives on the shared drives, so the servers themselves can be replaced at any time.</p>"
-     ]
+    [
+     "<p>Drives no longer belong to one server, and every server can read and write every drive directly. So when a server fails, the data on the drives is still on the network and other servers carry on; the failed one is simply replaced. This solves exactly the problem from step 2.</p>",
+     "<p>Because the path to remote drives is short enough, some storage systems keep no data cached locally on the front-end servers at all. All state lives on the shared drives, so the servers themselves can be replaced at any time.</p>"
     ]
-   }
-  ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Dynamo: scheduling distributed inference">Dynamo：分布式推理怎么调度</h1>
+      <div><h1 data-en="Dynamo: Scheduling Distributed Inference">Dynamo：分布式推理怎么调度</h1>
         <p class="meta"><span data-en="6 steps · inference frontend, KV-aware routing, scaling">6 步 · 推理前端、KV 感知路由、弹性调度</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="NVIDIA Dynamo documentation: Architecture">NVIDIA Dynamo 文档《Architecture》</li>
       <li data-en="NVIDIA Dynamo documentation: KV-Aware Routing">NVIDIA Dynamo 文档《KV-Aware Routing》</li>
@@ -73,44 +73,132 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/dynamo.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'dynamo',ar:[920/376,360/482],steps:[
-  {t:["前端接入请求，推理引擎执行模型", "The frontend accepts requests and engines run the model"],
-   d:["Dynamo 提供分布式服务层，将应用接口与后端模型执行连接起来。", "Dynamo provides a distributed serving layer between the application API and backend model execution."],
-   b:[
-     ["<p>Dynamo 是一个开源分布式推理框架。其前端接收应用请求，并把请求交给后端的推理工作进程。工作进程是能够运行预填充、解码或两个阶段的服务实例。</p>", "<p>预填充处理输入提示词，解码继续生成输出。推理引擎负责这两类模型计算，服务层负责选择执行实例和返回输出。</p>"],
-     ["<p>Dynamo is an open-source distributed inference framework. Its frontend receives application traffic and dispatches requests to inference workers. A worker is a service instance that can run prefill, decode, or both phases.</p>", "<p>Prefill processes the input prompt, and decode continues generating the output. The inference engine runs the model computations, while the serving layer selects execution instances and returns output.</p>"]
-   ]},
-  {t:["路由器维护候选实例的缓存与负载", "The router tracks candidate cache state and load"],
-   d:["工作进程发布缓存变化，路由器据此更新前缀索引。", "Workers publish cache changes so the router can update its prefix index."],
-   b:[
-     ["<p>KV Cache 保存键和值，即模型注意力计算的中间状态。启用缓存事件时，工作进程报告 KV 块的建立和释放。路由器据此记录哪些实例持有可匹配的前缀。</p>", "<p>路由器还跟踪已分派给候选实例的活跃工作。缓存索引提供放置决策用的状态信息，实际的 KV 仍保存在工作进程所在的缓存层。</p>"],
-     ["<p>The KV cache holds keys and values, the model’s intermediate attention state. With cache events enabled, workers report when KV blocks are created or released. The router tracks which instances hold matching prefixes.</p>", "<p>The router also tracks active work assigned to candidates. The prefix index provides placement metadata, while the KV data resides in the workers’ cache tier.</p>"]
-   ]},
-  {t:["相同负载下优先复用已有前缀", "Prefer prefix reuse when workers have similar load"],
-   d:["新请求与候选实例的缓存前缀匹配，可减少它需要从头计算的输入。", "A match with a candidate’s cached prefix reduces the input it must compute from scratch."],
-   b:[
-     ["<p>KV 感知路由是把可复用缓存纳入请求放置。路由器用请求开头的 token（模型处理的符号单位）查索引，估算每个候选实例可以复用多少已有前缀。</p>", "<p>当候选实例的负载相近时，拥有更多匹配前缀的实例通常有更少的新增预填充工作。请求送达后，实例读取已缓存的状态，再处理剩余输入。</p>"],
-     ["<p>KV-aware routing considers reusable cache when placing a request. The router looks up the leading tokens, or model input units, in the index to estimate how much prefix state each candidate can reuse.</p>", "<p>When candidates have similar load, the one with a longer matching prefix usually has less new prefill work. It reads its cached state and processes the remaining input after receiving the request.</p>"]
-   ]},
-  {t:["繁忙实例的等待会改变路由选择", "Busy workers can change the routing decision"],
-   d:["路由同时考虑缓存重合和活跃负载，有缓存的实例也可能暂时落选。", "Routing accounts for both cache overlap and active load, so a worker with cached state can lose the placement."],
-   b:[
-     ["<p>缓存命中减少新计算，活跃工作则占用可用的计算与 KV 容量。Dynamo 的 KV 感知路由把两者纳入成本估算，避免把相似请求一律集中到同一实例。</p>", "<p>例如，已有匹配前缀的实例正处理大量活跃请求时，空闲程度更高的候选实例可能获得更低的综合成本，即使它需要计算更多输入。</p>"],
-     ["<p>A cache hit reduces new computation, while active work consumes compute and KV capacity. Dynamo includes both effects in its routing estimate so that similar requests need not all cluster on one worker.</p>", "<p>For example, if the worker with a matching prefix has many active requests, a less busy candidate may have a lower estimated cost even though it must process more prompt tokens.</p>"]
-   ]},
-  {t:["分离部署让工作进程交接 KV", "Disaggregated workers hand off KV state"],
-   d:["预填充实例产出 KV，解码实例取得该状态后继续生成。", "The prefill worker produces KV and the decode worker uses it to continue generation."],
-   b:[
-     ["<p>在预填充与解码分离的部署中，服务层分别选择两个阶段的执行实例。预填充完成后，解码实例取得所需的 KV 及继续生成所需的元数据，接手输出。</p>", "<p>Dynamo 的公开架构将请求协调与 KV 数据传输分开。大块 KV 可在工作进程之间直接传输，前端负责协调请求和返回结果。</p>"],
-     ["<p>In a prefill/decode-disaggregated deployment, the serving layer chooses execution instances for the two phases separately. After prefill, the decode worker obtains the required KV and continuation metadata and takes over output generation.</p>", "<p>Dynamo’s public architecture separates request coordination from KV movement. Bulk KV can travel directly between workers while the frontend coordinates the request and returns results.</p>"]
-   ]},
-  {t:["容量规划依据运行信号调整实例数", "Capacity planning adjusts worker counts from runtime signals"],
-   d:["规划器依据运行指标调整各阶段的目标实例数，路由器继续为单个请求选点。", "The planner adjusts phase-specific worker targets from metrics while the router continues placing individual requests."],
-   b:[
-     ["<p>实例数的调整面向一段时间内的负载。部署启用规划器后，它读取前端和工作进程提供的指标，并计算预填充和解码的目标实例数。</p>", "<p>部署控制器将目标转成实际实例的增删。新实例可用后加入候选集合，请求路由再利用更新后的容量和缓存位置。</p>"],
-     ["<p>Worker count changes address workload over a period of time. When enabled, the planner reads metrics from the frontend and workers and calculates target counts for prefill and decode.</p>", "<p>The deployment controller reconciles the targets with running workers. Ready instances enter the candidate set, and subsequent routing can use the updated capacity and cache locations.</p>"]
-   ]},
-]};
+window.SS_TOPIC_CFG={
+ "anim": "dynamo",
+ "ar": [920/376,360/482],
+ "steps": [
+  {
+   "t": [
+    "前端接入请求，推理引擎执行模型",
+    "The Frontend Accepts Requests and Engines Run the Model"
+   ],
+   "d": [
+    "Dynamo 提供分布式服务层，将应用接口与后端模型执行连接起来。",
+    "Dynamo provides a distributed serving layer between the application API and backend model execution."
+   ],
+   "b": [
+    [
+     "<p>Dynamo 是一个开源分布式推理框架。其前端接收应用请求，并把请求交给后端的推理工作进程。工作进程是能够运行预填充、解码或两个阶段的服务实例。</p>",
+     "<p>预填充处理输入提示词，解码继续生成输出。推理引擎负责这两类模型计算，服务层负责选择执行实例和返回输出。</p>"
+    ],
+    [
+     "<p>Dynamo is an open-source distributed inference framework. Its frontend receives application traffic and dispatches requests to inference workers. A worker is a service instance that can run prefill, decode, or both phases.</p>",
+     "<p>Prefill processes the input prompt, and decode continues generating the output. The inference engine runs the model computations, while the serving layer selects execution instances and returns output.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "路由器维护候选实例的缓存与负载",
+    "The Router Tracks Candidate Cache State and Load"
+   ],
+   "d": [
+    "工作进程发布缓存变化，路由器据此更新前缀索引。",
+    "Workers publish cache changes so the router can update its prefix index."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 保存键和值，即模型注意力计算的中间状态。启用缓存事件时，工作进程报告 KV 块的建立和释放。路由器据此记录哪些实例持有可匹配的前缀。</p>",
+     "<p>路由器还跟踪已分派给候选实例的活跃工作。缓存索引提供放置决策用的状态信息，实际的 KV 仍保存在工作进程所在的缓存层。</p>"
+    ],
+    [
+     "<p>The KV cache holds keys and values, the model’s intermediate attention state. With cache events enabled, workers report when KV blocks are created or released. The router tracks which instances hold matching prefixes.</p>",
+     "<p>The router also tracks active work assigned to candidates. The prefix index provides placement metadata, while the KV data resides in the workers’ cache tier.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "相同负载下优先复用已有前缀",
+    "Prefer Prefix Reuse When Workers Have Similar Load"
+   ],
+   "d": [
+    "新请求与候选实例的缓存前缀匹配，可减少它需要从头计算的输入。",
+    "A match with a candidate’s cached prefix reduces the input it must compute from scratch."
+   ],
+   "b": [
+    [
+     "<p>KV 感知路由是把可复用缓存纳入请求放置。路由器用请求开头的 token（模型处理的符号单位）查索引，估算每个候选实例可以复用多少已有前缀。</p>",
+     "<p>当候选实例的负载相近时，拥有更多匹配前缀的实例通常有更少的新增预填充工作。请求送达后，实例读取已缓存的状态，再处理剩余输入。</p>"
+    ],
+    [
+     "<p>KV-aware routing considers reusable cache when placing a request. The router looks up the leading tokens, or model input units, in the index to estimate how much prefix state each candidate can reuse.</p>",
+     "<p>When candidates have similar load, the one with a longer matching prefix usually has less new prefill work. It reads its cached state and processes the remaining input after receiving the request.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "繁忙实例的等待会改变路由选择",
+    "Busy Workers Can Change the Routing Decision"
+   ],
+   "d": [
+    "路由同时考虑缓存重合和活跃负载，有缓存的实例也可能暂时落选。",
+    "Routing accounts for both cache overlap and active load, so a worker with cached state can lose the placement."
+   ],
+   "b": [
+    [
+     "<p>缓存命中减少新计算，活跃工作则占用可用的计算与 KV 容量。Dynamo 的 KV 感知路由把两者纳入成本估算，避免把相似请求一律集中到同一实例。</p>",
+     "<p>例如，已有匹配前缀的实例正处理大量活跃请求时，空闲程度更高的候选实例可能获得更低的综合成本，即使它需要计算更多输入。</p>"
+    ],
+    [
+     "<p>A cache hit reduces new computation, while active work consumes compute and KV capacity. Dynamo includes both effects in its routing estimate so that similar requests need not all cluster on one worker.</p>",
+     "<p>For example, if the worker with a matching prefix has many active requests, a less busy candidate may have a lower estimated cost even though it must process more prompt tokens.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "分离部署让工作进程交接 KV",
+    "Disaggregated Workers Hand off KV State"
+   ],
+   "d": [
+    "预填充实例产出 KV，解码实例取得该状态后继续生成。",
+    "The prefill worker produces KV and the decode worker uses it to continue generation."
+   ],
+   "b": [
+    [
+     "<p>在预填充与解码分离的部署中，服务层分别选择两个阶段的执行实例。预填充完成后，解码实例取得所需的 KV 及继续生成所需的元数据，接手输出。</p>",
+     "<p>Dynamo 的公开架构将请求协调与 KV 数据传输分开。大块 KV 可在工作进程之间直接传输，前端负责协调请求和返回结果。</p>"
+    ],
+    [
+     "<p>In a prefill/decode-disaggregated deployment, the serving layer chooses execution instances for the two phases separately. After prefill, the decode worker obtains the required KV and continuation metadata and takes over output generation.</p>",
+     "<p>Dynamo’s public architecture separates request coordination from KV movement. Bulk KV can travel directly between workers while the frontend coordinates the request and returns results.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "容量规划依据运行信号调整实例数",
+    "Capacity Planning Adjusts Worker Counts from Runtime Signals"
+   ],
+   "d": [
+    "规划器依据运行指标调整各阶段的目标实例数，路由器继续为单个请求选点。",
+    "The planner adjusts phase-specific worker targets from metrics while the router continues placing individual requests."
+   ],
+   "b": [
+    [
+     "<p>实例数的调整面向一段时间内的负载。部署启用规划器后，它读取前端和工作进程提供的指标，并计算预填充和解码的目标实例数。</p>",
+     "<p>部署控制器将目标转成实际实例的增删。新实例可用后加入候选集合，请求路由再利用更新后的容量和缓存位置。</p>"
+    ],
+    [
+     "<p>Worker count changes address workload over a period of time. When enabled, the planner reads metrics from the frontend and workers and calculates target counts for prefill and decode.</p>",
+     "<p>The deployment controller reconciles the targets with running workers. Ready instances enter the candidate set, and subsequent routing can use the updated capacity and cache locations.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

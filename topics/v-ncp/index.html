@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="NCP high-performance storage reference design">NCP 高性能存储参考设计</h1>
+      <div><h1 data-en="NCP High-Performance Storage Reference Design">NCP 高性能存储参考设计</h1>
         <p class="meta"><span data-en="NCP, CNode, DBox, Spectrum">NCP、CNode、DBox、Spectrum</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,10 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li><a href="https://www.vastdata.com/resources/forms/white-papers/ncp-high-performance-storage-reference-design-nvidia-gb200-gb300-nvl72-systems">NCP High-Performance Storage Reference Design for NVIDIA GB200 and GB300 NVL72 Systems</a><span data-en="VAST Data · CNode and DBox edition · June 2026">VAST Data · CNode 与 DBox 版 · 2026 年 6 月</span></li>
       <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -72,15 +71,129 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-ncp.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-ncp',ar:[960/396,480/470],
-  steps:[
-    {"t": ["NVL72 系统的高性能存储", "High-performance storage for NVL72 systems"], "d": ["VAST 的 HPS 参考设计涵盖 NVIDIA GB200 和 GB300 NVL72 系统的存储配置与网络接入。", "The VAST HPS reference design covers storage configuration and connectivity for NVIDIA GB200 and GB300 NVL72 systems."], "b": [["<p>NCP（NVIDIA Cloud Partner）参考设计面向提供 AI 训练和推理服务的 GPU 云。VAST 的高性能存储（HPS）方案使用 CNode 处理客户端 I/O，使用 DBox 提供存储，并通过 NVIDIA Spectrum 叶交换机接入网络。</p>"], ["<p>The NVIDIA Cloud Partner (NCP) reference design targets GPU clouds for AI training and inference. VAST’s high-performance storage (HPS) design uses CNodes for client I/O and DBoxes for storage, connected through NVIDIA Spectrum leaf switches.</p>"]]},
-    {"t": ["各 GPU 规模的读写带宽指引", "Read and write bandwidth guidance by GPU count"], "d": ["参考设计按 GPU 数量给出存储总读写带宽指引。", "The reference design gives aggregate storage read and write bandwidth guidance by GPU count."], "b": [["<p>表 1 列出七档标准 HPS 规模。1,152 GPU 档的总读、写带宽指引为 180 和 90 GB/s，41,472 GPU 档为 6,480 和 3,240 GB/s。表中各档的写带宽均为读带宽的一半。</p>", "<p>设备配置以总带宽指引为起点。训练的模型大小及其数据集影响实际的存储性能需求。</p>"], ["<p>Table 1 lists seven standard HPS scale points. At 1,152 GPUs, the aggregate read and write bandwidth guidance is 180 and 90 GB/s. At 41,472 GPUs, it is 6,480 and 3,240 GB/s. At each listed scale point, write bandwidth is half of read bandwidth.</p>", "<p>The aggregate bandwidth guidance informs equipment sizing. The model being trained and its dataset affect the storage performance required.</p>"]]},
-    {"t": ["1,152 GPU 档的 CNode、DBox 与端口", "CNodes, DBoxes and ports for 1,152 GPUs"], "d": ["该档使用 6 台 CNode、4 台 DBox，占用叶交换机的 14 个 400GbE 端口。", "This scale point uses 6 CNodes and 4 DBoxes, consuming 14 400GbE leaf switch ports."], "b": [["<p>CNode 和 DBox 接到 NVIDIA Spectrum SN5600 / SN5610 叶交换机。CNode 的 ConnectX-7 以 200GbE 运行，承载客户端及存储流量。每台 DBox 有两颗 BlueField-3 DPU，以 200GbE 承载存储流量。</p>", "<p>按表 2，CNode 侧 6 个 400GbE 端口分接为 12 条 200GbE 链路，DBox 侧 8 个分接为 16 条。参考设计建议将设备的接口接到不同的叶交换机端口以提供冗余。</p>"], ["<p>CNodes and DBoxes connect to NVIDIA Spectrum SN5600 / SN5610 leaf switches. The CNode’s ConnectX-7 runs at 200GbE and carries client and storage traffic. Each DBox has two BlueField-3 DPUs that carry storage traffic at 200GbE.</p>", "<p>In Table 2, the CNodes use 6 400GbE ports split into 12 200GbE links, and the DBoxes use 8 split into 16. The reference design recommends connecting a device’s interfaces to different leaf switch ports for redundancy.</p>"]]},
-    {"t": ["融合网络的 VLAN 划分", "VLANs on the converged fabric"], "d": ["同一组叶交换机承载客户端访问、内部存储和设备发现，各类流量配置独立 VLAN。", "The same leaf switches carry client access, internal storage and discovery on separate VLANs."], "b": [["<p>参考设计的装机前配置包括 VLAN 100（客户端访问 VIP）、VLAN 69（CNode 到 DBox 的内部通信）及 VLAN 10（发现和扩容）。</p>", "<p>客户端可通过多路径 NFS over RDMA 使用多个网络端口。参考设计使用基于 DSCP 的优先级流控（PFC）及 ECN，并在采用 VXLAN 时将内层 DSCP 映射到外层。</p>"], ["<p>The preinstallation configuration uses VLAN 100 for client access VIPs, VLAN 69 for internal CNode-to-DBox traffic, and VLAN 10 for discovery and expansion.</p>", "<p>Clients can use multipath NFS over RDMA across multiple network ports. The design uses DSCP-based Priority Flow Control (PFC) and ECN, and propagates the inner DSCP to the outer header when using VXLAN.</p>"]]},
-    {"t": ["租户隔离与 VIP 池", "Tenant isolation and VIP pools"], "d": ["租户拥有独立的目录树和策略，网络可按来源 IP 限制访问，或为各租户分配专用 VIP 池。", "Tenants have separate directory trees and policies. Network access can use source-IP restrictions or dedicated VIP pools."], "b": [["<p>每个租户是独立的管理和数据域，可配置身份源、加密密钥、配额、QoS 和防火墙规则。</p>", "<p>共享方案按协议使用 VIP 池，并按租户来源 IP 范围放行。专用方案为各租户配置自己的 VIP 池，通常配合 VRF 或 VLAN 隔离网络。</p>"], ["<p>Each tenant is an administrative and data domain with its own identity source, encryption keys, quotas, QoS and firewall rules.</p>", "<p>The shared design uses a VIP pool per protocol and admits traffic through tenant source-IP allowlists. The dedicated design assigns VIP pools per tenant and typically uses VRFs or VLANs for network isolation.</p>"]]},
-    {"t": ["性能、扩容与容错验证", "Performance, scaling and resilience validation"], "d": ["VAST 报告了 NVIDIA 对基准测试、扩容、部件故障及 QoS 结果的验证。", "VAST reports NVIDIA’s validation of benchmark, expansion, component failure and QoS results."], "b": [["<p>VAST 参考设计的性能验证一节记录了在 VAST 5.4 集群上使用 NVIDIA 基准测试套件，覆盖多个规模点的长时间 AI 训练负载，并将结果提交 NVIDIA 验证。</p>", "<p>扩容验证覆盖 1K 至 2K GPU 规模，VAST 报告在该次在线扩容期间集群性能保持稳定。文档也记录了网络接口、CNode 和 DBox 失效的试验，以及读写期间的 QoS 执行结果。</p>"], ["<p>The performance validation section describes using NVIDIA’s benchmark suite on a VAST 5.4 cluster to characterize long-running AI training workloads at multiple scales. The results were submitted to NVIDIA for validation.</p>", "<p>The expansion exercise covered the 1K to 2K GPU scale, and VAST reports that cluster performance remained stable during this online expansion. The document also reports tests of network interface, CNode and DBox failures, and QoS enforcement during reads and writes.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-ncp",
+ "ar": [960/396,480/470],
+ "steps": [
+  {
+   "t": [
+    "NVL72 系统的高性能存储",
+    "High-performance Storage for NVL72 Systems"
+   ],
+   "d": [
+    "VAST 的 HPS 参考设计涵盖 NVIDIA GB200 和 GB300 NVL72 系统的存储配置与网络接入。",
+    "The VAST HPS reference design covers storage configuration and connectivity for NVIDIA GB200 and GB300 NVL72 systems."
+   ],
+   "b": [
+    [
+     "<p>NCP（NVIDIA Cloud Partner）参考设计面向提供 AI 训练和推理服务的 GPU 云。VAST 的高性能存储（HPS）方案使用 CNode 处理客户端 I/O，使用 DBox 提供存储，并通过 NVIDIA Spectrum 叶交换机接入网络。</p>"
+    ],
+    [
+     "<p>The NVIDIA Cloud Partner (NCP) reference design targets GPU clouds for AI training and inference. VAST’s high-performance storage (HPS) design uses CNodes for client I/O and DBoxes for storage, connected through NVIDIA Spectrum leaf switches.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "各 GPU 规模的读写带宽指引",
+    "Read and Write Bandwidth Guidance by GPU Count"
+   ],
+   "d": [
+    "参考设计按 GPU 数量给出存储总读写带宽指引。",
+    "The reference design gives aggregate storage read and write bandwidth guidance by GPU count."
+   ],
+   "b": [
+    [
+     "<p>表 1 列出七档标准 HPS 规模。1,152 GPU 档的总读、写带宽指引为 180 和 90 GB/s，41,472 GPU 档为 6,480 和 3,240 GB/s。表中各档的写带宽均为读带宽的一半。</p>",
+     "<p>设备配置以总带宽指引为起点。训练的模型大小及其数据集影响实际的存储性能需求。</p>"
+    ],
+    [
+     "<p>Table 1 lists seven standard HPS scale points. At 1,152 GPUs, the aggregate read and write bandwidth guidance is 180 and 90 GB/s. At 41,472 GPUs, it is 6,480 and 3,240 GB/s. At each listed scale point, write bandwidth is half of read bandwidth.</p>",
+     "<p>The aggregate bandwidth guidance informs equipment sizing. The model being trained and its dataset affect the storage performance required.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "1,152 GPU 档的 CNode、DBox 与端口",
+    "CNodes, DBoxes and Ports for 1,152 GPUs"
+   ],
+   "d": [
+    "该档使用 6 台 CNode、4 台 DBox，占用叶交换机的 14 个 400GbE 端口。",
+    "This scale point uses 6 CNodes and 4 DBoxes, consuming 14 400GbE leaf switch ports."
+   ],
+   "b": [
+    [
+     "<p>CNode 和 DBox 接到 NVIDIA Spectrum SN5600 / SN5610 叶交换机。CNode 的 ConnectX-7 以 200GbE 运行，承载客户端及存储流量。每台 DBox 有两颗 BlueField-3 DPU，以 200GbE 承载存储流量。</p>",
+     "<p>按表 2，CNode 侧 6 个 400GbE 端口分接为 12 条 200GbE 链路，DBox 侧 8 个分接为 16 条。参考设计建议将设备的接口接到不同的叶交换机端口以提供冗余。</p>"
+    ],
+    [
+     "<p>CNodes and DBoxes connect to NVIDIA Spectrum SN5600 / SN5610 leaf switches. The CNode’s ConnectX-7 runs at 200GbE and carries client and storage traffic. Each DBox has two BlueField-3 DPUs that carry storage traffic at 200GbE.</p>",
+     "<p>In Table 2, the CNodes use 6 400GbE ports split into 12 200GbE links, and the DBoxes use 8 split into 16. The reference design recommends connecting a device’s interfaces to different leaf switch ports for redundancy.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "融合网络的 VLAN 划分",
+    "VLANs on the Converged Fabric"
+   ],
+   "d": [
+    "同一组叶交换机承载客户端访问、内部存储和设备发现，各类流量配置独立 VLAN。",
+    "The same leaf switches carry client access, internal storage and discovery on separate VLANs."
+   ],
+   "b": [
+    [
+     "<p>参考设计的装机前配置包括 VLAN 100（客户端访问 VIP）、VLAN 69（CNode 到 DBox 的内部通信）及 VLAN 10（发现和扩容）。</p>",
+     "<p>客户端可通过多路径 NFS over RDMA 使用多个网络端口。参考设计使用基于 DSCP 的优先级流控（PFC）及 ECN，并在采用 VXLAN 时将内层 DSCP 映射到外层。</p>"
+    ],
+    [
+     "<p>The preinstallation configuration uses VLAN 100 for client access VIPs, VLAN 69 for internal CNode-to-DBox traffic, and VLAN 10 for discovery and expansion.</p>",
+     "<p>Clients can use multipath NFS over RDMA across multiple network ports. The design uses DSCP-based Priority Flow Control (PFC) and ECN, and propagates the inner DSCP to the outer header when using VXLAN.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "租户隔离与 VIP 池",
+    "Tenant Isolation and VIP Pools"
+   ],
+   "d": [
+    "租户拥有独立的目录树和策略，网络可按来源 IP 限制访问，或为各租户分配专用 VIP 池。",
+    "Tenants have separate directory trees and policies. Network access can use source-IP restrictions or dedicated VIP pools."
+   ],
+   "b": [
+    [
+     "<p>每个租户是独立的管理和数据域，可配置身份源、加密密钥、配额、QoS 和防火墙规则。</p>",
+     "<p>共享方案按协议使用 VIP 池，并按租户来源 IP 范围放行。专用方案为各租户配置自己的 VIP 池，通常配合 VRF 或 VLAN 隔离网络。</p>"
+    ],
+    [
+     "<p>Each tenant is an administrative and data domain with its own identity source, encryption keys, quotas, QoS and firewall rules.</p>",
+     "<p>The shared design uses a VIP pool per protocol and admits traffic through tenant source-IP allowlists. The dedicated design assigns VIP pools per tenant and typically uses VRFs or VLANs for network isolation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "性能、扩容与容错验证",
+    "Performance, Scaling and Resilience Validation"
+   ],
+   "d": [
+    "VAST 报告了 NVIDIA 对基准测试、扩容、部件故障及 QoS 结果的验证。",
+    "VAST reports NVIDIA’s validation of benchmark, expansion, component failure and QoS results."
+   ],
+   "b": [
+    [
+     "<p>VAST 参考设计的性能验证一节记录了在 VAST 5.4 集群上使用 NVIDIA 基准测试套件，覆盖多个规模点的长时间 AI 训练负载，并将结果提交 NVIDIA 验证。</p>",
+     "<p>扩容验证覆盖 1K 至 2K GPU 规模，VAST 报告在该次在线扩容期间集群性能保持稳定。文档也记录了网络接口、CNode 和 DBox 失效的试验，以及读写期间的 QoS 执行结果。</p>"
+    ],
+    [
+     "<p>The performance validation section describes using NVIDIA’s benchmark suite on a VAST 5.4 cluster to characterize long-running AI training workloads at multiple scales. The results were submitted to NVIDIA for validation.</p>",
+     "<p>The expansion exercise covered the 1K to 2K GPU scale, and VAST reports that cluster performance remained stable during this online expansion. The document also reports tests of network interface, CNode and DBox failures, and QoS enforcement during reads and writes.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

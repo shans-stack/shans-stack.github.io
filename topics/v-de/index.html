@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="DataEngine: functions that run when data lands">DataEngine：数据一落地就触发函数</h1>
+      <div><h1 data-en="DataEngine: Functions That Run When Data Lands">DataEngine：数据一落地就触发函数</h1>
         <p class="meta"><span data-en="7 steps · triggers, functions, pipelines">7 步 · 触发器、函数、流水线</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="VAST documentation (docs.vastdata.com), VAST Cluster 5.5: Overview of VAST DataEngine, Enabling DataEngine on a VAST Cluster Tenant, Managing VAST Compute Clusters, Creating a DataEngine Function, Building and Deploying a Pipeline, Provisioning Source Views for Element Type Triggers.">VAST 官方文档（docs.vastdata.com），VAST Cluster 5.5：Overview of VAST DataEngine、Enabling DataEngine on a VAST Cluster Tenant、Managing VAST Compute Clusters、Creating a DataEngine Function、Building and Deploying a Pipeline、Provisioning Source Views for Element Type Triggers。</li>
       <li data-en="VAST documentation, VAST Cluster 5.5.0 Release Notes: event batching, trigger labels, custom metrics, NFS-based triggers.">VAST 官方文档，VAST Cluster 5.5.0 Release Notes：事件批处理、触发标签、自定义指标、NFS 触发器。</li>
@@ -75,16 +75,151 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-de.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-de',ar:[960/500,480/660],
-  steps:[
-    {"t": ["触发器、函数、流水线", "Triggers, functions and pipelines"], "d": ["DataEngine 是 VAST 的无服务器函数框架：触发器监听事件，函数定义要做的事，流水线把它们连起来。", "DataEngine is VAST's serverless function framework: triggers watch for events, functions define the work, and pipelines connect them."], "b": [["<p>DataEngine 按计划或按事件运行函数，并把函数和触发器组装成流水线。它有四类资源：触发器（trigger）监听某类事件；函数（function）指向容器镜像仓库里的一个函数镜像；函数部署（function deployment）是函数在某条流水线里的一次实例化，同一个函数在不同流水线里可以有不同的配置；流水线（pipeline）是这些部件连起来之后的运行实例。</p>", "<p>白皮书把触发器和函数定义为 Element Store 里的两类新元素，可以像文件一样创建和编辑。思路与存储系统内部的事件处理相同：盘坏了触发重建，请求到了触发处理。DataEngine 把这种由事件触发动作的机制开放给用户的数据。</p>"], ["<p>DataEngine runs functions on a schedule or on events and assembles functions and triggers into pipelines. It has four kinds of resources: a trigger watches for a type of event; a function points to a function image in a container registry; a function deployment is one instance of a function inside a pipeline, so the same function can be configured differently in different pipelines; and a pipeline is the running instance of these parts connected together.</p>", "<p>The white paper defines triggers and functions as two new element types in the Element Store that can be created and edited like files. The idea mirrors event handling inside a storage system, where a failed drive triggers a rebuild and an arriving request triggers processing; DataEngine opens the same event-driven mechanism to users' data.</p>"]]},
-    {"t": ["触发器：元素事件，或按计划", "Triggers: element events or a schedule"], "d": ["元素触发器监听视图里元素的创建和删除，可以按前缀、后缀过滤；定时触发器按计划发事件。", "Element triggers watch elements being created or deleted in a view, filtered by prefix or suffix; schedule triggers fire on a timetable."], "b": [["<p>元素触发器（element trigger）监听一个源视图：元素被创建或删除时产生事件，S3 源还可以监听对象标签的增删。过滤条件按前缀和后缀写，S3 作用在对象 key 上，NFS 作用在文件路径上，例如只关心 /photos/ 下以 .jpg 结尾的新文件。定时触发器（schedule trigger）按简单频率或 Quartz 表达式定期发事件。</p>", "<p>触发器把事件按 CloudEvents 格式写进事件代理的一个 topic，事件里带着元素路径等信息。NFS 源的触发器在 5.5 版加入，有使用条件：只对普通文件、只对 NFSv4 操作生效，源视图需要同时开启 NFSv4 和 S3 协议（截至 5.5 版官方文档）。</p>"], ["<p>An element trigger watches a source view: creating or deleting an element produces an event, and S3 sources can also watch object tags being added or removed. Filters are written as prefixes and suffixes, applied to object keys for S3 and to file paths for NFS, for example only new files ending in .jpg under /photos/. A schedule trigger fires events at a simple frequency or on a Quartz expression.</p>", "<p>Triggers write their events in CloudEvents format to a topic on the event broker, carrying details such as the element path. NFS-based triggers arrived in version 5.5 with conditions: they apply only to regular files and only to NFSv4 operations, and the source view must have both NFSv4 and S3 enabled (VAST Cluster 5.5 documentation).</p>"]]},
-    {"t": ["事件在 topic 里排队，按序或并发处理", "Events queue in a topic, in order or concurrently"], "d": ["事件先进 Event Broker 的 topic 排队；按序投递时每个分区一次只处理一个事件，不按序时可以并发处理。", "Events queue in a topic; ordered delivery handles one per partition at a time, unordered delivery handles them concurrently."], "b": [["<p>事件代理可以是 VAST Event Broker（兼容 Kafka 协议，topic 存成 DataBase 表），也可以是第三方 Kafka。触发器写、函数读，中间的 topic 把两端隔开：函数一时处理不过来，事件留在 topic 里等着，不会丢失。</p>", "<p>投递方式有两种。按序（ordered）保证每个分区内的事件逐个处理，所以同时在处理的事件数不超过 topic 的分区数，官方文档提示这可能限制性能；不按序（unordered）允许并发处理，但不保证先来先处理。选哪种，取决于下游函数是否依赖事件的先后顺序。</p>"], ["<p>The event broker can be VAST Event Broker (Kafka-compatible, with topics stored as DataBase tables) or a third-party Kafka. Triggers write and functions read, and the topic between them decouples the two: if functions fall behind, events wait in the topic rather than being lost.</p>", "<p>There are two delivery methods. Ordered delivery processes events within each partition one at a time, so the number of events in flight never exceeds the topic's partition count, which the documentation notes may limit performance. Unordered delivery allows concurrent processing but does not guarantee first-come, first-served. The choice depends on whether downstream functions rely on event order.</p>"]]},
-    {"t": ["函数：Python 编写，打成容器镜像", "Functions: Python, packaged as container images"], "d": ["函数是一个 Python 模块，有初始化和处理两个入口，用 vastde 命令行构建成镜像、推到镜像仓库。", "A function is a Python module with init and handler entry points, built with the vastde CLI and pushed to a registry."], "b": [["<p>函数用 Python 3 编写：init(ctx) 在部署时运行一次，handler(ctx, event) 每来一个事件运行一次。运行时传入的 ctx 提供日志、链路追踪和密钥，函数本身不用写这些样板代码。返回值会被包装成新的事件，交给流水线的下一段。</p>", "<p>用开源的 vastde 命令行把函数构建成容器镜像（构建需要本地 Docker），可以先在本地容器里测试，再推送到镜像仓库。VAST 不托管镜像：DataEngine 里的函数资源只是指向仓库中某个镜像的指针。每次修改函数都会生成新的版本号，流水线可以固定某个版本，也可以跟随最新版本。</p>"], ["<p>Functions are written in Python 3: init(ctx) runs once at deployment, and handler(ctx, event) runs for every event. The ctx passed in by the runtime provides logging, tracing and secrets, so the function needs no boilerplate for them. The return value is wrapped into a new event and handed to the next stage of the pipeline.</p>", "<p>The open-source vastde CLI builds the function into a container image (the build needs a local Docker), which can be tested in a local container before being pushed to a registry. VAST does not host images: a function resource in DataEngine is only a pointer to an image in the registry. Each edit to a function creates a new revision, and a pipeline can pin a revision or follow the latest.</p>"]]},
-    {"t": ["在哪里运行：外部 Kubernetes，或 CNode 上的计算集群", "Where it runs: Kubernetes or a CNode compute cluster"], "d": ["函数跑在外部 Kubernetes 集群上，或者跑在从 CNode 划出部分资源组成的 VAST 计算集群上。", "Functions run on an external Kubernetes cluster, or on a VAST compute cluster built from resources set aside on the CNodes."], "b": [["<p>DataEngine 按租户启用，需要三样东西：至少一个能经 https 访问的镜像仓库、一个事件代理，以及至少一个计算集群。计算集群可以是外部的 Kubernetes 集群，也可以是 5.5 版提供的 VAST 计算集群：由选定的 CNode 拿出一部分资源组成，至少需要 3 台 CNode（截至 5.5 版官方文档）。</p>", "<p>划给计算集群的资源不再用于存储服务，官方文档提示这会影响集群的存储性能。资源预设分几档，从拿出一小部分到整台 CNode 都有；划得越多，越需要保留足够的 CNode 不参与计算、专门承担存储服务。外部 Kubernetes 则不占用 CNode 的资源。</p>"], ["<p>DataEngine is enabled per tenant and needs three things: at least one container registry reachable over https, an event broker, and at least one compute cluster. The compute cluster can be an external Kubernetes cluster or, from version 5.5, a VAST compute cluster made from a share of the resources on selected CNodes, with at least three CNodes (VAST Cluster 5.5 documentation).</p>", "<p>Resources given to the compute cluster are no longer available for storage services, and the documentation warns that this can affect cluster performance. Resource presets range from a small share to whole CNodes; the larger the share, the more CNodes must be kept out of the compute cluster to carry the storage services. An external Kubernetes cluster uses no CNode resources.</p>"]]},
-    {"t": ["流水线：上一个函数的输出，就是下一个函数的事件", "Pipelines: each output becomes the next event"], "d": ["函数返回后，DataEngine 生成新事件送给下一段；可以按标签路由，也可以攒成一批再调用一次函数。", "A function's result becomes an event for the next stage; events can be routed by label or batched into one call."], "b": [["<p>流水线可以在网页界面的画布上拖拽搭建，也可以用 Python SDK 写成代码，两种方式最后都是同一份基于 YAML 的定义。函数不需要知道下一段是谁：返回结果之后，由运行时负责投递、重试和错误处理；同一个函数可以被对象到达、定时器、外部消息队列或上游函数触发，不用改代码。</p>", "<p>5.5 版增加了两种控制。上游函数可以给事件打键值标签，连线上配了同样标签的下游才接收，用来做条件分支。事件也可以按条数和超时时间攒成一批，再调用一次函数，摊薄每次调用的开销。流水线里触发器不能连触发器，也不能连成环。</p>"], ["<p>Pipelines can be built by dragging parts onto a canvas in the web UI or written as code with the Python SDK; both end up as the same YAML-based definition. A function does not need to know what comes next: once it returns, the runtime handles delivery, retries and error handling, and the same function can be triggered by an arriving object, a timer, an external message queue or an upstream function without code changes.</p>", "<p>Version 5.5 added two controls. An upstream function can tag events with key-value labels, and only downstream stages whose connections carry the same label receive them, which gives conditional branching. Events can also be gathered into a batch by count and timeout and passed to one function call, spreading the per-call overhead. A pipeline cannot connect a trigger to a trigger, and it cannot form a loop.</p>"]]},
-    {"t": ["每一次运行都留下可查询的记录", "Every run leaves a queryable record"], "d": ["运行时自动记录日志、链路追踪和指标，追踪存进 DataBase、可以用 SQL 查；失败的事件进死信 topic。", "The runtime records logs, traces and metrics; traces live in DataBase for SQL, and failed events go to a dead-letter topic."], "b": [["<p>运行时自动为每次函数调用打点：链路追踪显示运行了哪些函数、是哪一串事件触发的，日志和追踪在整条流水线上自动关联。函数可以在追踪里加自定义属性，例如用了哪个模型、处理到哪一步；5.5 版起还能上报兼容 OpenTelemetry 的自定义指标。</p>", "<p>白皮书说明，这些追踪存在 VAST DataBase 里，可以用 SQL 回答「这次运行用了哪个嵌入模型」「处理了多少段视频」这类问题。函数失败时，事件被送进专门的死信（dead letter）topic，它同样是一张表，可以在界面里查看，也可以用程序查询。</p>"], ["<p>The runtime instruments every function call automatically: traces show which functions ran and which chain of events triggered them, and logs and traces are correlated across the whole pipeline. Functions can add custom attributes to traces, such as the model used or the processing stage, and from version 5.5 can also emit OpenTelemetry-compatible custom metrics.</p>", "<p>The white paper explains that these traces are stored in VAST DataBase, so SQL can answer questions such as which embedding model a run used or how many video segments were processed. When a function fails, its event goes to a dedicated dead-letter topic, which is also a table that can be viewed in the UI or queried programmatically.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-de",
+ "ar": [960/500,480/660],
+ "steps": [
+  {
+   "t": [
+    "触发器、函数、流水线",
+    "Triggers, Functions and Pipelines"
+   ],
+   "d": [
+    "DataEngine 是 VAST 的无服务器函数框架：触发器监听事件，函数定义要做的事，流水线把它们连起来。",
+    "DataEngine is VAST's serverless function framework: triggers watch for events, functions define the work, and pipelines connect them."
+   ],
+   "b": [
+    [
+     "<p>DataEngine 按计划或按事件运行函数，并把函数和触发器组装成流水线。它有四类资源：触发器（trigger）监听某类事件；函数（function）指向容器镜像仓库里的一个函数镜像；函数部署（function deployment）是函数在某条流水线里的一次实例化，同一个函数在不同流水线里可以有不同的配置；流水线（pipeline）是这些部件连起来之后的运行实例。</p>",
+     "<p>白皮书把触发器和函数定义为 Element Store 里的两类新元素，可以像文件一样创建和编辑。思路与存储系统内部的事件处理相同：盘坏了触发重建，请求到了触发处理。DataEngine 把这种由事件触发动作的机制开放给用户的数据。</p>"
+    ],
+    [
+     "<p>DataEngine runs functions on a schedule or on events and assembles functions and triggers into pipelines. It has four kinds of resources: a trigger watches for a type of event; a function points to a function image in a container registry; a function deployment is one instance of a function inside a pipeline, so the same function can be configured differently in different pipelines; and a pipeline is the running instance of these parts connected together.</p>",
+     "<p>The white paper defines triggers and functions as two new element types in the Element Store that can be created and edited like files. The idea mirrors event handling inside a storage system, where a failed drive triggers a rebuild and an arriving request triggers processing; DataEngine opens the same event-driven mechanism to users' data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "触发器：元素事件，或按计划",
+    "Triggers: Element Events or a Schedule"
+   ],
+   "d": [
+    "元素触发器监听视图里元素的创建和删除，可以按前缀、后缀过滤；定时触发器按计划发事件。",
+    "Element triggers watch elements being created or deleted in a view, filtered by prefix or suffix; schedule triggers fire on a timetable."
+   ],
+   "b": [
+    [
+     "<p>元素触发器（element trigger）监听一个源视图：元素被创建或删除时产生事件，S3 源还可以监听对象标签的增删。过滤条件按前缀和后缀写，S3 作用在对象 key 上，NFS 作用在文件路径上，例如只关心 /photos/ 下以 .jpg 结尾的新文件。定时触发器（schedule trigger）按简单频率或 Quartz 表达式定期发事件。</p>",
+     "<p>触发器把事件按 CloudEvents 格式写进事件代理的一个 topic，事件里带着元素路径等信息。NFS 源的触发器在 5.5 版加入，有使用条件：只对普通文件、只对 NFSv4 操作生效，源视图需要同时开启 NFSv4 和 S3 协议（截至 5.5 版官方文档）。</p>"
+    ],
+    [
+     "<p>An element trigger watches a source view: creating or deleting an element produces an event, and S3 sources can also watch object tags being added or removed. Filters are written as prefixes and suffixes, applied to object keys for S3 and to file paths for NFS, for example only new files ending in .jpg under /photos/. A schedule trigger fires events at a simple frequency or on a Quartz expression.</p>",
+     "<p>Triggers write their events in CloudEvents format to a topic on the event broker, carrying details such as the element path. NFS-based triggers arrived in version 5.5 with conditions: they apply only to regular files and only to NFSv4 operations, and the source view must have both NFSv4 and S3 enabled (VAST Cluster 5.5 documentation).</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "事件在 topic 里排队，按序或并发处理",
+    "Events Queue in a Topic, in Order or Concurrently"
+   ],
+   "d": [
+    "事件先进 Event Broker 的 topic 排队；按序投递时每个分区一次只处理一个事件，不按序时可以并发处理。",
+    "Events queue in a topic; ordered delivery handles one per partition at a time, unordered delivery handles them concurrently."
+   ],
+   "b": [
+    [
+     "<p>事件代理可以是 VAST Event Broker（兼容 Kafka 协议，topic 存成 DataBase 表），也可以是第三方 Kafka。触发器写、函数读，中间的 topic 把两端隔开：函数一时处理不过来，事件留在 topic 里等着，不会丢失。</p>",
+     "<p>投递方式有两种。按序（ordered）保证每个分区内的事件逐个处理，所以同时在处理的事件数不超过 topic 的分区数，官方文档提示这可能限制性能；不按序（unordered）允许并发处理，但不保证先来先处理。选哪种，取决于下游函数是否依赖事件的先后顺序。</p>"
+    ],
+    [
+     "<p>The event broker can be VAST Event Broker (Kafka-compatible, with topics stored as DataBase tables) or a third-party Kafka. Triggers write and functions read, and the topic between them decouples the two: if functions fall behind, events wait in the topic rather than being lost.</p>",
+     "<p>There are two delivery methods. Ordered delivery processes events within each partition one at a time, so the number of events in flight never exceeds the topic's partition count, which the documentation notes may limit performance. Unordered delivery allows concurrent processing but does not guarantee first-come, first-served. The choice depends on whether downstream functions rely on event order.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "函数：Python 编写，打成容器镜像",
+    "Functions: Python, Packaged as Container Images"
+   ],
+   "d": [
+    "函数是一个 Python 模块，有初始化和处理两个入口，用 vastde 命令行构建成镜像、推到镜像仓库。",
+    "A function is a Python module with init and handler entry points, built with the vastde CLI and pushed to a registry."
+   ],
+   "b": [
+    [
+     "<p>函数用 Python 3 编写：init(ctx) 在部署时运行一次，handler(ctx, event) 每来一个事件运行一次。运行时传入的 ctx 提供日志、链路追踪和密钥，函数本身不用写这些样板代码。返回值会被包装成新的事件，交给流水线的下一段。</p>",
+     "<p>用开源的 vastde 命令行把函数构建成容器镜像（构建需要本地 Docker），可以先在本地容器里测试，再推送到镜像仓库。VAST 不托管镜像：DataEngine 里的函数资源只是指向仓库中某个镜像的指针。每次修改函数都会生成新的版本号，流水线可以固定某个版本，也可以跟随最新版本。</p>"
+    ],
+    [
+     "<p>Functions are written in Python 3: init(ctx) runs once at deployment, and handler(ctx, event) runs for every event. The ctx passed in by the runtime provides logging, tracing and secrets, so the function needs no boilerplate for them. The return value is wrapped into a new event and handed to the next stage of the pipeline.</p>",
+     "<p>The open-source vastde CLI builds the function into a container image (the build needs a local Docker), which can be tested in a local container before being pushed to a registry. VAST does not host images: a function resource in DataEngine is only a pointer to an image in the registry. Each edit to a function creates a new revision, and a pipeline can pin a revision or follow the latest.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "在哪里运行：外部 Kubernetes，或 CNode 上的计算集群",
+    "Where It Runs: Kubernetes or a CNode Compute Cluster"
+   ],
+   "d": [
+    "函数跑在外部 Kubernetes 集群上，或者跑在从 CNode 划出部分资源组成的 VAST 计算集群上。",
+    "Functions run on an external Kubernetes cluster, or on a VAST compute cluster built from resources set aside on the CNodes."
+   ],
+   "b": [
+    [
+     "<p>DataEngine 按租户启用，需要三样东西：至少一个能经 https 访问的镜像仓库、一个事件代理，以及至少一个计算集群。计算集群可以是外部的 Kubernetes 集群，也可以是 5.5 版提供的 VAST 计算集群：由选定的 CNode 拿出一部分资源组成，至少需要 3 台 CNode（截至 5.5 版官方文档）。</p>",
+     "<p>划给计算集群的资源不再用于存储服务，官方文档提示这会影响集群的存储性能。资源预设分几档，从拿出一小部分到整台 CNode 都有；划得越多，越需要保留足够的 CNode 不参与计算、专门承担存储服务。外部 Kubernetes 则不占用 CNode 的资源。</p>"
+    ],
+    [
+     "<p>DataEngine is enabled per tenant and needs three things: at least one container registry reachable over https, an event broker, and at least one compute cluster. The compute cluster can be an external Kubernetes cluster or, from version 5.5, a VAST compute cluster made from a share of the resources on selected CNodes, with at least three CNodes (VAST Cluster 5.5 documentation).</p>",
+     "<p>Resources given to the compute cluster are no longer available for storage services, and the documentation warns that this can affect cluster performance. Resource presets range from a small share to whole CNodes; the larger the share, the more CNodes must be kept out of the compute cluster to carry the storage services. An external Kubernetes cluster uses no CNode resources.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "流水线：上一个函数的输出，就是下一个函数的事件",
+    "Pipelines: Each Output Becomes the Next Event"
+   ],
+   "d": [
+    "函数返回后，DataEngine 生成新事件送给下一段；可以按标签路由，也可以攒成一批再调用一次函数。",
+    "A function's result becomes an event for the next stage; events can be routed by label or batched into one call."
+   ],
+   "b": [
+    [
+     "<p>流水线可以在网页界面的画布上拖拽搭建，也可以用 Python SDK 写成代码，两种方式最后都是同一份基于 YAML 的定义。函数不需要知道下一段是谁：返回结果之后，由运行时负责投递、重试和错误处理；同一个函数可以被对象到达、定时器、外部消息队列或上游函数触发，不用改代码。</p>",
+     "<p>5.5 版增加了两种控制。上游函数可以给事件打键值标签，连线上配了同样标签的下游才接收，用来做条件分支。事件也可以按条数和超时时间攒成一批，再调用一次函数，摊薄每次调用的开销。流水线里触发器不能连触发器，也不能连成环。</p>"
+    ],
+    [
+     "<p>Pipelines can be built by dragging parts onto a canvas in the web UI or written as code with the Python SDK; both end up as the same YAML-based definition. A function does not need to know what comes next: once it returns, the runtime handles delivery, retries and error handling, and the same function can be triggered by an arriving object, a timer, an external message queue or an upstream function without code changes.</p>",
+     "<p>Version 5.5 added two controls. An upstream function can tag events with key-value labels, and only downstream stages whose connections carry the same label receive them, which gives conditional branching. Events can also be gathered into a batch by count and timeout and passed to one function call, spreading the per-call overhead. A pipeline cannot connect a trigger to a trigger, and it cannot form a loop.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "每一次运行都留下可查询的记录",
+    "Every Run Leaves a Queryable Record"
+   ],
+   "d": [
+    "运行时自动记录日志、链路追踪和指标，追踪存进 DataBase、可以用 SQL 查；失败的事件进死信 topic。",
+    "The runtime records logs, traces and metrics; traces live in DataBase for SQL, and failed events go to a dead-letter topic."
+   ],
+   "b": [
+    [
+     "<p>运行时自动为每次函数调用打点：链路追踪显示运行了哪些函数、是哪一串事件触发的，日志和追踪在整条流水线上自动关联。函数可以在追踪里加自定义属性，例如用了哪个模型、处理到哪一步；5.5 版起还能上报兼容 OpenTelemetry 的自定义指标。</p>",
+     "<p>白皮书说明，这些追踪存在 VAST DataBase 里，可以用 SQL 回答「这次运行用了哪个嵌入模型」「处理了多少段视频」这类问题。函数失败时，事件被送进专门的死信（dead letter）topic，它同样是一张表，可以在界面里查看，也可以用程序查询。</p>"
+    ],
+    [
+     "<p>The runtime instruments every function call automatically: traces show which functions ran and which chain of events triggered them, and logs and traces are correlated across the whole pipeline. Functions can add custom attributes to traces, such as the model used or the processing stage, and from version 5.5 can also emit OpenTelemetry-compatible custom metrics.</p>",
+     "<p>The white paper explains that these traces are stored in VAST DataBase, so SQL can answer questions such as which embedding model a run used or how many video segments were processed. When a function fails, its event goes to a dedicated dead-letter topic, which is also a table that can be viewed in the UI or queried programmatically.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

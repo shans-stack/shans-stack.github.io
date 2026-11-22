@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="GPUs and HBM memory">GPU 与 HBM 显存</h1>
+      <div><h1 data-en="GPUs and HBM Memory">GPU 与 HBM 显存</h1>
         <p class="meta"><span data-en="5 steps · parallel execution, device memory, bandwidth">5 步 · 并行运算、显存、带宽</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,13 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>NVIDIA CUDA Programming Guide</li>
-      <li>NVIDIA CUDA C++ Best Practices Guide</li>
-      <li>Micron white paper — AI Acceleration Drives Memory Solutions</li>
-      <li>NVIDIA Nsight Compute Profiling Guide</li>
     </ul></div>
   </div>
 </main>
@@ -75,23 +71,102 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/gpu.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'gpu',ar:[840/390,360/520],steps:[
-  {t:["GPU 并行执行同一类运算", "GPUs execute similar operations in parallel"],
-   d:["GPU 把同类运算分配给多个线程，让不同数据同时接受同一项处理。", "A GPU distributes similar operations across threads so the same processing can run on different data in parallel."],
-   b:[["<p>GPU（图形处理器）是一类擅长并行数值计算的处理器。线程是一条独立的执行序列。对向量做逐元素加法时，多条线程可以各自读取对应的元素并写出各自的结果。GPU 把线程分组调度，组内线程执行相同指令时可以充分利用并行执行资源。</p>"], ["<p>A GPU, or graphics processing unit, is a processor designed for parallel numerical work. A thread is an independent sequence of execution. For elementwise vector addition, threads can read their assigned elements and write their own results. The GPU schedules threads in groups, which use the parallel execution resources efficiently when they execute the same instruction.</p>"]]},
-  {t:["矩阵乘加使用专用单元", "Dedicated units perform matrix multiply-accumulate"],
-   d:["矩阵乘法以小块为单位送入专用单元，再把各块的部分积累加到输出。", "Dedicated units multiply matrix tiles and accumulate the partial products into the output."],
-   b:[["<p>矩阵是按行和列排列的一组数。神经网络的许多层用矩阵乘法来组合输入和权重，权重是模型从训练中学到的参数。支持矩阵指令的 GPU 可以在专用单元中对小块矩阵做乘加，把乘积累加到输出块。线程仍需负责加载输入、发出运算指令和写回结果。</p>"], ["<p>A matrix is an array of numbers arranged in rows and columns. Many neural network layers use matrix multiplication to combine inputs with weights, the parameters learned during training. A GPU with matrix instructions can use dedicated units to multiply small matrix tiles and accumulate products into an output tile. Threads load the inputs, issue the operation and write back the result.</p>"]]},
-  {t:["HBM 用宽接口向 GPU 供数", "HBM feeds the GPU over a wide interface"],
-   d:["HBM 把多层存储芯片堆叠在 GPU 附近，通过多条并行通道传输数据。", "HBM stacks memory dies near the GPU and transfers data over multiple parallel channels."],
-   b:[["<p>大量并行运算需要持续读写数据。HBM（高带宽内存）将多层动态随机存取存储器（DRAM）芯片堆叠，在同一封装中靠近 GPU 芯片，通过宽接口提供显存。多个通道能并行传输，带宽表示单位时间内可传送的数据量。在采用 HBM 的 GPU 上，模型权重、算子中间结果和推理中使用的 KV 缓存等都可以放在这里。KV 缓存保留注意力计算已产生的键和值，供后续生成复用。</p>"], ["<p>Parallel computation requires a continuing supply of reads and writes. HBM, or high-bandwidth memory, stacks dynamic random-access memory (DRAM) dies and provides device memory through a wide interface close to the GPU die within the package. Multiple channels transfer data in parallel. Bandwidth is the amount of data that can move per unit of time. On GPUs equipped with HBM, it can hold model weights, intermediate results and the KV cache. This cache retains attention keys and values for reuse during generation.</p>"]]},
-  {t:["片上存储复用已读的数据", "On-chip memory reuses data already loaded"],
-   d:["数据块从 HBM 载入 GPU 后，可以在片上暂存并参与多次运算。", "Once a tile is loaded from HBM, on-chip memory can retain it for multiple operations."],
-   b:[["<p>GPU 还有比显存更靠近执行单元的片上存储。寄存器保存线程正在使用的值，缓存可保留近期访问的数据。在带有共享内存的执行模型中，同一线程块内的线程还可以显式共享一块片上暂存区。矩阵乘法可将数据分块载入这类暂存区，再让多个输出使用同一份输入，以减少显存读取。</p>"], ["<p>A GPU also has on-chip storage closer to its execution units than device memory. Registers hold values currently used by threads, and caches can retain recently accessed data. In execution models with shared memory, threads in the same block can explicitly share an on-chip scratchpad. Matrix multiplication can load tiles into this scratchpad and use each tile for multiple outputs, reducing reads from device memory.</p>"]]},
-  {t:["容量、带宽和算力约束不同", "Capacity, bandwidth and compute impose different limits"],
-   d:["容量决定工作集能否放下，带宽和算力约束每一步的处理速率。", "Capacity determines whether the working set fits, while bandwidth and compute limit its processing rate."],
-   b:[["<p>显存容量必须容纳当前阶段需要驻留的数据。工作集指一段计算反复访问的那部分数据。工作集放得下时，每读取一份数据能完成多少运算，仍会影响瓶颈。复用少的算子常受显存带宽限制，充分复用输入并持续执行大量乘加的算子则可能受算力限制。模型状态需要跨多块 GPU 放置时，卡间通信也进入执行路径。</p>"], ["<p>Device memory must accommodate the data that needs to remain resident. The working set is the data accessed repeatedly during a phase of computation. Once it fits, the amount of work performed per unit of data moved still influences the bottleneck. Operations with little reuse are often limited by device memory bandwidth, while operations that reuse inputs for many multiply-accumulates can reach a compute limit. Placing model state across GPUs also introduces communication between them.</p>"]]}
-]};
+window.SS_TOPIC_CFG={
+ "anim": "gpu",
+ "ar": [840/390,360/520],
+ "steps": [
+  {
+   "t": [
+    "GPU 并行执行同一类运算",
+    "GPUs Execute Similar Operations in Parallel"
+   ],
+   "d": [
+    "GPU 把同类运算分配给多个线程，让不同数据同时接受同一项处理。",
+    "A GPU distributes similar operations across threads so the same processing can run on different data in parallel."
+   ],
+   "b": [
+    [
+     "<p>GPU（图形处理器）是一类擅长并行数值计算的处理器。线程是一条独立的执行序列。对向量做逐元素加法时，多条线程可以各自读取对应的元素并写出各自的结果。GPU 把线程分组调度，组内线程执行相同指令时可以充分利用并行执行资源。</p>"
+    ],
+    [
+     "<p>A GPU, or graphics processing unit, is a processor designed for parallel numerical work. A thread is an independent sequence of execution. For elementwise vector addition, threads can read their assigned elements and write their own results. The GPU schedules threads in groups, which use the parallel execution resources efficiently when they execute the same instruction.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "矩阵乘加使用专用单元",
+    "Dedicated Units Perform Matrix Multiply-Accumulate"
+   ],
+   "d": [
+    "矩阵乘法以小块为单位送入专用单元，再把各块的部分积累加到输出。",
+    "Dedicated units multiply matrix tiles and accumulate the partial products into the output."
+   ],
+   "b": [
+    [
+     "<p>矩阵是按行和列排列的一组数。神经网络的许多层用矩阵乘法来组合输入和权重，权重是模型从训练中学到的参数。支持矩阵指令的 GPU 可以在专用单元中对小块矩阵做乘加，把乘积累加到输出块。线程仍需负责加载输入、发出运算指令和写回结果。</p>"
+    ],
+    [
+     "<p>A matrix is an array of numbers arranged in rows and columns. Many neural network layers use matrix multiplication to combine inputs with weights, the parameters learned during training. A GPU with matrix instructions can use dedicated units to multiply small matrix tiles and accumulate products into an output tile. Threads load the inputs, issue the operation and write back the result.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "HBM 用宽接口向 GPU 供数",
+    "HBM Feeds the GPU over a Wide Interface"
+   ],
+   "d": [
+    "HBM 把多层存储芯片堆叠在 GPU 附近，通过多条并行通道传输数据。",
+    "HBM stacks memory dies near the GPU and transfers data over multiple parallel channels."
+   ],
+   "b": [
+    [
+     "<p>大量并行运算需要持续读写数据。HBM（高带宽内存）将多层动态随机存取存储器（DRAM）芯片堆叠，在同一封装中靠近 GPU 芯片，通过宽接口提供显存。多个通道能并行传输，带宽表示单位时间内可传送的数据量。在采用 HBM 的 GPU 上，模型权重、算子中间结果和推理中使用的 KV 缓存等都可以放在这里。KV 缓存保留注意力计算已产生的键和值，供后续生成复用。</p>"
+    ],
+    [
+     "<p>Parallel computation requires a continuing supply of reads and writes. HBM, or high-bandwidth memory, stacks dynamic random-access memory (DRAM) dies and provides device memory through a wide interface close to the GPU die within the package. Multiple channels transfer data in parallel. Bandwidth is the amount of data that can move per unit of time. On GPUs equipped with HBM, it can hold model weights, intermediate results and the KV cache. This cache retains attention keys and values for reuse during generation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "片上存储复用已读的数据",
+    "On-chip Memory Reuses Data Already Loaded"
+   ],
+   "d": [
+    "数据块从 HBM 载入 GPU 后，可以在片上暂存并参与多次运算。",
+    "Once a tile is loaded from HBM, on-chip memory can retain it for multiple operations."
+   ],
+   "b": [
+    [
+     "<p>GPU 还有比显存更靠近执行单元的片上存储。寄存器保存线程正在使用的值，缓存可保留近期访问的数据。在带有共享内存的执行模型中，同一线程块内的线程还可以显式共享一块片上暂存区。矩阵乘法可将数据分块载入这类暂存区，再让多个输出使用同一份输入，以减少显存读取。</p>"
+    ],
+    [
+     "<p>A GPU also has on-chip storage closer to its execution units than device memory. Registers hold values currently used by threads, and caches can retain recently accessed data. In execution models with shared memory, threads in the same block can explicitly share an on-chip scratchpad. Matrix multiplication can load tiles into this scratchpad and use each tile for multiple outputs, reducing reads from device memory.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "容量、带宽和算力约束不同",
+    "Capacity, Bandwidth and Compute Impose Different Limits"
+   ],
+   "d": [
+    "容量决定工作集能否放下，带宽和算力约束每一步的处理速率。",
+    "Capacity determines whether the working set fits, while bandwidth and compute limit its processing rate."
+   ],
+   "b": [
+    [
+     "<p>显存容量必须容纳当前阶段需要驻留的数据。工作集指一段计算反复访问的那部分数据。工作集放得下时，每读取一份数据能完成多少运算，仍会影响瓶颈。复用少的算子常受显存带宽限制，充分复用输入并持续执行大量乘加的算子则可能受算力限制。模型状态需要跨多块 GPU 放置时，卡间通信也进入执行路径。</p>"
+    ],
+    [
+     "<p>Device memory must accommodate the data that needs to remain resident. The working set is the data accessed repeatedly during a phase of computation. Once it fits, the amount of work performed per unit of data moved still influences the bottleneck. Operations with little reuse are often limited by device memory bandwidth, while operations that reuse inputs for many multiply-accumulates can reach a compute limit. Placing model state across GPUs also introduces communication between them.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

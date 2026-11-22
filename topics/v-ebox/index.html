@@ -33,7 +33,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="EBox: CNode and DNode in one standard server">EBox：CNode 和 DNode 共置的标准服务器</h1>
+      <div><h1 data-en="EBox: CNode and DNode in One Standard Server">EBox：CNode 和 DNode 共置的标准服务器</h1>
         <p class="meta"><span data-en="6 steps · CNode, DNode, metadata triplication, rolling upgrade">6 步 · CNode、DNode、元数据三副本、滚动升级</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -44,8 +44,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): Variations on DASE (EBox), Write Buffer Erasure Coding, upgrade and delivery chapters.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：Variations on DASE（EBox）、Write Buffer Erasure Coding、升级与交付形态章节。</li>
       <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5, as of November 2026): VAST Cluster Concepts and Terminology; Adding CBoxes, DBoxes, or EBoxes to a Cluster; Software Installation Guide.">VAST Data 官方文档（docs.vastdata.com，5.5 版，截至 2026-11）：VAST Cluster Concepts and Terminology、Adding CBoxes, DBoxes, or EBoxes to a Cluster、Software Installation Guide。</li>
@@ -78,15 +78,133 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/v-ebox.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'v-ebox',ar:[960/430,480/676],
-  steps:[
-    {"t": ["一台服务器，三个容器", "Three containers in one server"], "d": ["一台 EBox 运行一个 CNode 容器和两个 DNode 容器。", "An EBox runs one CNode container and two DNode containers."], "b": [["<p>EBox 的 E 代表 Everything。EBox 采用通过 VAST 验证的行业标准服务器，在同一台服务器中运行 CNode 和 DNode 容器。</p>", "<p>CNode 处理协议请求并参与管理 Element Store。两个 DNode 将 SCM 和大容量闪存 SSD 接入集群的 NVMe 网络。正常运行时，每个 DNode 负责一半 SSD。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST 白皮书，第 30–31 页</a></p>"], ["<p>The E in EBox stands for Everything. An EBox runs CNode and DNode containers in the same VAST-validated industry-standard server.</p>", "<p>The CNode handles protocol requests and helps manage the Element Store. The two DNodes connect SCM and high-capacity flash SSDs to the cluster’s NVMe fabric. In normal operation, each DNode handles half the drives. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST white paper, pp. 30–31</a></p>"]]},
-    {"t": ["集群共享 SSD", "Cluster-wide access to SSDs"], "d": ["每个 CNode 都可以经 NVMe-oF 访问集群内各台 EBox 的 SSD。", "Each CNode can access the SSDs in every EBox over NVMe-oF."], "b": [["<p>DNode 负责转发 CNode 与 SSD 之间的 NVMe 命令和数据。每个 CNode 都挂载集群的全部 SSD，因此 EBox 1 上的 CNode 可以经 NVMe 网络访问 EBox 4 的盘。</p>", "<p>集群在初次安装时设为 EBox 或 CBox 与 DBox 形态。这个部署选项在安装时确定。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/adding-cboxes-dboxes-or-eboxes-to-a-cluster\">VAST 安装与扩容文档</a></p>"], ["<p>DNodes route NVMe commands and data between CNodes and SSDs. Each CNode mounts all SSDs in the cluster, so the CNode in EBox 1 can access drives in EBox 4 over the NVMe fabric.</p>", "<p>The initial installation sets the cluster type to EBoxes or CBoxes with DBoxes. This deployment setting is fixed at installation. <a href=\"https://docs.vastdata.com/docs-5-5/docs/adding-cboxes-dboxes-or-eboxes-to-a-cluster\">VAST installation and expansion documentation</a></p>"]]},
-    {"t": ["整台 EBox 是一个故障域", "The EBox is a failure domain"], "d": ["主板故障可使整台 EBox 及其 SSD 离线。", "A motherboard failure can take an entire EBox and its SSDs offline."], "b": [["<p>单个 DNode 容器离线时，另一个 DNode 可以把整台 EBox 的 SSD 接入 NVMe 网络。主板等共用部件的故障会影响该服务器上的 CNode、两个 DNode 及其 SSD。</p>", "<p>VAST 的 EBox 数据布局把整台服务器离线纳入保护范围。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST 白皮书，第 31 页</a></p>"], ["<p>When one DNode container goes offline, its peer can connect all the EBox’s SSDs to the NVMe fabric. The failure of a shared component such as the motherboard affects the CNode, both DNodes and the SSDs in that server.</p>", "<p>The EBox data layout accounts for the loss of a whole server. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST white paper, p. 31</a></p>"]]},
-    {"t": ["写缓冲双校验与元数据三副本", "Double parity and metadata triplication"], "d": ["写缓冲条带在每台 EBox 上最多放一块。启用元数据三副本时，每次更新写入三台 EBox。", "A write-buffer stripe places at most one chunk on each EBox. With metadata triplication enabled, each update is written to three EBoxes."], "b": [["<p>白皮书中的 EBox 保护方案对 SCM 写缓冲采用双校验纠删码。每条条带在每台 EBox 上最多放一块，任意两台 EBox 离线最多使同一条带缺少两块。</p>", "<p>启用元数据三副本后，处理写入的 CNode 将元数据更新同时写到三台 EBox 的 SCM SSD，收到三份写入确认后再向客户端确认。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=35\">VAST 白皮书，第 35–37 页</a></p>", "<p>白皮书给出的 EBox 集群起步规模为 8 台。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=144\">VAST 白皮书，第 144 页</a></p>"], ["<p>The EBox protection design in the white paper uses double-parity erasure coding for the SCM write buffer. Each stripe places at most one chunk on each EBox, so losing any two EBoxes removes at most two chunks from the stripe.</p>", "<p>With metadata triplication enabled, the CNode processing the write sends the metadata update to SCM SSDs in three EBoxes in parallel. It acknowledges the client write after receiving all three acknowledgments. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=35\">VAST white paper, pp. 35–37</a></p>", "<p>The white paper describes an EBox cluster starting at 8 nodes. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=144\">VAST white paper, p. 144</a></p>"]]},
-    {"t": ["两台 EBox 离线时的数据读取", "Reading with two EBoxes offline"], "d": ["双校验条带可以恢复缺失的块，三副本元数据仍有至少一份可用。", "Double-parity stripes can recover missing chunks, and triplicated metadata retains at least one copy."], "b": [["<p>在上述保护布局下，CNode 可以用剩余条带块重构读取所需的数据。大容量闪存上的数据由本地可解码纠删码和数据布局保护。VAST 将该方案描述为数据和元数据的 n+2 保护。</p>", "<p>集群可以利用剩余 EBox 上的空闲空间重建数据，恢复完整保护。白皮书同时列出机柜级保护，用于应对整柜故障。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST 白皮书，第 31 页</a></p>"], ["<p>Under this protection layout, CNodes can reconstruct data for reads from the surviving stripe chunks. Locally decodable erasure codes and data placement protect data on high-capacity flash. VAST describes this design as n+2 protection for data and metadata.</p>", "<p>The cluster can rebuild into free space on the remaining EBoxes to restore full protection. The white paper also describes rack-level resiliency for whole-rack failures. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST white paper, p. 31</a></p>"]]},
-    {"t": ["滚动升级 CNode 和 DNode", "Rolling upgrades of CNodes and DNodes"], "d": ["升级 CNode 时先迁移 VIP。两个 DNode 轮流接管 SSD，依次更新。", "VIPs move before the CNode update. The DNodes take turns serving the SSDs while their peer updates."], "b": [["<p>CNode 升级时，集群先将其工作和 VIP 迁往其他 CNode，再启动新版本容器。升级 DNode 时，集群把全部 SSD 交给另一个 DNode，更新容器后，再交换角色。</p>", "<p>需要重启 EBox 的操作系统时，集群预先转移 CNode 的工作，并通知集群主控节点该机的 SSD 将离线。重启期间，集群使用较窄的纠删码条带迁移数据，按需重构读取的数据。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=135\">VAST 白皮书，第 135–136 页</a></p>"], ["<p>For a CNode update, the cluster first transfers its work and VIPs to other CNodes, then starts the new container. For a DNode update, the peer takes over all the SSDs. After the first container is updated, the roles are reversed.</p>", "<p>When the EBox operating system must reboot, the cluster moves the CNode’s workload in advance and notifies the cluster leader that the SSDs will go offline. During reboot, the cluster migrates data in narrower erasure-code stripes and reconstructs reads as needed. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=135\">VAST white paper, pp. 135–136</a></p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "v-ebox",
+ "ar": [960/430,480/676],
+ "steps": [
+  {
+   "t": [
+    "一台服务器，三个容器",
+    "Three Containers in One Server"
+   ],
+   "d": [
+    "一台 EBox 运行一个 CNode 容器和两个 DNode 容器。",
+    "An EBox runs one CNode container and two DNode containers."
+   ],
+   "b": [
+    [
+     "<p>EBox 的 E 代表 Everything。EBox 采用通过 VAST 验证的行业标准服务器，在同一台服务器中运行 CNode 和 DNode 容器。</p>",
+     "<p>CNode 处理协议请求并参与管理 Element Store。两个 DNode 将 SCM 和大容量闪存 SSD 接入集群的 NVMe 网络。正常运行时，每个 DNode 负责一半 SSD。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST 白皮书，第 30–31 页</a></p>"
+    ],
+    [
+     "<p>The E in EBox stands for Everything. An EBox runs CNode and DNode containers in the same VAST-validated industry-standard server.</p>",
+     "<p>The CNode handles protocol requests and helps manage the Element Store. The two DNodes connect SCM and high-capacity flash SSDs to the cluster’s NVMe fabric. In normal operation, each DNode handles half the drives. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST white paper, pp. 30–31</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "集群共享 SSD",
+    "Cluster-wide Access to SSDs"
+   ],
+   "d": [
+    "每个 CNode 都可以经 NVMe-oF 访问集群内各台 EBox 的 SSD。",
+    "Each CNode can access the SSDs in every EBox over NVMe-oF."
+   ],
+   "b": [
+    [
+     "<p>DNode 负责转发 CNode 与 SSD 之间的 NVMe 命令和数据。每个 CNode 都挂载集群的全部 SSD，因此 EBox 1 上的 CNode 可以经 NVMe 网络访问 EBox 4 的盘。</p>",
+     "<p>集群在初次安装时设为 EBox 或 CBox 与 DBox 形态。这个部署选项在安装时确定。 <a href=\"https://docs.vastdata.com/docs-5-5/docs/adding-cboxes-dboxes-or-eboxes-to-a-cluster\">VAST 安装与扩容文档</a></p>"
+    ],
+    [
+     "<p>DNodes route NVMe commands and data between CNodes and SSDs. Each CNode mounts all SSDs in the cluster, so the CNode in EBox 1 can access drives in EBox 4 over the NVMe fabric.</p>",
+     "<p>The initial installation sets the cluster type to EBoxes or CBoxes with DBoxes. This deployment setting is fixed at installation. <a href=\"https://docs.vastdata.com/docs-5-5/docs/adding-cboxes-dboxes-or-eboxes-to-a-cluster\">VAST installation and expansion documentation</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "整台 EBox 是一个故障域",
+    "The EBox Is a Failure Domain"
+   ],
+   "d": [
+    "主板故障可使整台 EBox 及其 SSD 离线。",
+    "A motherboard failure can take an entire EBox and its SSDs offline."
+   ],
+   "b": [
+    [
+     "<p>单个 DNode 容器离线时，另一个 DNode 可以把整台 EBox 的 SSD 接入 NVMe 网络。主板等共用部件的故障会影响该服务器上的 CNode、两个 DNode 及其 SSD。</p>",
+     "<p>VAST 的 EBox 数据布局把整台服务器离线纳入保护范围。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST 白皮书，第 31 页</a></p>"
+    ],
+    [
+     "<p>When one DNode container goes offline, its peer can connect all the EBox’s SSDs to the NVMe fabric. The failure of a shared component such as the motherboard affects the CNode, both DNodes and the SSDs in that server.</p>",
+     "<p>The EBox data layout accounts for the loss of a whole server. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST white paper, p. 31</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "写缓冲双校验与元数据三副本",
+    "Double Parity and Metadata Triplication"
+   ],
+   "d": [
+    "写缓冲条带在每台 EBox 上最多放一块。启用元数据三副本时，每次更新写入三台 EBox。",
+    "A write-buffer stripe places at most one chunk on each EBox. With metadata triplication enabled, each update is written to three EBoxes."
+   ],
+   "b": [
+    [
+     "<p>白皮书中的 EBox 保护方案对 SCM 写缓冲采用双校验纠删码。每条条带在每台 EBox 上最多放一块，任意两台 EBox 离线最多使同一条带缺少两块。</p>",
+     "<p>启用元数据三副本后，处理写入的 CNode 将元数据更新同时写到三台 EBox 的 SCM SSD，收到三份写入确认后再向客户端确认。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=35\">VAST 白皮书，第 35–37 页</a></p>",
+     "<p>白皮书给出的 EBox 集群起步规模为 8 台。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=144\">VAST 白皮书，第 144 页</a></p>"
+    ],
+    [
+     "<p>The EBox protection design in the white paper uses double-parity erasure coding for the SCM write buffer. Each stripe places at most one chunk on each EBox, so losing any two EBoxes removes at most two chunks from the stripe.</p>",
+     "<p>With metadata triplication enabled, the CNode processing the write sends the metadata update to SCM SSDs in three EBoxes in parallel. It acknowledges the client write after receiving all three acknowledgments. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=35\">VAST white paper, pp. 35–37</a></p>",
+     "<p>The white paper describes an EBox cluster starting at 8 nodes. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=144\">VAST white paper, p. 144</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "两台 EBox 离线时的数据读取",
+    "Reading with Two EBoxes Offline"
+   ],
+   "d": [
+    "双校验条带可以恢复缺失的块，三副本元数据仍有至少一份可用。",
+    "Double-parity stripes can recover missing chunks, and triplicated metadata retains at least one copy."
+   ],
+   "b": [
+    [
+     "<p>在上述保护布局下，CNode 可以用剩余条带块重构读取所需的数据。大容量闪存上的数据由本地可解码纠删码和数据布局保护。VAST 将该方案描述为数据和元数据的 n+2 保护。</p>",
+     "<p>集群可以利用剩余 EBox 上的空闲空间重建数据，恢复完整保护。白皮书同时列出机柜级保护，用于应对整柜故障。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST 白皮书，第 31 页</a></p>"
+    ],
+    [
+     "<p>Under this protection layout, CNodes can reconstruct data for reads from the surviving stripe chunks. Locally decodable erasure codes and data placement protect data on high-capacity flash. VAST describes this design as n+2 protection for data and metadata.</p>",
+     "<p>The cluster can rebuild into free space on the remaining EBoxes to restore full protection. The white paper also describes rack-level resiliency for whole-rack failures. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=31\">VAST white paper, p. 31</a></p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "滚动升级 CNode 和 DNode",
+    "Rolling Upgrades of CNodes and DNodes"
+   ],
+   "d": [
+    "升级 CNode 时先迁移 VIP。两个 DNode 轮流接管 SSD，依次更新。",
+    "VIPs move before the CNode update. The DNodes take turns serving the SSDs while their peer updates."
+   ],
+   "b": [
+    [
+     "<p>CNode 升级时，集群先将其工作和 VIP 迁往其他 CNode，再启动新版本容器。升级 DNode 时，集群把全部 SSD 交给另一个 DNode，更新容器后，再交换角色。</p>",
+     "<p>需要重启 EBox 的操作系统时，集群预先转移 CNode 的工作，并通知集群主控节点该机的 SSD 将离线。重启期间，集群使用较窄的纠删码条带迁移数据，按需重构读取的数据。 <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=135\">VAST 白皮书，第 135–136 页</a></p>"
+    ],
+    [
+     "<p>For a CNode update, the cluster first transfers its work and VIPs to other CNodes, then starts the new container. For a DNode update, the peer takes over all the SSDs. After the first container is updated, the roles are reversed.</p>",
+     "<p>When the EBox operating system must reboot, the cluster moves the CNode’s workload in advance and notifies the cluster leader that the SSDs will go offline. During reboot, the cluster migrates data in narrower erasure-code stripes and reconstructs reads as needed. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=135\">VAST white paper, pp. 135–136</a></p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

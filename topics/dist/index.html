@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="How distributed training stays in sync">分布式训练怎么同步</h1>
+      <div><h1 data-en="How Distributed Training Stays in Sync">分布式训练怎么同步</h1>
         <p class="meta"><span data-en="6 steps · gradient reduction, tensor parallelism, pipeline parallelism">6 步 · 梯度归约、张量并行、流水线并行</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,14 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>PyTorch Distributed Overview</li>
-      <li>PyTorch DistributedDataParallel Design Note</li>
-      <li>PyTorch Pipeline Parallelism documentation</li>
-      <li>PyTorch Large Scale Transformer Model Training with Tensor Parallelism</li>
-      <li>NVIDIA NCCL User Guide — Collective Operations and Environment Variables</li>
     </ul></div>
   </div>
 </main>
@@ -76,26 +71,120 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/dist.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'dist',ar:[840/390,360/520],steps:[
-  {t:["数据并行把样本分给模型副本", "Data parallelism divides samples among model replicas"],
-   d:["各 GPU 运行同一模型的副本，分别计算不同样本的局部梯度。", "Each GPU runs a replica of the same model and computes local gradients on different samples."],
-   b:[["<p>数据并行把一次训练处理的样本分配给多块 GPU。在常见的同步数据并行中，每个参与进程保有同一份模型参数。各副本分别完成前向计算和反向传播。前向计算生成预测并计算损失，损失衡量预测误差，反向传播计算损失对各参数的梯度。每个进程此时得到的是其本地样本的梯度。</p>"], ["<p>Data parallelism distributes the samples for a training step across GPUs. In conventional synchronous data parallelism, each participating process holds the same model parameters. Each replica performs its own forward computation and backpropagation. The forward pass produces predictions and computes a loss to quantify prediction error. Backpropagation computes the gradient of that loss with respect to the parameters. Each process initially has gradients for its local samples.</p>"]]},
-  {t:["All-reduce 让所有副本拿到归约结果", "All-reduce gives every replica the reduction result"],
-   d:["各进程贡献自己的梯度，归约结果返回到同一通信组的每个进程。", "Each process contributes its gradients, and every process in the same communication group receives the reduction result."],
-   b:[["<p>集合通信是由一组进程共同执行的通信操作。All-reduce 对各参与者输入的对应元素做归约，例如求和，并将结果交给每个参与者。各副本使用一致的汇总梯度进行相同的参数更新。每个副本样本数相同时，可将梯度之和除以副本数得到平均值。</p>"], ["<p>A collective is a communication operation that a group of processes executes together. All-reduce combines corresponding input elements using an operation such as summation and delivers the result to every participant. Replicas then apply the same parameter update using the aggregated gradients. When replicas process equal numbers of samples, the gradient sum divided by the replica count gives the average.</p>"]]},
-  {t:["梯度通信可与反向计算重叠", "Gradient communication can overlap backpropagation"],
-   d:["已就绪的一组梯度可以开始归约，同时 GPU 继续计算后续梯度。", "A group of gradients can begin reduction as soon as it is ready, while the GPU continues computing other gradients."],
-   b:[["<p>梯度按反向传播的依赖顺序陆续产生。分布式训练框架可以把多个梯度组织成一个通信批次，批次内的梯度全部就绪时发起集合通信。计算与通信重叠的部分可以隐藏在计算时间内。参数更新仍要等所需梯度归约完成，因此未被覆盖的通信会延长训练步。</p>"], ["<p>Gradients become available in backpropagation dependency order. A distributed training framework can group gradients into communication buckets and launch a collective when a bucket is ready. Communication concurrent with computation can be hidden within compute time. The parameter update still depends on the required reductions, so any exposed communication extends the training step.</p>"]]},
-  {t:["张量并行把一层的运算拆到多卡", "Tensor parallelism splits a layer across GPUs"],
-   d:["每块 GPU 计算该层的一部分，并在需要时交换或合并部分结果。", "Each GPU computes part of a layer and exchanges or combines partial results as needed."],
-   b:[["<p>张量是用于表示模型输入、权重和输出的多维数组。张量并行可沿矩阵行或列切分权重，让参与 GPU 共同执行同一层。以将矩阵乘法沿被求和的维度切分为例，各 GPU 得到形状相同的部分输出，随后按元素求和得到完整输出。此类通信可发生在层内的计算路径上。</p>"], ["<p>A tensor is a multidimensional array used for model inputs, weights and outputs. Tensor parallelism can split a weight matrix by rows or columns so that GPUs compute one layer together. For example, splitting matrix multiplication along the summed dimension produces partial outputs of the same shape. An elementwise sum combines them into the full output. This communication can occur on the computation path within a layer.</p>"]]},
-  {t:["流水线并行按层划分阶段", "Pipeline parallelism partitions layers into stages"],
-   d:["连续的层放在不同阶段，多个小批次可以在不同阶段同时运行。", "Consecutive layers are placed in separate stages, allowing different microbatches to run on different stages at the same time."],
-   b:[["<p>流水线并行把模型分为若干层组，每个层组是一个阶段。小批次是从一批样本进一步切分出的子批次。前向产生的中间张量称为激活值，随小批次传给下一阶段，反向梯度则沿相反方向传递。当一个小批次进入后续阶段后，前面的阶段可以处理另一个小批次。</p>"], ["<p>Pipeline parallelism divides a model into groups of layers called stages. A microbatch is a subdivision of a batch of samples. Intermediate tensors from the forward pass, called activations, move with the microbatch to the next stage. Backward gradients travel in the opposite direction. As one microbatch advances, an earlier stage can begin processing the next microbatch.</p>"]]},
-  {t:["并行组按通信需求映射到拓扑", "Parallel groups map to topology by communication demand"],
-   d:["层内频繁通信的进程可放在高速 GPU 互联域内，其他并行组还可跨节点连接。", "Processes that communicate frequently within layers can share a high-speed GPU fabric, while other parallel groups can span nodes."],
-   b:[["<p>同一作业可以组合数据并行、张量并行和流水线并行。通信组定义哪些进程共同完成一类操作。频繁交换层内结果的张量并行组常放在高速互联域内，数据并行组则可以通过集群网络覆盖多个节点。放置方式影响流量经过的链路，以及计算完成后还需等待的通信时间。</p>"], ["<p>A job can combine data, tensor and pipeline parallelism. A communication group defines which processes take part in an operation. Tensor-parallel groups that exchange intermediate results frequently are often placed within a high-speed fabric, while data-parallel groups can span nodes over the cluster network. Placement affects which links carry the traffic and how much communication remains after computation finishes.</p>"]]}
-]};
+window.SS_TOPIC_CFG={
+ "anim": "dist",
+ "ar": [840/390,360/520],
+ "steps": [
+  {
+   "t": [
+    "数据并行把样本分给模型副本",
+    "Data Parallelism Divides Samples Among Model Replicas"
+   ],
+   "d": [
+    "各 GPU 运行同一模型的副本，分别计算不同样本的局部梯度。",
+    "Each GPU runs a replica of the same model and computes local gradients on different samples."
+   ],
+   "b": [
+    [
+     "<p>数据并行把一次训练处理的样本分配给多块 GPU。在常见的同步数据并行中，每个参与进程保有同一份模型参数。各副本分别完成前向计算和反向传播。前向计算生成预测并计算损失，损失衡量预测误差，反向传播计算损失对各参数的梯度。每个进程此时得到的是其本地样本的梯度。</p>"
+    ],
+    [
+     "<p>Data parallelism distributes the samples for a training step across GPUs. In conventional synchronous data parallelism, each participating process holds the same model parameters. Each replica performs its own forward computation and backpropagation. The forward pass produces predictions and computes a loss to quantify prediction error. Backpropagation computes the gradient of that loss with respect to the parameters. Each process initially has gradients for its local samples.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "All-reduce 让所有副本拿到归约结果",
+    "All-reduce Gives Every Replica the Reduction Result"
+   ],
+   "d": [
+    "各进程贡献自己的梯度，归约结果返回到同一通信组的每个进程。",
+    "Each process contributes its gradients, and every process in the same communication group receives the reduction result."
+   ],
+   "b": [
+    [
+     "<p>集合通信是由一组进程共同执行的通信操作。All-reduce 对各参与者输入的对应元素做归约，例如求和，并将结果交给每个参与者。各副本使用一致的汇总梯度进行相同的参数更新。每个副本样本数相同时，可将梯度之和除以副本数得到平均值。</p>"
+    ],
+    [
+     "<p>A collective is a communication operation that a group of processes executes together. All-reduce combines corresponding input elements using an operation such as summation and delivers the result to every participant. Replicas then apply the same parameter update using the aggregated gradients. When replicas process equal numbers of samples, the gradient sum divided by the replica count gives the average.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "梯度通信可与反向计算重叠",
+    "Gradient Communication Can Overlap Backpropagation"
+   ],
+   "d": [
+    "已就绪的一组梯度可以开始归约，同时 GPU 继续计算后续梯度。",
+    "A group of gradients can begin reduction as soon as it is ready, while the GPU continues computing other gradients."
+   ],
+   "b": [
+    [
+     "<p>梯度按反向传播的依赖顺序陆续产生。分布式训练框架可以把多个梯度组织成一个通信批次，批次内的梯度全部就绪时发起集合通信。计算与通信重叠的部分可以隐藏在计算时间内。参数更新仍要等所需梯度归约完成，因此未被覆盖的通信会延长训练步。</p>"
+    ],
+    [
+     "<p>Gradients become available in backpropagation dependency order. A distributed training framework can group gradients into communication buckets and launch a collective when a bucket is ready. Communication concurrent with computation can be hidden within compute time. The parameter update still depends on the required reductions, so any exposed communication extends the training step.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "张量并行把一层的运算拆到多卡",
+    "Tensor Parallelism Splits a Layer Across GPUs"
+   ],
+   "d": [
+    "每块 GPU 计算该层的一部分，并在需要时交换或合并部分结果。",
+    "Each GPU computes part of a layer and exchanges or combines partial results as needed."
+   ],
+   "b": [
+    [
+     "<p>张量是用于表示模型输入、权重和输出的多维数组。张量并行可沿矩阵行或列切分权重，让参与 GPU 共同执行同一层。以将矩阵乘法沿被求和的维度切分为例，各 GPU 得到形状相同的部分输出，随后按元素求和得到完整输出。此类通信可发生在层内的计算路径上。</p>"
+    ],
+    [
+     "<p>A tensor is a multidimensional array used for model inputs, weights and outputs. Tensor parallelism can split a weight matrix by rows or columns so that GPUs compute one layer together. For example, splitting matrix multiplication along the summed dimension produces partial outputs of the same shape. An elementwise sum combines them into the full output. This communication can occur on the computation path within a layer.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "流水线并行按层划分阶段",
+    "Pipeline Parallelism Partitions Layers into Stages"
+   ],
+   "d": [
+    "连续的层放在不同阶段，多个小批次可以在不同阶段同时运行。",
+    "Consecutive layers are placed in separate stages, allowing different microbatches to run on different stages at the same time."
+   ],
+   "b": [
+    [
+     "<p>流水线并行把模型分为若干层组，每个层组是一个阶段。小批次是从一批样本进一步切分出的子批次。前向产生的中间张量称为激活值，随小批次传给下一阶段，反向梯度则沿相反方向传递。当一个小批次进入后续阶段后，前面的阶段可以处理另一个小批次。</p>"
+    ],
+    [
+     "<p>Pipeline parallelism divides a model into groups of layers called stages. A microbatch is a subdivision of a batch of samples. Intermediate tensors from the forward pass, called activations, move with the microbatch to the next stage. Backward gradients travel in the opposite direction. As one microbatch advances, an earlier stage can begin processing the next microbatch.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "并行组按通信需求映射到拓扑",
+    "Parallel Groups Map to Topology by Communication Demand"
+   ],
+   "d": [
+    "层内频繁通信的进程可放在高速 GPU 互联域内，其他并行组还可跨节点连接。",
+    "Processes that communicate frequently within layers can share a high-speed GPU fabric, while other parallel groups can span nodes."
+   ],
+   "b": [
+    [
+     "<p>同一作业可以组合数据并行、张量并行和流水线并行。通信组定义哪些进程共同完成一类操作。频繁交换层内结果的张量并行组常放在高速互联域内，数据并行组则可以通过集群网络覆盖多个节点。放置方式影响流量经过的链路，以及计算完成后还需等待的通信时间。</p>"
+    ],
+    [
+     "<p>A job can combine data, tensor and pipeline parallelism. A communication group defines which processes take part in an operation. Tensor-parallel groups that exchange intermediate results frequently are often placed within a high-speed fabric, while data-parallel groups can span nodes over the cluster network. Placement affects which links carry the traffic and how much communication remains after computation finishes.</p>"
+    ]
+   ]
+  }
+ ]
+};
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

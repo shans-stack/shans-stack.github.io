@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="How erasure coding saves space">纠删码怎么省空间</h1>
+      <div><h1 data-en="How Erasure Coding Saves Space">纠删码怎么省空间</h1>
         <p class="meta"><span data-en="6 steps · replicas, RAID, stripes, rebuild">6 步 · 副本、RAID、条带、重建</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="Lustre Wiki: File Level Redundancy Solution Architecture.">Lustre Wiki：File Level Redundancy Solution Architecture。</li>
       <li data-en="VAST Data public white paper, The VAST AI Operating System (wide stripes and locally decodable codes).">VAST Data 公开白皮书《The VAST AI Operating System》（宽条带与局部可解码码）。</li>
@@ -73,153 +73,155 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/ec.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'ec',ar:[960/476,480/540],
-  steps:[
-   {
-    "s": [
-     "坏盘是常事",
-     "Drives fail"
+window.SS_TOPIC_CFG={
+ "anim": "ec",
+ "ar": [960/476,480/540],
+ "steps": [
+  {
+   "s": [
+    "坏盘是常事",
+    "Drives fail"
+   ],
+   "t": [
+    "盘一多，坏盘是常事",
+    "With Enough Drives, Failures Are Routine"
+   ],
+   "d": [
+    "一块盘坏了，它上面的数据就没了，除非别处还有一份。",
+    "When a drive fails, the data on it is gone, unless another copy exists somewhere else."
+   ],
+   "b": [
+    [
+     "<p>单块盘的平均无故障时间看起来很长，但一个系统里有成百上千块盘时，隔一段时间坏一块是必然的。所以存储系统从一开始就要假定「盘会坏」，并且在盘坏的时候数据不能丢。</p>",
+     "<p>最基本的做法是 RAID：RAID 0 只把数据切开分散到多块盘上，速度快但没有任何冗余，任何一块盘坏了数据就全丢。后续步骤介绍两类能容忍坏盘的办法：多副本和纠删码。</p>"
     ],
-    "t": [
-     "盘一多，坏盘是常事",
-     "With enough drives, failures are routine"
-    ],
-    "d": [
-     "一块盘坏了，它上面的数据就没了，除非别处还有一份。",
-     "When a drive fails, the data on it is gone, unless another copy exists somewhere else."
-    ],
-    "b": [
-     [
-      "<p>单块盘的平均无故障时间看起来很长，但一个系统里有成百上千块盘时，隔一段时间坏一块是必然的。所以存储系统从一开始就要假定「盘会坏」，并且在盘坏的时候数据不能丢。</p>",
-      "<p>最基本的做法是 RAID：RAID 0 只把数据切开分散到多块盘上，速度快但没有任何冗余，任何一块盘坏了数据就全丢。后续步骤介绍两类能容忍坏盘的办法：多副本和纠删码。</p>"
-     ],
-     [
-      "<p>A single drive's mean time between failures looks long, but in a system with hundreds or thousands of drives, one failing every so often is a certainty. So a storage system has to assume from the start that drives will fail, and that no data may be lost when they do.</p>",
-      "<p>The most basic approach is RAID. RAID 0 only splits data across several drives: it is fast but has no redundancy at all, and losing any one drive loses all the data. The next steps cover the two kinds of approach that survive drive failures: keeping extra copies, and erasure coding.</p>"
-     ]
+    [
+     "<p>A single drive's mean time between failures looks long, but in a system with hundreds or thousands of drives, one failing every so often is a certainty. So a storage system has to assume from the start that drives will fail, and that no data may be lost when they do.</p>",
+     "<p>The most basic approach is RAID. RAID 0 only splits data across several drives: it is fast but has no redundancy at all, and losing any one drive loses all the data. The next steps cover the two kinds of approach that survive drive failures: keeping extra copies, and erasure coding.</p>"
     ]
-   },
-   {
-    "s": [
-     "多存几份",
-     "Keep copies"
+   ]
+  },
+  {
+   "s": [
+    "多存几份",
+    "Keep copies"
+   ],
+   "t": [
+    "最直接的办法：多存几份",
+    "The Simplest Fix: Keep Several Copies"
+   ],
+   "d": [
+    "每块数据复制三份放到三块盘上，坏两块仍不丢数据，但三块盘只装下一份数据。",
+    "Each block is copied three times onto three drives. Two can fail without data loss, but three drives hold only one drive's worth of data."
+   ],
+   "b": [
+    [
+     "<p>副本（镜像）就是把同一份数据完整地写到几块不同的盘上。RAID 1 是两份，很多分布式存储默认三份。坏盘时不用计算，直接从还活着的那一份读，恢复也只是再复制一次。</p>",
+     "<p>代价是空间：三副本意味着买三块盘的容量，只能存一块盘的数据。数据量小时影响不大；到了 PB 级，多出来的两份意味着大量额外的盘和电费。</p>"
     ],
-    "t": [
-     "最直接的办法：多存几份",
-     "The simplest fix: keep several copies"
-    ],
-    "d": [
-     "每块数据复制三份放到三块盘上，坏两块仍不丢数据，但三块盘只装下一份数据。",
-     "Each block is copied three times onto three drives. Two can fail without data loss, but three drives hold only one drive's worth of data."
-    ],
-    "b": [
-     [
-      "<p>副本（镜像）就是把同一份数据完整地写到几块不同的盘上。RAID 1 是两份，很多分布式存储默认三份。坏盘时不用计算，直接从还活着的那一份读，恢复也只是再复制一次。</p>",
-      "<p>代价是空间：三副本意味着买三块盘的容量，只能存一块盘的数据。数据量小时影响不大；到了 PB 级，多出来的两份意味着大量额外的盘和电费。</p>"
-     ],
-     [
-      "<p>Replicas (mirrors) write the same data in full to several different drives. RAID 1 keeps two copies; many distributed storage systems keep three by default. When a drive fails nothing needs computing: reads go to a surviving copy, and recovery is just one more copy.</p>",
-      "<p>The cost is space: three copies means buying three drives' worth of capacity to store one drive's worth of data. That hardly matters for small amounts of data, but at petabyte scale the two extra copies add up to a lot of drives and power.</p>"
-     ]
+    [
+     "<p>Replicas (mirrors) write the same data in full to several different drives. RAID 1 keeps two copies; many distributed storage systems keep three by default. When a drive fails nothing needs computing: reads go to a surviving copy, and recovery is just one more copy.</p>",
+     "<p>The cost is space: three copies means buying three drives' worth of capacity to store one drive's worth of data. That hardly matters for small amounts of data, but at petabyte scale the two extra copies add up to a lot of drives and power.</p>"
     ]
-   },
-   {
-    "s": [
-     "切块加校验",
-     "Split and add parity"
+   ]
+  },
+  {
+   "s": [
+    "切块加校验",
+    "Split and add parity"
+   ],
+   "t": [
+    "纠删码：切成几块，再算出几块校验",
+    "Erasure Coding: Split into Blocks, Then Compute Parity"
+   ],
+   "d": [
+    "把数据切成 8 块，再算出 2 块校验块，10 块分别放到 10 块盘上。",
+    "Data is split into 8 blocks, 2 parity blocks are computed, and the 10 blocks go onto 10 drives."
+   ],
+   "b": [
+    [
+     "<p>纠删码（Erasure Coding，简称 EC）把一份数据切成 k 块数据块，再用数学方法算出 m 块校验块，一共 k+m 块分散到不同的盘上，这一组叫一个条带。常见写法是「8+2」：8 块数据加 2 块校验。RAID 5、RAID 6 也是这个思路，分别带 1 块和 2 块校验。</p>",
+     "<p>空间开销对比：8+2 用 10 块盘的容量存 8 块盘的数据，多出来的只是 2 块校验；三副本是 3 块盘存 1 块盘的数据。</p>"
     ],
-    "t": [
-     "纠删码：切成几块，再算出几块校验",
-     "Erasure coding: split into blocks, then compute parity"
-    ],
-    "d": [
-     "把数据切成 8 块，再算出 2 块校验块，10 块分别放到 10 块盘上。",
-     "Data is split into 8 blocks, 2 parity blocks are computed, and the 10 blocks go onto 10 drives."
-    ],
-    "b": [
-     [
-      "<p>纠删码（Erasure Coding，简称 EC）把一份数据切成 k 块数据块，再用数学方法算出 m 块校验块，一共 k+m 块分散到不同的盘上，这一组叫一个条带。常见写法是「8+2」：8 块数据加 2 块校验。RAID 5、RAID 6 也是这个思路，分别带 1 块和 2 块校验。</p>",
-      "<p>空间开销对比：8+2 用 10 块盘的容量存 8 块盘的数据，多出来的只是 2 块校验；三副本是 3 块盘存 1 块盘的数据。</p>"
-     ],
-     [
-      "<p>Erasure coding (EC) splits data into k data blocks and mathematically computes m parity blocks; the k+m blocks are spread across different drives, and the group is called a stripe. A common notation is \"8+2\": 8 data blocks plus 2 parity blocks. RAID 5 and RAID 6 follow the same idea, with 1 and 2 parity blocks.</p>",
-      "<p>The space comparison: 8+2 stores 8 drives' worth of data in 10 drives' worth of capacity, and the overhead is only the 2 parity blocks. Three copies store 1 drive's worth of data in 3 drives.</p>"
-     ]
+    [
+     "<p>Erasure coding (EC) splits data into k data blocks and mathematically computes m parity blocks; the k+m blocks are spread across different drives, and the group is called a stripe. A common notation is \"8+2\": 8 data blocks plus 2 parity blocks. RAID 5 and RAID 6 follow the same idea, with 1 and 2 parity blocks.</p>",
+     "<p>The space comparison: 8+2 stores 8 drives' worth of data in 10 drives' worth of capacity, and the overhead is only the 2 parity blocks. Three copies store 1 drive's worth of data in 3 drives.</p>"
     ]
-   },
-   {
-    "s": [
-     "坏了算回来",
-     "Recompute the lost"
+   ]
+  },
+  {
+   "s": [
+    "坏了算回来",
+    "Recompute the lost"
+   ],
+   "t": [
+    "坏了就算回来",
+    "Lost Blocks Are Recomputed"
+   ],
+   "d": [
+    "坏掉的盘不超过校验块数，用剩下的块就能把丢掉的那几块算回来。",
+    "As long as no more drives fail than there are parity blocks, the remaining blocks can recompute the lost ones."
+   ],
+   "b": [
+    [
+     "<p>8+2 的条带里，任意 2 块盘同时坏掉，剩下 8 块里的数据和校验足以把丢的 2 块重新算出来，写到新盘或备用空间上，这个过程叫重建。坏的盘数超过校验块数，数据才会丢。</p>",
+     "<p>重建要读剩下的块、再做计算，所以比副本恢复更费力。有的系统把数据、校验和备用空间打散到池里所有盘上（分簇 RAID），坏一块盘时很多盘一起参与重建，重建窗口缩短，重建期间再坏盘的风险也跟着降下来。</p>"
     ],
-    "t": [
-     "坏了就算回来",
-     "Lost blocks are recomputed"
-    ],
-    "d": [
-     "坏掉的盘不超过校验块数，用剩下的块就能把丢掉的那几块算回来。",
-     "As long as no more drives fail than there are parity blocks, the remaining blocks can recompute the lost ones."
-    ],
-    "b": [
-     [
-      "<p>8+2 的条带里，任意 2 块盘同时坏掉，剩下 8 块里的数据和校验足以把丢的 2 块重新算出来，写到新盘或备用空间上，这个过程叫重建。坏的盘数超过校验块数，数据才会丢。</p>",
-      "<p>重建要读剩下的块、再做计算，所以比副本恢复更费力。有的系统把数据、校验和备用空间打散到池里所有盘上（分簇 RAID），坏一块盘时很多盘一起参与重建，重建窗口缩短，重建期间再坏盘的风险也跟着降下来。</p>"
-     ],
-     [
-      "<p>In an 8+2 stripe, if any 2 drives fail at the same time, the data and parity in the remaining 8 are enough to recompute the 2 lost blocks and write them to a new drive or spare space. This is called a rebuild. Data is lost only when more drives fail than there are parity blocks.</p>",
-      "<p>A rebuild has to read the remaining blocks and compute, so it takes more effort than recovering from a copy. Some systems spread data, parity and spare space across every drive in the pool (declustered RAID); when a drive fails, many drives take part in the rebuild, which shortens the rebuild window and lowers the risk of another failure during it.</p>"
-     ]
+    [
+     "<p>In an 8+2 stripe, if any 2 drives fail at the same time, the data and parity in the remaining 8 are enough to recompute the 2 lost blocks and write them to a new drive or spare space. This is called a rebuild. Data is lost only when more drives fail than there are parity blocks.</p>",
+     "<p>A rebuild has to read the remaining blocks and compute, so it takes more effort than recovering from a copy. Some systems spread data, parity and spare space across every drive in the pool (declustered RAID); when a drive fails, many drives take part in the rebuild, which shortens the rebuild window and lowers the risk of another failure during it.</p>"
     ]
-   },
-   {
-    "s": [
-     "占多少盘",
-     "Drives used"
+   ]
+  },
+  {
+   "s": [
+    "占多少盘",
+    "Drives used"
+   ],
+   "t": [
+    "同样多的数据，占多少盘",
+    "The Same Data, How Many Drives"
+   ],
+   "d": [
+    "写进同样多的数据，三副本的盘很快就满了，纠删码只多占一点。",
+    "Write the same amount of data: the drives fill up fast with three copies, while erasure coding takes only a little extra."
+   ],
+   "b": [
+    [
+     "<p>把两种办法放在一起写同样多的数据：三副本每写 1 块就落 3 块；8+2 每写 8 块只多落 2 块校验。写入的数据一样多，占用的盘差距很大。这就是纠删码被称为「省空间」的原因，也是大容量存储默认用它的原因。</p>",
+     "<p>副本仍有适用场景：副本恢复快、写小块数据时不用计算。纠删码改动一个小块，要把同一条带的校验一起读出来、重算、再写回（读改写），所以有的系统小块数据和元数据用副本，大块数据用纠删码。</p>"
     ],
-    "t": [
-     "同样多的数据，占多少盘",
-     "The same data, how many drives"
-    ],
-    "d": [
-     "写进同样多的数据，三副本的盘很快就满了，纠删码只多占一点。",
-     "Write the same amount of data: the drives fill up fast with three copies, while erasure coding takes only a little extra."
-    ],
-    "b": [
-     [
-      "<p>把两种办法放在一起写同样多的数据：三副本每写 1 块就落 3 块；8+2 每写 8 块只多落 2 块校验。写入的数据一样多，占用的盘差距很大。这就是纠删码被称为「省空间」的原因，也是大容量存储默认用它的原因。</p>",
-      "<p>副本仍有适用场景：副本恢复快、写小块数据时不用计算。纠删码改动一个小块，要把同一条带的校验一起读出来、重算、再写回（读改写），所以有的系统小块数据和元数据用副本，大块数据用纠删码。</p>"
-     ],
-     [
-      "<p>Run the two approaches side by side with the same data: three copies land 3 blocks for every block written, while 8+2 lands only 2 extra parity blocks for every 8 written. The data written is the same, but the drives used differ by a wide margin. That is why erasure coding is said to save space, and why high-capacity storage uses it by default.</p>",
-      "<p>Copies still have their uses: they recover quickly and need no computation when writing small pieces of data. With erasure coding, changing one small block means reading the stripe's parity, recomputing it and writing it back (read-modify-write), so some systems use copies for small data and metadata and erasure coding for large data.</p>"
-     ]
+    [
+     "<p>Run the two approaches side by side with the same data: three copies land 3 blocks for every block written, while 8+2 lands only 2 extra parity blocks for every 8 written. The data written is the same, but the drives used differ by a wide margin. That is why erasure coding is said to save space, and why high-capacity storage uses it by default.</p>",
+     "<p>Copies still have their uses: they recover quickly and need no computation when writing small pieces of data. With erasure coding, changing one small block means reading the stripe's parity, recomputing it and writing it back (read-modify-write), so some systems use copies for small data and metadata and erasure coding for large data.</p>"
     ]
-   },
-   {
-    "s": [
-     "条带宽窄",
-     "Stripe width"
+   ]
+  },
+  {
+   "s": [
+    "条带宽窄",
+    "Stripe width"
+   ],
+   "t": [
+    "条带越宽越省，重建也越重",
+    "Wider Stripes Save More, but Rebuilds Get Heavier"
+   ],
+   "d": [
+    "从 8+2 换成 14+2，校验占的比例更小，但坏一块盘时重建要读的块更多。",
+    "Going from 8+2 to 14+2 shrinks the share taken by parity, but rebuilding a failed drive means reading more blocks."
+   ],
+   "b": [
+    [
+     "<p>同样是 2 块校验，数据块越多（条带越宽），校验在总容量里占得越少，越省空间。代价在重建：传统算法要把丢的块算回来，得读取同一条带里足够多的存活块，条带越宽要读的越多，重建越慢、对系统性能影响越久。所以业界通常把条带宽度控制在一个折中范围里。</p>",
+     "<p>有的系统用改进的编码，让校验块覆盖更大范围的数据，重建时只需读一部分存活块，从而敢用很宽的条带。条带要跨多少台服务器、多少块盘，还取决于系统的故障单位是一台服务器还是一块盘。</p>"
     ],
-    "t": [
-     "条带越宽越省，重建也越重",
-     "Wider stripes save more, but rebuilds get heavier"
-    ],
-    "d": [
-     "从 8+2 换成 14+2，校验占的比例更小，但坏一块盘时重建要读的块更多。",
-     "Going from 8+2 to 14+2 shrinks the share taken by parity, but rebuilding a failed drive means reading more blocks."
-    ],
-    "b": [
-     [
-      "<p>同样是 2 块校验，数据块越多（条带越宽），校验在总容量里占得越少，越省空间。代价在重建：传统算法要把丢的块算回来，得读取同一条带里足够多的存活块，条带越宽要读的越多，重建越慢、对系统性能影响越久。所以业界通常把条带宽度控制在一个折中范围里。</p>",
-      "<p>有的系统用改进的编码，让校验块覆盖更大范围的数据，重建时只需读一部分存活块，从而敢用很宽的条带。条带要跨多少台服务器、多少块盘，还取决于系统的故障单位是一台服务器还是一块盘。</p>"
-     ],
-     [
-      "<p>With the same 2 parity blocks, the more data blocks there are (the wider the stripe), the smaller the share of capacity that parity takes, and the more space is saved. The cost is in rebuilds: to recompute a lost block, conventional codes must read enough surviving blocks from the same stripe, so a wider stripe means more to read, a slower rebuild and a longer impact on system performance. That is why stripe width is usually kept within a compromise range.</p>",
-      "<p>Some systems use improved codes in which parity covers a larger span of data, so a rebuild needs to read only some of the surviving blocks, which makes very wide stripes practical. How many servers and drives a stripe spans also depends on whether the system's unit of failure is a server or a drive.</p>"
-     ]
+    [
+     "<p>With the same 2 parity blocks, the more data blocks there are (the wider the stripe), the smaller the share of capacity that parity takes, and the more space is saved. The cost is in rebuilds: to recompute a lost block, conventional codes must read enough surviving blocks from the same stripe, so a wider stripe means more to read, a slower rebuild and a longer impact on system performance. That is why stripe width is usually kept within a compromise range.</p>",
+     "<p>Some systems use improved codes in which parity covers a larger span of data, so a rebuild needs to read only some of the surviving blocks, which makes very wide stripes practical. How many servers and drives a stripe spans also depends on whether the system's unit of failure is a server or a drive.</p>"
     ]
-   }
-  ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

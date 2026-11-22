@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Shared KV cache: computed KV goes to shared storage so other nodes read it instead of recomputing">KV Cache 共享层：算过的 KV 放进共享存储，别的节点直接读</h1>
+      <div><h1 data-en="Shared KV Cache: Computed KV Goes to Shared Storage so Other Nodes Read It Instead of Recomputing">KV Cache 共享层：算过的 KV 放进共享存储，别的节点直接读</h1>
         <p class="meta"><span data-en="6 steps · inference, KV Cache, GPUDirect Storage">6 步 · 推理、KV Cache、GPUDirect Storage</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,8 +40,8 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="NVIDIA Dynamo documentation: KV cache management and tiering.">NVIDIA Dynamo 文档：KV Cache 管理与分层。</li>
       <li data-en="NVIDIA NIXL (GitHub: ai-dynamo/nixl).">NVIDIA NIXL（GitHub：ai-dynamo/nixl）。</li>
@@ -76,153 +76,155 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/d-kv.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'d-kv',ar:[960/490,480/764],
-  steps:[
-   {
-    "s": [
-     "算出 KV",
-     "Computing KV"
+window.SS_TOPIC_CFG={
+ "anim": "d-kv",
+ "ar": [960/490,480/764],
+ "steps": [
+  {
+   "s": [
+    "算出 KV",
+    "Computing KV"
+   ],
+   "t": [
+    "推理先把提示词算成 KV Cache",
+    "Inference First Turns the Prompt into KV Cache"
+   ],
+   "d": [
+    "GPU 先把整段提示词算一遍，得到一串 KV 块放在显存里，之后每生成一个字都要读它们。",
+    "The GPU first works through the whole prompt and gets a run of KV blocks held in GPU memory; every token it generates afterwards reads them."
+   ],
+   "b": [
+    [
+     "<p>大模型推理分两段。预填充（Prefill）把整段输入一次算完，得到每个词的 Key 和 Value 两组中间结果，合起来叫 KV Cache；这一段计算量大，输入越长越久，用户感受到的「首字时延」主要花在这里。解码（Decode）每生成一个字，都要回头读一遍已有的 KV Cache。</p>",
+     "<p>很多请求的开头是一样的：同一段系统提示、同一份文档、同一段对话历史。只要这段前缀的 KV 还在，下一次就可以跳过这部分预填充，直接接着算。</p>"
     ],
-    "t": [
-     "推理先把提示词算成 KV Cache",
-     "Inference first turns the prompt into KV cache"
-    ],
-    "d": [
-     "GPU 先把整段提示词算一遍，得到一串 KV 块放在显存里，之后每生成一个字都要读它们。",
-     "The GPU first works through the whole prompt and gets a run of KV blocks held in GPU memory; every token it generates afterwards reads them."
-    ],
-    "b": [
-     [
-      "<p>大模型推理分两段。预填充（Prefill）把整段输入一次算完，得到每个词的 Key 和 Value 两组中间结果，合起来叫 KV Cache；这一段计算量大，输入越长越久，用户感受到的「首字时延」主要花在这里。解码（Decode）每生成一个字，都要回头读一遍已有的 KV Cache。</p>",
-      "<p>很多请求的开头是一样的：同一段系统提示、同一份文档、同一段对话历史。只要这段前缀的 KV 还在，下一次就可以跳过这部分预填充，直接接着算。</p>"
-     ],
-     [
-      "<p>Large-model inference has two phases. Prefill processes the whole input at once and produces two sets of intermediate results for every token, the Keys and the Values, together called the KV cache. This phase is compute-heavy and takes longer the longer the input, and most of the time to first token that users notice is spent here. Decode then reads back through the existing KV cache for every token it generates.</p>",
-      "<p>Many requests start the same way: the same system prompt, the same document, the same conversation history. As long as the KV for that prefix is still there, the next request can skip that part of prefill and carry on from there.</p>"
-     ]
+    [
+     "<p>Large-model inference has two phases. Prefill processes the whole input at once and produces two sets of intermediate results for every token, the Keys and the Values, together called the KV cache. This phase is compute-heavy and takes longer the longer the input, and most of the time to first token that users notice is spent here. Decode then reads back through the existing KV cache for every token it generates.</p>",
+     "<p>Many requests start the same way: the same system prompt, the same document, the same conversation history. As long as the KV for that prefix is still there, the next request can skip that part of prefill and carry on from there.</p>"
     ]
-   },
-   {
-    "s": [
-     "被挤掉重算",
-     "Evicted, recomputed"
+   ]
+  },
+  {
+   "s": [
+    "被挤掉重算",
+    "Evicted, recomputed"
+   ],
+   "t": [
+    "显存装不下，被挤掉的就要重算",
+    "When GPU Memory Runs Out, Evicted KV Has to Be Recomputed"
+   ],
+   "d": [
+    "会话一多，显存放不下所有 KV，旧的被挤掉；同样的前缀再来一次，只能重新预填充。",
+    "With many sessions GPU memory cannot hold all the KV, so older blocks are evicted; when the same prefix comes back, prefill has to run again."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 的大小随输入长度和并发会话数增长，而 GPU 显存（HBM）最快也最小，还要放模型权重。显存满了，推理框架只能把较旧的 KV 块丢掉。</p>",
+     "<p>被丢掉的前缀如果再次出现，就得把预填充重新做一遍：GPU 又被占用一次，用户又多等一次首字。这部分重复计算就是把 KV 放到显存以外的动机。</p>"
     ],
-    "t": [
-     "显存装不下，被挤掉的就要重算",
-     "When GPU memory runs out, evicted KV has to be recomputed"
-    ],
-    "d": [
-     "会话一多，显存放不下所有 KV，旧的被挤掉；同样的前缀再来一次，只能重新预填充。",
-     "With many sessions GPU memory cannot hold all the KV, so older blocks are evicted; when the same prefix comes back, prefill has to run again."
-    ],
-    "b": [
-     [
-      "<p>KV Cache 的大小随输入长度和并发会话数增长，而 GPU 显存（HBM）最快也最小，还要放模型权重。显存满了，推理框架只能把较旧的 KV 块丢掉。</p>",
-      "<p>被丢掉的前缀如果再次出现，就得把预填充重新做一遍：GPU 又被占用一次，用户又多等一次首字。这部分重复计算就是把 KV 放到显存以外的动机。</p>"
-     ],
-     [
-      "<p>The KV cache grows with input length and the number of concurrent sessions, while GPU memory (HBM) is the fastest and smallest tier and also has to hold the model weights. When it is full, the inference framework can only drop older KV blocks.</p>",
-      "<p>If a dropped prefix shows up again, prefill has to be redone: the GPU is tied up once more and the user waits for the first token once more. That repeated computation is the reason to keep KV outside GPU memory.</p>"
-     ]
+    [
+     "<p>The KV cache grows with input length and the number of concurrent sessions, while GPU memory (HBM) is the fastest and smallest tier and also has to hold the model weights. When it is full, the inference framework can only drop older KV blocks.</p>",
+     "<p>If a dropped prefix shows up again, prefill has to be redone: the GPU is tied up once more and the user waits for the first token once more. That repeated computation is the reason to keep KV outside GPU memory.</p>"
     ]
-   },
-   {
-    "s": [
-     "往下放一层",
-     "One tier down"
+   ]
+  },
+  {
+   "s": [
+    "往下放一层",
+    "One tier down"
+   ],
+   "t": [
+    "往下放一层：用读取代替重算",
+    "One Tier Down: Read Instead of Recompute"
+   ],
+   "d": [
+    "冷一点的 KV 不扔，挪到主机内存或本地盘；要用时读回显存，比重算省。",
+    "Cooler KV is not thrown away but moved to host memory or a local disk; reading it back into GPU memory when needed costs less than recomputing it."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 可以分层存放：显存放正在用的，主机内存和本地 NVMe 放较冷的。显存要腾地方时，把 KV 块卸载（offload）到下一层；同样的前缀再来，就从下一层读回（onboard），而不是重新预填充。</p>",
+     "<p>这一层的局限是它只属于这一台机器。别的 GPU 节点即使遇到完全相同的前缀，也看不到这里存的 KV。</p>"
     ],
-    "t": [
-     "往下放一层：用读取代替重算",
-     "One tier down: read instead of recompute"
-    ],
-    "d": [
-     "冷一点的 KV 不扔，挪到主机内存或本地盘；要用时读回显存，比重算省。",
-     "Cooler KV is not thrown away but moved to host memory or a local disk; reading it back into GPU memory when needed costs less than recomputing it."
-    ],
-    "b": [
-     [
-      "<p>KV Cache 可以分层存放：显存放正在用的，主机内存和本地 NVMe 放较冷的。显存要腾地方时，把 KV 块卸载（offload）到下一层；同样的前缀再来，就从下一层读回（onboard），而不是重新预填充。</p>",
-      "<p>这一层的局限是它只属于这一台机器。别的 GPU 节点即使遇到完全相同的前缀，也看不到这里存的 KV。</p>"
-     ],
-     [
-      "<p>The KV cache can be stored in tiers: GPU memory holds what is in use, while host memory and local NVMe hold cooler blocks. When GPU memory needs room, KV blocks are offloaded to the next tier; when the same prefix comes back, they are read back (onboarded) instead of running prefill again.</p>",
-      "<p>The limit of this tier is that it belongs to one machine. Other GPU nodes cannot see the KV stored here, even for exactly the same prefix.</p>"
-     ]
+    [
+     "<p>The KV cache can be stored in tiers: GPU memory holds what is in use, while host memory and local NVMe hold cooler blocks. When GPU memory needs room, KV blocks are offloaded to the next tier; when the same prefix comes back, they are read back (onboarded) instead of running prefill again.</p>",
+     "<p>The limit of this tier is that it belongs to one machine. Other GPU nodes cannot see the KV stored here, even for exactly the same prefix.</p>"
     ]
-   },
-   {
-    "s": [
-     "共享层",
-     "Shared tier"
+   ]
+  },
+  {
+   "s": [
+    "共享层",
+    "Shared tier"
+   ],
+   "t": [
+    "放进共享层：别的节点直接读",
+    "Into the Shared Tier: Other Nodes Read It Directly"
+   ],
+   "d": [
+    "节点 A 算出的 KV 写进共享存储，节点 B 遇到同样的前缀，直接从共享存储读回，不用重算。",
+    "KV computed on node A is written to shared storage; when node B meets the same prefix, it reads the KV back from shared storage instead of recomputing it."
+   ],
+   "b": [
+    [
+     "<p>把最下面一层换成整个集群共享的存储，同一份 KV 就能被任意 GPU 节点复用，而不是每个节点各自算、各自缓存一份。请求被调度到哪台机器都能命中，节点重启或扩缩容时 KV 也还在。</p>",
+     "<p>这里要和 Prefill / Decode 分离区分开：那是同一个请求在两组 GPU 之间直接交接 KV，共享存储不是必经之路；共享层服务的是后续的请求和别的实例。两条路径可以同时存在。</p>"
     ],
-    "t": [
-     "放进共享层：别的节点直接读",
-     "Into the shared tier: other nodes read it directly"
-    ],
-    "d": [
-     "节点 A 算出的 KV 写进共享存储，节点 B 遇到同样的前缀，直接从共享存储读回，不用重算。",
-     "KV computed on node A is written to shared storage; when node B meets the same prefix, it reads the KV back from shared storage instead of recomputing it."
-    ],
-    "b": [
-     [
-      "<p>把最下面一层换成整个集群共享的存储，同一份 KV 就能被任意 GPU 节点复用，而不是每个节点各自算、各自缓存一份。请求被调度到哪台机器都能命中，节点重启或扩缩容时 KV 也还在。</p>",
-      "<p>这里要和 Prefill / Decode 分离区分开：那是同一个请求在两组 GPU 之间直接交接 KV，共享存储不是必经之路；共享层服务的是后续的请求和别的实例。两条路径可以同时存在。</p>"
-     ],
-     [
-      "<p>Make the bottom tier storage shared by the whole cluster, and the same KV can be reused by any GPU node instead of each node computing and caching its own copy. A request hits the cache whichever machine it is scheduled on, and the KV is still there when nodes restart or the cluster scales.</p>",
-      "<p>Keep this apart from prefill/decode disaggregation, where one request hands its KV directly between two groups of GPUs and shared storage is not on the path. The shared tier serves later requests and other instances. The two paths can exist side by side.</p>"
-     ]
+    [
+     "<p>Make the bottom tier storage shared by the whole cluster, and the same KV can be reused by any GPU node instead of each node computing and caching its own copy. A request hits the cache whichever machine it is scheduled on, and the KV is still there when nodes restart or the cluster scales.</p>",
+     "<p>Keep this apart from prefill/decode disaggregation, where one request hands its KV directly between two groups of GPUs and shared storage is not on the path. The shared tier serves later requests and other instances. The two paths can exist side by side.</p>"
     ]
-   },
-   {
-    "s": [
-     "谁管什么",
-     "Who does what"
+   ]
+  },
+  {
+   "s": [
+    "谁管什么",
+    "Who does what"
+   ],
+   "t": [
+    "谁管什么：框架管存什么、在哪，存储管存和传",
+    "Who Does What: The Framework Decides What Is Kept and Where, Storage Keeps and Moves It"
+   ],
+   "d": [
+    "推理框架记着哪段前缀的 KV 在哪、要不要存；存储只负责把这些块存好、快速传回 GPU。",
+    "The inference framework keeps track of where each prefix's KV is and whether to keep it; storage only keeps the blocks safe and moves them back to the GPU quickly."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 的控制在推理框架（如 vLLM、SGLang、NVIDIA Dynamo、LMCache）手里：给每段前缀算哈希、维护「哪段 KV 在哪」的索引、决定哪些值得保留、把请求调度到有缓存的节点。存储层不理解这些 KV 的含义。</p>",
+     "<p>存储不自行决定缓存什么，它负责的是容量、带宽、跨节点共享和稳定运行。画面里框架只回答「在共享层」，数据本身走的是 GPU 和存储之间的通路。</p>"
     ],
-    "t": [
-     "谁管什么：框架管存什么、在哪，存储管存和传",
-     "Who does what: the framework decides what is kept and where, storage keeps and moves it"
-    ],
-    "d": [
-     "推理框架记着哪段前缀的 KV 在哪、要不要存；存储只负责把这些块存好、快速传回 GPU。",
-     "The inference framework keeps track of where each prefix's KV is and whether to keep it; storage only keeps the blocks safe and moves them back to the GPU quickly."
-    ],
-    "b": [
-     [
-      "<p>KV Cache 的控制在推理框架（如 vLLM、SGLang、NVIDIA Dynamo、LMCache）手里：给每段前缀算哈希、维护「哪段 KV 在哪」的索引、决定哪些值得保留、把请求调度到有缓存的节点。存储层不理解这些 KV 的含义。</p>",
-      "<p>存储不自行决定缓存什么，它负责的是容量、带宽、跨节点共享和稳定运行。画面里框架只回答「在共享层」，数据本身走的是 GPU 和存储之间的通路。</p>"
-     ],
-     [
-      "<p>Control of the KV cache sits with the inference framework (such as vLLM, SGLang, NVIDIA Dynamo or LMCache): it hashes each prefix, keeps the index of which KV is where, decides what is worth keeping and schedules requests onto nodes that have the cache. The storage layer does not understand what the KV means.</p>",
-      "<p>Storage does not decide on its own what to cache; it is responsible for capacity, bandwidth, sharing across nodes and stable operation. In the animation the framework only answers \"in the shared tier\"; the data itself travels on the path between the GPU and storage.</p>"
-     ]
+    [
+     "<p>Control of the KV cache sits with the inference framework (such as vLLM, SGLang, NVIDIA Dynamo or LMCache): it hashes each prefix, keeps the index of which KV is where, decides what is worth keeping and schedules requests onto nodes that have the cache. The storage layer does not understand what the KV means.</p>",
+     "<p>Storage does not decide on its own what to cache; it is responsible for capacity, bandwidth, sharing across nodes and stable operation. In the animation the framework only answers \"in the shared tier\"; the data itself travels on the path between the GPU and storage.</p>"
     ]
-   },
-   {
-    "s": [
-     "数据怎么走",
-     "The data path"
+   ]
+  },
+  {
+   "s": [
+    "数据怎么走",
+    "The data path"
+   ],
+   "t": [
+    "数据怎么走：GPU 显存直连存储",
+    "The Data Path: GPU Memory Straight to Storage"
+   ],
+   "d": [
+    "KV 块经网卡在 GPU 显存和存储之间直接传，不在主机内存里中转；DDN 有共享文件系统和键值存储两种接法。",
+    "KV blocks move directly between GPU memory and storage through the NIC, without a stop in host memory; DDN offers two ways in, a shared file system and a key-value store."
+   ],
+   "b": [
+    [
+     "<p>KV 块从共享层回到 GPU 时，可以走 GPUDirect Storage：数据经网卡用 RDMA 直接进出 GPU 显存，不经过 CPU 和主机内存中转，CPU 开销小，延迟低。走普通文件读写也能用，只是要在主机内存里多倒一次。</p>",
+     "<p>DDN 两条产品线都能做这个共享层。EXAScaler 是共享并行文件系统，推理框架（例如 LMCache）按文件读写 KV，可以走 GPUDirect Storage。Infinia 是键值存储，它的插件随 NVIDIA 的 NIXL 传输库发布，Dynamo 和 vLLM 等框架通过 NIXL 直接把 KV 块读写到 Infinia。</p>"
     ],
-    "t": [
-     "数据怎么走：GPU 显存直连存储",
-     "The data path: GPU memory straight to storage"
-    ],
-    "d": [
-     "KV 块经网卡在 GPU 显存和存储之间直接传，不在主机内存里中转；DDN 有共享文件系统和键值存储两种接法。",
-     "KV blocks move directly between GPU memory and storage through the NIC, without a stop in host memory; DDN offers two ways in, a shared file system and a key-value store."
-    ],
-    "b": [
-     [
-      "<p>KV 块从共享层回到 GPU 时，可以走 GPUDirect Storage：数据经网卡用 RDMA 直接进出 GPU 显存，不经过 CPU 和主机内存中转，CPU 开销小，延迟低。走普通文件读写也能用，只是要在主机内存里多倒一次。</p>",
-      "<p>DDN 两条产品线都能做这个共享层。EXAScaler 是共享并行文件系统，推理框架（例如 LMCache）按文件读写 KV，可以走 GPUDirect Storage。Infinia 是键值存储，它的插件随 NVIDIA 的 NIXL 传输库发布，Dynamo 和 vLLM 等框架通过 NIXL 直接把 KV 块读写到 Infinia。</p>"
-     ],
-     [
-      "<p>When KV blocks come back from the shared tier to the GPU, they can use GPUDirect Storage: data moves in and out of GPU memory over RDMA through the NIC, without a stop in the CPU or host memory, so CPU overhead is small and latency is low. Ordinary file reads and writes also work, with one extra copy through host memory.</p>",
-      "<p>Both DDN product lines can serve as this shared tier. EXAScaler is a shared parallel file system; inference frameworks such as LMCache read and write KV as files and can use GPUDirect Storage. Infinia is a key-value store whose plugin ships with NVIDIA's NIXL transfer library, so frameworks such as Dynamo and vLLM read and write KV blocks to Infinia directly through NIXL.</p>"
-     ]
+    [
+     "<p>When KV blocks come back from the shared tier to the GPU, they can use GPUDirect Storage: data moves in and out of GPU memory over RDMA through the NIC, without a stop in the CPU or host memory, so CPU overhead is small and latency is low. Ordinary file reads and writes also work, with one extra copy through host memory.</p>",
+     "<p>Both DDN product lines can serve as this shared tier. EXAScaler is a shared parallel file system; inference frameworks such as LMCache read and write KV as files and can use GPUDirect Storage. Infinia is a key-value store whose plugin ships with NVIDIA's NIXL transfer library, so frameworks such as Dynamo and vLLM read and write KV blocks to Infinia directly through NIXL.</p>"
     ]
-   }
-  ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>

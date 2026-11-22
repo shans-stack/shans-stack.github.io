@@ -24,7 +24,9 @@
 
 <main class="wrap glossary">
   <div class="mhero"><h1 data-en="Glossary">术语表</h1></div>
-  <label class="glossary-search"><span data-en="Filter terms">筛选术语</span><input id="term-filter" type="search" autocomplete="off"></label>
+  <div class="gsearch"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.2-4.2"/></svg><input id="term-filter" type="search" autocomplete="off" aria-label="搜索术语" data-en-label="Search terms"><span class="gcount" id="term-count" aria-live="polite"></span></div>
+  <div class="gdoms" id="term-doms" role="group" aria-label="按领域筛选" data-en-label="Filter by area"></div>
+  <nav class="gletters" id="term-letters" aria-label="按首字母跳转" data-en-label="Jump to letter"></nav>
   <div id="term-list"></div>
   <p id="no-terms" role="status" data-en="No matching terms." hidden>没有匹配的术语。</p>
 </main>
@@ -46,18 +48,30 @@
     if(!groups.has(letter))groups.set(letter,[]);
     groups.get(letter).push(entry);
   });
+  /* 领域：厂商专有词按 tag；通用词按「详见」那一站所在的总图线；厂商站上的通用词归到它最接近的领域 */
+  var DOMS=[['all','全部','All'],['a','AI 应用','AI Apps'],['m','模型','Model'],['d','数据','Data'],['c','计算','Compute'],['n','网络','Network'],['s','存储','Storage'],['vast','VAST','VAST'],['ddn','DDN','DDN']];
+  var VLINE={'v-aios':'d','d-ai':'a','d-inf':'d'};
+  function domOf(t){if(t.tag==='vast'||t.tag==='ddn')return t.tag;var s=t.see&&SS.stations[t.see];if(!s)return 's';
+    var h=s.lines.filter(function(l){return 'amdcns'.indexOf(l)>-1&&l.length===1});if(h.length)return h[0];
+    for(var i=0;i<s.lines.length;i++)if(VLINE[s.lines[i]])return VLINE[s.lines[i]];return 's'}
+  var dom='all',doms=document.getElementById('term-doms'),letters=document.getElementById('term-letters');
+  function drawDoms(){var cnt={all:entries.length};entries.forEach(function(e){var d=domOf(e[1]);cnt[d]=(cnt[d]||0)+1});
+    doms.innerHTML=DOMS.filter(function(d){return cnt[d[0]]}).map(function(d){return '<button type="button" data-dom="'+d[0]+'" aria-pressed="'+(dom===d[0])+'">'+SS.esc(SS.L(d[1],d[2]))+'<span>'+cnt[d[0]]+'</span></button>'}).join('')}
+  doms.addEventListener('click',function(e){var b=e.target.closest('[data-dom]');if(!b)return;dom=b.getAttribute('data-dom');drawDoms();filter();input.dispatchEvent(new Event('input'))});
+  function drawLetters(){letters.innerHTML=sections.map(function(s){var L=s.id.slice(2);return '<a href="#'+s.id+'"'+(s.hidden?' aria-disabled="true" tabindex="-1"':'')+'>'+L+'</a>'}).join('')}
   var sections=[];
   function filter(){
     var query=input.value.trim().toLowerCase(),count=0;
     sections.forEach(function(section){var found=false;
       Array.from(section.children).slice(1).forEach(function(row){
         var t=SS.terms[row.id],words=[t.zh,t.en].concat(t.alias||[],row.textContent).join(' ').toLowerCase();
-        row.hidden=!words.includes(query);
+        row.hidden=!words.includes(query)||(dom!=='all'&&domOf(t)!==dom);
         if(!row.hidden){found=true;count++}
       });
       section.hidden=!found;
     });
     empty.hidden=count>0;
+    drawLetters();
   }
   function jump(){
     var target=document.getElementById(location.hash.slice(1));
@@ -71,7 +85,7 @@
     var en=SS.lang()==='en',esc=SS.esc,first=!sections.length;
     document.title=SS.L('术语表','Glossary')+" · Shan's Stack";
     list.innerHTML=Array.from(groups,function(group){
-      return '<section class="glossary-group"><h2>'+esc(group[0])+'</h2>'+group[1].map(function(entry){
+      return '<section class="glossary-group" id="g-'+esc(group[0])+'"><h2>'+esc(group[0])+'</h2>'+group[1].map(function(entry){
         var id=entry[0],t=entry[1],name=SS.T(t),alt=en?t.zh:t.en,see=SS.termSee(t);
         return '<article class="glossary-term" id="'+esc(id)+'"><h3>'+esc(name)+
           (name===alt?'':'<span lang="'+(en?'zh-CN':'en')+'">'+esc(alt)+'</span>')+'</h3><p>'+esc(SS.T(t.d))+'</p>'+
@@ -79,11 +93,20 @@
       }).join('')+'</section>';
     }).join('');
     sections=Array.from(list.children);
+    drawDoms();
     try{var q0=new URLSearchParams(location.search).get('q');if(q0)input.value=q0}catch(e){}
     filter();
     if(first&&location.hash)requestAnimationFrame(jump);
   });
 })();
+</script>
+<script>/* 搜索框：提示文字跟语言走，右侧显示总数或匹配数 */
+(function(){var i=document.getElementById('term-filter'),c=document.getElementById('term-count');
+function up(){var all=document.querySelectorAll('.glossary-term').length,shown=[].filter.call(document.querySelectorAll('.glossary-term'),function(x){return !x.hidden&&x.offsetParent!==null}).length;
+  i.placeholder=SS.L('搜索术语，例如 PFC、条带','Search terms, e.g. PFC, stripe');
+  var f=i.value.trim()||document.querySelector('.gdoms [aria-pressed="true"]:not([data-dom="all"])');
+  c.textContent=f?SS.L('找到 '+shown+' 个','Found '+shown):SS.L('共 '+all+' 个','All '+all)}
+i.addEventListener('input',function(){requestAnimationFrame(up)});document.getElementById('term-doms').addEventListener('click',function(){requestAnimationFrame(up)});document.addEventListener('ss-lang',function(){requestAnimationFrame(up)});setTimeout(up,0)})();
 </script>
 </body>
 </html>

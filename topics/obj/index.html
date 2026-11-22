@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Object storage and file storage">对象存储和文件存储</h1>
+      <div><h1 data-en="Object Storage and File Storage">对象存储和文件存储</h1>
         <p class="meta"><span data-en="5 steps · Buckets, Object keys, HTTP">5 步 · 存储桶、对象键、HTTP</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -40,13 +40,9 @@
   <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
-    <div><h3 data-en="Read first">先看</h3><ul id="relprev"></ul></div>
-    <div><h3 data-en="Read next">接着看</h3><ul id="relnext"></ul></div>
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li>Amazon S3 User Guide — Naming Amazon S3 objects</li>
-      <li>Amazon S3 User Guide — Uploading and copying objects using multipart upload in Amazon S3</li>
-      <li>Amazon Simple Storage Service API Reference — PutObject, GetObject, ListObjectsV2</li>
-      <li>The Open Group Base Specifications — pwrite()</li>
     </ul></div>
   </div>
 </main>
@@ -74,29 +70,101 @@
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/obj.js"></script>
 <script>
-window.SS_TOPIC_CFG={anim:'obj',ar:[900/388,360/482],
-  steps:[
-    {t:["用存储桶和对象键定位数据", "Buckets and keys address data"],
-     d:["在 S3 的数据模型里，存储桶内的对象用完整的对象键定位。", "In the S3 data model, the full object key identifies an object within a bucket."],
-     b:[["<p>对象由数据和描述它的元数据组成。存储桶（bucket）是对象的容器，对象键（key）是在桶内标识对象的完整名称。例如，桶 <code>media</code> 中键为 <code>train/a.jpg</code> 的对象，可以用这对名称直接定位。</p>"],
-        ["<p>An object consists of data and metadata that describes it. A bucket is a container for objects, and a key is the full name that identifies an object within that bucket. For example, the pair of names selects the object with key <code>train/a.jpg</code> in bucket <code>media</code>.</p>"]]},
-    {t:["前缀把平铺的键组织成组", "Prefixes group keys in a flat namespace"],
-     d:["列表操作可按键的开头筛选对象，界面可利用分隔符显示类似目录的分组。", "A listing can filter keys by their starting characters, and a delimiter lets interfaces group them like folders."],
-     b:[["<p>在 S3 通用存储桶里，对象键处于平铺命名空间。<code>train/</code> 是一个前缀，即一组键共享的起始字符。按前缀列出对象时，<code>train/a.jpg</code> 和 <code>train/b.jpg</code> 可以同组返回。文件系统路径则由一层层目录及目录项解析，目录本身有可操作的属性。</p>"],
-        ["<p>In an S3 general purpose bucket, keys occupy a flat namespace. A prefix such as <code>train/</code> consists of the starting characters shared by a set of keys. A prefix listing can return <code>train/a.jpg</code> and <code>train/b.jpg</code> together. A file system resolves paths through directory entries, and directories have attributes of their own.</p>"]]},
-    {t:["应用通过 HTTP 请求读写对象", "Applications read and write objects over HTTP"],
-     d:["PUT 写入对象，GET 可读取整个对象或指定的字节范围。", "PUT writes an object. GET can retrieve the whole object or a specified byte range."],
-     b:[["<p>S3 API 是通过 HTTP 调用对象存储服务的一套操作。客户端用 PutObject 提交对象内容，用 GetObject 读取数据，或用 ListObjectsV2 列出匹配的键。请求中的 Range 可将一次 GET 限定在对象的一个字节范围，适合只读取有用的部分。</p>"],
-        ["<p>The S3 API exposes object storage operations over HTTP. A client uses PutObject to submit object data, GetObject to retrieve it, and ListObjectsV2 to list matching keys. A Range header can limit a GET to one byte range, allowing a client to fetch only the part it needs.</p>"]]},
-    {t:["大对象可以分段上传", "Large objects can be uploaded in parts"],
-     d:["客户端独立上传各段，完成请求按段号将它们组成一个对象。", "The client uploads parts independently. The completion request assembles them into one object in part order."],
-     b:[["<p>多段上传先建立上传会话，再发送对象的连续数据段。各段可以并发传输，某段传输失败时可单独重试。客户端发出完成请求后，服务按段号排序并组装，并以指定的对象键提供结果。</p>"],
-        ["<p>A multipart upload starts a session and sends contiguous parts of the object. Parts can transfer concurrently, and a failed part can be retried independently. When the client completes the upload, the service assembles the parts in part-number order and makes the result available under the designated key.</p>"]]},
-    {t:["文件偏移写入与对象替换", "File offset writes and object replacement"],
-     d:["文件接口支持按偏移覆盖字节，S3 通用存储桶的 PutObject 按键提交完整对象。", "A file interface supports overwriting bytes at an offset. PutObject for an S3 general purpose bucket submits a complete object under a key."],
-     b:[["<p>POSIX 是定义文件等操作接口的一组标准。其 pwrite() 可把字节写到打开文件的指定偏移。S3 通用存储桶的 PutObject 则在一次操作中提交整个对象，对象服务可用新内容替换该键所指向的当前对象。按对象组织的数据集通常可以将独立更新的内容放在不同的键下，例如每个数据分片使用一个键。</p>"],
-        ["<p>POSIX is a family of standards for interfaces including file operations. Its pwrite() can write bytes at a specified offset in an open file. PutObject for an S3 general purpose bucket submits a whole object in one operation, allowing the service to replace the current object at that key with new content. Object-based datasets can keep independently updated data under separate keys, such as one key per shard.</p>"]]}
-  ]
+window.SS_TOPIC_CFG={
+ "anim": "obj",
+ "ar": [900/388,360/482],
+ "steps": [
+  {
+   "t": [
+    "用存储桶和对象键定位数据",
+    "Buckets and Keys Address Data"
+   ],
+   "d": [
+    "在 S3 的数据模型里，存储桶内的对象用完整的对象键定位。",
+    "In the S3 data model, the full object key identifies an object within a bucket."
+   ],
+   "b": [
+    [
+     "<p>对象由数据和描述它的元数据组成。存储桶（bucket）是对象的容器，对象键（key）是在桶内标识对象的完整名称。例如，桶 <code>media</code> 中键为 <code>train/a.jpg</code> 的对象，可以用这对名称直接定位。</p>"
+    ],
+    [
+     "<p>An object consists of data and metadata that describes it. A bucket is a container for objects, and a key is the full name that identifies an object within that bucket. For example, the pair of names selects the object with key <code>train/a.jpg</code> in bucket <code>media</code>.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "前缀把平铺的键组织成组",
+    "Prefixes Group Keys in a Flat Namespace"
+   ],
+   "d": [
+    "列表操作可按键的开头筛选对象，界面可利用分隔符显示类似目录的分组。",
+    "A listing can filter keys by their starting characters, and a delimiter lets interfaces group them like folders."
+   ],
+   "b": [
+    [
+     "<p>在 S3 通用存储桶里，对象键处于平铺命名空间。<code>train/</code> 是一个前缀，即一组键共享的起始字符。按前缀列出对象时，<code>train/a.jpg</code> 和 <code>train/b.jpg</code> 可以同组返回。文件系统路径则由一层层目录及目录项解析，目录本身有可操作的属性。</p>"
+    ],
+    [
+     "<p>In an S3 general purpose bucket, keys occupy a flat namespace. A prefix such as <code>train/</code> consists of the starting characters shared by a set of keys. A prefix listing can return <code>train/a.jpg</code> and <code>train/b.jpg</code> together. A file system resolves paths through directory entries, and directories have attributes of their own.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "应用通过 HTTP 请求读写对象",
+    "Applications Read and Write Objects over HTTP"
+   ],
+   "d": [
+    "PUT 写入对象，GET 可读取整个对象或指定的字节范围。",
+    "PUT writes an object. GET can retrieve the whole object or a specified byte range."
+   ],
+   "b": [
+    [
+     "<p>S3 API 是通过 HTTP 调用对象存储服务的一套操作。客户端用 PutObject 提交对象内容，用 GetObject 读取数据，或用 ListObjectsV2 列出匹配的键。请求中的 Range 可将一次 GET 限定在对象的一个字节范围，适合只读取有用的部分。</p>"
+    ],
+    [
+     "<p>The S3 API exposes object storage operations over HTTP. A client uses PutObject to submit object data, GetObject to retrieve it, and ListObjectsV2 to list matching keys. A Range header can limit a GET to one byte range, allowing a client to fetch only the part it needs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "大对象可以分段上传",
+    "Large Objects Can Be Uploaded in Parts"
+   ],
+   "d": [
+    "客户端独立上传各段，完成请求按段号将它们组成一个对象。",
+    "The client uploads parts independently. The completion request assembles them into one object in part order."
+   ],
+   "b": [
+    [
+     "<p>多段上传先建立上传会话，再发送对象的连续数据段。各段可以并发传输，某段传输失败时可单独重试。客户端发出完成请求后，服务按段号排序并组装，并以指定的对象键提供结果。</p>"
+    ],
+    [
+     "<p>A multipart upload starts a session and sends contiguous parts of the object. Parts can transfer concurrently, and a failed part can be retried independently. When the client completes the upload, the service assembles the parts in part-number order and makes the result available under the designated key.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "文件偏移写入与对象替换",
+    "File Offset Writes and Object Replacement"
+   ],
+   "d": [
+    "文件接口支持按偏移覆盖字节，S3 通用存储桶的 PutObject 按键提交完整对象。",
+    "A file interface supports overwriting bytes at an offset. PutObject for an S3 general purpose bucket submits a complete object under a key."
+   ],
+   "b": [
+    [
+     "<p>POSIX 是定义文件等操作接口的一组标准。其 pwrite() 可把字节写到打开文件的指定偏移。S3 通用存储桶的 PutObject 则在一次操作中提交整个对象，对象服务可用新内容替换该键所指向的当前对象。按对象组织的数据集通常可以将独立更新的内容放在不同的键下，例如每个数据分片使用一个键。</p>"
+    ],
+    [
+     "<p>POSIX is a family of standards for interfaces including file operations. Its pwrite() can write bytes at a specified offset in an open file. PutObject for an S3 general purpose bucket submits a whole object in one operation, allowing the service to replace the current object at that key with new content. Object-based datasets can keep independently updated data under separate keys, such as one key per shard.</p>"
+    ]
+   ]
+  }
+ ]
 };
 </script>
 <script src="../../assets/topic.js"></script>
