@@ -13,7 +13,7 @@
 @media (max-width:640px){.ssa-v-de .tgl{font-size:14px;padding:6px 12px}}
 .ssa-v-de .ssa-scene text{dominant-baseline:central}
 .ssa-v-de .ssa-scene .vis{transition:opacity .4s}
-.ssa-v-de .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-de .ssa-scene .hid{opacity:0;visibility:hidden;transition:none}
 .ssa-v-de .ssa-scene .dim{opacity:.25}
 .ssa-v-de .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s,fill .3s}
 .ssa-v-de .box.soft{stroke:var(--rule)}
@@ -31,11 +31,11 @@
 .ssa-v-de .ttl{fill:var(--ink2);font-weight:700}
 .ssa-v-de .b7{font-weight:700}
 .ssa-v-de .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-.ssa-v-de .rose-t{fill:var(--rose)}
-.ssa-v-de .sage-t{fill:var(--sage)}
-.ssa-v-de .slate-t{fill:var(--slate)}
-.ssa-v-de .violet-t{fill:var(--violet)}
-.ssa-v-de .ochre-t{fill:var(--ochre)}
+.ssa-v-de .rose-t{fill:color-mix(in srgb,var(--ink) 35%,var(--rose))}
+.ssa-v-de .sage-t{fill:color-mix(in srgb,var(--ink) 35%,var(--sage))}
+.ssa-v-de .slate-t{fill:color-mix(in srgb,var(--ink) 35%,var(--slate))}
+.ssa-v-de .violet-t{fill:color-mix(in srgb,var(--ink) 35%,var(--violet))}
+.ssa-v-de .ochre-t{fill:color-mix(in srgb,var(--ink) 35%,var(--ochre))}
 .ssa-v-de .ink3-t{fill:var(--ink3)}
 .ssa-v-de .ink2-t{fill:var(--ink2)}
 .ssa-v-de .st{font-weight:600;transition:opacity .25s}
@@ -61,7 +61,7 @@
 .ssa-v-de .tile rect{fill:var(--card);stroke:var(--slate);stroke-width:2}
 .ssa-v-de .tile .tt{fill:var(--ink);font-weight:500}
 .ssa-v-de .tile.vio rect{stroke:var(--violet)}
-.ssa-v-de .tile.vio .tt{fill:var(--violet);font-weight:600}
+.ssa-v-de .tile.vio .tt{fill:color-mix(in srgb,var(--ink) 35%,var(--violet));font-weight:600}
 .ssa-v-de .tile.ok rect{stroke:var(--sage)}
 .ssa-v-de .tile.och rect{stroke:var(--ochre)}
 .ssa-v-de .tile.rose rect{stroke:var(--rose)}
@@ -77,3 +77,13 @@
 .ssa-v-de .num{font-weight:700;font-variant-numeric:tabular-nums}
 .ssa-v-de .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
 .ssa-v-de .fadein{transition:opacity .35s}
+
+.topic-v-de .stage .figbox{margin-block:16px}
+@media (max-width:640px){
+  body.topic-v-de.present .stage{padding:12px}
+  .topic-v-de .stage .figbox{margin-block:8px}
+  .topic-v-de .stage .cap{display:block;margin-top:8px}
+  .topic-v-de .stage h2{font-size:23px;line-height:1.2}
+  .topic-v-de .stage .desc{font-size:16px;line-height:1.35}
+}
+.topic-v-de .rel .src a{display:inline;padding:0;font-size:inherit;text-decoration:underline;text-underline-offset:3px}

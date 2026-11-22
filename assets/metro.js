@@ -6,7 +6,7 @@
    排版规则（详见 README）：
    1. 每条线一行横轨，上下顺序由地图数据定。
    2. 站按 pos 从左往右排；同一 pos 的站在同一列。换乘站在它停靠的每条线上都在同一列。
-   3. 一个站停靠的线不相邻时，自动拆成「每段相邻线一站 + 虚线圈 + 悬停联动」。
+   3. 一个站停靠的线不相邻时，画成一个长胶囊跨过中间的线；胶囊里只在它停靠的线上画点，跨过的线不画点。
    4. 相邻两列如果占用的线互不重叠，就并成一列（站少时更紧凑）；但不把换乘站的站名
       放到上一条线某个站名的正下方（两行字上下贴着，容易看成一个站）。
    5. 间距：先算出「所有站名互不重叠、也不压到胶囊」需要的最小列距，再在 954px 宽的轨道里
@@ -90,7 +90,7 @@ function layout(mapId,o){
     var s=SS.stations[sid];if(!s)return;
     var ls=s.lines.filter(function(l){return l in LI}).map(function(l){return LI[l]}).sort(function(a,b){return a-b});
     if(!ls.length)return;
-    var runs=[[ls[0]]];for(var i=1;i<ls.length;i++){var r=runs[runs.length-1];if(ls[i]===r[r.length-1]+1)r.push(ls[i]);else runs.push([ls[i]])}
+    var runs=[ls];  /* 停靠的线不相邻时也画成一个长胶囊，跨过中间没停靠的线（那几条线上不画点） */
     var mark=topic&&!!SS.homeOf(sid);
     runs.forEach(function(r,gi){
       var e={sid:sid,ls:r,top:r[0],bot:r[r.length-1],cap:r.length>1,split:runs.length>1,gi:gi,pos:SS.posOf(sid,mapId),mark:mark,
@@ -103,8 +103,8 @@ function layout(mapId,o){
   /* 列：同一 pos 一列，再把互不重叠的相邻列并起来 */
   var keys=[];els.forEach(function(e){if(keys.indexOf(e.pos)<0)keys.push(e.pos)});keys.sort(function(a,b){return a-b});
   var cols=keys.map(function(){return {els:[],occ:{}}});
-  els.forEach(function(e){var c=cols[keys.indexOf(e.pos)];c.els.push(e);e.ls.forEach(function(l){
-    if(c.occ[l]&&c.occ[l]!==e.sid)warn.push('同一条线同一位置有两个站：'+c.occ[l]+' / '+e.sid);c.occ[l]=e.sid})});
+  els.forEach(function(e){var c=cols[keys.indexOf(e.pos)];c.els.push(e);for(var l=e.top;l<=e.bot;l++){
+    if(c.occ[l]&&c.occ[l]!==e.sid)warn.push('同一条线同一位置有两个站（或胶囊跨过了别的站）：'+c.occ[l]+' / '+e.sid);c.occ[l]=e.sid}});
   function singles(g){var s={};g.els.forEach(function(e){if(!e.cap)s[e.top]=1});return s}
   function tops(g){var s={};g.els.forEach(function(e){if(e.cap)s[e.top]=1});return s}
   function stack(a,b){var t=tops(b),si=singles(a);for(var k in t)if(si[k-1])return true;return false}
@@ -221,6 +221,7 @@ function render(svg,m,o){
     if(e.cap){
       if(e.split||e.pair)el('rect',{x:x-17,y:e.y1-17,width:34,height:e.y2-e.y1+34,rx:17,class:'pr',stroke:lcol},a);
       el('rect',{x:x-12,y:e.y1-12,width:24,height:e.y2-e.y1+24,rx:12,class:'xc'},a);
+      if(e.bot-e.top+1>e.ls.length)e.ls.forEach(function(li){el('circle',{cx:x,cy:m.ys[li],r:4.5,class:'cd',fill:SS.lc(m.lines[li])},a)});
       t=el('text',{x:x,y:e.y1-22,'text-anchor':'middle',class:'lbx'},a);
       if(e.two){t.setAttribute('y',e.y1-40)}
     }else{

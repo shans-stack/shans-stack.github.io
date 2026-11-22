@@ -9,16 +9,16 @@
    VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
 (function(){
 var ID='v-db',NSTEP=6;
-var EN={"WHERE 金额 > 500":"WHERE amount > 500","块 1":"Chunk 1","块 2":"Chunk 2","块 3":"Chunk 3","块 4":"Chunk 4","块 5":"Chunk 5","块 6":"Chunk 6","NFS 客户端":"NFS client","S3 客户端":"S3 client","SQL 客户端":"SQL client","目录":"Directory","bucket":"Bucket","数据库视图":"Database view","schema · 表":"schema · table","快照":"Snapshots","数据缩减":"Data reduction","异步复制":"Async replication","配额":"Quotas",
+var EN={"WHERE 金额 > 500":"WHERE amount > 500","块 1":"Chunk 1","块 2":"Chunk 2","块 3":"Chunk 3","块 4":"Chunk 4","块 5":"Chunk 5","块 6":"Chunk 6","NFS 客户端":"NFS client","S3 客户端":"S3 client","SQL 客户端":"SQL client","目录":"Directory","bucket":"Bucket","数据库视图":"Database view","schema · 表":"schema · table","快照":"Snapshots","数据缩减":"Data reduction","适用表复制":"Replication","配额":"Quotas",
 "表和文件、对象用同一套存储与元数据":"Tables share one store and one set of metadata with files and objects",
-"应用":"App","SCM 写缓冲":"SCM write buffer","QLC 闪存":"QLC flash","行存":"Rows","列存：每列单独成块":"Columns: one per chunk","每行写进 SCM 就确认":"Each row is acknowledged once it is in SCM","攒够一个行组，迁往 QLC 时转成列":"A full row group becomes columns on its way to QLC","一个行组":"One row group",
-"页脚：最小–最大":"Footer: min–max","块 ":"Chunk ","跳过":"Skip","读取":"Read","读取 ":"Read ","块":"chunks","先读页脚，最大值不到 500 的块直接跳过":"Footers are read first; chunks with a max below 500 are skipped",
+"应用":"App","持久写缓冲":"Persistent write buffer","容量闪存":"Capacity flash","分列暂存":"Column values","提交后可查":"Queryable at commit","列存：每列单独成块":"Columns: one per chunk","各列的值暂存于写缓冲":"Column values enter the write buffer","提交后由后台迁移到闪存":"After commit, data moves to flash","一个行组":"One row group",
+"列块统计：最小值–最大值":"Chunk stats: min–max","块 ":"Chunk ","跳过":"Skip","读取":"Read","读取 ":"Read ","块":"chunks","最大值小于或等于 500 的块可以跳过":"Skip chunks with a maximum of 500 or less",
 "不下推":"No pushdown","下推":"Pushdown","表":"Table","查询引擎":"Query engine","只把行读出":"Reads rows out","先按条件过滤":"Filters first","网络":"Network","经网络回传":"Rows sent back","回传":"Sent back","示意，不代表实测数字":"Schematic, not measured","下推之后，网络上只走命中的行":"With pushdown, only matching rows cross the network",
-"集群":"cluster","原生查询引擎":"Native query engine","DataBase 表":"DataBase table","连接器 · REST API":"Connectors · REST API","多个引擎读写同一张表":"Several engines read and write the same table",
-"Kafka 生产者":"Kafka producer","P0 的 leader":"Leader for P0","P1 的 leader":"Leader for P1","分区":"Partition","Kafka 消费者":"Kafka consumer","按分区读":"By partition","SQL 查询":"SQL query","一次查全部分区":"All partitions",
-"每个 topic 是一张表，消息作为行写入":"Each topic is a table; messages are written as rows","Kafka 消费者照常按分区读":"Kafka consumers read by partition as usual","SQL 一条语句查遍全部分区":"One SQL statement reads every partition",
+"集群":"cluster","原生查询引擎":"Native query engine","DataBase 表":"DataBase table","连接器":"Connectors","多个引擎查询同一张表":"Multiple engines query one table",
+"Kafka 生产者":"Kafka producer","P0 的 leader":"Leader for P0","P1 的 leader":"Leader for P1","分区":"Partition","Kafka 消费者":"Kafka consumer","按分区读":"By partition","SQL 查询":"SQL query","读取已提交消息":"Committed",
+"每个 topic 是一张表，消息作为行写入":"Each topic is a table; messages are written as rows","Kafka 消费者照常按分区读":"Kafka consumers read by partition as usual","SQL 读取符合条件的 topic 表":"SQL reads eligible topic tables",
 "表直接存在 VAST 的存储里：视图、行转列、页脚跳块、过滤下推、多引擎与 topic 表":"Tables stored in VAST: views, rows to columns, footer skipping, pushdown, multiple engines and topic tables"};
-var ENM={"查询引擎":"Engine","表和文件、对象用同一套存储与元数据":"Tables, files and objects share one store","数据缩减":"Reduction","异步复制":"Replication","每行写进 SCM 就确认":"Each row ACKed once in SCM","攒够一个行组，迁往 QLC 时转成列":"Full row groups become columns","列存：每列单独成块":"Columnar","网络":"Net","先读页脚，最大值不到 500 的块直接跳过":"Chunks with max below 500 are skipped","只把行读出":"Reads rows","先按条件过滤":"Filters first","经网络回传":"Sent back","下推之后，网络上只走命中的行":"Only matching rows cross the network","多个引擎读写同一张表":"Many engines, one table","每个 topic 是一张表，消息作为行写入":"Each topic is a table of messages","Kafka 消费者照常按分区读":"Kafka consumers read by partition","SQL 一条语句查遍全部分区":"One SQL query reads all partitions","一次查全部分区":"All partitions","P0 的 leader":"P0 leader","P1 的 leader":"P1 leader","Kafka 生产者":"Producer","SCM 写缓冲":"SCM buffer","页脚：最小–最大":"Footer min–max"};
+var ENM={"查询引擎":"Engine","表和文件、对象用同一套存储与元数据":"Tables, files and objects share one store","数据缩减":"Reduction","适用表复制":"Replication","各列的值暂存于写缓冲":"Column values enter the buffer","提交后由后台迁移到闪存":"Committed data moves to flash","列存：每列单独成块":"Columnar","网络":"Net","最大值小于或等于 500 的块可以跳过":"Skip chunks with max ≤ 500","只把行读出":"Reads rows","先按条件过滤":"Filters first","经网络回传":"Sent back","下推之后，网络上只走命中的行":"Only matching rows cross the network","多个引擎查询同一张表":"Multiple engines, one table","每个 topic 是一张表，消息作为行写入":"Each topic is a table of messages","Kafka 消费者照常按分区读":"Kafka consumers read by partition","SQL 读取符合条件的 topic 表":"SQL reads eligible topics","读取已提交消息":"Committed","P0 的 leader":"P0 leader","P1 的 leader":"P1 leader","Kafka 生产者":"Producer","持久写缓冲":"Write buffer","列块统计：最小值–最大值":"Chunk stats: min–max"};
 var ARIA="表直接存在 VAST 的存储里：视图、行转列、页脚跳块、过滤下推、多引擎与 topic 表";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -77,7 +77,7 @@ const COLC=['slate','och','vio','ok'];
 const SCENE={
  still:[1.6,5.2,4.4,6.5,2.2,8.4],
  layout(m){
-  if(!m)return {W:960,H:480,mobile:false,f:{lbl:20,sm:17,cap:18,xs:16,big:30},pw:22,ph:16,dr:7,sp:330,lg:15,
+  if(!m)return {W:960,H:480,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17,big:30},pw:22,ph:16,dr:7,sp:330,lg:15,
    cap:{x:480,y:458},tgl:{x:480,y:458}};
   return {W:480,H:640,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17,big:26},pw:18,ph:14,dr:6,sp:240,lg:13,
    cap:{x:240,y:618},tgl:{x:240,y:618}};
@@ -102,24 +102,24 @@ const SCENE={
    {const r=el_[1],cx=C(r).x,y0=r.y+(m?76:72);for(let k=0;k<4;k++){const col=k%2,row=k>>1;el('circle',{cx:cx-22+col*44,cy:y0+row*(m?56:50),r:m?14:15,class:'cell'},g)}}
    {const r=el_[2],cx=C(r).x;tx(cx,r.y+(m?52:50),'schema · 表',f.xs,'ink3-t','middle',g);const cwid=m?28:34,ch=m?20:18,x0=cx-2*cwid,y0=r.y+(m?72:68);
     for(let rr=0;rr<4;rr++)for(let c=0;c<4;c++)el('rect',{x:x0+c*cwid,y:y0+rr*ch,width:cwid,height:ch,class:'cell'+(rr===0?' hd':'')},g)}
-   const chipN=['快照','数据缩减','异步复制','配额'],cxs=m?[66,182,298,414]:[240,400,560,720],chw=m?104:140;
+   const chipN=['快照','数据缩减','适用表复制','配额'],cxs=m?[66,182,298,414]:[240,400,560,720],chw=m?104:140;
    E.s1.chip=cxs.map((x,i)=>{const r=R(x-chw/2,m?478:388,chw,m?38:38);const b=box(r,g,'box soft',19);tx(x,C(r).y,chipN[i],f.sm,'lbl','middle',g);return b});
   }
-  /* ===== 第 2 步：写入先按行进 SCM，再转成列 ===== */
+  /* ===== 第 2 步：列值写入缓冲，提交后迁移 ===== */
   {const g=grp('2');const s={};E.s2=s;
    s.cl=m?R(150,10,180,56):R(20,200,150,60);s.cn=m?R(150,94,180,52):R(222,200,170,60);
    s.scm=m?R(30,176,420,190):R(446,90,210,280);s.qlc=m?R(30,404,420,184):R(718,90,222,280);
    box(s.cl,g);tx(C(s.cl).x,C(s.cl).y-11,'应用',f.sm,'lbl','middle',g);tx(C(s.cl).x,C(s.cl).y+12,'INSERT',f.xs,'slate-t mono st','middle',g);
    s.cnB=box(s.cn,g);{const lw=f.sm*3.1,w=L.lg*66/14,x0=C(s.cn).x-(lw+7+w)/2;vlogo(x0,C(s.cn).y,L.lg,g);tx(x0+w+7,C(s.cn).y,'CNode',f.sm,'lbl b7','start',g)}
-   s.scmB=box(s.scm,g,'box',14);tx(s.scm.x+16,s.scm.y+22,'SCM 写缓冲',f.sm,'ttl','start',g);
-   s.qlcB=box(s.qlc,g,'box',14);tx(s.qlc.x+16,s.qlc.y+22,'QLC 闪存',f.sm,'ttl','start',g);
+   s.scmB=box(s.scm,g,'box',14);tx(s.scm.x+16,s.scm.y+22,'持久写缓冲',f.sm,'ttl','start',g);
+   s.qlcB=box(s.qlc,g,'box',14);tx(s.qlc.x+16,s.qlc.y+22,'容量闪存',f.sm,'ttl','start',g);
    const cw=m?34:36,chh=m?24:26,gap=4;
-   // SCM 槽位（行）
+   // 写缓冲中的列值
    s.rowX0=m?252:470;s.rowY=[0,1,2,3].map(r=>(m?s.scm.y+62:s.scm.y+72)+r*(chh+(m?6:10)));
    s.slot=s.rowY.map(y=>[0,1,2,3].map(c=>el('rect',{x:s.rowX0+c*(cw+gap),y:y-chh/2,width:cw,height:chh,rx:3,class:'cell'},g)));
    ['a','b','c','d'].forEach((t,c)=>tx(s.rowX0+c*(cw+gap)+cw/2,s.rowY[0]-chh/2-14,t,f.xs,'ink3-t mono','middle',g));
-   tx(m?s.scm.x+16:s.scm.x+16,m?s.rowY[3]+chh/2+16:s.scm.y+s.scm.h-22,'行存',f.xs,'ink3-t','start',g);
-   s.grpLbl=tx(m?s.scm.x+s.scm.w-16:C(s.scm).x,m?s.scm.y+22:s.scm.y+s.scm.h-22,'一个行组',f.xs,'slate-t st',m?'end':'middle',g);
+   tx(m?s.scm.x+16:s.scm.x+16,m?s.rowY[3]+chh/2+16:s.scm.y+s.scm.h-22,'分列暂存',f.xs,'ink3-t','start',g);
+   s.grpLbl=tx(m?s.scm.x+s.scm.w-16:C(s.scm).x,m?s.scm.y+22:s.scm.y+s.scm.h-46,'提交后可查',f.xs,'slate-t st',m?'end':'middle',g);
    if(!m)s.grpLbl.setAttribute('x',s.scm.x+s.scm.w-16),s.grpLbl.setAttribute('text-anchor','end');
    // QLC 列块
    s.colX=[0,1,2,3].map(c=>m?s.qlc.x+130+c*(cw+20):s.qlc.x+24+c*(cw+14));
@@ -151,10 +151,10 @@ const SCENE={
    {const lw=f.sm*3.1,w=L.lg*66/14,x0=C(s.cn).x-(lw+7+w)/2;vlogo(x0,C(s.cn).y,L.lg,g);tx(x0+w+7,C(s.cn).y,'CNode',f.sm,'lbl b7','start',g)}
    s.q=tx(m?240:s.cn.x-24,m?92:C(s.cn).y,'WHERE 金额 > 500',f.sm,'slate-t mono st',m?'middle':'end',g);
    s.cnt=tx(m?240:s.cn.x+s.cn.w+24,m?118:C(s.cn).y,'',f.sm,'lbl st',m?'middle':'start',g);
-   const V=[[12,380],[40,620],[5,90],[510,990],[100,480],[300,700]];s.V=V;
+   const V=[[12,380],[40,620],[5,90],[510,990],[100,500],[300,700]];s.V=V;
    const cw=m?120:128,chh=m?132:150;
    s.ch=V.map((v,k)=>m?R([26,180,334][k%3],[154,330][Math.floor(k/3)],cw,chh):R(36+k*150,184,cw,chh));
-   tx(m?26:36,m?488:362,'页脚：最小–最大',f.xs,'ink3-t','start',g);
+   tx(m?26:36,m?488:362,'列块统计：最小值–最大值',f.xs,'ink3-t','start',g);
    s.box=[];s.ft=[];s.lb=[];s.path=[];
    const busY=m?136:126;
    s.ch.forEach((r,k)=>{
@@ -165,10 +165,10 @@ const SCENE={
     s.path.push(pts);poly(pts,'thin',g);
     s.box.push(box(r,g,'box',10));
     tx(r.x+12,r.y+18,'块 '+(k+1),f.xs,'ink3-t','start',g);
-    for(let j=0;j<4;j++)el('rect',{x:r.x+14,y:r.y+(m?36:40)+j*(m?14:16),width:(r.w-28)*(0.35+0.6*((k*7+j*3)%5)/4),height:m?8:9,rx:2,class:'cell'},g);
+    for(let j=0;j<3;j++)el('rect',{x:r.x+14,y:r.y+(m?36:40)+j*(m?14:16),width:(r.w-28)*(0.35+0.6*((k*7+j*3)%5)/4),height:m?8:9,rx:2,class:'cell'},g);
     const fr=R(r.x+6,r.y+r.h-(m?38:40),r.w-12,m?32:34);s.ft.push(el('rect',{x:fr.x,y:fr.y,width:fr.w,height:fr.h,rx:6,class:'cell hd'},g));
     tx(C(fr).x,C(fr).y,V[k][0]+'–'+V[k][1],f.sm,'lbl mono','middle',g);
-    s.lb.push(tx(r.x+r.w-12,r.y+18,'',f.xs,'st','end',g));
+    s.lb.push(tx(C(r).x,r.y+(m?83:96),'',f.xs,'st','middle',g));
    });
   }
   /* ===== 第 4 步：过滤下推，两条路同时跑 ===== */
@@ -205,11 +205,11 @@ const SCENE={
    s.p1=m?[P(240,60),P(240,s.band.y)]:[P(s.cl.x+s.cl.w,C(s.cl).y),P(s.band.x,C(s.band).y)];
    if(m){s.p1=[P(240,60),P(240,s.cn[1].y)]}
    poly(s.p1,'',g);
-   const en=['Trino','Spark','Dremio'];
-   s.en=en.map((t,i)=>{const r=m?R([84,240,396][i]-66,440,132,48):R(738,92+i*84,180,52);box(r,g);tx(C(r).x,C(r).y,t,f.sm,'lbl','middle',g);return r});
+   const en=['Trino','Spark'];
+   s.en=en.map((t,i)=>{const r=m?R([146,334][i]-66,440,132,48):R(738,92+i*84,180,52);box(r,g);tx(C(r).x,C(r).y,t,f.sm,'lbl','middle',g);return r});
    s.pe=s.en.map(r=>m?[P(C(r).x,r.y),P(C(r).x,404),P(C(s.tb).x,404),P(C(s.tb).x,s.tb.y+s.tb.h)]:[P(r.x,C(r).y),P(700,C(r).y),P(700,C(s.tb).y),P(s.tb.x+s.tb.w,C(s.tb).y)]);
    s.pe.forEach(p=>poly(p,'',g));
-   tx(m?240:708,m?510:398,'连接器 · REST API',f.xs,'ink3-t',m?'middle':'start',g);
+   tx(m?240:708,m?510:398,'连接器',f.xs,'ink3-t',m?'middle':'start',g);
   }
   /* ===== 第 6 步：Event Broker，topic 即表 ===== */
   {const g=grp('6');const s={};E.s6=s;
@@ -222,14 +222,14 @@ const SCENE={
    const sub=['P0 的 leader','P1 的 leader',''];
    s.cnB=s.cn.map((r,i)=>{const b=box(r,g);tx(C(r).x,sub[i]?C(r).y-11:C(r).y,'CNode',f.sm,'lbl','middle',g);if(sub[i])tx(C(r).x,C(r).y+12,sub[i],f.xs,i?'ochre-t st':'slate-t st','middle',g);return b});
    // 表头与行
-   const cols=m?[90,120,218]:[80,110,150],hh=m?30:32,rh=m?29:30;s.cols=cols;s.rh=rh;
-   s.tbB=box(s.tb,g,'box',8);let x=s.tb.x;['分区','key','value'].forEach((t,c)=>{el('rect',{x,y:s.tb.y,width:cols[c],height:hh,class:'cell hd'},g);tx(x+cols[c]/2,s.tb.y+hh/2,t,f.xs,'ink2-t st','middle',g);x+=cols[c]});
+   const cols=m?[146,282]:[110,230],hh=m?30:32,rh=m?29:30;s.cols=cols;s.rh=rh;
+   s.tbB=box(s.tb,g,'box',8);let x=s.tb.x;['key','value'].forEach((t,c)=>{el('rect',{x,y:s.tb.y,width:cols[c],height:hh,class:'cell hd'},g);tx(x+cols[c]/2,s.tb.y+hh/2,t,f.xs,'ink2-t st','middle',g);x+=cols[c]});
    s.rowY=[];for(let k=0;k<8;k++)s.rowY.push(s.tb.y+hh+4+rh/2+k*rh);
    s.rows=s.rowY.map((y,k)=>{const r=el('rect',{x:s.tb.x+4,y:y-rh/2+2,width:s.tb.w-8,height:rh-4,rx:4,class:'cell'},g);r.style.opacity=0;
-     let xx=s.tb.x;const ts=[('P'+(k%2)),'k'+(k+1),'{"v":'+(k*7+3)+'}'].map((v,c)=>{const t=tx(xx+cols[c]/2,y,v,f.xs,'lbl mono','middle',g);xx+=cols[c];t.style.opacity=0;return t});
+     let xx=s.tb.x;const ts=['k'+(k+1),'{"v":'+(k*7+3)+'}'].map((v,c)=>{const t=tx(xx+cols[c]/2,y,v,f.xs,'lbl mono','middle',g);xx+=cols[c];t.style.opacity=0;return t});
      return {r,ts}});
    box(s.kc,g);tx(C(s.kc).x,C(s.kc).y-11,'Kafka 消费者',f.sm,'lbl','middle',g);tx(C(s.kc).x,C(s.kc).y+12,'按分区读',f.xs,'ink3-t','middle',g);
-   box(s.sq,g);tx(C(s.sq).x,C(s.sq).y-11,'SQL 查询',f.sm,'lbl','middle',g);tx(C(s.sq).x,C(s.sq).y+12,'一次查全部分区',f.xs,'ink3-t','middle',g);
+   box(s.sq,g);tx(C(s.sq).x,C(s.sq).y-11,'SQL 查询',f.sm,'lbl','middle',g);tx(C(s.sq).x,C(s.sq).y+12,'读取已提交消息',f.xs,'ink3-t','middle',g);
    // 走线
    if(!m){const bx=215,ib=400;line(P(s.pr.x+s.pr.w,C(s.pr).y),P(bx,C(s.pr).y),'',g);poly([P(bx,C(s.cn[0]).y),P(bx,C(s.cn[1]).y)],'',g);
      [0,1].forEach(i=>line(P(bx,C(s.cn[i]).y),P(s.cn[i].x,C(s.cn[i]).y),'',g));
@@ -261,21 +261,20 @@ SCENE.modes[0]={enter(){cap('表和文件、对象用同一套存储与元数据
   s.chip.forEach((c,i)=>c.classList.toggle('ok',u>2.3+i*0.35&&u<5.8));
   s.el.forEach(e=>e.classList.toggle('ok',u>2.3&&u<5.8))}};
 /* 第 2 步 */
-SCENE.modes[1]={enter(){const s=E.s2;S.v.rows=[0,1,2,3].map(()=>rowTile());S.v.ack=[0,1,2,3].map(()=>dot('ok'));
+SCENE.modes[1]={enter(){const s=E.s2;S.v.rows=[0,1,2,3].map(()=>rowTile());S.v.ack=dot('ok');
   S.v.cells=[];for(let r=0;r<4;r++)for(let c=0;c<4;c++){S.v.cells.push(pk(COLC[c],s.cw-6,s.chh-8))}
   // 每行的路线：应用 → CNode → SCM → 槽位
   S.v.rp=s.rowY.map(y=>L.mobile?cat(s.p1,s.p2,[P(s.busS,y),P(s.rowX0+30,y)]):cat(s.p1,s.p2,[P(s.busS,s.p2[1].y),P(s.busS,y),P(s.rowX0+30,y)]));
  },
  frame(t){const s=E.s2,u=t%12,m=L.mobile;
-  const ph1=u<5.6;cap(ph1?'每行写进 SCM 就确认':'攒够一个行组，迁往 QLC 时转成列',ph1?'sage-t':'slate-t');
+  const ph1=u<5.6;cap(ph1?'各列的值暂存于写缓冲':'提交后由后台迁移到闪存',ph1?'sage-t':'slate-t');
   for(let r=0;r<4;r++){const t0=0.3+r*1.25,d=dur(S.v.rp[r])*0.8;const p=run(S.v.rows[r],S.v.rp[r],u,t0,d,0.15);
    const landed=u>t0+d,moved=u>6.2+0.0;
    s.slot[r].forEach((c,ci)=>{c.setAttribute('class','cell'+(landed&&!(u>6.2+ci*0.3)?' '+COLC[ci].replace('slate','on'):''))});
-   // ACK：落到 SCM 之后，绿点沿原路回到应用
-   const back=rev(cat(s.p1,s.p2));run(S.v.ack[r],back,u,t0+d+0.05,dur(back)*0.7,0.15);
   }
+  const back=rev(cat(s.p1,s.p2));run(S.v.ack,back,u,5.35,dur(back)*0.7,0.12);
   s.cnB.classList.toggle('on',u<5.4);
-  s.grpLbl.style.opacity=u>5.1&&u<6.6?1:0;s.scmB.classList.toggle('on',u>5.1&&u<6.6);
+  s.grpLbl.style.opacity=u>5.35&&u<6.6?1:0;s.scmB.classList.toggle('on',u>5.35&&u<6.6);
   // 迁移：每格沿 SCM 内部走线出来，经连线进 QLC，再落到对应列
   for(let r=0;r<4;r++)for(let c=0;c<4;c++){const o=S.v.cells[r*4+c],y=s.rowY[r],x=s.rowX0+c*(s.cw+4)+s.cw/2,ty=s.colY[r],tx_=s.colX[c]+s.cw/2;
    let pts;
@@ -285,7 +284,7 @@ SCENE.modes[1]={enter(){const s=E.s2;S.v.rows=[0,1,2,3].map(()=>rowTile());S.v.a
    s.qcell[c][r].setAttribute('class','cell'+(u>t0+d&&u<11.6?' '+COLC[c].replace('slate','on'):''));}
   s.qlcB.classList.toggle('on',u>8.6&&u<11.6)}};
 /* 第 3 步 */
-SCENE.modes[2]={enter(){cap('先读页脚，最大值不到 500 的块直接跳过','slate-t');S.v.p=[];E.s3.V.forEach(v=>{if(v[1]>500)S.v.p.push(pk())})},
+SCENE.modes[2]={enter(){cap('最大值小于或等于 500 的块可以跳过','slate-t');S.v.p=[];E.s3.V.forEach(v=>{if(v[1]>500)S.v.p.push(pk())})},
  frame(t){const s=E.s3,u=t%8;let n=0,j=0;
   s.V.forEach((v,k)=>{const seen=u>0.4+k*0.3,hit=v[1]>500,dec=u>2.4;
    s.ft[k].setAttribute('class','cell hd'+(seen&&!dec?' och':''));
@@ -307,7 +306,7 @@ SCENE.modes[3]={enter(){cap('下推之后，网络上只走命中的行','sage-t
    });}
   s.num[0].textContent=na;s.num[1].textContent=nb;s.num[0].style.opacity=fo;s.num[1].style.opacity=fo}};
 /* 第 5 步 */
-SCENE.modes[4]={enter(){cap('多个引擎读写同一张表','ink2-t');S.v.q=pk('vio');S.v.r=pk('ok');S.v.e=[0,1,2].map(()=>pk());S.v.er=[0,1,2].map(()=>pk('ok'))},
+SCENE.modes[4]={enter(){cap('多个引擎查询同一张表','ink2-t');S.v.q=pk('vio');S.v.r=pk('ok');S.v.e=[0,1,2].map(()=>pk());S.v.er=[0,1,2].map(()=>pk('ok'))},
  frame(t){const s=E.s5,u=t%6.5,m=L.mobile;
   const pq=m?cat(s.p1,[P(240,C(s.band).y),P(240,s.tb.y)]):cat(s.p1,[P(C(s.band).x,C(s.band).y),P(C(s.tb).x,s.tb.y)]);
   run(S.v.q,pq,u,0.2,1.4,0.1);run(S.v.r,rev(pq),u,1.9,1.4);
@@ -318,7 +317,7 @@ SCENE.modes[4]={enter(){cap('多个引擎读写同一张表','ink2-t');S.v.q=pk(
 SCENE.modes[5]={enter(){S.v.m=[];for(let k=0;k<8;k++)S.v.m.push(pk(k%2?'och':''));S.v.k=[0,1,2,3].map(()=>pk());S.v.s=[0,1,2,3,4,5,6,7].map(()=>pk('ok'))},
  frame(t){const s=E.s6,u=t%12;
   const ph=u<5.8?0:u<8.4?1:2;
-  cap(['每个 topic 是一张表，消息作为行写入','Kafka 消费者照常按分区读','SQL 一条语句查遍全部分区'][ph],['ink2-t','slate-t','sage-t'][ph]);
+  cap(['每个 topic 是一张表，消息作为行写入','Kafka 消费者照常按分区读','SQL 读取符合条件的 topic 表'][ph],['ink2-t','slate-t','sage-t'][ph]);
   for(let k=0;k<8;k++){const i=k%2,t0=0.2+k*0.6,p1=s.toP(i),p2=s.toR(i,k);const d1=dur(p1)*0.7,d2=dur(p2)*0.7;
    const o=S.v.m[k];if(u<t0+d1)run(o,p1,u,t0,d1,0);else run(o,p2,u,t0+d1,d2,0.15);
    const on=u>t0+d1+d2&&u<11.6;const row=s.rows[k];row.r.style.opacity=on?1:0;row.ts.forEach(x=>x.style.opacity=on?1:0);

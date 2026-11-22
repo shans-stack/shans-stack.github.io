@@ -4,18 +4,18 @@
      ?talk=<讲稿 id>        载入某场讲稿
      ?stops=a,b,c&name=…   载入一套自定义站序（「保存为讲稿」生成的链接）
      ?edit=1               打开路线编辑器
-     ?line=<线 id>&st=<站>  单线图（竖排，每站一句话）
-     ?hl=<站 id>           高亮某站（从专题图换乘过来时用） */
+     ?hl=<站 id>           高亮某站（从专题图过来时用）
+   点线名跳到页面下方「按线路找知识点」里那条线的列表。 */
 (function(){
 var SS=window.SS,M=SS.Metro,L=SS.L;
 var root=document.getElementById('map');if(!root)return;
 var mapId=root.dataset.map,map=SS.mapById[mapId],topic=map.kind!=='main';
 var $=function(id){return document.getElementById(id)};
-var svg=$('metro'),box=$('mapbox'),mlist=$('mlist'),lv=$('lv'),pop=$('pop'),pnl=$('pnl'),cap=$('cap'),key=$('key'),pick=$('pick'),warnEl=$('warn');
+var svg=$('metro'),box=$('mapbox'),mlist=$('mlist'),pop=$('pop'),pnl=$('pnl'),cap=$('cap'),key=$('key'),pick=$('pick'),warnEl=$('warn');
 var q=new URLSearchParams(location.search);
 var talks=SS.talks.filter(function(t){return t.map===mapId});
 var st={talk:null,stops:null,name:'',custom:false,panel:false,mode:'browse',showAll:false,
-  line:q.get('line'),lineSt:q.get('st'),hl:q.get('hl'),preview:null,pinned:null,popId:null,msg:''};
+  hl:q.get('hl'),preview:null,pinned:null,popId:null,msg:''};
 
 function loadTalk(t){if(!t)return;st.talk=t.id;st.stops=t.stops.slice();st.name='';st.custom=false}
 function talkName(){if(st.custom||!st.talk)return st.name;var t=SS.talkById[st.talk];return SS.L(t.zh,t.en)}
@@ -26,7 +26,6 @@ else if(SS.TALKS&&topic&&map.talk)loadTalk(SS.talkById[map.talk]);
 if(!topic&&st.talk)st.pinned=st.talk;
 if(q.get('edit')){st.panel=true;st.mode='edit';if(!st.stops)loadTalk(SS.talkById[map.talk])}
 if(st.hl&&!SS.inMap(st.hl,mapId))st.hl=null;
-if(st.line&&(!SS.line[st.line]||map.lines.indexOf(st.line)<0))st.line=null;
 
 /* ---------- 当前要显示什么 ---------- */
 function current(){
@@ -47,9 +46,6 @@ function uniq(a){var o=[];a.forEach(function(x){if(o.indexOf(x)<0)o.push(x)});re
 var lastModel=null;
 function draw(){
   var c=current();
-  box.classList.toggle('lvon',!!st.line);
-  if(st.line){drawLine();svg.innerHTML='';mlist.innerHTML='';showWarn('');return}
-  lv.hidden=true;lv.innerHTML='';
   if(!c.lines.length){
     svg.innerHTML='';svg.removeAttribute('viewBox');svg.style.display='none';
     box.querySelector('.empty')||box.insertAdjacentHTML('afterbegin','<p class="empty"></p>');
@@ -88,30 +84,9 @@ function drawList(c){
   mlist.innerHTML=h;mlist.classList.toggle('on',!!c.rt);
 }
 
-/* 单线图 */
-function drawLine(){
-  var lid=st.line,ln=SS.line[lid],ids=SS.onLine(lid,mapId),hid=SS.onLine(lid,mapId,{all:true}).filter(function(id){return SS.stations[id].hidden});
-  function item(id){
-    var s=SS.stations[id],ls=SS.linesIn(id,mapId),others=ls.filter(function(l){return l!==lid}),home=topic&&SS.homeOf(id);
-    var acts='';
-    if(s.page)acts+='<a class="btn sm dark" href="'+SS.url(s.page)+'">'+L('打开知识点','Open topic')+'</a>';
-    if(home)acts+='<a class="btn sm" href="'+SS.url('index.html')+'?hl='+home+'#map">'+L('换乘到总图 ↗','To the main map ↗')+'</a>';
-    others.forEach(function(o){acts+='<a class="btn sm" href="'+SS.lineHref(mapId,o,id)+'" data-line="'+o+'" data-st="'+id+'">'+SS.sym(o,'mini')+L('换到','Change to ')+SS.esc(SS.lineName(o))+L('线','')+'</a>'});
-    if(st.panel)acts+='<button class="btn sm" type="button" data-toggle="'+id+'">'+((st.stops||[]).indexOf(id)>-1?L('移出讲解','Remove from talk'):L('加入讲解','Add to talk'))+'</button>';
-    return '<li class="'+(ls.length>1?'x ':'')+(id===st.lineSt?'cur ':'')+'" id="lv-'+id+'"><span class="mk"><i></i></span><div class="bd"><h4>'+SS.esc(SS.title(id))+
-      (s.st==='live'?'':' <span class="soon">'+L('整理中','In progress')+'</span>')+'</h4><p>'+SS.esc(SS.desc(id,mapId))+'</p>'+(acts?'<p class="acts">'+acts+'</p>':'')+'</div></li>';
-  }
-  var h='<p class="lvback"><a class="btn sm" href="'+SS.url(map.href)+'#map" data-back>'+L('← 返回整张图','← Back to the whole map')+'</a></p>'+
-    '<div class="lvh" style="--lc:'+SS.lc(lid)+'">'+SS.sym(lid)+'<h3>'+SS.esc(SS.lineName(lid))+L('线','')+'</h3><small>'+ids.length+L(' 站',' stops')+'</small></div>'+
-    '<p class="lvd">'+SS.esc(SS.T(ln.d))+'</p><ol class="lvl" style="--lc:'+SS.lc(lid)+'">'+ids.map(item).join('')+'</ol>';
-  if(hid.length)h+='<p class="lvsub">'+L('默认不显示的站','Stops not shown by default')+'</p><ol class="lvl hid" style="--lc:'+SS.lc(lid)+'">'+hid.map(item).join('')+'</ol>';
-  lv.innerHTML=h;lv.hidden=false;
-  if(st.lineSt){var t=$('lv-'+st.lineSt);if(t&&t.scrollIntoView)setTimeout(function(){t.scrollIntoView({block:'center'})},30)}
-}
-
 /* ---------- 说明、图例、讲稿选择 ---------- */
 function caption(){
-  if(st.line){cap.hidden=true;return}cap.hidden=false;
+  cap.hidden=false;
   var c=current();
   if(!c.rt){
     cap.hidden=true;return;/* 地图说明已在页首，不再重复 */
@@ -125,10 +100,9 @@ function caption(){
   cap.innerHTML='<p><b>'+SS.esc(nm)+'</b>　'+meta+'</p>'+go+'<ol>'+r.stops.map(function(id,i){return '<li style="--lc:'+SS.lc(r.at[i].line)+'"><i>'+(i+1)+'</i>'+SS.esc(SS.name(id))+'</li>'}).join('')+'</ol>';
 }
 function legend(){
-  key.hidden=!!st.line;
   key.innerHTML=map.lines.map(function(l){return '<span>'+SS.sym(l)+'<i class="bar" style="background:'+SS.lc(l)+'"></i>'+SS.esc(SS.lineName(l))+'</span>'}).join('')+
     '<span><i class="cap-k"></i>'+L('换乘站','Transfer stop')+'</span><span><i class="pr-k"></i>'+L('同一主题，另一站在不相邻的线上','Same topic, other stop on a non-adjacent line')+'</span>'+
-    (topic?'<span><i class="gn-k"></i>'+L('粗圈：总图上也有的通识站，点开可换乘回总图','Bold ring: a general stop that is also on the main map')+'</span>':'');
+    (topic?'<span><i class="gn-k"></i>'+L('粗圈：总图上也有的通识站','Bold ring: a general stop that is also on the main map')+'</span>':'');
 }
 function chips(){
   var h='<span>'+L('讲稿','Talks')+'</span>';
@@ -187,8 +161,7 @@ function openPop(id,anchor,note){
   st.popId=id;var s=SS.stations[id],ls=SS.linesIn(id,mapId),home=topic&&SS.homeOf(id);
   var acts='';
   if(s.page)acts+='<a class="btn sm dark" href="'+SS.url(s.page)+'">'+L('打开知识点','Open topic')+'</a>';
-  acts+='<a class="btn sm" href="'+SS.lineHref(mapId,ls[0],id)+'" data-line="'+ls[0]+'" data-st="'+id+'">'+L('单线图','Line view')+'</a>';
-  if(home)acts+='<a class="btn sm" href="'+SS.url('index.html')+'?hl='+home+'#map">'+L('换乘到总图 ↗','To the main map ↗')+'</a>';
+  if(home)acts+='<a class="btn sm" href="'+SS.url('index.html')+'?hl='+home+'#map">'+L('在总图中查看 ↗','See on the main map ↗')+'</a>';
   if(st.panel)acts+='<button class="btn sm" type="button" data-toggle="'+id+'">'+((st.stops||[]).indexOf(id)>-1?L('移出讲解','Remove from talk'):L('加入讲解','Add to talk'))+'</button>';
   pop.innerHTML='<div class="pop-hd"><span class="pop-s">'+ls.map(function(l){return SS.sym(l)}).join('')+'</span><b>'+SS.esc(SS.title(id))+'</b><button type="button" class="x" data-close aria-label="'+L('关闭','Close')+'">✕</button></div>'+
     (note?'<p class="pop-n">'+SS.esc(note)+'</p>':'')+
@@ -203,15 +176,11 @@ function openPop(id,anchor,note){
 }
 function closePop(){pop.hidden=true;st.popId=null}
 
-function setURL(params){try{var u=new URL(location.href);['line','st','hl'].forEach(function(k){u.searchParams.delete(k)});for(var k in params)if(params[k])u.searchParams.set(k,params[k]);u.hash='map';history.pushState({},'',u)}catch(e){}}
-function goLine(lid,sid){st.line=lid;st.lineSt=sid||null;closePop();setURL({line:lid,st:sid});all();root.scrollIntoView({block:'start'})}
 
 root.addEventListener('click',function(e){
   var t=e.target.closest?e.target:null;if(!t)return;
   var a;
   if((a=t.closest('[data-close]'))){closePop();return}
-  if((a=t.closest('[data-back]'))){e.preventDefault();st.line=null;st.lineSt=null;setURL({});all();return}
-  if((a=t.closest('a[data-line],.gut'))){e.preventDefault();goLine(a.getAttribute('data-line'),a.getAttribute('data-st'));return}
   if((a=t.closest('[data-toggle]'))){toggle(a.getAttribute('data-toggle'));if(st.popId){var an=svg.querySelector('[data-id="'+st.popId+'"]');openPop(st.popId,an)}return}
   if((a=t.closest('a.stn, .mlist a[data-id]'))){e.preventDefault();var id=a.getAttribute('data-id');
     if(st.panel&&st.mode==='edit'){toggle(id);return}
@@ -256,13 +225,12 @@ pnl.addEventListener('dragend',function(){dragI=null;pnl.querySelectorAll('.drag
 root.addEventListener('mouseover',function(e){var b=e.target.closest&&e.target.closest('.chip[data-talk]');if(!b||topic||st.panel)return;var id=b.getAttribute('data-talk');if(st.preview!==id){st.preview=id;draw();caption()}});
 root.addEventListener('mouseout',function(e){var b=e.target.closest&&e.target.closest('.chip[data-talk]');if(!b||!st.preview)return;if(b.contains(e.relatedTarget))return;st.preview=null;draw();caption()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!pop.hidden)closePop()});
-window.addEventListener('popstate',function(){var p=new URLSearchParams(location.search);st.line=p.get('line');st.lineSt=p.get('st');all()});
 SS.mapPick=function(id){if(topic||st.panel){loadTalk(SS.talkById[id])}else{st.pinned=st.pinned===id?null:id;if(st.pinned)loadTalk(SS.talkById[id]);else st.stops=null}st.preview=null;all();
   if(st.pinned||st.panel){var r=root.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)root.scrollIntoView({behavior:'smooth',block:'start'})}return st.pinned};
 SS.mapPreview=function(id){if(topic||st.panel)return;st.preview=id;draw();caption()};
 
 function all(){chips();draw();caption();legend();panel();document.dispatchEvent(new CustomEvent('ss-map',{detail:{map:mapId,talk:st.pinned}}))}
-document.addEventListener('ss-lang',function(){all();if(st.hl&&!st.line){var a=svg.querySelector('[data-id="'+st.hl+'"]');if(a&&!SS._hlDone){SS._hlDone=1;root.scrollIntoView({block:'start'});setTimeout(function(){openPop(st.hl,svg.querySelector('[data-id="'+st.hl+'"]'),L('从专题图换乘过来。','You came here from a topic map.'))},60)}}});
+document.addEventListener('ss-lang',function(){all();if(st.hl){var a=svg.querySelector('[data-id="'+st.hl+'"]');if(a&&!SS._hlDone){SS._hlDone=1;root.scrollIntoView({block:'start'});setTimeout(function(){openPop(st.hl,svg.querySelector('[data-id="'+st.hl+'"]'),L('从专题图打开。','Opened from a topic map.'))},60)}}});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){if(window.SS_LANG)all()});
 SS.mapState=st;SS.mapModel=function(){return lastModel};
 })();

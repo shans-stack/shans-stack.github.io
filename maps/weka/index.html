@@ -30,6 +30,7 @@
     <p class="crumb"><a href="../../index.html#maps" data-en="Topic maps">专题</a> / <span id="mcrumb"></span></p>
     <div class="mt"><h1 id="mtitle"></h1><span id="mbrand"></span></div>
     <p class="lead" id="mlead"></p>
+    <dl class="mfacts" id="mfacts" hidden></dl>
   </div>
 
   <div id="map" data-map="weka">
@@ -42,7 +43,6 @@
         <div class="mapbox" id="mapbox">
           <svg class="metro" id="metro" role="img"></svg>
           <div class="mlist" id="mlist"></div>
-          <div class="lv" id="lv" hidden></div>
           <div class="pop" id="pop" hidden role="dialog"></div>
         </div>
         <p class="warn" id="warn" hidden></p>
@@ -69,6 +69,7 @@
 <script src="../../data/maps.js"></script>
 <script src="../../data/talks.js"></script>
 <script src="../../data/vendors.js"></script>
+<script src="../../data/intro.js"></script>
 <script src="../../assets/core.js"></script>
 <script src="../../assets/metro.js"></script>
 <script src="../../assets/mapview.js"></script>
@@ -79,6 +80,7 @@ document.addEventListener('ss-lang',function(){
   document.getElementById('mtitle').textContent=SS.L(m.zh+' 专题图',m.en+' topic map');
   document.getElementById('mbrand').innerHTML=SS.brandMark(m.brand,'mh-lg');
   SS.renderCols(document.getElementById('cols'),m.id);
+  SS.renderIntro(m.id,document.getElementById('mfacts'));
   document.getElementById('mlead').textContent=SS.T(m.d)+SS.L(' '+m.lines.length+' 条线，'+n+' 个站。',' '+m.lines.length+' lines, '+n+' stops.');
 });
 </script>

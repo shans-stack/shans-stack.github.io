@@ -84,6 +84,10 @@ SS.T=function(o){return o?(SS.lang()==='en'?(o.en!==undefined?o.en:o[1]):(o.zh!=
 
 /* ---------- 数据索引 ---------- */
 SS.line={};(SS.lines||[]).forEach(function(l){SS.line[l.id]=l});
+/* 产品线上各站的一句话说明以知识库产品页为准（data/intro.js），覆盖 stations.js 里的默认说明 */
+(function(){var I=SS.intro||{},strip=function(h){return String(h).replace(/<[^>]+>/g,'')};
+  Object.keys(I).forEach(function(m){(I[m].products||[]).forEach(function(p){var s=p.st&&SS.stations[p.st];
+    if(s&&p.d){s.dBy=s.dBy||{};s.dBy[m]={zh:strip(p.d[0]),en:strip(p.d[1])}}})})})();
 SS.mapById={};(SS.maps||[]).forEach(function(m){SS.mapById[m.id]=m});
 SS.talkById={};(SS.talks||[]).forEach(function(t){SS.talkById[t.id]=t});
 SS.mapOfLine=function(lid){return SS.line[lid]?SS.line[lid].map:null};
@@ -109,13 +113,13 @@ SS.sym=function(lid,cls){var l=SS.line[lid];return '<svg'+(cls?' class="'+cls+'"
 /* 专题图里的站对应总图上哪一站：自己就在总图上，或者写了 generic */
 SS.homeOf=function(id){var s=SS.stations[id];if(!s)return null;if(SS.inMap(id,'home'))return id;return s.generic&&SS.stations[s.generic]?s.generic:null};
 SS.talksWith=function(id){var r=[];(SS.talks||[]).forEach(function(t){var i=t.stops.indexOf(id);if(i>-1)r.push({talk:t,n:i+1})});return r};
-SS.lineHref=function(mapId,lid,sid){var m=SS.mapById[mapId];return SS.url(m.href)+'?line='+encodeURIComponent(lid)+(sid?'&st='+encodeURIComponent(sid):'')+'#map'};
-/* 一个站点进去去哪：有知识点页就去知识点页，否则去它所在线的单线图 */
+SS.lineHref=function(mapId,lid){var m=SS.mapById[mapId];return SS.url(m.href)+'#ln-'+lid};
+/* 一个站点进去去哪：有知识点页就去知识点页，否则去地图页下方它所在线的列表 */
 SS.stationHref=function(id,mapId){
   var s=SS.stations[id];if(!s)return '#';
   if(s.page)return SS.url(s.page);
   if(!mapId||!SS.inMap(id,mapId)){mapId=SS.maps.filter(function(m){return SS.inMap(id,m.id)})[0].id}
-  return SS.lineHref(mapId,SS.linesIn(id,mapId)[0],id);
+  return SS.lineHref(mapId,SS.linesIn(id,mapId)[0]);
 };
 function readingHref(path){
   var p=new URLSearchParams();
@@ -139,8 +143,13 @@ SS.renderCols=function(el,mapId,primary){if(!el)return;var L=SS.L,m=SS.mapById[m
     return '<li class="wip"><span class="n">'+SS.esc(SS.title(id))+'</span></li>'}
   el.innerHTML=m.lines.map(function(lid){
     var ids=SS.onLine(lid,mapId).filter(function(id){var ls=SS.linesIn(id,mapId);return ls.length===1||primary[id]===lid||(!primary[id]&&ls[0]===lid)});
-    return '<div class="col" style="--lc:'+SS.lc(lid)+'"><h3>'+SS.sym(lid)+'<span>'+SS.esc(SS.lineName(lid))+'</span></h3><p class="d">'+SS.esc(SS.T(SS.line[lid].d))+'</p><ul>'+
+    return '<div class="col" id="ln-'+lid+'" style="--lc:'+SS.lc(lid)+'"><h3>'+SS.sym(lid)+'<span>'+SS.esc(SS.lineName(lid))+'</span></h3><p class="d">'+SS.esc(SS.T(SS.line[lid].d))+'</p><ul>'+
       ids.map(item).join('')+'</ul></div>'}).join('')};
+/* 专题图页头的公司信息，数据在 data/intro.js（由知识库公司页生成） */
+SS.renderIntro=function(mapId,facts){var it=(SS.intro||{})[mapId];if(!facts)return;
+  if(!it){facts.hidden=true;return}
+  var T=function(a){return SS.L(a[0],a[1])};
+  facts.innerHTML=it.rows.map(function(r){return '<div><dt>'+SS.esc(T(r.k))+'</dt><dd>'+T(r.v)+'</dd></div>'}).join('');facts.hidden=false};
 SS.esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 SS.zhNum=function(n){var d='零一二三四五六七八九';if(n<10)return d[n];if(n<20)return '十'+(n%10?d[n%10]:'');return d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:'')};
 SS.lvName=function(lv){return lv===2?SS.L('深入','In depth'):SS.L('入门','Intro')};

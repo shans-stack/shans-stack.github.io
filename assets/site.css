@@ -126,7 +126,7 @@ section{margin-top:104px}
 
 /* 知识点列表 */
 .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:56px 40px}
-.col{border-top:1px solid var(--ink);padding-top:16px}
+.col{border-top:1px solid var(--ink);padding-top:16px;scroll-margin-top:84px}
 .col h3{display:flex;align-items:center;gap:10px;font-size:20px}
 .col h3 svg{width:26px;height:26px;flex:none}
 .col .d{font-size:14px;color:var(--ink3);margin:6px 0 12px}
@@ -199,7 +199,6 @@ section{margin-top:104px}
 .metro .nbg{pointer-events:none}
 .mapbox{position:relative}
 .mapbox .empty{padding:48px 0;color:var(--ink3);font-size:15px}
-.mapbox.lvon .metro,.mapbox.lvon .mlist{display:none!important}
 .warn{margin-top:10px;font-size:14px;color:var(--ink);border-left:3px solid var(--l2);padding:4px 10px}
 .cap .cacts{display:flex;gap:8px;flex-wrap:wrap;width:100%;order:3}
 .cap .cacts+ol{order:2}
@@ -283,27 +282,6 @@ section{margin-top:104px}
 .pop-d{font-size:15px;color:var(--ink2);margin-top:8px;line-height:1.6}
 .pop .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 
-/* 单线图 */
-.lv{padding-top:4px}
-.lvback{margin-bottom:16px}
-.lvh{display:flex;align-items:center;gap:12px;border-top:2px solid var(--lc);padding-top:12px}
-.lvh svg{width:28px;height:28px}
-.lvh h3{font-size:24px}
-.lvh small{margin-left:auto;font-size:14px;color:var(--ink3)}
-.lvd{font-size:16px;color:var(--ink2);margin-top:4px}
-.lvl{list-style:none;margin:16px 0 0;padding:0;position:relative;max-width:46em}
-.lvl::before{content:"";position:absolute;left:11px;top:18px;bottom:18px;width:6px;background:var(--lc)}
-.lvl.hid::before{background:none;border-left:3px dashed var(--lc);width:0;left:12.5px}
-.lvl li{position:relative;display:grid;grid-template-columns:28px 1fr;gap:16px;padding:10px 0}
-.lvl .mk{display:grid;place-items:start center;padding-top:6px;z-index:1}
-.lvl .mk i{display:block;width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--ink)}
-.lvl li.x .mk i{width:28px;height:16px;border-radius:8px}
-.lvl li.cur .mk i{border-width:5px;width:22px;height:22px}
-.lvl li.cur h4{text-decoration:underline;text-underline-offset:4px}
-.lvl h4{font-size:18px;font-weight:600;line-height:1.4;margin:0}
-.lvl .bd p{font-size:15px;color:var(--ink2);margin-top:2px}
-.lvl .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.lvsub{margin-top:28px;font-size:14px;color:var(--ink3)}
 
 /* 专题入口 */
 .tms{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
@@ -329,7 +307,7 @@ a.tm:hover h3{text-decoration:underline}
 .mhero p.lead{font-size:18px;color:var(--ink2);max-width:40em;margin-top:8px}
 
 @media (max-width:1100px){#map.withpnl .mwrap{grid-template-columns:1fr}.pnl{position:static;max-height:none}.tms{grid-template-columns:1fr 1fr}}
-@media (max-width:720px){.tms{grid-template-columns:1fr;gap:12px}.pop{position:fixed;left:8px!important;right:8px;top:auto!important;bottom:8px;width:auto;max-width:none}.lvh h3{font-size:20px}}
+@media (max-width:720px){.tms{grid-template-columns:1fr;gap:12px}.pop{position:fixed;left:8px!important;right:8px;top:auto!important;bottom:8px;width:auto;max-width:none}}
 
 .langs{display:inline-flex;margin-left:8px;border:1px solid var(--rule2);border-radius:2px;flex:none}
 .langs button{min-width:34px;min-height:34px;padding:0 8px;border:0;background:transparent;color:var(--ink3);font:500 14px var(--f);cursor:pointer}
@@ -375,3 +353,9 @@ a.tm:hover h3{text-decoration:underline}
 .glossary-group{scroll-margin-top:60px}
 @media (min-width:900px){.glossary-group{display:grid;grid-template-columns:1fr 1fr;column-gap:56px}.glossary-group h2{grid-column:1/-1}}
 @media (max-width:720px){.gletters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.gletters::-webkit-scrollbar{display:none}.gletters a{flex:none}}
+
+/* 专题图：公司信息 */
+.mfacts{display:flex;flex-wrap:wrap;gap:12px 40px;margin:20px 0 0;padding:0}
+.mfacts dt{font-size:13px;color:var(--ink3)}
+.mfacts dd{margin:2px 0 0;font-size:16px;color:var(--ink)}
+@media (max-width:720px){.mfacts{gap:10px 28px}}

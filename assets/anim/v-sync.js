@@ -10,14 +10,14 @@
 (function(){
 var ID='v-sync',NSTEP=6;
 var EN={"对象存储":"Object store","NFS 文件系统":"NFS file system","协作平台":"Collaboration","S3 · GCS":"S3 · GCS","导出目录":"Export","Confluence 等":"Confluence etc.","SyncEngine":"SyncEngine","控制平面":"Control plane","调度 · 监控":"Schedules","标签 A":"Label A","集群":"cluster","S3 bucket":"S3 bucket","NFS 导出目录":"NFS export","DataBase 表":"DataBase table","连接器":"Connector",
-"只进不出；跨集群容灾走 VAST 原生复制":"Inbound only; cross-cluster DR uses VAST native replication","一次迁移 = 源连接器 + 目标连接器 + 路径":"A migration = source connector + destination connector + paths","worker 从控制平面领任务":"Workers take tasks from the control plane",
+"常见迁移目标：VAST S3 或 NFS":"Common migration targets: VAST S3 or NFS","worker 从控制平面领任务":"Workers take tasks from the control plane",
 "NFS 源端":"NFS source","目录 A":"Dir A","目录 B":"Dir B","目录 C":"Dir C","批":"Batch","逐层并行遍历，攒成批分给多个 worker":"Walk level by level in parallel, hand batches to several workers",
 "SQS 队列":"SQS queue","S3 事件通知":"S3 event notices","新对象":"New object","扫描":"Scan","定期：按间隔整体重扫一遍":"Scheduled: rescan the whole source at each interval","事件驱动：变更通知进 SQS，只同步变化的对象":"Event-driven: change notices go to SQS; only changed objects sync","换成事件驱动":"Switch to event-driven","换成定期重同步":"Switch to scheduled resync","切换同步方式，当前 ":"Switch sync mode, now ","定期重同步":"scheduled resync","事件驱动":"event-driven",
-"页面":"Page","页面.md":"Page.md","表格.xlsx":"Sheet.xlsx","表格.md":"Sheet.md","报告.pdf":"Report.pdf","A 组":"Group A","ACL：A 组":"ACL: Group A","转成 Markdown，权限转成 S3 ACL；PDF 保留原样":"Converted to Markdown, permissions to S3 ACLs; PDFs stay as they are",
-"路径":"Path","大小":"Size","修改时间":"Modified","元数据":"Metadata","只读元数据、不复制内容，写成一张表":"Metadata only, no content copied, written as a table","SQL：找出多年没改过的大文件":"SQL: find large files untouched for years",
-"SyncEngine 把外部数据单向搬进 VAST：控制平面、worker、连接器、并行分批、同步方式、协作平台转换与元数据索引":"SyncEngine moves outside data one way into VAST: control plane, workers, connectors, parallel batches, sync modes, collaboration-platform conversion and metadata indexing"};
-var ENM={"对象存储":"Objects","NFS 文件系统":"NFS","协作平台":"SaaS","Confluence 等":"Confluence…","控制平面":"Control","调度 · 监控":"plane","只进不出；跨集群容灾走 VAST 原生复制":"Inbound only; DR uses native replication","一次迁移 = 源连接器 + 目标连接器 + 路径":"Migration = 2 connectors + paths","逐层并行遍历，攒成批分给多个 worker":"Parallel walk, batches to workers","定期：按间隔整体重扫一遍":"Scheduled: full rescan","事件驱动：变更通知进 SQS，只同步变化的对象":"Event-driven: sync changed objects","换成事件驱动":"Event-driven","换成定期重同步":"Scheduled","转成 Markdown，权限转成 S3 ACL；PDF 保留原样":"To Markdown, permissions to S3 ACLs","只读元数据、不复制内容，写成一张表":"Metadata only, written as a table","SQL：找出多年没改过的大文件":"SQL: old large files","S3 事件通知":"S3 events","NFS 导出目录":"NFS export","DataBase 表":"DB table","ACL：A 组":"ACL: A","A 组":"Group A"};
-var ARIA="SyncEngine 把外部数据单向搬进 VAST：控制平面、worker、连接器、并行分批、同步方式、协作平台转换与元数据索引";
+"页面":"Page","页面.md":"Page.md","表格.xlsx":"Sheet.xlsx","表格.md":"Sheet.md","报告.pdf":"Report.pdf","A 组":"Group A","ACL：A 组":"ACL: Group A","格式转换与权限映射":"Format conversion and permission mapping",
+"路径":"Path","大小":"Size","修改时间":"Modified","元数据":"Metadata","POSIX 元数据写入 DataBase":"POSIX metadata goes to DataBase","SQL：找出多年没改过的大文件":"SQL: find large files untouched for years",
+"SyncEngine：迁移、重新同步与元数据索引":"SyncEngine: migration, resynchronization, and metadata indexing","迁移配置：源与目标连接器及路径":"Migration configuration: source and destination connectors and paths","POSIX 路径":"POSIX path","AWS S3 源":"AWS S3 source"};
+var ENM={"对象存储":"Objects","NFS 文件系统":"NFS","协作平台":"SaaS","Confluence 等":"Confluence…","控制平面":"Control","调度 · 监控":"plane","常见迁移目标：VAST S3 或 NFS":"Targets: VAST S3 or NFS","逐层并行遍历，攒成批分给多个 worker":"Parallel walk, batches to workers","定期：按间隔整体重扫一遍":"Scheduled: full rescan","事件驱动：变更通知进 SQS，只同步变化的对象":"Event-driven: sync changed objects","换成事件驱动":"Event-driven","换成定期重同步":"Scheduled","格式转换与权限映射":"Format and ACL mapping","POSIX 元数据写入 DataBase":"POSIX metadata to DataBase","SQL：找出多年没改过的大文件":"SQL: old large files","S3 事件通知":"S3 events","NFS 导出目录":"NFS export","DataBase 表":"DB table","ACL：A 组":"ACL: A","A 组":"Group A","迁移配置：源与目标连接器及路径":"Connectors and paths"};
+var ARIA="SyncEngine：迁移、重新同步与元数据索引";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
 function mount(host,opts){
@@ -92,10 +92,10 @@ const SCENE={
   s.sb=sb;
   /* VAST 框与目标 */
   {const g=grp(null);box(L.fr,g,'box frame',16);vtitle(L.fr.x+16,L.fr.y+22,'集群',f.sm,'ttl',g);}
-  {const g=grp('1 2 3 4 5');s.tgB=L.tg.map((r,i)=>{const b=box(r,g);tx(C(r).x,C(r).y,i?'NFS 导出目录':'S3 bucket',f.sm,'lbl','middle',g);return b})}
+  {s.tgB=L.tg.map((r,i)=>{const b=box(r,grp(i?'1 3':'1 2 4 5'));tx(C(r).x,C(r).y,i?'NFS 导出目录':'S3 bucket',f.sm,'lbl','middle',grp(i?'1 3':'1 2 4 5'));return b})}
   /* 源端三个框（第 3 步换成目录树） */
-  const sn=[['对象存储','S3 · GCS','1 2 4'],['NFS 文件系统','导出目录','1 2 6'],['协作平台','Confluence 等','1 2 5']];
-  s.srcB=L.src.map((r,i)=>{const g=grp(sn[i][2]);if(i)g.dataset.dim='2';const b=box(r,g);tx(r.x+(m?10:16),r.y+(m?22:24),sn[i][0],f.sm,'lbl b7','start',g);tx(r.x+(m?10:16),r.y+(m?46:50),sn[i][1],f.xs,'ink3-t','start',g);return b});
+  const sn=[['对象存储','S3 · GCS','1 2'],['NFS 文件系统','导出目录','1'],['协作平台','Confluence 等','1 5']];
+  s.srcB=L.src.map((r,i)=>{const g=grp(sn[i][2]);const b=box(r,g);tx(r.x+(m?10:16),r.y+(m?22:24),sn[i][0],f.sm,'lbl b7','start',g);tx(r.x+(m?10:16),r.y+(m?46:50),sn[i][1],f.xs,'ink3-t','start',g);return b});
   /* 第 1 步：一个 SyncEngine 框 */
   {const g=grp('1');[0,1,2].forEach(i=>poly(cat(elbowV(sb(i),P([0,1,0][i]?C(L.tg[1]).x:C(L.tg[0]).x,L.se.y),L.midA),[tt(L.tg[[0,1,0][i]])]),'',s.ln['1']));
    box(L.se,g,'box fillv',14);tx(C(L.se).x,C(L.se).y,'SyncEngine',f.lbl,'violet-t st','middle',g);
@@ -108,7 +108,7 @@ const SCENE={
    s.wB=s.wk.map((r,j)=>{const b=box(r,g);tx(C(r).x,C(r).y-11,'worker '+(j+1),f.sm,'lbl','middle',g);tx(C(r).x,C(r).y+13,'标签 A',f.xs,'ink3-t','middle',g);return b});}
   /* 第 2 步：连接器，三个 worker 一起搬 S3 */
   {const g=grp('2');s.p2=[0,1,2].map(j=>s.path(sb(0),j,tt(L.tg[0])));s.p2.forEach(p=>poly(p,'',s.ln['2']));
-   const chip=(x,y)=>{const w=m?74:90,h=24;box(R(x-w/2,y-h/2,w,h),g,'box fillv',12);tx(x,y,'连接器',f.xs,'violet-t st','middle',g)};
+   const chip=(x,y)=>{const w=m?92:102,h=24;box(R(x-w/2,y-h/2,w,h),g,'box fillv',12);tx(x,y,'连接器',f.xs,'violet-t st','middle',g)};
    chip(L.src[0].x+L.src[0].w-(m?40:56),L.src[0].y+L.src[0].h);chip(L.tg[0].x+L.tg[0].w-(m?40:56),L.tg[0].y);}
   /* 第 3 步：目录树 + 分批 */
   {const g=grp('3');const top=m?10:8,fr=m?R(8,top,464,124):R(120,top,720,150);box(fr,g,'box soft',12);tx(fr.x+12,fr.y+18,'NFS 源端',f.xs,'ink3-t','start',g);
@@ -122,22 +122,22 @@ const SCENE={
   }
   /* 第 4 步：定期重扫 / 事件驱动 */
   {const g=grp('4');const q=L.src[1],qg=el('g',{class:'vis'},g);s.qg=qg;s.qB=box(q,qg,'box och');tx(q.x+(m?10:16),q.y+(m?22:24),'SQS 队列',f.sm,'ochre-t b7','start',qg);tx(q.x+(m?10:16),q.y+(m?46:50),'S3 事件通知',f.xs,'ink3-t','start',qg);
-   const s3=L.src[0];s.ev1=[P(s3.x+s3.w,C(s3).y),P(q.x,C(q).y)];poly(s.ev1,'thin dash',qg);
-   s.ev2=cat([P(C(q).x,q.y+q.h)],elbowV(P(C(q).x,q.y+q.h),wt(1),L.midA).slice(1));poly(s.ev2,'thin dash',s.ln['4']);
+   const s3=L.src[0];box(s3,g);tx(s3.x+12,s3.y+23,'AWS S3 源',f.sm,'lbl b7','start',g);s.ev1=[P(s3.x+s3.w,C(s3).y),P(q.x,C(q).y)];poly(s.ev1,'thin dash',qg);
+   s.ev2=cat([P(C(q).x,q.y+q.h)],elbowV(P(C(q).x,q.y+q.h),wt(1),L.midA).slice(1));poly(s.ev2,'thin dash',qg);
    s.p4a=s.path(sb(0),0,tt(L.tg[0]));s.p4b=s.path(sb(0),1,tt(L.tg[0]));poly(s.p4a,'',s.ln['4']);poly(s.p4b,'',s.ln['4']);
-   s.obj=el('rect',{x:s3.x+s3.w-(m?24:34),y:s3.y+(m?10:16),width:m?16:20,height:m?16:20,rx:3,class:'cell ok'},g);
-   s.objT=tx(s3.x+s3.w-(m?30:42),s3.y+(m?18:26),'新对象',f.xs,'sage-t st','end',g);if(m)s.objT.style.display='none';
+   s.obj=el('rect',{x:s3.x+s3.w-(m?24:34),y:s3.y+(m?38:43),width:m?16:20,height:m?16:20,rx:3,class:'cell ok'},g);
+   s.objT=tx(s3.x+12,s3.y+48,'新对象',f.xs,'sage-t st','start',g);
    s.scan=line(P(s3.x+8,s3.y+6),P(s3.x+8,s3.y+s3.h-6),'och',g);
    const b=L.tg[0];s.copy=el('rect',{x:b.x+b.w-(m?24:34),y:b.y+(m?8:10),width:m?16:20,height:m?16:20,rx:3,class:'cell ok'},g);}
   /* 第 5 步：协作平台 */
   {const g=grp('5');s.p5=s.path(sb(2),2,tt(L.tg[0]));poly(s.p5,'',s.ln['5'])}
   /* 第 6 步：元数据进 DataBase 表 */
-  {const g=grp('6');s.p6=s.path(sb(1),1,P(C(L.tb).x,L.tb.y));poly(s.p6,'',s.ln['6']);
+  {const g=grp('6');box(L.src[1],g);tx(L.src[1].x+12,L.src[1].y+23,'POSIX 路径',f.sm,'lbl b7','start',g);s.p6=s.path(sb(1),1,P(C(L.tb).x,L.tb.y));poly(s.p6,'',s.ln['6']);
    const tb=L.tb;s.tbB=box(tb,g,'box',8);const cols=m?[180,110,142]:[150,70,100],hh=30,rh=26;let x=tb.x;
    ['路径','大小','修改时间'].forEach((k,c)=>{el('rect',{x,y:tb.y,width:cols[c],height:hh,class:'cell hd'},g);tx(x+cols[c]/2,tb.y+hh/2,k,f.xs,'ink2-t st','middle',g);x+=cols[c]});
    const D=[['/proj/a.dat','12 GB','2019'],['/proj/b.log','3 MB','2026'],['/arch/c.tar','80 GB','2018']];
    s.rows=D.map((d,k)=>{const y=tb.y+hh+rh/2+3+k*rh;const r=el('rect',{x:tb.x+3,y:y-rh/2+2,width:tb.w-6,height:rh-4,rx:3,class:'cell'},g);let xx=tb.x;
-     const ts=d.map((v,c)=>{const t=tx(xx+cols[c]/2,y,v,m?17:16,'lbl mono','middle',g);xx+=cols[c];return t});r.style.opacity=0;ts.forEach(t=>t.style.opacity=0);return {r,ts,old:+d[2]<2020}});
+     const ts=d.map((v,c)=>{const t=tx(xx+cols[c]/2,y,v,17,'lbl mono','middle',g);xx+=cols[c];return t});r.style.opacity=0;ts.forEach(t=>t.style.opacity=0);return {r,ts,old:+d[2]<2020}});
    s.fileC=[0,1,2].map(k=>el('rect',{x:L.src[1].x+L.src[1].w-(m?60:96)+k*(m?18:28),y:L.src[1].y+(m?40:36),width:m?14:20,height:m?16:22,rx:3,class:'cell on'},g));
   }
  },
@@ -145,11 +145,11 @@ const SCENE={
  modes:[]
 };
 /* 第 1 步 */
-SCENE.modes[0]={enter(){cap('只进不出；跨集群容灾走 VAST 原生复制','ink2-t');S.v.b=[pk(),pk(),pk('och')]},
+SCENE.modes[0]={enter(){cap('常见迁移目标：VAST S3 或 NFS','ink2-t');S.v.b=[pk(),pk(),pk('och')]},
  frame(t){const s=E.s,u=t%5;s.p1.forEach((p,i)=>{const r=run(S.v.b[i],p,u,0.2+i*0.6,dur(p),0.3);});
   s.tgB.forEach((b,i)=>b.classList.toggle('on',(i===0&&((u>0.2+dur(s.p1[0])&&u<0.2+dur(s.p1[0])+0.5)||(u>1.4+dur(s.p1[2])&&u<1.4+dur(s.p1[2])+0.5)))||(i===1&&u>0.8+dur(s.p1[1])&&u<1.3+dur(s.p1[1]))))}};
 /* 第 2 步 */
-SCENE.modes[1]={enter(){cap('一次迁移 = 源连接器 + 目标连接器 + 路径','ink2-t');S.v.t=[0,1,2].map(()=>pk('vio',L.mobile?14:16,L.mobile?14:16));S.v.b=[0,1,2].map(()=>pk())},
+SCENE.modes[1]={enter(){cap('迁移配置：源与目标连接器及路径','ink2-t');S.v.t=[0,1,2].map(()=>pk('vio',L.mobile?14:16,L.mobile?14:16));S.v.b=[0,1,2].map(()=>pk())},
  frame(t){const s=E.s,u=t%6.5;
   s.task.forEach((p,j)=>run(S.v.t[j],p,u,0.2+j*0.2,0.9,0.2));
   s.wB.forEach((b,j)=>b.classList.toggle('vio',u>1.1+j*0.2&&u<1.6+j*0.2));
@@ -164,7 +164,7 @@ SCENE.modes[2]={enter(){cap('逐层并行遍历，攒成批分给多个 worker',
   s.tgB[1].classList.toggle('on',u>2.4+dur(s.p3[1])-0.3&&u<7.4)}};
 /* 第 4 步：定期重扫或事件驱动（一个按钮切换） */
 SCENE.modes[3]={enter(v){S.v.ev=v==='event';cap(S.v.ev?'事件驱动：变更通知进 SQS，只同步变化的对象':'定期：按间隔整体重扫一遍',S.v.ev?'ochre-t':'slate-t');
-  S.v.b=pk('ok');S.v.e=dot('och');E.s.qg.classList.toggle('dim',!S.v.ev)},
+  S.v.b=pk('ok');S.v.e=dot('och');E.s.qg.style.display=S.v.ev?'':'none'},
  frame(t){const s=E.s,u=t%8,ev=S.v.ev,s3=L.src[0];
   s.obj.style.opacity=u>0.6?1:0;s.objT.style.opacity=u>0.6&&u<2?1:0;
   let t0;
@@ -178,21 +178,21 @@ SCENE.modes[3]={enter(v){S.v.ev=v==='event';cap(S.v.ev?'事件驱动：变更通
   const arr=t0+dur(ev?s.p4b:s.p4a);s.copy.style.opacity=u>arr?1:0;s.tgB[0].classList.toggle('on',u>arr&&u<arr+0.8)}};
 /* 第 5 步 */
 const DOCS=[['页面','页面.md'],['表格.xlsx','表格.md'],['报告.pdf','报告.pdf']];
-SCENE.modes[4]={enter(){cap('转成 Markdown，权限转成 S3 ACL；PDF 保留原样','ink2-t');const m=L.mobile;S.v.d=tile('',m?100:120,m?28:30,'');S.v.c=tile('',m?96:110,m?24:26,'vio',m?17:16)},
+SCENE.modes[4]={enter(){cap('格式转换与权限映射','ink2-t');const m=L.mobile;S.v.p=pk();S.v.d=tile('',m?128:156,m?28:30,'');S.v.c=tile('',m?128:156,m?24:26,'vio',17)},
  frame(t){const s=E.s,u=t%10.8,k=Math.floor(u/3.6),v=u-k*3.6,p=s.p5,d=dur(p)*1.05;
-  const pr=run(S.v.d,p,v,0.2,d,0.3);const cv=at(p,sm(clamp((v-0.2)/d,0,1)));
-  const conv=pr>0.5||pr>1;setText(S.v.d,conv?DOCS[k][1]:DOCS[k][0]);setText(S.v.c,conv?'ACL：A 组':'A 组');
+  const pr=run(S.v.p,p,v,0.2,d,0.3);
+  const conv=v>=0.2+d || (pr>=0 && S.v.p.y>=L.wy+L.wh/2);setText(S.v.d,conv?DOCS[k][1]:DOCS[k][0]);setText(S.v.c,conv?'ACL：A 组':'A 组');
   S.v.d.el.querySelector('rect').setAttribute('class',conv&&DOCS[k][0]!==DOCS[k][1]?'ok':'');
-  if(pr>=0){put(S.v.c,S.v.d.x,S.v.d.y+(L.mobile?27:30),S.v.d.a)}else put(S.v.c,-99,-99,0);
+  const x=L.mobile?350:786,y=L.mobile?375:389;put(S.v.d,x,y,1);put(S.v.c,x,y+33,1);
   s.wB[2].classList.toggle('on',pr>0.35&&pr<0.62);s.tgB[0].classList.toggle('on',v>0.2+d&&v<0.2+d+0.6)}};
 /* 第 6 步 */
-SCENE.modes[5]={enter(){S.v.m=[0,1,2].map(()=>tile('元数据',L.mobile?70:80,L.mobile?24:26,'vio',L.mobile?17:16))},
+SCENE.modes[5]={enter(){S.v.m=[0,1,2].map(()=>pk('vio'))},
  frame(t){const s=E.s,u=t%9.5,p=s.p6,d=dur(p)*0.8;
   for(let k=0;k<3;k++){const t0=0.3+k*0.9;const pr=run(S.v.m[k],p,u,t0,d,0.25);const on=u>t0+d&&u<9.2;const row=s.rows[k];
    row.r.style.opacity=on?1:0;row.ts.forEach(x=>x.style.opacity=on?1:0);row.r.setAttribute('class','cell'+(u>6.3&&row.old?' och':''));
    if(k===0)s.wB[1].classList.toggle('on',pr>0.35&&pr<0.65)}
   s.fileC.forEach(c=>c.setAttribute('class','cell on'));
-  const q=u>6.3;cap(q?'SQL：找出多年没改过的大文件':'只读元数据、不复制内容，写成一张表',q?'ochre-t':'violet-t')}};
+  const q=u>6.3;cap(q?'SQL：找出多年没改过的大文件':'POSIX 元数据写入 DataBase',q?'ochre-t':'violet-t')}};
 /* ---------- 引擎 ---------- */
 const TG=SCENE.toggles||{};
 const tstate={};Object.keys(TG).forEach(k=>{const g=TG[k],v=qs.get(g.param);tstate[k]=g.values.indexOf(v)>-1?v:g.values[0]});

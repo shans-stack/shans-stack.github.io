@@ -1,0 +1,28 @@
+.v-broker-figure{width:100%;height:auto;display:block;font-family:var(--f);font-size:17px}
+.v-broker-figure text{fill:var(--ink2)}
+.v-broker-figure .v-broker-heading{fill:var(--ink);font-size:19px;font-weight:600}
+.v-broker-figure .v-broker-annotation{fill:var(--ink3)}
+.v-broker-figure .v-broker-outline{fill:var(--surface);stroke:var(--rule2)}
+.v-broker-figure .v-broker-divider{stroke:var(--rule)}
+.v-broker-figure .v-broker-link{fill:none;stroke:var(--ink3);stroke-width:1.25}
+.v-broker-figure .v-broker-arrow{fill:var(--ink3)}
+.v-broker-figure .v-broker-packet{fill:var(--l3);stroke:var(--surface)}
+.v-broker-figure .v-broker-selection{fill:transparent}
+.v-broker-figure .v-broker-scope .v-broker-selection{fill:color-mix(in srgb,var(--l3) 16%,var(--surface))}
+.v-broker-figure .v-broker-match .v-broker-selection{fill:color-mix(in srgb,var(--l5) 24%,var(--surface))}
+.v-broker-figure .v-broker-removed .v-broker-selection{fill:color-mix(in srgb,var(--l1) 25%,var(--surface))}
+.v-broker-figure .v-broker-scope text,.v-broker-figure .v-broker-match text,.v-broker-figure .v-broker-removed text{fill:var(--ink)}
+.v-broker-figure .v-broker-logo-dark{display:none}
+:root[data-theme=dark] .v-broker-figure .v-broker-logo-light{display:none}
+:root[data-theme=dark] .v-broker-figure .v-broker-logo-dark{display:inline}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme=light]) .v-broker-figure .v-broker-logo-light{display:none}
+  :root:not([data-theme=light]) .v-broker-figure .v-broker-logo-dark{display:inline}
+}
+@media(max-width:639px){
+  .v-broker-figure{font-size:14px}
+  .v-broker-figure .v-broker-heading{font-size:16px}
+}
+@media (640px <= width <= 720px){
+  main[data-station="v-broker"] .mhost{aspect-ratio:var(--ar)}
+}

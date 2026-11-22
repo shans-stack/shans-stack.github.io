@@ -9,15 +9,15 @@
    VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
 (function(){
 var ID='v-ie',NSTEP=7;
-var EN={"docs/合同.pdf":"docs/contract.pdf","media/会议.mp4":"media/meeting.mp4","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","手册.pdf":"Manual.pdf","存储":"Storage","嵌入流水线":"Embedding pipeline","向量库":"Vector database","权限系统":"Permission system","应用":"App","复制数据":"Copy data","同步权限":"Sync permissions","定制代码":"Custom code","拼装：数据要复制，权限要同步":"Assembled: data is copied, permissions are synced","InsightEngine：在同一个系统里完成":"InsightEngine: all inside one system","换成 InsightEngine":"Switch to InsightEngine","换成拼装方式":"Switch to assembled","切换对比，当前 ":"Switch comparison, now ","拼装方式":"assembled","DataEngine 函数":"DataEngine functions","DataBase 表":"DataBase table","检索接口":"Search API",
-"客户端":"Client","DataStore bucket":"DataStore bucket","函数实例 ":"Instance ","事件":"Event","写入即事件；向量化不阻塞写入":"A write is an event; embedding never blocks the write",
-"按内容类型分流":"Route by content type","文本流水线":"Text pipeline","文字 · 表格 · 图":"Text · tables · figures","视频流水线":"Video pipeline","切段 · 视觉语言模型":"Segments · vision-language model","嵌入模型":"Embedding model","托管服务或 NVIDIA NIM":"Hosted service or NVIDIA NIM","报告.pdf":"Report.pdf","会议.mp4":"Meeting.mp4","按内容类型切块，再送进嵌入模型":"Chunked by content type, then sent to the embedding model",
-"切块 + 向量":"Chunks + vectors","片段":"Chunk","向量":"Vector","来源":"Source","元数据":"Metadata","第 3 页正文…":"Page 3 text…","第 4 页表格…":"Page 4 table…","02:10 片段…":"02:10 segment…","05:40 片段…":"05:40 segment…","页 3":"Page 3","页 4":"Page 4","向量列带近似最近邻索引":"Vector column with an approximate-nearest-neighbour index","原文、向量、元数据共用一个租户密钥":"Source, vectors and metadata share one tenant key","片段、向量、元数据各占一列":"Chunk, vector and metadata each get a column",
-"提问人":"Asker","研发组":"R&D","核对身份":"Check identity","问题向量化":"Embed question","检索 + 过滤":"Search + filter","重排（可选）":"Rerank (optional)","无权限":"Denied","片段 + 来源":"Chunk + source","只返回提问人有权查看的片段":"Only chunks the asker may see come back","问题":"Question",
-"RAG 检索接口":"RAG retrieval API","向量检索接口":"Vector search API","相似度检索（SQL）":"Similarity search (SQL)","大模型生成回答":"LLM writes the answer","不调用":"Not called","回答":"Answer","耗时":"Timing","RAG 检索：返回生成的回答、来源和耗时":"RAG retrieval: answer, sources and timing","向量检索：传入向量，只返回片段":"Vector search: send a vector, get chunks only","换成向量检索接口":"Switch to vector search API","换成 RAG 检索接口":"Switch to RAG retrieval API","切换接口，当前 ":"Switch API, now ",
-"清理函数":"Clean-up function","定时触发器":"Schedule trigger","Catalog 对比时间":"Catalog time check","已删除":"Deleted","已修改":"Modified","不触发":"No event","过期":"Stale","已重算":"Re-embedded","对象删除：对应的行随之删除":"Object deleted: its rows are removed","就地修改：不自动重算，定时对照 Catalog 再补":"Edited in place: not re-embedded at once; a scheduled Catalog check catches up","换成就地修改":"Switch to in-place edit","换成删除":"Switch to delete","切换场景，当前 ":"Switch case, now ","删除":"delete","就地修改":"in-place edit",
+var EN={"合同.pdf":"Contract.pdf","会议.mp4":"Meeting.mp4","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","手册.pdf":"Manual.pdf","存储":"Storage","嵌入流水线":"Embedding pipeline","向量库":"Vector database","权限系统":"Permission system","应用":"App","复制数据":"Copy data","同步权限":"Sync permissions","定制代码":"Custom code","分置架构：通过接口连通":"Separate components connected through interfaces","InsightEngine：事件驱动的入库流水线":"InsightEngine: event-driven ingestion pipeline","换成 InsightEngine":"Switch to InsightEngine","切到分置架构":"Switch to separate components","切换对比，当前 ":"Switch comparison, now ","分置架构":"separate components","DataEngine 函数":"DataEngine functions","DataBase 表":"DataBase table","检索接口":"Search API",
+"客户端":"Client","DataStore bucket":"DataStore bucket","函数实例 ":"Instance ","事件":"Event","对象创建触发异步向量化":"Object creation triggers asynchronous embedding",
+"按内容类型分流":"Route by type","文本流水线":"Text pipeline","文字 · 表格 · 图":"Text · tables · figures","视频流水线":"Video pipeline","切段 · 视觉语言模型":"Segments · VLM","嵌入模型":"Embedding model","托管服务或 NVIDIA NIM":"Hosted or NVIDIA NIM","报告.pdf":"Report.pdf","按内容类型切块，再送进嵌入模型":"Chunked by content type, then sent to the embedding model",
+"切块 + 向量":"Chunks + vectors","片段":"Chunk","向量":"Vector","来源":"Source","元数据":"Metadata","正文":"Text","表格":"Table","视频片段 A":"Clip A","视频片段 B":"Clip B","页 3":"Page 3","页 4":"Page 4","向量列可配置索引":"The vector column can be indexed","写入片段、向量、来源和元数据":"Store chunks, vectors, sources, and metadata",
+"提问人":"Asker","研发组":"R&D","核对身份":"Check identity","问题向量化":"Embed question","检索 + 过滤":"Search + filter","重排（可选）":"Rerank","无权限":"Denied","片段 + 来源":"Chunk + source","返回符合访问策略的片段":"Return chunks permitted by the access policy","问题":"Question",
+"RAG 检索接口":"RAG retrieval API","向量检索接口":"Vector search API","相似度检索（SQL）":"Similarity (SQL)","大模型生成回答":"LLM writes the answer","不调用":"Not called","回答":"Answer","耗时":"Timing","RAG 检索：返回回答与来源":"RAG retrieval returns an answer and sources","向量检索：用查询向量匹配片段":"Vector search matches chunks to a query vector","换成向量检索接口":"Switch to vector search API","换成 RAG 检索接口":"Switch to RAG retrieval API","切换接口，当前 ":"Switch API, now ",
+"清理函数":"Clean-up function","定时触发器":"Schedule trigger","Catalog 对比时间":"Catalog time check","已删除":"Deleted","已修改":"Modified","等待刷新":"Awaiting refresh","过期":"Stale","已重算":"Refreshed","处理删除事件后移除对应行":"Cleanup removes rows after a deletion event","就地修改：定期核对 Catalog 并刷新":"In-place edit: scheduled Catalog check and refresh","换成就地修改":"Switch to in-place edit","换成删除":"Switch to delete","切换场景，当前 ":"Switch case, now ","删除":"delete","就地修改":"in-place edit",
 "InsightEngine：写入触发切块与向量化，结果存进 DataBase 表，检索时按提问人的权限过滤":"InsightEngine: writes trigger chunking and embedding, results go to a DataBase table, and search is filtered by the asker's permissions"};
-var ENM={"拼装：数据要复制，权限要同步":"Assembled: copies and syncs","InsightEngine：在同一个系统里完成":"InsightEngine: one system","换成 InsightEngine":"InsightEngine","换成拼装方式":"Assembled","嵌入流水线":"Embedding","权限系统":"Permissions","写入即事件；向量化不阻塞写入":"Write = event; embedding is async","按内容类型分流":"Route by type","切段 · 视觉语言模型":"Segments · VLM","托管服务或 NVIDIA NIM":"Hosted or NVIDIA NIM","按内容类型切块，再送进嵌入模型":"Chunk by type, then embed","向量列带近似最近邻索引":"Vector column has an ANN index","原文、向量、元数据共用一个租户密钥":"One tenant key for all","片段、向量、元数据各占一列":"Chunk, vector, metadata columns","只返回提问人有权查看的片段":"Only permitted chunks return","相似度检索（SQL）":"Similarity (SQL)","大模型生成回答":"LLM answer","RAG 检索：返回生成的回答、来源和耗时":"RAG: answer, sources, timing","向量检索：传入向量，只返回片段":"Vector search: chunks only","换成向量检索接口":"Vector search API","换成 RAG 检索接口":"RAG API","对象删除：对应的行随之删除":"Deleted object, rows removed","就地修改：不自动重算，定时对照 Catalog 再补":"In-place edit: caught up later","换成就地修改":"In-place edit","换成删除":"Delete","Catalog 对比时间":"Catalog check","重排（可选）":"Rerank","检索 + 过滤":"Search + filter","RAG 检索接口":"RAG API","向量检索接口":"Vector API","DataEngine 函数":"DataEngine fn"};
+var ENM={"分置架构：通过接口连通":"Separate components","InsightEngine：事件驱动的入库流水线":"InsightEngine ingestion pipeline","换成 InsightEngine":"InsightEngine","切到分置架构":"Separate components","嵌入流水线":"Embedding","权限系统":"Permissions","对象创建触发异步向量化":"Object creation triggers async embedding","按内容类型分流":"Route by type","切段 · 视觉语言模型":"Segments · VLM","托管服务或 NVIDIA NIM":"Hosted or NVIDIA NIM","按内容类型切块，再送进嵌入模型":"Chunk by type, then embed","向量列可配置索引":"Optional vector index","写入片段、向量、来源和元数据":"Store chunks, vectors, and metadata","返回符合访问策略的片段":"Return permitted chunks","相似度检索（SQL）":"Similarity (SQL)","大模型生成回答":"LLM answer","RAG 检索：返回回答与来源":"RAG returns answer and sources","向量检索：用查询向量匹配片段":"Vector search returns matching chunks","换成向量检索接口":"Vector search API","换成 RAG 检索接口":"RAG API","处理删除事件后移除对应行":"Cleanup removes the matching rows","就地修改：定期核对 Catalog 并刷新":"Scheduled Catalog check and refresh","换成就地修改":"In-place edit","换成删除":"Delete","Catalog 对比时间":"Catalog check","重排（可选）":"Rerank","检索 + 过滤":"Search + filter","RAG 检索接口":"RAG API","向量检索接口":"Vector API","DataEngine 函数":"DataEngine fn","等待刷新":"Pending refresh"};
 var ARIA="InsightEngine：写入触发切块与向量化，结果存进 DataBase 表，检索时按提问人的权限过滤";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -74,7 +74,7 @@ function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.
 /* ---------- 场景 ---------- */
 const SCENE={
  still:[2.4,3.6,4.6,5.4,6.0,4.4,6.4],
- toggles:{0:{param:'view',values:['split','native'],label:v=>v==='split'?'换成 InsightEngine':'换成拼装方式',aria:'切换对比，当前 ',name:v=>v==='split'?'拼装方式':'InsightEngine'},
+ toggles:{0:{param:'view',values:['split','native'],label:v=>v==='split'?'换成 InsightEngine':'切到分置架构',aria:'切换对比，当前 ',name:v=>v==='split'?'分置架构':'InsightEngine'},
           5:{param:'api',values:['rag','vec'],label:v=>v==='rag'?'换成向量检索接口':'换成 RAG 检索接口',aria:'切换接口，当前 ',name:v=>v==='rag'?'RAG 检索接口':'向量检索接口'},
           6:{param:'case',values:['del','mod'],label:v=>v==='del'?'换成就地修改':'换成删除',aria:'切换场景，当前 ',name:v=>v==='del'?'删除':'就地修改'}},
  layout(m){
@@ -109,14 +109,18 @@ const SCENE={
   /* ===== 2：写入即事件 ===== */
   {const ln=grp('2'),g=grp('2');const s={};E.s2=s;
    s.cl=m?R(150,10,180,48):R(24,190,150,60);s.fr=m?R(8,84,464,500):R(210,40,726,390);
-   s.bk=m?R(130,124,220,90):R(240,170,200,120);s.tp=m?R(150,262,180,64):R(500,190,170,80);
+   s.bk=m?R(130,124,220,110):R(240,170,200,120);s.tp=m?R(150,262,180,64):R(500,190,170,80);
    s.fn=[0,1,2].map(k=>m?R([84,240,396][k]-66,400,132,56):R(740,90+k*100,170,60));
    s.p1=[out_(s.cl),in_(s.bk)];poly(s.p1,'',ln);s.p2=[out_(s.bk),in_(s.tp)];poly(s.p2,'',ln);
    s.p3=s.fn.map(r=>m?elbowV(P(C(s.tp).x,s.tp.y+s.tp.h),P(C(r).x,r.y),360):elbowH(P(s.tp.x+s.tp.w,C(s.tp).y),P(r.x,C(r).y),705));s.p3.forEach(p=>poly(p,'',ln));
    box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'AI OS',f.sm,'ttl',g);
    nb(s.cl,'客户端','',g);s.bkB=nb(s.bk,'DataStore bucket','',g);s.bkB.t.setAttribute('y',s.bk.y+22);
    s.tpB=nb(s.tp,'Event Broker','topic',g,'box och');s.fnB=s.fn.map((r,k)=>nb(r,T('函数实例 ')+(k+1),'',g,'box'));
-   s.files=['报告.pdf','会议.mp4','手册.pdf'].map((n,k)=>{const x=C(s.bk).x,y=s.bk.y+(m?44:50)+k*(m?16:22);const r=el('rect',{x:x-(m?60:70),y:y-(m?7:9),width:m?120:140,height:m?14:18,rx:3,class:'cell ok'},g);r.style.opacity=0;return r});
+   s.files=['报告.pdf','会议.mp4','手册.pdf'].map((name,k)=>{
+    const x=C(s.bk).x,y=s.bk.y+(m?47:50)+k*(m?20:22),row=el('g',{},g);
+    el('rect',{x:x-74,y:y-9,width:148,height:18,rx:3,class:'cell ok'},row);
+    tx(x,y,name,f.xs,'lbl','middle',row);row.style.opacity=0;return row;
+   });
   }
   /* ===== 3：切块与向量化 ===== */
   {const ln=grp('3'),g=grp('3');const s={};E.s3=s;
@@ -137,7 +141,7 @@ const SCENE={
   /* ===== 4：写成一张表 ===== */
   {const ln=grp('4'),g=grp('4');const s={};E.s4=s;
    s.in=m?R(140,10,200,48):R(24,190,160,60);s.fr=m?R(8,90,464,470):R(214,36,722,394);
-   const cols=m?[{k:'片段',w:150},{k:'向量',w:120},{k:'来源',w:166}]:[{k:'片段',w:190},{k:'向量',w:170},{k:'来源',w:150},{k:'元数据',w:150}];
+   const cols=m?[{k:'片段',w:110},{k:'向量',w:86},{k:'来源',w:140},{k:'元数据',w:100}]:[{k:'片段',w:190},{k:'向量',w:170},{k:'来源',w:150},{k:'元数据',w:150}];
    const hh=34,rh=m?46:50;s.tb=m?R(22,150,436,hh+4*rh):R(240,96,660,hh+4*rh);
    s.rowY=[0,1,2,3].map(k=>s.tb.y+hh+rh/2+k*rh);
    if(!m){const bx=s.tb.x-14;line(P(s.in.x+s.in.w,C(s.in).y),P(bx,C(s.in).y),'',ln);poly([P(bx,s.rowY[0]),P(bx,s.rowY[3])],'thin',ln);s.rowY.forEach(y=>line(P(bx,y),P(s.tb.x,y),'thin',ln));
@@ -146,11 +150,11 @@ const SCENE={
      s.ins=k=>[P(240,s.in.y+s.in.h),P(240,by),P(bx,by),P(bx,s.rowY[k]),P(s.tb.x+30,s.rowY[k])];}
    nb(s.in,'切块 + 向量','',g,'box fillv');box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'DataBase 表',f.sm,'ttl',g);
    box(s.tb,g,'box',8);let x=s.tb.x;cols.forEach(c=>{el('rect',{x,y:s.tb.y,width:c.w,height:hh,class:'cell hd'},g);tx(x+c.w/2,s.tb.y+hh/2,c.k,f.xs,'ink2-t st','middle',g);c.x=x;x+=c.w});
-   const D=[['第 3 页正文…','[0.21, …]','docs/合同.pdf','页 3'],['第 4 页表格…','[0.64, …]','docs/合同.pdf','页 4'],['02:10 片段…','[0.08, …]','media/会议.mp4','02:10'],['05:40 片段…','[0.77, …]','media/会议.mp4','05:40']];
+   const D=[['正文','[0.21, …]','合同.pdf','页 3'],['表格','[0.64, …]','合同.pdf','页 4'],['视频片段 A','[0.08, …]','会议.mp4','02:10'],['视频片段 B','[0.77, …]','会议.mp4','05:40']];
    s.rows=D.map((d,k)=>{const y=s.rowY[k];const r=el('rect',{x:s.tb.x+3,y:y-rh/2+3,width:s.tb.w-6,height:rh-6,rx:4,class:'cell'},g);
-    const ts=cols.map((c,ci)=>tx(c.x+c.w/2,y,d[ci],ci===2?(m?17:16):f.xs,ci===1?'violet-t mono':ci===2?'lbl mono':'lbl','middle',g));r.style.opacity=0;ts.forEach(t=>t.style.opacity=0);return {r,ts}});
+    const ts=cols.map((c,ci)=>tx(c.x+c.w/2,y,d[ci],ci===2?(17):f.xs,ci===1?'violet-t mono':ci===2?'lbl mono':'lbl','middle',g));r.style.opacity=0;ts.forEach(t=>t.style.opacity=0);return {r,ts}});
    const vc=cols[1];s.vcol=el('rect',{x:vc.x+2,y:s.tb.y+2,width:vc.w-4,height:s.tb.h-4,rx:4,class:'cell vio'},g);s.vcol.style.fillOpacity=0.06;s.vcol.style.opacity=0;
-   s.n1=tx(m?240:C(s.tb).x,s.tb.y+s.tb.h+26,'向量列带近似最近邻索引',f.xs,'violet-t st','middle',g);s.n2=tx(m?240:C(s.tb).x,s.tb.y+s.tb.h+(m?56:58),'原文、向量、元数据共用一个租户密钥',f.xs,'ink3-t','middle',g);
+   s.n1=tx(m?240:C(s.tb).x,s.tb.y+s.tb.h+26,'向量列可配置索引',f.xs,'violet-t st','middle',g);
   }
   /* ===== 5：检索 ===== */
   {const ln=grp('5'),g=grp('5');const s={};E.s5=s;
@@ -164,7 +168,7 @@ const SCENE={
    box(s.tb,g,'box',10);tx(C(s.tb).x,s.tb.y+20,'检索 + 过滤',f.sm,'ttl','middle',g);
    const D=[['片段 1','rd/'],['片段 2','hr/'],['片段 3','rd/'],['片段 4','rd/']];s.D=D;const rh=m?42:46;
    s.rows=D.map((d,k)=>{const y=s.tb.y+(m?56:60)+k*rh;const r=el('rect',{x:s.tb.x+10,y:y-rh/2+4,width:s.tb.w-20,height:rh-8,rx:4,class:'cell'},g);
-    tx(s.tb.x+(m?70:58),y,d[0],f.sm,'lbl','middle',g);tx(s.tb.x+(m?170:130),y,d[1],f.xs,'lbl mono','middle',g);const st=tx(s.tb.x+s.tb.w-18,y,'',f.xs,'st','end',g);return {r,st}});
+    tx(s.tb.x+(m?70:58),y,d[0],f.sm,'lbl','middle',g);tx(s.tb.x+(m?170:121),y,d[1],f.xs,'lbl mono','middle',g);const st=tx(s.tb.x+s.tb.w-18,y,'',f.xs,'st','end',g);return {r,st}});
    s.res=tx(m?240:C(s.u).x,m?s.u.y-0:s.u.y-18,'',f.xs,'sage-t st','middle',g);if(m)s.res.setAttribute('y',590);
   }
   /* ===== 6：两个接口 ===== */
@@ -182,7 +186,7 @@ const SCENE={
   }
   /* ===== 7：删除与就地修改 ===== */
   {const ln=grp('7'),g=grp('7');const s={};E.s7=s;
-   if(!m){s.ds=R(24,70,200,200);s.eb=R(280,80,150,60);s.cf=R(480,80,160,60);s.tb=R(690,60,246,210);s.ti=R(280,330,150,60);s.ca=R(480,330,160,60)}
+   if(!m){s.ds=R(24,70,200,200);s.eb=R(280,80,150,60);s.cf=R(480,80,160,60);s.tb=R(660,60,276,210);s.ti=R(280,330,150,60);s.ca=R(480,330,160,60)}
    else{s.ds=R(12,10,456,96);s.eb=R(12,146,210,56);s.cf=R(258,146,210,56);s.tb=R(40,240,400,170);s.ti=R(12,450,210,56);s.ca=R(258,450,210,56)}
    s.fl=m?[R(40,52,180,36),R(260,52,180,36)]:[R(44,120,160,40),R(44,190,160,40)];
    s.pE=m?[P(C(s.fl[0]).x,s.ds.y+s.ds.h),P(C(s.fl[0]).x,s.eb.y)]:[P(s.ds.x+s.ds.w,C(s.fl[0]).y),P(252,C(s.fl[0]).y),P(252,C(s.eb).y),P(s.eb.x,C(s.eb).y)];
@@ -198,7 +202,7 @@ const SCENE={
    box(s.tb,g,'box',10);tx(s.tb.x+14,s.tb.y+20,'DataBase 表',f.sm,'ttl','start',g);
    const D=[['a.pdf','片段 1'],['a.pdf','片段 2'],['b.docx','片段 1']];const rh=m?40:46;
    s.rows=D.map((d,k)=>{const y=s.tb.y+(m?58:66)+k*rh;const r=el('rect',{x:s.tb.x+10,y:y-rh/2+4,width:s.tb.w-20,height:rh-8,rx:4,class:'cell'},g);
-    const a=tx(s.tb.x+(m?70:50),y,d[0],f.xs,'lbl mono','middle',g),b=tx(s.tb.x+(m?190:116),y,d[1],f.xs,'lbl','middle',g),st=tx(s.tb.x+s.tb.w-16,y,'',f.xs,'st','end',g);return {r,a,b,st}});
+    const a=tx(s.tb.x+(m?70:50),y,d[0],f.xs,'lbl mono','middle',g),b=tx(s.tb.x+(m?190:128),y,d[1],f.xs,'lbl','middle',g),st=tx(s.tb.x+s.tb.w-16,y,'',f.xs,'st','end',g);return {r,a,b,st}});
   }
  },
  reset(){svg.querySelectorAll('.box').forEach(b=>b.classList.remove('on','ok','hot','off','och'));cap('','')},
@@ -206,7 +210,7 @@ const SCENE={
 };
 /* 1 */
 SCENE.modes[0]={enter(v){const s=E.s1;S.v.v=v;const sp=v==='split';s.A.style.display=sp?'':'none';s.B.style.display=sp?'none':'';
-  cap(sp?'拼装：数据要复制，权限要同步':'InsightEngine：在同一个系统里完成',sp?'rose-t':'sage-t');
+  cap(sp?'分置架构：通过接口连通':'InsightEngine：事件驱动的入库流水线',sp?'rose-t':'sage-t');
   S.v.p=[0,1,2,3,4].map(i=>pk(i===2?'vio':''))},
  frame(t){const s=E.s1,u=t%6;
   if(S.v.v==='split'){s.pa.forEach((p,i)=>{const t0=[0.2,1.2,0.6,2.4,3.0][i];run(S.v.p[i],i===3||i===4?p:p,u,t0,dur(p)*0.8,0.3)})}
@@ -214,13 +218,13 @@ SCENE.modes[0]={enter(v){const s=E.s1;S.v.v=v;const sp=v==='split';s.A.style.dis
    s.bB.forEach((b,i)=>b.classList.toggle('on',u>0.2+i*0.6&&u<0.8+i*0.6))}}};
 /* 2 */
 const FN=['报告.pdf','会议.mp4','手册.pdf'];
-SCENE.modes[1]={enter(){cap('写入即事件；向量化不阻塞写入','ink2-t');S.v.f=FN.map(n=>tile(n,L.mobile?96:100,L.mobile?26:28,'ok',L.mobile?17:16));S.v.e=FN.map(()=>tile('事件',L.mobile?54:58,L.mobile?24:26,'vio',L.mobile?17:16))},
+SCENE.modes[1]={enter(){cap('对象创建触发异步向量化','ink2-t');S.v.f=FN.map(()=>pk('ok'));S.v.e=FN.map(()=>dot('vio'))},
  frame(t){const s=E.s2,u=t%8;
   FN.forEach((n,k)=>{const t0=0.2+k*0.5,d=dur(s.p1)*0.8;run(S.v.f[k],s.p1,u,t0,d,0.1);s.files[k].style.opacity=u>t0+d&&u<7.7?1:0;
    const te=t0+d+0.1,pe=cat(s.p2,s.p3[k]);const de=dur(pe)*0.8;const p=run(S.v.e[k],pe,u,te,de,0.2);s.fnB[k].classList.toggle('on',u>te+de&&u<te+de+2.4)});
   s.tpB.classList.toggle('on',u>1.4&&u<3.2)}};
 /* 3 */
-SCENE.modes[2]={enter(){cap('按内容类型切块，再送进嵌入模型','violet-t');const m=L.mobile;S.v.d=[tile('报告.pdf',m?96:100,m?26:28,'',m?17:16),tile('会议.mp4',m?96:100,m?26:28,'och',m?17:16)];
+SCENE.modes[2]={enter(){cap('按内容类型切块，再送进嵌入模型','violet-t');const m=L.mobile;S.v.d=[pk(),pk('och')];
   S.v.c=[0,1,2,3,4].map(k=>pk(k<3?'':'och',m?18:20,m?14:16))},
  frame(t){const s=E.s3,u=t%9;
   [0,1].forEach(i=>{const t0=0.2+i*0.4,p=cat(s.pIn[i],s.pPP[i]);const d=dur(p)*0.8;run(S.v.d[i],p,u,t0,d,0.2);s.ppB[i].classList.toggle(i?'och':'on',u>t0+d&&u<t0+d+1.2)});
@@ -229,17 +233,17 @@ SCENE.modes[2]={enter(){cap('按内容类型切块，再送进嵌入模型','vio
    run(S.v.c[k],p,u,t0,d,0.2);s.vec[k].style.opacity=u>t0+d&&u<8.7?1:0});
   s.emB.classList.toggle('vio',u>3&&u<5.6)}};
 /* 4 */
-SCENE.modes[3]={enter(){cap('片段、向量、元数据各占一列','violet-t');S.v.r=[0,1,2,3].map(()=>{const g=el('g',{},E.pk);['','vio','slate','ok'].forEach((c,i)=>el('rect',{x:-24+i*12,y:-7,width:10,height:14,rx:2,class:'pkt '+c},g));const o={el:g};S.items.push(o);put(o,-99,-99,0);return o})},
+SCENE.modes[3]={enter(){cap('写入片段、向量、来源和元数据','violet-t');S.v.r=[0,1,2,3].map(()=>{const g=el('g',{},E.pk);['','vio','slate','ok'].forEach((c,i)=>el('rect',{x:-24+i*12,y:-7,width:10,height:14,rx:2,class:'pkt '+c},g));const o={el:g};S.items.push(o);put(o,-99,-99,0);return o})},
  frame(t){const s=E.s4,u=t%9;
   for(let k=0;k<4;k++){const t0=0.3+k*1.0,p=s.ins(k),d=dur(p)*0.8;run(S.v.r[k],p,u,t0,d,0.1);const on=u>t0+d&&u<8.6;s.rows[k].r.style.opacity=on?1:0;s.rows[k].ts.forEach(x=>x.style.opacity=on?1:0)}
-  s.vcol.style.opacity=u>5&&u<8.6?1:0;s.n1.style.opacity=u>5?1:0.35}};
+  s.vcol.style.opacity=u>5&&u<8.6?1:0;s.n1.style.opacity=u>5?1:0}};
 /* 5 */
-SCENE.modes[4]={enter(){cap('只返回提问人有权查看的片段','sage-t');const m=L.mobile;S.v.q=tile('问题',m?60:64,m?26:28,'',m?17:16);S.v.b=tile('研发组',m?70:76,m?22:24,'och',m?17:16);S.v.r=[0,1].map(()=>tile('片段 + 来源',m?110:118,m?24:26,'ok',m?17:16))},
+SCENE.modes[4]={enter(){cap('返回符合访问策略的片段','sage-t');S.v.q=pk();S.v.r=[0,1].map(()=>pk('ok'))},
  frame(t){const s=E.s5,u=t%10,seq=s.seg;let tt=0.2;const pts=cat(...seq);const L1=dur(seq[0])*0.9,L2=dur(seq[1])*0.9,L3=dur(seq[2])*0.9;
   // 问题牌沿线走，过「核对身份」后带上身份牌，过「问题向量化」后变成向量
   const tA=0.2,tB=tA+L1+0.3,tC=tB+L2+0.3,tD=tC+L3;
   let q;if(u<tA)q=null;else if(u<tA+L1)q=at(seq[0],sm((u-tA)/L1));else if(u<tB)q=C(s.id);else if(u<tB+L2)q=at(seq[1],sm((u-tB)/L2));else if(u<tC)q=C(s.em);else if(u<tD)q=at(seq[2],sm((u-tC)/L3));else q=null;
-  if(q){put(S.v.q,q,1);setText(S.v.q,u>tC?'向量':'问题');S.v.q.el.querySelector('rect').setAttribute('class',u>tC?'':'');S.v.q.el.classList.toggle('vio',u>tC);if(u>tB-0.2)put(S.v.b,q.x,q.y+(L.mobile?-24:-26),1);else put(S.v.b,-99,-99,0)}else{put(S.v.q,-99,-99,0);put(S.v.b,-99,-99,0)}
+  if(q){put(S.v.q,q,1);S.v.q.el.classList.toggle('vio',u>tC)}else put(S.v.q,-99,-99,0);
   s.idB.classList.toggle('on',u>tA+L1&&u<tB+0.2);s.emB.classList.toggle('vio',u>tB+L2&&u<tC+0.2);
   const tq=tD+0.2;s.D.forEach((d,k)=>{const cand=k<3,hit=u>tq+0.3*k,deny=d[1]==='hr/'&&u>tq+1.2;
    s.rows[k].r.setAttribute('class','cell'+(hit&&cand?(deny?' off':' ok'):''));s.rows[k].st.textContent=deny&&hit?T('无权限'):'';s.rows[k].st.setAttribute('class','st ink3-t')});
@@ -249,16 +253,16 @@ SCENE.modes[4]={enter(){cap('只返回提问人有权查看的片段','sage-t');
   s.uB.classList.toggle('ok',u>tR+dR+0.8+dur(s.backT)*0.8)}};
 /* 6 */
 SCENE.modes[5]={enter(v){const s=E.s6,rag=v==='rag';S.v.rag=rag;s.apiB.t.textContent=T(rag?'RAG 检索接口':'向量检索接口');
-  cap(rag?'RAG 检索：返回生成的回答、来源和耗时':'向量检索：传入向量，只返回片段',rag?'violet-t':'slate-t');
+  cap(rag?'RAG 检索：返回回答与来源':'向量检索：用查询向量匹配片段',rag?'violet-t':'slate-t');
   s.llmB.classList.toggle('off',!rag);s.llmN.textContent=rag?'':T('不调用');s.l3.classList.toggle('off',!rag);s.lR.style.display=rag?'':'none';s.lV.style.display=rag?'none':'';
-  const m=L.mobile;S.v.q=tile(rag?'问题':'向量',m?60:64,m?26:28,rag?'':'vio',m?17:16);S.v.c=pk('ok');S.v.r=[0,1,2].map(k=>tile(rag?['回答','来源','耗时'][k]:'片段',m?60:64,m?24:26,'ok',m?17:16))},
+  const m=L.mobile;S.v.q=pk(rag?'':'vio');S.v.c=pk('ok');S.v.r=[0,1].map(k=>tile(rag?['回答','来源'][k]:'片段',m?72:82,m?24:26,'ok',17))},
  frame(t){const s=E.s6,u=t%7,rag=S.v.rag;const p=cat(s.p1,s.p2);run(S.v.q,p,u,0.2,dur(p)*0.8,0.2);
   const t1=0.2+dur(p)*0.8;let tb;
   if(rag){run(S.v.c,s.p3,u,t1+0.2,dur(s.p3)*0.8,0.2);tb=t1+0.2+dur(s.p3)*0.8+0.5;s.llmB.classList.toggle('vio',u>tb-0.5&&u<tb+0.3)}else{put(S.v.c,-99,-99,0);tb=t1+0.5}
-  const b0=rag?s.bR:s.bV,back=b0.slice(0,-1).concat([L.mobile?P(s.ap.x-40,C(s.ap).y):P(C(s.ap).x,s.ap.y+s.ap.h+30)]);S.v.r.forEach((o,k)=>{if(!rag&&k===2){put(o,-99,-99,0);return}run(o,back,u,tb+k*0.75,dur(back)*0.8,0.3)})}};
+  const b0=rag?s.bR:s.bV,back=b0.slice(0,-1).concat([L.mobile?P(s.ap.x-40,C(s.ap).y):P(C(s.ap).x,s.ap.y+s.ap.h+30)]);S.v.r.forEach((o,k)=>{run(o,back,u,tb+k*0.75,dur(back)*0.8,0.3)})}};
 /* 7 */
 SCENE.modes[6]={enter(v){const s=E.s7;S.v.del=v==='del';
-  cap(S.v.del?'对象删除：对应的行随之删除':'就地修改：不自动重算，定时对照 Catalog 再补',S.v.del?'rose-t':'ochre-t');
+  cap(S.v.del?'处理删除事件后移除对应行':'就地修改：定期核对 Catalog 并刷新',S.v.del?'rose-t':'ochre-t');
   s.lEM.classList.toggle('off',S.v.del);S.v.e=dot('vio');S.v.k=dot('och');S.v.x=dot('och')},
  frame(t){const s=E.s7,u=t%8;
   if(S.v.del){const del=u>0.5;s.flB[0].classList.toggle('hot',del);s.flB[0].style.opacity=del?0.4:1;s.fst[0].textContent=del?T('已删除'):'';s.fst[0].setAttribute('class','st rose-t');s.fst[1].textContent='';
@@ -266,7 +270,7 @@ SCENE.modes[6]={enter(v){const s=E.s7;S.v.del=v==='del';
    s.rows.forEach((r,k)=>{const gone=k<2&&u>0.9+d;r.r.style.opacity=gone?0.15:1;r.a.style.opacity=gone?0.15:1;r.b.style.opacity=gone?0.15:1;r.st.textContent=gone?T('已删除'):'';r.st.setAttribute('class','st rose-t');r.r.setAttribute('class','cell')});
    put(S.v.k,-99,-99,0);put(S.v.x,-99,-99,0);s.nt.textContent='';s.flB[1].classList.remove('och');s.flB[1].style.opacity=1}
   else{s.flB[0].style.opacity=1;s.fst[0].textContent='';const md=u>0.5;s.flB[1].classList.toggle('och',md);s.fst[1].textContent=md?T('已修改'):'';s.fst[1].setAttribute('class','st ochre-t');
-   s.nt.textContent=u>0.8&&u<3?T('不触发'):'';put(S.v.e,-99,-99,0);
+   s.nt.textContent=u>0.8&&u<3?T('等待刷新'):'';put(S.v.e,-99,-99,0);
    const p=cat(s.pK,s.pR);const d=dur(p)*0.8;run(S.v.k,p,u,3.0,d,0.2);s.tiB.classList.toggle('och',u>2.6&&u<3.4);s.caB.classList.toggle('on',u>3+d*0.4&&u<3+d*0.7);
    s.rows.forEach((r,k)=>{r.r.style.opacity=1;r.a.style.opacity=1;r.b.style.opacity=1;const st=k===2?(u>3+d?'已重算':u>0.8?'过期':''):'';r.st.textContent=st?T(st):'';r.st.setAttribute('class','st '+(st==='已重算'?'sage-t':'ochre-t'));r.r.setAttribute('class','cell'+(st==='过期'?' och':st==='已重算'?' ok':''))})}}};
 /* ---------- 引擎 ---------- */

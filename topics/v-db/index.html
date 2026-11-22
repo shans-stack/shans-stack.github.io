@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DataBase：表直接存在 VAST 的存储里 · Shan's Stack</title>
-<meta name="description" content="分 6 步说明 VAST DataBase：库是 Element Store 里的一个视图，写入先按行进写缓冲、再转成小列块，过滤下推到 CNode，多个查询引擎和 Kafka topic 共用同一份表。">
+<title>DataBase：存储布局与查询路径 · Shan's Stack</title>
+<meta name="description" content="VAST DataBase 的数据库视图、写缓冲、列式存储、查询下推和 Event Broker topic 查询。">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css">
 </head>
-<body>
+<body class="topic-v-db">
 <script src="../../assets/symbols.js"></script>
 
 <header class="hd"><div class="wrap">
@@ -29,7 +29,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="DataBase: Tables Stored Directly in VAST Storage">DataBase：表直接存在 VAST 的存储里</h1>
+      <div><h1 data-en="DataBase: Storage Layout and Query Paths">DataBase：存储布局与查询路径</h1>
         <p class="meta"><span data-en="6 steps · columnar storage, pushdown, transactions">6 步 · 列存、谓词下推、事务</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -43,10 +43,14 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), The VAST DataBase chapter and the Kafka-Compatible Event Broker section.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版），The VAST DataBase 章节与 Kafka-Compatible Event Broker 一节。</li>
-      <li data-en="VAST documentation (docs.vastdata.com), VAST Cluster 5.5: The VAST DataBase, Managing Databases, Supported Pushdowns, VAST Query Engine, Supported Query Engines.">VAST 官方文档（docs.vastdata.com），VAST Cluster 5.5：The VAST DataBase、Managing Databases、Supported Pushdowns、VAST Query Engine、Supported Query Engines。</li>
-      <li data-en="VAST documentation, VAST Cluster 5.5: Publishing Events to VAST Event Broker.">VAST 官方文档，VAST Cluster 5.5：Publishing Events to VAST Event Broker。</li>
-      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/managing-databases&quot;&gt;VAST Cluster 5.5 · Managing Databases&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/managing-databases">VAST Cluster 5.5 · Managing Databases</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/develop/docs/dev-database-concepts-architecture-write-path&quot;&gt;VAST DataBase Developer Guide (5.5) · Write Path&lt;/a&gt;"><a href="https://docs.vastdata.com/develop/docs/dev-database-concepts-architecture-write-path">VAST DataBase Developer Guide (5.5) · Write Path</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/develop/docs/dev-database-concepts-architecture-read-path-and-pruning&quot;&gt;VAST DataBase Developer Guide (5.5) · Read Path and Pruning&lt;/a&gt;"><a href="https://docs.vastdata.com/develop/docs/dev-database-concepts-architecture-read-path-and-pruning">VAST DataBase Developer Guide (5.5) · Read Path and Pruning</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/supported-pushdowns&quot;&gt;VAST Cluster 5.5 · Supported Pushdowns&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/supported-pushdowns">VAST Cluster 5.5 · Supported Pushdowns</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/vast-query-engine&quot;&gt;VAST Cluster 5.5 · VAST Query Engine&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/vast-query-engine">VAST Cluster 5.5 · VAST Query Engine</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/develop/docs/dev-event-broker-guides-querying-topics&quot;&gt;VAST Event Broker Developer Guide · Querying Topics&lt;/a&gt;"><a href="https://docs.vastdata.com/develop/docs/dev-event-broker-guides-querying-topics">VAST Event Broker Developer Guide · Querying Topics</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/vast-cluster-5-5-0-release-notes&quot;&gt;VAST Cluster 5.5.0 · Release Notes&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/vast-cluster-5-5-0-release-notes">VAST Cluster 5.5.0 · Release Notes</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
 </main>
@@ -63,7 +67,7 @@
 </section>
 
 <footer class="ft"><div class="wrap">
-  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
@@ -81,126 +85,139 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "一个数据库，就是一个视图",
-    "A Database Is a View"
+    "数据库视图",
+    "Database views"
    ],
    "d": [
-    "在 VAST 上建库，就是在 Element Store 里建一个开了 Database 协议的视图，表和文件、对象放在同一套存储里。",
-    "A database on VAST is an Element Store view with the Database protocol, so tables share storage with files and objects."
+    "VAST DataBase 使用启用了 Database 协议的视图，表与文件、对象共享底层存储。",
+    "VAST DataBase uses a view with the Database protocol. Tables share the underlying storage with files and objects."
    ],
    "b": [
     [
-     "<p>VAST 的 Element Store 用同一套元数据管理文件、对象和表。在它上面建一个数据库，就是建一个协议类型包含 Database 的视图（view）；层级依次是数据库（对应一个 bucket）、schema、表。白皮书的说法是，VAST SQL 在架构上可以看作和 SMB、S3 并列的又一种协议。</p>",
-     "<p>表是 Element Store 里的一类元素，所以存储侧已有的能力可以直接用在表上：快照、数据缩减、异步复制和配额。同样因为这一点，表在命名空间里看起来像一个文件，官方文档提醒要用视图策略和身份策略管好谁能访问它。</p>"
+     "<p>数据库对应一个启用 Database 协议的视图。数据库下按 schema 组织表。视图策略和身份或 bucket 策略控制访问，表在命名空间中也可表现为文件。</p>",
+     "<p>数据库表可使用快照、数据缩减和配额。异步复制适用于符合条件的表，排序表和分区表有复制限制。</p>"
     ],
     [
-     "<p>VAST's Element Store manages files, objects and tables with one set of metadata. Creating a database on it means creating a view whose protocols include Database; the hierarchy is database (backed by a bucket), schema, table. The white paper describes VAST SQL as, architecturally, one more protocol alongside SMB and S3.</p>",
-     "<p>A table is a kind of element in the Element Store, so the storage features already there apply to tables directly: snapshots, data reduction, asynchronous replication and quotas. For the same reason a table looks like a file in the namespace, and the documentation advises using view policies and identity policies to control who can reach it.</p>"
+     "<p>A database is backed by a view with the Database protocol enabled. Schemas organize the tables within it. View policies and identity or bucket policies control access. Tables can also appear as files in the namespace.</p>",
+     "<p>Database tables can use snapshots, data reduction, and quotas. Asynchronous replication applies to eligible tables, with restrictions on sorted and partitioned tables.</p>"
     ]
    ]
   },
   {
    "t": [
-    "写入先按行进写缓冲，再转成列",
-    "Rows Land in the Write Buffer, Then Become Columns"
+    "写缓冲、事务提交与列块",
+    "Write buffering, commits, and column chunks"
    ],
    "d": [
-    "INSERT 的数据先按行写进 SCM 写缓冲并确认；攒够一个行组后，迁往 QLC 闪存时转成按列组织的小块。",
-    "INSERTs are acknowledged once rows are in the SCM write buffer; full row groups become column chunks on QLC flash."
+    "插入行时，各列的值先写入持久写缓冲，提交后再由后台整理到闪存的列块中。",
+    "An insert stages column values in a persistent write buffer. After commit, background work moves them to column chunks on flash."
    ],
    "b": [
     [
-     "<p>SQL 的 INSERT、UPDATE 天然按行写。接收请求的 CNode 把数据写进两块 SCM 盘上的写缓冲，和处理 NFS 写入、S3 PUT 一样，然后更新元数据。元数据更新是事务性的，并且发生在数据落到持久的 SCM 之后，所以表的写入满足 ACID：一次写入要么完整生效，要么完全不生效。</p>",
-     "<p>写缓冲里攒够一个行组后，这批数据被迁往 QLC 闪存，迁移时转成按列组织的小块。行存适合快速写入，列存适合分析查询，两种组织方式在同一条写入路径上前后衔接。更新已经落在闪存上的数据时，系统读出它所在的列块，把新版本写进写缓冲。</p>"
+     "<p>插入时，DataBase 为新行分配行 ID，将各列的值写入 SCM 写缓冲，并关联到当前事务。提交后，随后开始的事务可立即读取这些行。</p>",
+     "<p>后台将已提交的数据迁移到闪存，形成表的长期布局。每个行组内，各列分别存成列块，查询可读取所需列。</p>"
     ],
     [
-     "<p>SQL INSERT and UPDATE naturally write row by row. The CNode that receives the request writes the data into the write buffer on two SCM drives, just as it does for an NFS write or an S3 PUT, and then updates the metadata. The metadata update is transactional and happens after the data is on persistent SCM, so table writes are ACID: a write either takes full effect or none at all.</p>",
-     "<p>Once a full row group has built up in the write buffer, it is migrated to QLC flash and turned into column-organised chunks on the way. Rows suit fast writes and columns suit analytical queries, and the two follow one another on the same write path. To update data already on flash, the system reads the column chunk that holds it and writes a new version into the write buffer.</p>"
+     "<p>DataBase assigns IDs to inserted rows and stages each column’s values in the SCM write buffer under the current transaction. Transactions that begin after the commit can query those rows immediately.</p>",
+     "<p>Background work moves committed data to its long-term layout on flash. Within each row group, each column is stored separately so queries can read the columns they need.</p>"
     ]
    ]
   },
   {
    "t": [
-    "列块很小，页脚记着最小值和最大值",
-    "Small Column Chunks with Min and Max in the Footer"
+    "用列块统计跳过无关数据",
+    "Skipping irrelevant data with chunk statistics"
    ],
    "d": [
-    "每个列块只装一小段行的一列值，页脚记着最小值、最大值和行数；查询先读页脚，就能跳过不可能命中的块。",
-    "Each chunk holds one column for a few rows; its footer keeps min, max and count, so queries skip chunks that cannot match."
+    "查询可用列块的最小值和最大值排除不可能命中的块。",
+    "Minimum and maximum values can rule out column chunks that cannot match a query."
    ],
    "b": [
     [
-     "<p>列存的好处是查询只读需要的列。数据湖常用的 Parquet 文件也在页脚记最小值和最大值，但一个文件往往有几百 MB 到 1 GB，只要查询范围落在最小值和最大值之间，就得读整个文件。VAST 的列块小得多：官方文档给出的列块大小为 32 KB，白皮书称它和关系数据库的一页差不多大（截至 2026-04 白皮书）。</p>",
-     "<p>例如查询「金额大于 500」：先读各块的页脚，最大值不到 500 的块直接跳过，只读可能命中的块。块越小，跳过的判断越精细，读进来的无关数据越少；白皮书也指出，小列块让同一张表可以按日期、地区等多个维度查询，而不必按每个维度各分区、多存几份。</p>"
+     "<p>列块的元数据记录值域。对示例条件 <code>amount &gt; 500</code>，最大值小于或等于 500 的块可以跳过，其余块仍需检查实际行。</p>"
     ],
     [
-     "<p>The point of columns is that a query reads only the columns it needs. Parquet files, common in data lakes, also keep min and max in the footer, but a single file is often hundreds of megabytes to 1 GB, and whenever the query range falls between min and max the whole file has to be read. VAST's column chunks are far smaller: the documentation gives a column chunk size of 32 KB, which the white paper likens to a relational database page (white paper, April 2026).</p>",
-     "<p>Take a query for amounts above 500: the footers are read first, chunks whose max is below 500 are skipped, and only chunks that could match are read. The smaller the chunk, the finer the skipping and the less irrelevant data is read; the white paper also notes that small chunks let one table be queried by date, region and other dimensions without partitioning and storing extra copies for each.</p>"
+     "<p>Metadata for each column chunk records its value range. For the example predicate <code>amount &gt; 500</code>, chunks with a maximum of 500 or less can be skipped. Rows in the remaining chunks still need to be checked.</p>"
     ]
    ]
   },
   {
    "t": [
-    "过滤在 CNode 上做，只回传命中的行",
-    "Filters Run on the CNodes; Only Matches Come Back"
+    "谓词与列投影下推",
+    "Predicate and projection pushdown"
    ],
    "d": [
-    "查询引擎把过滤条件和要读的列下推给 VAST，CNode 在数据旁边过滤，只把命中的行送回引擎。",
-    "The query engine pushes filters and columns down to VAST; CNodes filter next to the data and return only matching rows."
+    "支持的过滤条件和列投影可下推到 VAST DataBase，减少经网络返回的数据。",
+    "VAST DataBase can apply supported filters and column projections before sending data over the network."
    ],
    "b": [
     [
-     "<p>Trino、Spark 等外部查询引擎通过 VAST 提供的连接器访问表，连接器走 REST API。查询里的比较条件（等于、大于、小于、IS NULL、同一列上的 OR、子串 LIKE 等）和列投影会下推（pushdown）到 VAST，由 CNode 在数据旁边执行，只把满足条件的行回传给引擎（据 5.5 版官方文档「Supported Pushdowns」）。</p>",
-     "<p>不下推时，整张表的行都要经网络送到引擎再过滤；下推之后，网络上只走命中的行，引擎集群也少做很多工作。下推有明确的范围：连接（JOIN）、分组（GROUP BY）、排序仍由引擎完成，聚合中只有全表 COUNT(*) 会下推。</p>"
+     "<p>Trino、Spark 等引擎通过 VAST 连接器访问表。DataBase 可执行下推的比较条件、空值检查或同一列上的部分 OR 条件，并返回符合这些条件的行与请求的列。</p>",
+     "<p>无过滤条件的全表 <code>COUNT(*)</code> 可直接下推。对于带过滤条件的计数，DataBase 可下推谓词，随后由查询引擎对结果计数。</p>"
     ],
     [
-     "<p>External query engines such as Trino and Spark reach the tables through connectors supplied by VAST, which use a REST API. Comparisons in the query (equal, greater than, less than, IS NULL, OR on the same column, substring LIKE and so on) and column projections are pushed down to VAST, where the CNodes run them next to the data and return only the rows that qualify (VAST Cluster 5.5 documentation, Supported Pushdowns).</p>",
-     "<p>Without pushdown, every row of the table crosses the network to the engine before filtering; with it, only matching rows travel, and the engine cluster does far less work. Pushdown has a defined scope: joins, GROUP BY and sorting stay in the engine, and among aggregations only a whole-table COUNT(*) is pushed down.</p>"
+     "<p>Engines such as Trino and Spark access tables through VAST connectors. DataBase can apply pushed comparisons, null checks, and certain OR conditions on one column, then return the rows and columns requested by the pushed operations.</p>",
+     "<p>An unfiltered table-wide <code>COUNT(*)</code> can be pushed down. For a filtered count, DataBase can apply the predicate, and the query engine counts the returned results.</p>"
     ]
    ]
   },
   {
    "t": [
-    "原生查询引擎跑在 CNode 上",
-    "The Native Query Engine Runs on the CNodes"
+    "原生查询引擎与外部连接器",
+    "Native query engine and external connectors"
    ],
    "d": [
-    "VAST 原生查询引擎嵌在 CNode 里，经 ADBC 驱动或 Python SDK 访问；Trino、Spark、Dremio 也能通过连接器读写同一张表。",
-    "The native engine runs in the CNodes via ADBC or the Python SDK; Trino, Spark and Dremio use connectors to the same tables."
+    "原生查询引擎嵌入 CNode，Trino 和 Spark 通过连接器查询同一份表数据。",
+    "The native query engine runs on CNodes. Trino and Spark query the same table data through connectors."
    ],
    "b": [
     [
-     "<p>最直接的访问方式是 VAST 原生查询引擎（VAST Query Engine）。它跑在一组 CNode 上，直接读取 Element Store 的共享元数据，支持建表、增删改查和向量检索，需要为它划一个专用角色的虚拟 IP 池。客户端用开源的 ADBC 驱动或 Python SDK 连接。</p>",
-     "<p>已有查询工作流的团队可以继续用原来的引擎：官方文档列出的连接器覆盖 Trino（含 Starburst）、Spark 和 Dremio，各连接器版本与 VAST 版本有对应关系。几个引擎读写的是同一张表、同一份数据，不需要为某个引擎再导出一份。</p>"
+     "<p>VAST Query Engine 支持 SQL 数据定义、数据操作和向量检索。应用可经专用 Query Engine 虚拟 IP 池，使用 VAST ADBC 驱动或 VAST DB Python SDK 连接。</p>",
+     "<p>外部查询引擎通过各自的连接器访问 DataBase 表。连接器支持的操作取决于所用引擎。</p>"
     ],
     [
-     "<p>The most direct way in is VAST's native query engine (VAST Query Engine). It runs on a pool of CNodes, reads the Element Store's shared metadata directly, supports table creation, inserts, updates, deletes, queries and vector search, and needs a virtual IP pool with its own dedicated role. Clients connect through the open-source ADBC driver or the Python SDK.</p>",
-     "<p>Teams with existing query workflows can keep their engines: the documentation lists connectors for Trino (including Starburst), Spark and Dremio, each matched to specific VAST versions. All the engines read and write the same table and the same data, with no extra export for any one engine.</p>"
+     "<p>VAST Query Engine supports SQL data definition, data manipulation, and vector search. Applications use a dedicated Query Engine virtual IP pool with the VAST ADBC driver or VAST DB Python SDK.</p>",
+     "<p>External query engines access DataBase tables through their respective connectors. Supported operations depend on the engine.</p>"
     ]
    ]
   },
   {
    "t": [
-    "Kafka 的 topic 也是一张表",
-    "A Kafka Topic Is Also a Table"
+    "Event Broker 的 topic 表",
+    "Event Broker topic tables"
    ],
    "d": [
-    "VAST Event Broker 兼容 Kafka API，每个 topic 就是一张 DataBase 表，消息写进来就能用 SQL 查询。",
-    "VAST Event Broker speaks the Kafka API and stores each topic as a table, so SQL can query messages as they land."
+    "VAST Event Broker 兼容 Kafka API，topic 存在 DataBase 中，符合查询条件的 topic 可直接读取。",
+    "VAST Event Broker is Kafka API-compatible. Topics are stored in DataBase, where eligible topics can be queried directly."
    ],
    "b": [
     [
-     "<p>VAST Event Broker 建在 DataBase 之上：生产者用标准 Kafka 客户端发消息，消息以事务方式作为行插入该 topic 对应的表，每行原样保存消息的 key 和 value。一个 topic 的全部分区都在同一张表里，分区键是其中一列。</p>",
-     "<p>消费者照常按分区用 Kafka 协议消费；做分析时可以用一条 SELECT 查遍全部分区，不必先把消息导出到另一个系统。每个分区的 leader 对应一台 CNode，用来保证分区内的顺序；底层的表任何 CNode 都能访问，所以 leader 可以借浮动 IP 换到别的 CNode，不需要在 broker 之间复制日志。</p>"
+     "<p>生产者通过 Kafka API 向 topic 写入消息，消费者按分区读取。topic 对应 <code>kafka_topics</code> schema 中的表，每条消息以一行保存，key 和 value 以字节形式存储。</p>",
+     "<p>SQL 可以读取符合查询条件的 topic 中已提交的消息。分区是 Kafka 访问的一部分，原始 topic 表不提供可查询的分区或 offset 列。</p>"
     ],
     [
-     "<p>VAST Event Broker is built on DataBase: producers send messages with standard Kafka clients, and each message is inserted transactionally as a row in the table behind that topic, with its key and value stored as they arrive. All of a topic's partitions live in the same table, with the partition key as one column.</p>",
-     "<p>Consumers read by partition over the Kafka protocol as usual; for analysis, one SELECT reads every partition, with no export to another system first. Each partition's leader sits on one CNode to keep order within the partition, but the underlying table is reachable from every CNode, so a leader can move to another CNode through a floating IP without replicating logs between brokers.</p>"
+     "<p>A producer writes messages to a topic through the Kafka API, and consumers read by partition. The topic corresponds to a table in the <code>kafka_topics</code> schema. Each message is one row, with its key and value stored as bytes.</p>",
+     "<p>SQL can read committed messages from an eligible topic. Partitions are part of Kafka access. The raw topic table exposes neither a partition nor an offset column for queries.</p>"
     ]
    ]
   }
  ]
 };
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
 </script>
 <script src="../../assets/topic.js"></script>
 </body>

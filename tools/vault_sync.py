@@ -11,6 +11,8 @@
   python3 tools/vault_sync.py build               # 检查通过后，把库内文字写回网页；任何一项不过就不写、退出码非 0
   python3 tools/vault_sync.py roundtrip           # 自测：每站 网页 → 块 → 网页 应该完全一致
 
+专题图页头的公司信息和产品一览来自知识库公司页（块 map-<专题图 id>）和产品页（块 product），生成 data/intro.js。
+
 知识库路径取环境变量 SS_VAULT，没有就读 ~/.config/shans-stack/vault。
 """
 import html, json, os, re, subprocess, sys
@@ -202,7 +204,7 @@ def render(sid, title, steps, sources):
     newcfg = {'anim': cfg['anim'], 'ar': cfg['ar'], 'steps': steps}
     cfgtext = json.dumps(newcfg, ensure_ascii=False, indent=1)
     ar = text[s:e]
-    arm = re.search(r'ar\s*:\s*(\[[^\]]*\])', ar)
+    arm = re.search(r'(?<![A-Za-z_])"?ar"?\s*:\s*(\[[^\]]*\])', ar)
     if arm:  # 保留原来写成算式的宽高比（如 960/476）
         cfgtext = re.sub(r'"ar": \[[^\]]*\]', '"ar": ' + arm.group(1), cfgtext, count=1)
     text = text[:s] + cfgtext + text[e:]
@@ -232,9 +234,28 @@ def check_one(sid, page):
     for pat in FORBID:
         for m in re.finditer(pat, re.sub(r'<[^>]+>', ' ', body)):
             problems.append('禁写命中：%r 附近「%s」' % (pat, body[max(0, m.start() - 20):m.end() + 20].replace('\n', ' ')))
-    new = render(sid, title, steps, sources)
     old = open(os.path.join(ROOT, 'topics', sid, 'index.html'), encoding='utf-8').read()
-    return new, new != old, problems
+    _, cfg, t0, s0 = page_parts(sid)
+    if same_content((title, steps, sources), (t0, cfg['steps'], s0)):
+        return old, False, problems  # 只比内容，不比网页排版：内容没变就不重写网页
+    return render(sid, title, steps, sources), True, problems
+
+
+def norm_steps(sts):
+    out = []
+    for st in sts:
+        d = dict(st, b=[html.unescape(''.join(st['b'][0])), html.unescape(''.join(st['b'][1]))])
+        d['t'], d['d'] = [html.unescape(x) for x in st['t']], [html.unescape(x) for x in st['d']]
+        if 's' in st:
+            d['s'] = [html.unescape(x) for x in st['s']]
+        out.append(d)
+    return out
+
+
+def same_content(a, b):
+    (t1, st1, s1), (t2, st2, s2) = a, b
+    return (tuple(t1) == tuple(t2) and norm_steps(st1) == norm_steps(st2)
+            and [tuple(x) for x in s1] == [tuple(x) for x in s2])
 
 
 # ---------- 技术名词表：知识库一页 ⇄ data/terms.js ----------
@@ -298,6 +319,113 @@ def terms_js(terms):
     return '\n'.join(lines) + '\n'
 
 
+# ---------- 专题图介绍：公司页 + 产品页 ⇄ data/intro.js ----------
+# vault-map.json 里带 "map" 的行：{"map": "vast", "page": "<公司页路径>"}。
+# 公司页里的块 id 是 map-<专题图 id>，生成专题图页头的公司信息；产品页里的块 id 是 product，它的一句话说明显示在专题图产品线的站上。格式见 Skills/shans-stack/SKILL.md「专题图介绍」。
+INTRO = os.path.join(ROOT, 'data', 'intro.js')
+WIKILINK = re.compile(r'\[\[([^\]|#]+)(?:\|[^\]]*)?\]\]')
+
+
+def kv_pairs(block):
+    """块里的 `- 键：值` 行，按出现顺序返回 [(键, 值)]；中文键用全角冒号，英文键用半角冒号加空格。"""
+    out = []
+    for line in block.split('\n'):
+        m = re.match(r'- ([^：:]+?)(?:：|: )(.*)$', line)
+        if m and not line.startswith('  '):
+            out.append((m.group(1).strip(), m.group(2).strip()))
+    return out
+
+
+def sources_of(block):
+    if '### 出处' not in block:
+        return []
+    src, cur = [], None
+    for line in block.split('### 出处', 1)[1].split('\n'):
+        if line.startswith('- '):
+            cur = [line[2:].strip(), '']
+            src.append(cur)
+        elif line.startswith('  - ') and cur:
+            cur[1] = line[4:].strip()
+    return [[inline_m2h(a), inline_m2h(b)] for a, b in src]
+
+
+def parse_product(page):
+    kv = kv_pairs(read_vault_block(page, 'product'))
+    d = dict(kv)
+    need = ['名称', 'Name', '是什么', 'What it is', '出处']
+    miss = [k for k in need if not d.get(k)]
+    if miss:
+        raise ValueError('%s 的 product 块缺字段：%s' % (page, '、'.join(miss)))
+    st = d.get('站') or None  # 产品线上的站 id；站可以还没有知识点页
+    out = {'name': [d['名称'], d['Name']], 'd': [inline_m2h(d['是什么']), inline_m2h(d['What it is'])],
+           'st': st, 'src': inline_m2h(d['出处'])}
+    if d.get('系列'):
+        out['fam'] = [d['系列'], d.get('Family') or d['系列']]
+    return out
+
+
+def parse_intro(row):
+    block = read_vault_block(row['page'], 'map-' + row['map'])
+    head = block.split('### 出处', 1)[0]
+    kv = kv_pairs(head)
+    rows, prods, zh = [], [], None
+    for k, v in kv:
+        if k == '产品':
+            prods = [parse_product(t.strip() + ('' if t.strip().endswith('.md') else '.md')) for t in WIKILINK.findall(v)]
+            continue
+        if re.search(r'[一-鿿]', k):
+            zh = (k, v)
+        elif zh:
+            rows.append({'k': [zh[0], k], 'v': [inline_m2h(zh[1]), inline_m2h(v)]})
+            zh = None
+    if not rows or not prods:
+        raise ValueError('%s 的 map-%s 块要有信息行和「产品」行' % (row['page'], row['map']))
+    return {'rows': rows, 'products': prods, 'src': sources_of(block)}
+
+
+def intro_text(it):
+    parts = [x for r in it['rows'] for x in r['k'] + r['v']]
+    for p in it['products']:
+        parts += p['name'] + p['d'] + [p['src']] + p.get('fam', [])
+    for a, b in it['src']:
+        parts += [a, b]
+    return re.sub(r'<[^>]+>', ' ', '\n'.join(parts))
+
+
+def intro_js(intros):
+    lines = ['window.SS = window.SS || {};', '/* 由知识库公司页和产品页的对外块生成（tools/vault_sync.py），不要手改。 */', 'SS.intro = {']
+    items = list(intros.items())
+    for i, (k, v) in enumerate(items):
+        lines.append('  ' + json.dumps(k, ensure_ascii=False) + ': ' + json.dumps(v, ensure_ascii=False) + (',' if i < len(items) - 1 else ''))
+    lines.append('};')
+    return '\n'.join(lines) + '\n'
+
+
+def check_intros(mapping):
+    """返回 (新的 intro.js 或 None, 问题列表)。没有任何 map 行时不动 intro.js。"""
+    rows = [r for r in mapping if 'map' in r]
+    if not rows:
+        return None, []
+    intros, problems = {}, []
+    for r in rows:
+        try:
+            it = parse_intro(r)
+        except Exception as e:
+            problems.append(('intro-' + r['map'], [str(e)]))
+            continue
+        body = intro_text(it)
+        hits = ['禁写命中：%r 附近「%s」' % (pat, body[max(0, m.start() - 20):m.end() + 20].replace('\n', ' '))
+                for pat in FORBID for m in re.finditer(pat, body)]
+        if hits:
+            problems.append(('intro-' + r['map'], hits))
+        intros[r['map']] = it
+    if problems:
+        return None, problems
+    js = intro_js(intros)
+    old = open(INTRO, encoding='utf-8').read() if os.path.exists(INTRO) else ''
+    return (js if js != old else None), []
+
+
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'check'
     if cmd == 'export':
@@ -332,6 +460,8 @@ def main():
     mapping = json.load(open(MAP, encoding='utf-8'))
     changed, failed = [], []
     for row in mapping:
+        if 'map' in row:
+            continue
         try:
             new, diff, problems = check_one(row['id'], row['page'])
         except Exception as e:
@@ -354,16 +484,19 @@ def main():
             if gp:
                 failed.append(('glossary', gp))
             else:
-                js = terms_js(gterms)
-                if js != open(TERMS, encoding='utf-8').read():
-                    gl_new = js
+                def gnorm(t):
+                    return {k: {f: v for f, v in sorted(x.items()) if v not in ([], '', None)} for k, x in t.items()}
+                if gnorm(gterms) != gnorm(load_terms()):
+                    gl_new = terms_js(gterms)
     except Exception as e:
         failed.append(('glossary', [str(e)]))
+    in_new, in_bad = check_intros(mapping)
+    failed += in_bad
     for sid, ps in failed:
         print('FAIL', sid)
         for p in ps:
             print('  -', p)
-    print('changed:', ' '.join(s for s, _ in changed) or '无', '| glossary changed' if gl_new else '')
+    print('changed:', ' '.join(s for s, _ in changed) or '无', '| glossary changed' if gl_new else '', '| intro changed' if in_new else '')
     if cmd == 'build':
         if failed:
             print('有站没通过检查，什么都没写。')
@@ -375,7 +508,10 @@ def main():
         if gl_new:
             open(TERMS + '.new', 'w', encoding='utf-8').write(gl_new)
             os.replace(TERMS + '.new', TERMS)
-        print('已写回 %d 站%s' % (len(changed), '，术语表已更新' if gl_new else ''))
+        if in_new:
+            open(INTRO + '.new', 'w', encoding='utf-8').write(in_new)
+            os.replace(INTRO + '.new', INTRO)
+        print('已写回 %d 站%s%s' % (len(changed), '，术语表已更新' if gl_new else '', '，专题图介绍已更新' if in_new else ''))
     return 2 if failed else 0
 
 

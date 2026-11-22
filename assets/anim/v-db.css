@@ -13,7 +13,7 @@
 @media (max-width:640px){.ssa-v-db .tgl{font-size:14px;padding:6px 12px}}
 .ssa-v-db .ssa-scene text{dominant-baseline:central}
 .ssa-v-db .ssa-scene .vis{transition:opacity .4s}
-.ssa-v-db .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-db .ssa-scene .hid{opacity:0;visibility:hidden;transition:none}
 .ssa-v-db .ssa-scene .dim{opacity:.25}
 .ssa-v-db .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s,fill .3s}
 .ssa-v-db .box.soft{stroke:var(--rule)}
@@ -31,11 +31,11 @@
 .ssa-v-db .ttl{fill:var(--ink2);font-weight:700}
 .ssa-v-db .b7{font-weight:700}
 .ssa-v-db .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-.ssa-v-db .rose-t{fill:var(--rose)}
-.ssa-v-db .sage-t{fill:var(--sage)}
-.ssa-v-db .slate-t{fill:var(--slate)}
-.ssa-v-db .violet-t{fill:var(--violet)}
-.ssa-v-db .ochre-t{fill:var(--ochre)}
+.ssa-v-db .rose-t{fill:color-mix(in srgb,var(--ink) 35%,var(--rose))}
+.ssa-v-db .sage-t{fill:color-mix(in srgb,var(--ink) 35%,var(--sage))}
+.ssa-v-db .slate-t{fill:color-mix(in srgb,var(--ink) 35%,var(--slate))}
+.ssa-v-db .violet-t{fill:color-mix(in srgb,var(--ink) 35%,var(--violet))}
+.ssa-v-db .ochre-t{fill:color-mix(in srgb,var(--ink) 35%,var(--ochre))}
 .ssa-v-db .ink3-t{fill:var(--ink3)}
 .ssa-v-db .ink2-t{fill:var(--ink2)}
 .ssa-v-db .st{font-weight:600;transition:opacity .25s}
@@ -61,7 +61,7 @@
 .ssa-v-db .tile rect{fill:var(--card);stroke:var(--slate);stroke-width:2}
 .ssa-v-db .tile .tt{fill:var(--ink);font-weight:500}
 .ssa-v-db .tile.vio rect{stroke:var(--violet)}
-.ssa-v-db .tile.vio .tt{fill:var(--violet);font-weight:600}
+.ssa-v-db .tile.vio .tt{fill:color-mix(in srgb,var(--ink) 35%,var(--violet));font-weight:600}
 .ssa-v-db .tile.ok rect{stroke:var(--sage)}
 .ssa-v-db .tile.och rect{stroke:var(--ochre)}
 .ssa-v-db .tile.rose rect{stroke:var(--rose)}
@@ -77,3 +77,13 @@
 .ssa-v-db .num{font-weight:700;font-variant-numeric:tabular-nums}
 .ssa-v-db .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
 .ssa-v-db .fadein{transition:opacity .35s}
+
+.topic-v-db .stage .figbox{margin-block:16px}
+@media (max-width:640px){
+  body.topic-v-db.present .stage{padding:12px}
+  .topic-v-db .stage .figbox{margin-block:8px}
+  .topic-v-db .stage .cap{display:block;margin-top:8px}
+  .topic-v-db .stage h2{font-size:23px;line-height:1.2}
+  .topic-v-db .stage .desc{font-size:16px;line-height:1.35}
+}
+.topic-v-db .rel .src a{display:inline;padding:0;font-size:inherit;text-decoration:underline;text-underline-offset:3px}

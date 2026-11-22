@@ -28,7 +28,7 @@
   function fillMeta(){
     var m=SS.mapById[MAP],mapName=MAP===HOME?L('总图','Main map'):SS.L(m.zh,m.en);
     document.getElementById('crumb').innerHTML='<a href="'+SS.url(m.href)+(LS.length>1?'?hl='+id:'')+'#map">'+SS.esc(mapName)+'</a><span class="sep">/</span>'+
-      LS.map(function(l){return '<a href="'+SS.lineHref(MAP,l,id)+'">'+SS.esc(SS.lineName(l))+'</a>'}).join('<span class="sep">·</span>')+
+      LS.map(function(l){return '<a href="'+SS.lineHref(MAP,l)+'">'+SS.esc(SS.lineName(l))+'</a>'}).join('<span class="sep">·</span>')+
       SS.brandMark(SS.brandOf(id),'lg');
     var t=SS.talksWith(id),el=document.getElementById('intalks');
     if(el)el.innerHTML=t.length?L('讲稿：','Talks: ')+t.map(function(r){var tm=SS.mapById[r.talk.map];

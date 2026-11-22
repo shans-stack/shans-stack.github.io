@@ -13,7 +13,7 @@
 @media (max-width:640px){.ssa-v-ie .tgl{font-size:14px;padding:6px 12px}}
 .ssa-v-ie .ssa-scene text{dominant-baseline:central}
 .ssa-v-ie .ssa-scene .vis{transition:opacity .4s}
-.ssa-v-ie .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-ie .ssa-scene .hid{opacity:0;visibility:hidden;transition:none}
 .ssa-v-ie .ssa-scene .dim{opacity:.25}
 .ssa-v-ie .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s,fill .3s}
 .ssa-v-ie .box.soft{stroke:var(--rule)}
@@ -31,11 +31,11 @@
 .ssa-v-ie .ttl{fill:var(--ink2);font-weight:700}
 .ssa-v-ie .b7{font-weight:700}
 .ssa-v-ie .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-.ssa-v-ie .rose-t{fill:var(--rose)}
-.ssa-v-ie .sage-t{fill:var(--sage)}
-.ssa-v-ie .slate-t{fill:var(--slate)}
-.ssa-v-ie .violet-t{fill:var(--violet)}
-.ssa-v-ie .ochre-t{fill:var(--ochre)}
+.ssa-v-ie .rose-t{fill:color-mix(in srgb,var(--ink) 35%,var(--rose))}
+.ssa-v-ie .sage-t{fill:color-mix(in srgb,var(--ink) 35%,var(--sage))}
+.ssa-v-ie .slate-t{fill:color-mix(in srgb,var(--ink) 35%,var(--slate))}
+.ssa-v-ie .violet-t{fill:color-mix(in srgb,var(--ink) 35%,var(--violet))}
+.ssa-v-ie .ochre-t{fill:color-mix(in srgb,var(--ink) 35%,var(--ochre))}
 .ssa-v-ie .ink3-t{fill:var(--ink3)}
 .ssa-v-ie .ink2-t{fill:var(--ink2)}
 .ssa-v-ie .st{font-weight:600;transition:opacity .25s}
@@ -61,7 +61,7 @@
 .ssa-v-ie .tile rect{fill:var(--card);stroke:var(--slate);stroke-width:2}
 .ssa-v-ie .tile .tt{fill:var(--ink);font-weight:500}
 .ssa-v-ie .tile.vio rect{stroke:var(--violet)}
-.ssa-v-ie .tile.vio .tt{fill:var(--violet);font-weight:600}
+.ssa-v-ie .tile.vio .tt{fill:color-mix(in srgb,var(--ink) 35%,var(--violet));font-weight:600}
 .ssa-v-ie .tile.ok rect{stroke:var(--sage)}
 .ssa-v-ie .tile.och rect{stroke:var(--ochre)}
 .ssa-v-ie .tile.rose rect{stroke:var(--rose)}
@@ -77,3 +77,13 @@
 .ssa-v-ie .num{font-weight:700;font-variant-numeric:tabular-nums}
 .ssa-v-ie .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
 .ssa-v-ie .fadein{transition:opacity .35s}
+
+.topic-v-ie .stage .figbox{margin-block:16px}
+@media (max-width:640px){
+  body.topic-v-ie.present .stage{padding:12px}
+  .topic-v-ie .stage .figbox{margin-block:8px}
+  .topic-v-ie .stage .cap{display:block;margin-top:8px}
+  .topic-v-ie .stage h2{font-size:23px;line-height:1.2}
+  .topic-v-ie .stage .desc{font-size:16px;line-height:1.35}
+}
+.topic-v-ie .rel .src a{display:inline;padding:0;font-size:inherit;text-decoration:underline;text-underline-offset:3px}

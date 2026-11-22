@@ -35,9 +35,13 @@ SS.lines = [
    d:{zh:'盘坏了、站点出事了，数据怎么不丢。', en:'How data survives failed drives and lost sites.'}},
   {id:'v-red', map:'vast', zh:'数据缩减', en:'Data Reduction', gut:{en:'Reduction'}, slot:'l2', sym:'i-squeeze',
    d:{zh:'同样的闪存怎么放下更多数据，还用得久。', en:'How the same flash holds more data and lasts longer.'}},
+  {id:'v-sw', map:'vast', zh:'软件', en:'Software', slot:'l8', sym:'i-ai',
+   d:{zh:'VAST 自己的软件产品。', en:'VAST\'s own software products.'}},
+  {id:'v-hw', map:'vast', zh:'硬件', en:'Hardware', slot:'l7', sym:'i-rack',
+   d:{zh:'VAST 自己的硬件产品。', en:'VAST\'s own hardware products.'}},
 
   /* ---------- DDN 专题图 ---------- */
-  {id:'d-hw', map:'ddn', zh:'硬件系列', en:'Hardware', slot:'l3', sym:'i-rack',
+  {id:'d-hw', map:'ddn', zh:'硬件', en:'Hardware', slot:'l7', sym:'i-rack',
    d:{zh:'装在机柜里的那几款机器和扩展柜。', en:'The appliances and expansion shelves that go into the rack.'}},
   {id:'d-lus', map:'ddn', zh:'EXAScaler', en:'EXAScaler', slot:'l4', sym:'i-sto',
    d:{zh:'建在开源 Lustre 上的并行文件系统，元数据和数据各走一条路。', en:'A parallel file system built on open-source Lustre, with separate paths for metadata and data.'}},
@@ -49,6 +53,8 @@ SS.lines = [
    d:{zh:'GPU、容器和普通应用分别怎样拿到数据。', en:'How GPUs, containers and ordinary applications each get to the data.'}},
   {id:'d-inf', map:'ddn', zh:'Infinia', en:'Infinia', slot:'l6', sym:'i-key',
    d:{zh:'以键值引擎为底座的数据平台，S3、文件、KV Cache 都是上面的视图。', en:'A data platform on a key-value core, with S3, files and KV cache as views on top.'}},
+  {id:'d-sw', map:'ddn', zh:'软件', en:'Software', slot:'l8', sym:'i-ai',
+   d:{zh:'DDN 自己的软件产品。', en:'DDN\'s own software products.'}},
 
   /* ---------- WEKA 专题图 ---------- */
   {id:'w-ai', map:'weka', zh:'AI 推理', en:'AI Inference', gut:{en:'Inference'}, slot:'l1', sym:'i-ai',
@@ -63,6 +69,10 @@ SS.lines = [
    d:{zh:'快照、快照策略，和把快照整包送到对象存储。', en:'Snapshots, snapshot policies, and shipping whole snapshots to object storage.'}},
   {id:'w-deploy', map:'weka', zh:'部署形态', en:'Deployment', slot:'l6', sym:'i-rack',
    d:{zh:'一体机、参考设计、公有云，和跑在 GPU 服务器上的几种搭法。', en:'Appliances, reference designs, public cloud, and running on the GPU servers themselves.'}},
+  {id:'w-sw', map:'weka', zh:'软件', en:'Software', slot:'l8', sym:'i-ai',
+   d:{zh:'WEKA 自己的软件产品。', en:'WEKA\'s own software products.'}},
+  {id:'w-hw', map:'weka', zh:'硬件', en:'Hardware', slot:'l7', sym:'i-rack',
+   d:{zh:'WEKA 自己的硬件产品。', en:'WEKA\'s own hardware products.'}},
 
   /* ---------- Rafay 专题图 ---------- */
   {id:'r-ai', map:'rafay', zh:'AI 服务', en:'AI Services', slot:'l1', sym:'i-ai',

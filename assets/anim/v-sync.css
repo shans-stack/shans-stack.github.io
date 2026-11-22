@@ -13,7 +13,7 @@
 @media (max-width:640px){.ssa-v-sync .tgl{font-size:14px;padding:6px 12px}}
 .ssa-v-sync .ssa-scene text{dominant-baseline:central}
 .ssa-v-sync .ssa-scene .vis{transition:opacity .4s}
-.ssa-v-sync .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-sync .ssa-scene .hid{opacity:0;visibility:hidden;transition:none}
 .ssa-v-sync .ssa-scene .dim{opacity:.25}
 .ssa-v-sync .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s,fill .3s}
 .ssa-v-sync .box.soft{stroke:var(--rule)}
@@ -31,11 +31,11 @@
 .ssa-v-sync .ttl{fill:var(--ink2);font-weight:700}
 .ssa-v-sync .b7{font-weight:700}
 .ssa-v-sync .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-.ssa-v-sync .rose-t{fill:var(--rose)}
-.ssa-v-sync .sage-t{fill:var(--sage)}
-.ssa-v-sync .slate-t{fill:var(--slate)}
-.ssa-v-sync .violet-t{fill:var(--violet)}
-.ssa-v-sync .ochre-t{fill:var(--ochre)}
+.ssa-v-sync .rose-t{fill:color-mix(in srgb,var(--ink) 35%,var(--rose))}
+.ssa-v-sync .sage-t{fill:color-mix(in srgb,var(--ink) 35%,var(--sage))}
+.ssa-v-sync .slate-t{fill:color-mix(in srgb,var(--ink) 35%,var(--slate))}
+.ssa-v-sync .violet-t{fill:color-mix(in srgb,var(--ink) 35%,var(--violet))}
+.ssa-v-sync .ochre-t{fill:color-mix(in srgb,var(--ink) 35%,var(--ochre))}
 .ssa-v-sync .ink3-t{fill:var(--ink3)}
 .ssa-v-sync .ink2-t{fill:var(--ink2)}
 .ssa-v-sync .st{font-weight:600;transition:opacity .25s}
@@ -61,7 +61,7 @@
 .ssa-v-sync .tile rect{fill:var(--card);stroke:var(--slate);stroke-width:2}
 .ssa-v-sync .tile .tt{fill:var(--ink);font-weight:500}
 .ssa-v-sync .tile.vio rect{stroke:var(--violet)}
-.ssa-v-sync .tile.vio .tt{fill:var(--violet);font-weight:600}
+.ssa-v-sync .tile.vio .tt{fill:color-mix(in srgb,var(--ink) 35%,var(--violet));font-weight:600}
 .ssa-v-sync .tile.ok rect{stroke:var(--sage)}
 .ssa-v-sync .tile.och rect{stroke:var(--ochre)}
 .ssa-v-sync .tile.rose rect{stroke:var(--rose)}
@@ -77,3 +77,13 @@
 .ssa-v-sync .num{font-weight:700;font-variant-numeric:tabular-nums}
 .ssa-v-sync .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
 .ssa-v-sync .fadein{transition:opacity .35s}
+
+.topic-v-sync .stage .figbox{margin-block:16px}
+@media (max-width:640px){
+  body.topic-v-sync.present .stage{padding:12px}
+  .topic-v-sync .stage .figbox{margin-block:8px}
+  .topic-v-sync .stage .cap{display:block;margin-top:8px}
+  .topic-v-sync .stage h2{font-size:23px;line-height:1.2}
+  .topic-v-sync .stage .desc{font-size:16px;line-height:1.35}
+}
+.topic-v-sync .rel .src a{display:inline;padding:0;font-size:inherit;text-decoration:underline;text-underline-offset:3px}

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VAST Catalog：按快照查询文件与对象的元数据 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 VAST Catalog 如何从快照索引文件和对象的元数据，并按路径、属性和标签查询。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-catalog.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-catalog">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="VAST Catalog: Querying File and Object Metadata from Snapshots">VAST Catalog：按快照查询文件与对象的元数据</h1>
+        <p class="meta"><span data-en="5 steps · Namespace, metadata, snapshots">5 步 · 命名空间、元数据、快照</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/vast-catalog-overview&quot;&gt;VAST Data documentation 5.5 · VAST Catalog Overview&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/vast-catalog-overview">VAST Data 官方文档 5.5 · VAST Catalog Overview</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/develop/docs/dev-catalog-concepts-index&quot;&gt;VAST Data developer guide 5.5 · VAST Catalog Concepts&lt;/a&gt;"><a href="https://docs.vastdata.com/develop/docs/dev-catalog-concepts-index">VAST Data 开发者文档 5.5 · VAST Catalog Concepts</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/develop/docs/dev-catalog-guides-snapshots-and-change-detection&quot;&gt;VAST Data developer guide 5.5 · Snapshots and change detection&lt;/a&gt;"><a href="https://docs.vastdata.com/develop/docs/dev-catalog-guides-snapshots-and-change-detection">VAST Data 开发者文档 5.5 · Snapshots and change detection</a></li>
+      <li data-en="Sources checked on 2026-11-23.">出处核对截至 2026-11-23。</li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../data/vendors.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-catalog.js"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "v-catalog",
+  "ar": [
+    2.6666666666666665,
+    0.8372093023255814
+  ],
+  "steps": [
+    {
+      "t": [
+        "文件和对象的属性进入目录表",
+        "File and Object Attributes Become Catalog Rows"
+      ],
+      "d": [
+        "集群维护一张可查询的元数据表，每个元素对应一行。",
+        "The cluster maintains a queryable metadata table with one row per element."
+      ],
+      "b": [
+        [
+          "<p>元数据描述数据本身的属性，例如名称、所在目录、大小和修改时间。VAST Catalog 把这些属性编入 VAST DataBase 的系统表。文件、S3 对象和目录都是这里的元素，分别形成可查询的行。</p>",
+          "<p>目录表由集群写入。VAST DataBase Python SDK、Trino 或 Spark 可以查询这些行，用于文件盘点、容量汇总和对象分类。</p>"
+        ],
+        [
+          "<p>Metadata describes attributes such as a name, parent directory, size, and modification time. VAST Catalog indexes these attributes in a VAST DataBase system table. Files, S3 objects, and directories are elements, each represented by a queryable row.</p>",
+          "<p>The cluster maintains the table. The VAST DataBase Python SDK, Trino, or Spark can query its rows for file inventories, capacity summaries, and object classification.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "目录反映最近一次已索引的快照",
+        "The Catalog Reflects the Latest Indexed Snapshot"
+      ],
+      "d": [
+        "集群定期为命名空间做快照，再在后台把当时的属性编入目录表。",
+        "The cluster periodically captures the namespace and indexes its attributes in the background."
+      ],
+      "b": [
+        [
+          "<p>命名空间是文件、对象和目录按路径组成的层级。快照保留了这一层级在某个时点的状态。启用 Catalog 后，集群按计划取快照，再异步构建索引。</p>",
+          "<p>查询结果以最近一次完成索引的快照为准。快照之后才写入的文件，要等后续快照完成索引，才会出现在目录表中。</p>"
+        ],
+        [
+          "<p>The namespace is the hierarchy of files, objects, and directories organized by path. A snapshot captures its state at a point in time. With Catalog enabled, the cluster takes snapshots on a schedule and indexes them asynchronously.</p>",
+          "<p>Query results reflect the latest snapshot whose indexing has completed. A file written after that snapshot appears once a later snapshot has captured and indexed it.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "路径和属性共同限定查询",
+        "Path and Attribute Filters Narrow the Query"
+      ],
+      "d": [
+        "search_path 限定目录子树，大小、名称等条件再筛出匹配的元数据行。",
+        "search_path limits the query to a subtree, where size, name, and other filters select matching rows."
+      ],
+      "b": [
+        [
+          "<p>例如，查询可以把范围限定为 <code>/images/</code>，再按扩展名筛出 PNG 文件。<code>search_path</code> 是查询用的虚拟列，其值表示要查的目录及其下级路径。身份策略决定查询者能访问哪些路径。</p>",
+          "<p>支持下推的筛选条件由集群在读取目录表时执行，返回匹配的行与所选列。这类文件盘点可以通过目录查询完成，客户端无需逐级遍历文件系统。</p>"
+        ],
+        [
+          "<p>A query can limit its scope to <code>/images/</code> and then filter for the PNG extension. <code>search_path</code> is a virtual query column whose value selects a directory and its descendants. The identity policy determines which paths the caller can query.</p>",
+          "<p>The cluster applies supported filters when it reads the Catalog and returns matching rows with the selected columns. This lets clients inventory files through a Catalog query without walking the directory tree.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "常查的对象标签可以单独成列",
+        "Frequently Queried Object Tags Can Become Columns"
+      ],
+      "d": [
+        "管理员可将某个 S3 标签键映射为目录表的自定义列，供集群筛选。",
+        "An administrator can map an S3 tag key to a user-defined Catalog column for filtering on the cluster."
+      ],
+      "b": [
+        [
+          "<p>S3 对象标签以键值对描述对象，例如 <code>processed=false</code> 可以标记待处理对象。Catalog 的 <code>user_tags</code> 列保存标签集合。配置自定义列后，指定标签还会从下一次快照起写入单独的字符串列。</p>",
+          "<p>以 <code>tag_processed</code> 为例，查询可以直接按该列的值筛选。Python SDK 可以将这种列筛选下推到集群。通过 <code>user_tags</code> 集合按键筛选时，SDK 需要先取回集合，再在客户端筛选。</p>"
+        ],
+        [
+          "<p>S3 object tags describe objects with key-value pairs. For example, <code>processed=false</code> can mark an object awaiting processing. The Catalog stores the tag map in <code>user_tags</code>. Once a user-defined column is configured, the selected tag is also populated in a dedicated string column from the next snapshot onward.</p>",
+          "<p>With a column such as <code>tag_processed</code>, a query can filter directly on that value. The Python SDK can push this column filter down to the cluster. To filter on a key inside the <code>user_tags</code> map, the SDK retrieves the map for client-side filtering.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "比较两份目录快照可找出新增与删除",
+        "Comparing Catalog Snapshots Reveals Additions and Deletions"
+      ],
+      "d": [
+        "在同一路径下对照仍保留的两份目录快照，可以识别两个时点之间的路径变化。",
+        "Comparing two retained Catalog snapshots for the same path shows which paths appeared or disappeared."
+      ],
+      "b": [
+        [
+          "<p>目录快照是可查询的历史目录表。在同一子树查询较早和较晚的版本，可以用父目录和名称组成的完整路径比较两组结果。只在较晚版本出现的是新增路径，只在较早版本出现的是已消失的路径。</p>",
+          "<p>比较需要两份快照都在保留期内。文件改名或移动也会表现为一个路径消失、另一个路径出现。差异反映的是两个时点的状态，中间曾经出现又消失的路径可能不会出现在结果中。</p>"
+        ],
+        [
+          "<p>A Catalog snapshot is a queryable historical copy of the table. Querying earlier and later copies for the same subtree makes it possible to compare full paths formed from each parent directory and element name. Paths found only in the later copy have appeared, and paths found only in the earlier copy have disappeared.</p>",
+          "<p>Both snapshots must still be retained. A rename or move also appears as one path disappearing and another appearing. The comparison captures the state at two points in time, so a path that appeared and disappeared between them can be absent from both results.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

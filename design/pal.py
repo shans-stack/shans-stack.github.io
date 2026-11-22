@@ -15,3 +15,7 @@ PAL={
           l=['#CF7F8B','#D2AF6C','#8FA4CC','#7FB096','#B6A697'])),
 }
 NAMES=[('AI 应用','AI Application'),('数据','Data'),('计算','Compute'),('网络','Network'),('存储','Storage')]
+
+# 第七、八色（专题图的厂商「硬件」「软件」两条产品线用）：岩灰褐、石墨蓝，和技术线的彩色分开。
+PAL['muted']['L']['l'] += ['#8E7F6E', '#4F5A66']
+PAL['muted']['D']['l'] += ['#B5A796', '#A3ADB8']

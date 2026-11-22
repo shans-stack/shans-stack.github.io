@@ -80,10 +80,6 @@ window.SS_TOPIC_CFG={
  "ar": [960/476,480/716],
  "steps": [
   {
-   "s": [
-    "纠删码",
-    "Erasure coding"
-   ],
    "t": [
     "纠删码：数据切成几份，再加几份校验",
     "Erasure Coding: Split the Data, Add Parity"
@@ -91,6 +87,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "一条数据切成几份，再算出几份校验，分别放到不同的盘上；坏掉的份数不超过校验份数，就能算回来。",
     "Data is split into pieces, a few parity pieces are computed, and each goes to a different drive. As long as no more pieces fail than there is parity, the data can be recomputed."
+   ],
+   "s": [
+    "纠删码",
+    "Erasure coding"
    ],
    "b": [
     [
@@ -104,10 +104,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "服务器一起下线",
-    "A server takes its drives down"
-   ],
    "t": [
     "传统架构里，一台服务器挂了，它的盘一起下线",
     "In Classic Designs, a Failed Server Takes Its Drives with It"
@@ -115,6 +111,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "服务器各管各的盘，一台挂掉，它下面所有盘一起下线，所以一条带在一台服务器上只能放一份。",
     "Each server owns its drives. When one fails, all its drives go offline together, so a stripe can put only one piece on each server."
+   ],
+   "s": [
+    "服务器一起下线",
+    "A server takes its drives down"
    ],
    "b": [
     [
@@ -128,10 +128,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "故障域缩到一块盘",
-    "Failure domain: one drive"
-   ],
    "t": [
     "VAST 把故障域缩到一块盘",
     "VAST Shrinks the Failure Domain to One Drive"
@@ -139,6 +135,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "DBox 从网口到盘都是双份，一个 DNode 掉线，它的盘由另一个 DNode 接管；任何单一故障最多带走一块盘。",
     "A DBox is redundant from network port to drive. If one DNode goes offline, the other DNode takes over its drives, so any single failure takes at most one drive."
+   ],
+   "s": [
+    "故障域缩到一块盘",
+    "Failure domain: one drive"
    ],
    "b": [
     [
@@ -152,10 +152,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "条带铺满所有盘",
-    "Stripes span every drive"
-   ],
    "t": [
     "条带按盘算，可以铺满整套系统的盘",
     "Stripes Count Drives, so They Can Span the Whole System"
@@ -163,6 +159,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "只要每份落在不同的盘上就行，不必跨服务器；条带可以横跨所有 DBox 的盘，最宽是 146 份数据加 4 份校验。",
     "Each piece only needs a different drive, not a different server. A stripe can span the drives of every DBox, up to 146 data pieces plus 4 parity."
+   ],
+   "s": [
+    "条带铺满所有盘",
+    "Stripes span every drive"
    ],
    "b": [
     [
@@ -176,10 +176,6 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "校验占比",
-    "Parity overhead"
-   ],
    "t": [
     "条带越宽，校验占的空间越小",
     "The Wider the Stripe, the Less Space Parity Takes"
@@ -187,6 +183,10 @@ window.SS_TOPIC_CFG={
    "d": [
     "8+2 的校验占 20%，14+2 占 12.5%，146+4 只占约 2.7%。",
     "Parity takes 20% in 8+2, 12.5% in 14+2, and only about 2.7% in 146+4."
+   ],
+   "s": [
+    "校验占比",
+    "Parity overhead"
    ],
    "b": [
     [
@@ -200,26 +200,26 @@ window.SS_TOPIC_CFG={
    ]
   },
   {
-   "s": [
-    "代价：重建读得多",
-    "Cost: heavy rebuild reads"
-   ],
    "t": [
     "代价：坏一块盘，要读很多份才补得回来",
     "The Cost: One Failed Drive Means Many Reads to Rebuild"
    ],
    "d": [
-    "用传统算法补一块盘，要读条带里剩下的 146 份数据；这正是下一站要解决的问题。",
-    "With the classic algorithm, rebuilding one drive reads the remaining 146 data pieces in the stripe. That is the problem the next stop solves."
+    "用传统算法补一块盘，要读条带里剩下的 146 份数据。",
+    "With the classic algorithm, rebuilding one drive reads the remaining 146 data pieces in the stripe."
+   ],
+   "s": [
+    "代价：重建读得多",
+    "Cost: heavy rebuild reads"
    ],
    "b": [
     [
      "<p>条带宽了，重建也变重了。传统的 Reed-Solomon 纠删码（最常见的一种纠删码算法）要补回一份，得把同一条带里剩下的数据份全部读一遍。条带有 146 份数据，就要读 146 份，相当于坏盘容量的 146 倍。</p>",
-     "<p>这么大的重建读取量会长时间占用系统，这也是行业普遍不把条带做宽的真正原因。VAST 用本地可解码纠删码把重建要读的份数降下来，见下一站。</p>"
+     "<p>这么大的重建读取量会长时间占用系统，这也是行业普遍不把条带做宽的真正原因。VAST 用本地可解码纠删码降低重建要读的份数，原理见「本地可解码纠删码」。</p>"
     ],
     [
      "<p>Wider stripes make rebuilds heavier. To recover one piece, classic Reed-Solomon erasure coding, the most common algorithm, reads every remaining data piece in the same stripe. With 146 data pieces it reads 146, which is 146 times the capacity of the failed drive.</p>",
-     "<p>A rebuild that reads this much keeps the system busy for a long time, and that is the real reason the industry generally avoids wide stripes. VAST cuts the number of pieces a rebuild reads with locally decodable codes; see the next stop.</p>"
+     "<p>A rebuild that reads this much keeps the system busy for a long time, and that is the real reason the industry generally avoids wide stripes. VAST cuts the number of pieces a rebuild reads with locally decodable codes, explained in Locally Decodable Codes.</p>"
     ]
    ]
   }

@@ -9,15 +9,15 @@
    VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
 (function(){
 var ID='v-vec',NSTEP=6;
-var EN={"SELECT 片段 FROM t WHERE 时间 >= '2026-09' ORDER BY array_distance(向量, 提问) LIMIT 2":"SELECT chunk FROM t WHERE time >= '2026-09' ORDER BY array_distance(vec, query) LIMIT 2","SELECT 片段 FROM t":"SELECT chunk FROM t","WHERE 时间 >= '2026-09'":"WHERE time >= '2026-09'","ORDER BY array_distance(向量, 提问)":"ORDER BY array_distance(vec, query)","rd/设计.pdf":"rd/design.pdf","hr/制度.pdf":"hr/policy.pdf","rd/接口.pdf":"rd/api.pdf","hr/假期.pdf":"hr/leave.pdf","片段 A":"Chunk A","片段 B":"Chunk B","片段 C":"Chunk C","片段 D":"Chunk D","片段 E":"Chunk E","片段 F":"Chunk F","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","小猫":"Kitten","小狗":"Puppy","轿车":"Sedan","卡车":"Truck","提问：小猫咪":"Query: kitty","嵌入模型":"Embedding model","维度 1":"Dim 1","维度 2":"Dim 2","示意：实际向量有几百到上千维":"Schematic: real vectors have many more dimensions","提问":"Query","意思相近，向量也相近":"Similar meaning, nearby vectors","最近的 2 个：小猫、小狗":"Nearest 2: kitten, puppy",
-"应用":"App","向量库":"Vector database","向量 + 原文的引用":"Vectors + references","存储":"Storage","原文":"Source content","同步：改动、删除、权限":"Sync: edits, deletes, permissions","第 1 次往返":"Round trip 1","第 2 次往返":"Round trip 2","检索要先查向量库，再去存储取原文":"Search queries the vector store, then fetches from storage","两处数据要一直保持同步":"Two copies must be kept in sync",
+var EN={"SELECT 片段 FROM t WHERE 时间 >= '2026-09' ORDER BY array_distance(向量, 提问) LIMIT 2":"SELECT chunk FROM t WHERE time >= '2026-09' ORDER BY array_distance(vec, query) LIMIT 2","SELECT 片段 FROM t":"SELECT chunk FROM t","WHERE 时间 >= '2026-09'":"WHERE time >= '2026-09'","ORDER BY array_distance(向量, 提问)":"ORDER BY array_distance(vec, query)","rd/设计.pdf":"rd/design.pdf","hr/制度.pdf":"hr/policy.pdf","rd/接口.pdf":"rd/api.pdf","hr/假期.pdf":"hr/leave.pdf","片段 A":"Chunk A","片段 B":"Chunk B","片段 C":"Chunk C","片段 D":"Chunk D","片段 E":"Chunk E","片段 F":"Chunk F","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","小猫":"Kitten","小狗":"Puppy","轿车":"Sedan","卡车":"Truck","提问：小猫咪":"Query: kitty","嵌入模型":"Embedding model","维度 1":"Dim 1","维度 2":"Dim 2","二维示意":"Two-dimensional illustration","提问":"Query","距离用于衡量相似度":"Distance measures similarity","最近的 2 个：小猫、小狗":"Nearest 2: kitten, puppy",
+"应用":"App","向量库":"Vector database","向量 + 原文的引用":"Vectors + references","存储":"Storage","原文":"Source content","同步：改动、删除、权限":"Sync: edits, deletes, permissions","第 1 次往返":"Round trip 1","第 2 次往返":"Round trip 2","检索要先查向量库，再去存储取原文":"Search queries the vector store, then fetches from storage","索引随源内容更新":"The index tracks source updates",
 "写入":"Write","ID":"ID","片段":"Chunk","来源路径":"Source path","来源":"Source","时间":"Time","向量":"Vector","一次事务":"One transaction","向量和它的元数据在同一行，一次事务写入":"A vector and its metadata share a row, written in one transaction",
 "向量检索的定义…":"What vector search…","距离函数的用法…":"Using distance fns…","建索引的限制…":"Index limits…","权限过滤规则…":"Permission rules…","距离":"Distance","结果：前 2 行":"Result: top 2 rows","被过滤":"Filtered out","先按 WHERE 筛，再按距离排序取前 2":"WHERE first, then sort by distance and take 2",
 "研发组用户":"R&D user","人事组用户":"HR user","对象路径":"Object path","行级过滤：按对象路径核对读权限":"Row filter: read permission on the object path","同一条检索，按提问人的权限返回不同的行":"One search, different rows for different users","返回 2 行":"2 rows back",
-"无索引：逐个算距离":"No index: score every row","有索引：只看相近的一组":"Index: nearby group only","已算距离":"Scored","建表时指定 · 每表一列 · 欧氏或余弦（负）内积":"Set at table creation · one column · Euclidean or cosine (negative) inner product","示意，不代表实测数字":"Schematic, not measured","找到最近的 2 个":"Nearest 2 found","索引让检索不必算遍每一行":"The index spares the search from scoring every row",
-"向量检索：向量和原数据存在同一张表里，用 SQL 找最近邻并按权限过滤":"Vector search: vectors in the same table as the data, nearest neighbours in SQL, filtered by permission"};
-var ENM={"示意：实际向量有几百到上千维":"Schematic: real vectors have far more dimensions","向量 + 原文的引用":"Vectors + refs","同步：改动、删除、权限":"Sync edits, deletes, permissions","检索要先查向量库，再去存储取原文":"Vector store first, then storage","向量和它的元数据在同一行，一次事务写入":"Vector and metadata in one row, one write","先按 WHERE 筛，再按距离排序取前 2":"WHERE, then nearest 2","行级过滤：按对象路径核对读权限":"Row filter on object path","同一条检索，按提问人的权限返回不同的行":"Same search, different rows per user","建表时指定 · 每表一列 · 欧氏或余弦（负）内积":"At table creation · one column","无索引：逐个算距离":"No index: score every row","有索引：只看相近的一组":"Index: nearby group only","索引让检索不必算遍每一行":"No need to score every row","提问：小猫咪":"Query: kitty","嵌入模型":"Embedding model","结果：前 2 行":"Top 2 rows","两处数据要一直保持同步":"Keep both in sync","最近的 2 个：小猫、小狗":"Nearest: kitten, puppy","向量检索的定义…":"What vector…","距离函数的用法…":"Distance fns…","权限过滤规则…":"Permissions…"};
-var ARIA="向量检索：向量和原数据存在同一张表里，用 SQL 找最近邻并按权限过滤";
+"无索引：逐个算距离":"No index: score every row","有索引：缩小搜索范围":"Indexed: narrower search","已算距离":"Scored","建表时指定 · 每表一个向量列":"Set at table creation · One vector column","示意，不代表实测数字":"Schematic, not measured","找到最近的 2 个":"Nearest 2 found","索引让检索不必算遍每一行":"The index spares the search from scoring every row",
+"向量检索：向量列、SQL 搜索与行级过滤":"Vector search: vector columns, SQL search, and row filtering"};
+var ENM={"向量 + 原文的引用":"Vectors + refs","同步：改动、删除、权限":"Sync edits, deletes, permissions","检索要先查向量库，再去存储取原文":"Vector store first, then storage","向量和它的元数据在同一行，一次事务写入":"Vector and metadata in one row, one write","先按 WHERE 筛，再按距离排序取前 2":"WHERE, then nearest 2","行级过滤：按对象路径核对读权限":"Row filter on object path","同一条检索，按提问人的权限返回不同的行":"Same search, different rows per user","建表时指定 · 每表一个向量列":"Set at creation · One vector column","无索引：逐个算距离":"No index: score every row","有索引：缩小搜索范围":"Indexed: narrower search","索引让检索不必算遍每一行":"No need to score every row","提问：小猫咪":"Query: kitty","嵌入模型":"Embedding model","结果：前 2 行":"Top 2 rows","索引随源内容更新":"Keep the index current","最近的 2 个：小猫、小狗":"Nearest: kitten, puppy","向量检索的定义…":"What vector…","距离函数的用法…":"Distance fns…","权限过滤规则…":"Permissions…","距离用于衡量相似度":"Distance measures similarity"};
+var ARIA="向量检索：向量列、SQL 搜索与行级过滤";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
 function mount(host,opts){
@@ -74,7 +74,7 @@ function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.
 const SCENE={
  still:[7.2,6.5,5.6,6.2,2.6,3.2],
  layout(m){
-  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:16,big:28},pw:22,ph:16,dr:7,sp:330,lg:15,cap:{x:480,y:478},tgl:{x:480,y:478}};
+  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17,big:28},pw:22,ph:16,dr:7,sp:330,lg:15,cap:{x:480,y:478},tgl:{x:480,y:478}};
   return {W:480,H:660,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17,big:24},pw:18,ph:14,dr:6,sp:240,lg:13,cap:{x:240,y:640},tgl:{x:240,y:640}};
  },
  build(){
@@ -88,7 +88,7 @@ const SCENE={
    s.pl=m?R(16,222,448,340):R(500,40,436,370);
    box(s.pl,g,'box soft',12);
    tx(s.pl.x+s.pl.w-12,s.pl.y+s.pl.h-16,'维度 1',f.xs,'ink3-t','end',g);tx(s.pl.x+12,s.pl.y+18,'维度 2',f.xs,'ink3-t','start',g);
-   tx(m?240:C(s.pl).x,m?584:438,'示意：实际向量有几百到上千维',f.xs,'ink3-t','middle',g);
+   tx(m?240:C(s.pl).x,m?584:438,'二维示意',f.xs,'ink3-t','middle',g);
    const UV=[[0.24,0.26],[0.46,0.16],[0.72,0.76],[0.88,0.56]],QV=[0.32,0.48];
    const map=uv=>P(s.pl.x+40+uv[0]*(s.pl.w-80),s.pl.y+40+uv[1]*(s.pl.h-80));
    s.pt=UV.map(map);s.qp=map(QV);
@@ -154,7 +154,7 @@ const SCENE={
   {const g=grp('4');const s={};E.s4=s;
    s.sq=m?R(12,10,456,112):R(24,18,912,58);box(s.sq,g,'box soft',10);
    const sql=m?["SELECT 片段 FROM t","WHERE 时间 >= '2026-09'","ORDER BY array_distance(向量, 提问)","LIMIT 2"]:["SELECT 片段 FROM t WHERE 时间 >= '2026-09' ORDER BY array_distance(向量, 提问) LIMIT 2"];
-   sql.forEach((l,i)=>{const t=tx(s.sq.x+14,s.sq.y+(m?20+i*24:29),l,m?17:16,'mono lbl','start',g);t.classList.add('sqlt')});
+   sql.forEach((l,i)=>{const t=tx(s.sq.x+14,s.sq.y+(m?20+i*24:29),l,17,'mono lbl','start',g);t.classList.add('sqlt')});
    const R6=[['片段 A','2026-07',0.12],['片段 B','2026-09',0.35],['片段 C','2026-10',0.18],['片段 D','2026-08',0.09],['片段 E','2026-09',0.61],['片段 F','2026-11',0.27]];s.R6=R6;
    const cols=m?[150,140,166]:[200,150,190],hh=34,rh=m?44:46;
    s.tb=m?R(12,136,456,hh+6*rh):R(24,100,540,hh+6*rh);box(s.tb,g,'box',8);
@@ -193,10 +193,10 @@ const SCENE={
   }
   /* ===== 第 6 步：向量索引，两边同时跑 ===== */
   {const g=grp('6');const s={};E.s6=s;
-   tx(m?240:24,m?20:30,'建表时指定 · 每表一列 · 欧氏或余弦（负）内积',f.xs,'ink2-t st',m?'middle':'start',g);
+   tx(m?240:24,m?20:30,'建表时指定 · 每表一个向量列',f.xs,'ink2-t st',m?'middle':'start',g);
    tx(m?240:936,m?606:30,'示意，不代表实测数字',f.xs,'ink3-t',m?'middle':'end',g);
    s.pl=m?[R(12,44,456,262),R(12,330,456,262)]:[R(24,60,440,350),R(496,60,440,350)];
-   const ttl=['无索引：逐个算距离','有索引：只看相近的一组'];
+   const ttl=['无索引：逐个算距离','有索引：缩小搜索范围'];
    // 32 个点，按四个象限各 8 个（种子固定）
    let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
    const UV=[];for(let qd=0;qd<4;qd++)for(let k=0;k<8;k++){const ux=(qd%2)*0.5+0.06+rnd()*0.38,uy=(qd>>1)*0.5+0.08+rnd()*0.36;UV.push([ux,uy,qd])}
@@ -219,15 +219,15 @@ const SCENE={
  modes:[]
 };
 /* 第 1 步 */
-SCENE.modes[0]={enter(){cap('意思相近，向量也相近','ink2-t');S.v.t=[0,1,2,3].map(k=>tile(['小猫','小狗','轿车','卡车'][k],L.mobile?60:70,L.mobile?26:28,''));S.v.v=[0,1,2,3].map(()=>dot());S.v.qt=tile('提问',L.mobile?60:70,L.mobile?26:28,'och');S.v.qv=dot('och')},
+SCENE.modes[0]={enter(){cap('距离用于衡量相似度','ink2-t');S.v.t=[0,1,2,3].map(()=>pk());S.v.v=[0,1,2,3].map(()=>dot());S.v.qt=pk('och');S.v.qv=dot('och')},
  frame(t){const s=E.s1,u=t%10;
-  for(let k=0;k<4;k++){const t0=0.2+k*0.7;run(S.v.t[k],s.pin[k],u,t0,0.8,0.15);const p=run(S.v.v[k],s.pout[k],u,t0+0.95,0.9,0.1);
+  for(let k=0;k<4;k++){const t0=0.2+k*0.7;run(S.v.t[k],s.pin[k],u,t0,0.8,0);const p=run(S.v.v[k],s.pout[k],u,t0+0.95,0.9,0.1);
    const on=u>t0+1.85&&u<9.6;s.dot[k].c.style.opacity=on?1:0;s.dot[k].t.style.opacity=on?1:0}
   run(S.v.qt,s.qin,u,3.4,0.8,0.15);run(S.v.qv,s.pout[4],u,4.35,0.9,0.1);
   const qon=u>5.25&&u<9.6;s.qd.style.opacity=qon?1:0;s.qtx.style.opacity=qon?1:0;
   const nn=u>5.8&&u<9.6;s.nl.forEach(l=>l.style.opacity=nn?1:0);
   [0,1].forEach(k=>s.dot[k].c.setAttribute('class','cell '+(nn?'ok':'on')));
-  cap(nn?'最近的 2 个：小猫、小狗':'意思相近，向量也相近',nn?'sage-t':'ink2-t')}};
+  cap(nn?'最近的 2 个：小猫、小狗':'距离用于衡量相似度',nn?'sage-t':'ink2-t')}};
 /* 第 2 步 */
 SCENE.modes[1]={enter(){S.v.q=pk();S.v.ids=[0,1,2].map(()=>pk('',12,12));S.v.rq=pk();S.v.or=[0,1,2].map(()=>pk('ok'));S.v.sy=pk('vio')},
  frame(t){const s=E.s2,u=t%8.5;
@@ -236,7 +236,7 @@ SCENE.modes[1]={enter(){S.v.q=pk();S.v.ids=[0,1,2].map(()=>pk('',12,12));S.v.rq=
   s.vdB.classList.toggle('on',u>1.2&&u<1.8);s.stB.classList.toggle('on',u>3.8&&u<4.4);
   s.cnt.textContent=u>0.3&&u<2.8?T('第 1 次往返'):u>=2.8&&u<5.6?T('第 2 次往返'):'';
   run(S.v.sy,s.sy,u,5.8,1.2,0.3);s.vdB.classList.toggle('vio',u>6.9&&u<7.8);
-  cap(u<5.6?'检索要先查向量库，再去存储取原文':'两处数据要一直保持同步',u<5.6?'ink2-t':'violet-t')}};
+  cap(u<5.6?'检索要先查向量库，再去存储取原文':'索引随源内容更新',u<5.6?'ink2-t':'violet-t')}};
 /* 第 3 步 */
 SCENE.modes[2]={enter(){cap('向量和它的元数据在同一行，一次事务写入','sage-t');S.v.r=[0,1,2,3].map(()=>{const g=el('g',{class:'rowt'},E.pk);['','och','vio','ok','slate'].forEach((c,i)=>el('rect',{x:-30+i*12,y:-7,width:10,height:14,rx:2,class:'pkt '+c},g));const o={el:g};S.items.push(o);put(o,-99,-99,0);return o})},
  frame(t){const s=E.s3,u=t%9;

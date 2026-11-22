@@ -9,15 +9,15 @@
    VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
 (function(){
 var ID='v-de',NSTEP=7;
-var EN={"    … return 结果":"    … return result","DataEngine 流水线":"DataEngine pipeline","触发器":"Trigger","监听事件":"Watches events","函数部署 A":"Function deployment A","函数部署 B":"Function deployment B","函数 A":"Function A","函数 B":"Function B","镜像仓库（VAST 之外）":"Container registry (outside VAST)","函数只是指向镜像的指针":"A function is a pointer to an image","事件":"Event","触发器 → 函数 → 函数：一条流水线":"Trigger → function → function: one pipeline",
+var EN={"    … return 结果":"    … return result","DataEngine 流水线":"DataEngine pipeline","触发器":"Trigger","监听事件":"Watches events","函数部署 A":"Function deployment A","函数部署 B":"Function deployment B","函数 A":"Function A","函数 B":"Function B","容器镜像仓库":"Container registry","函数资源引用镜像":"A function references a container image","事件":"Event","触发器 → 函数 → 函数：一条流水线":"Trigger → function → function: one pipeline",
 "客户端":"Client","源视图":"Source view","元素触发器":"Element trigger","后缀 .jpg":"Suffix .jpg","定时触发器":"Schedule trigger","按计划":"On a schedule","不匹配":"No match","按前缀、后缀过滤，事件写进 topic":"Filtered by prefix or suffix; events go to a topic",
 "分区 0":"Partition 0","分区 1":"Partition 1","函数实例 ":"Instance ","已处理 ":"Processed ","按序：每个分区一次只处理一个":"Ordered: one event per partition at a time","不按序：可以并发，不保证先后":"Unordered: concurrent, order not guaranteed","换成不按序":"Switch to unordered","换成按序":"Switch to ordered","切换投递方式，当前 ":"Switch delivery, now ","按序":"ordered","不按序":"unordered","示意，不代表实测数字":"Schematic, not measured",
-"vastde 构建":"vastde build","本地 Docker":"Local Docker","镜像仓库":"Container registry","代码":"Code","镜像 v2":"Image v2","函数资源 · 版本 2":"Function · revision 2","函数资源":"Function","流水线":"Pipeline","VAST 不托管镜像，函数资源只是指针":"VAST does not host images; a function is only a pointer",
-"计算":"Compute","集群":"cluster","源视图":"View","存储":"Storage","保留给存储":"Kept for storage","外部 Kubernetes":"External Kubernetes","节点 1":"Node 1","节点 2":"Node 2","节点 3":"Node 3","计算集群：划出的 CNode 资源不再用于存储服务":"Compute cluster: CNode resources set aside are no longer used for storage","外部 Kubernetes：函数不占用 CNode 资源":"External Kubernetes: functions use no CNode resources","换成外部 Kubernetes":"Switch to external Kubernetes","换成 CNode 计算集群":"Switch to CNode compute cluster","切换运行位置，当前 ":"Switch where functions run, now ","CNode 计算集群":"CNode compute cluster","Event Broker topic":"Event Broker topic",
-"识别类型":"Detect type","图片处理":"Images","文档处理":"Documents","标签：图片":"Label: image","标签：文档":"Label: document","攒批":"Batch","一次处理 3 个":"3 in one call","按标签路由，按条数或超时攒批":"Routed by label; batched by count or timeout",
-"追踪表（DataBase）":"Trace table (DataBase)","死信 topic（也是表）":"Dead-letter topic (also a table)","运行":"Run","函数":"Function","结果":"Result","成功":"OK","失败":"Failed","每次调用自动记录追踪，存进 DataBase 表":"Every call is traced automatically into a DataBase table","失败的事件进死信 topic，同样可以查询":"Failed events go to a dead-letter topic, also queryable",
+"vastde 构建":"vastde build","本地 Docker":"Local Docker","镜像仓库":"Container registry","代码":"Code","镜像 v2":"Image v2","函数资源 · 版本 2":"Function · revision 2","函数资源":"Function","流水线":"Pipeline","函数资源引用仓库中的镜像":"The function references a registry image",
+"计算":"Compute","集群":"cluster","存储":"Storage","保留给存储":"Kept for storage","外部 Kubernetes":"External Kubernetes","节点 1":"Node 1","节点 2":"Node 2","节点 3":"Node 3","VAST 计算集群使用选定的 CNode 资源":"VAST compute uses resources from selected CNodes","外部 Kubernetes 运行函数":"External Kubernetes runs the functions","换成外部 Kubernetes":"Switch to external Kubernetes","换成 CNode 计算集群":"Switch to CNode compute cluster","切换运行位置，当前 ":"Switch where functions run, now ","CNode 计算集群":"CNode compute cluster","Event Broker topic":"Event Broker topic",
+"识别类型":"Detect type","图片处理":"Images","文档处理":"Documents","标签：图片":"Label: image","标签：文档":"Label: document","攒批":"Batch","一次处理 3 个":"3 in one call","按标签路由，按条数或超时组批":"Route by label, batch by count or timeout",
+"运行追踪":"Execution traces","死信 topic":"Dead-letter topic","运行":"Run","函数":"Function","结果":"Result","成功":"OK","失败":"Failed","追踪关联函数执行与结果":"Traces show function execution and results","失败事件进入配置的死信 topic":"Failed events go to a configured dead-letter topic",
 "DataEngine：触发器、函数与流水线，事件驱动的函数在 VAST 上运行":"DataEngine: triggers, functions and pipelines; event-driven functions on VAST"};
-var ENM={"函数部署 A":"Deployment A","函数部署 B":"Deployment B","镜像仓库（VAST 之外）":"Registry (outside VAST)","函数只是指向镜像的指针":"Function = pointer","触发器 → 函数 → 函数：一条流水线":"Trigger → functions: a pipeline","按前缀、后缀过滤，事件写进 topic":"Filter by prefix/suffix, then a topic","按序：每个分区一次只处理一个":"Ordered: one per partition","不按序：可以并发，不保证先后":"Unordered: concurrent","换成不按序":"Unordered","换成按序":"Ordered","VAST 不托管镜像，函数资源只是指针":"A function only points to an image","函数资源 · 版本 2":"Function · rev 2","计算集群：划出的 CNode 资源不再用于存储服务":"Set-aside CNode resources leave storage","外部 Kubernetes：函数不占用 CNode 资源":"K8s: no CNode resources used","换成外部 Kubernetes":"External K8s","换成 CNode 计算集群":"CNode cluster","外部 Kubernetes":"External K8s","保留给存储":"Storage only","按标签路由，按条数或超时攒批":"Route by label, batch by count","追踪表（DataBase）":"Traces (DataBase)","死信 topic（也是表）":"Dead-letter topic","每次调用自动记录追踪，存进 DataBase 表":"Every call traced into a table","失败的事件进死信 topic，同样可以查询":"Failures go to a dead-letter topic","一次处理 3 个":"3 per call","Event Broker topic":"topic","元素触发器":"Element","定时触发器":"Schedule"};
+var ENM={"函数部署 A":"Deployment A","函数部署 B":"Deployment B","容器镜像仓库":"Registry","函数资源引用镜像":"Function references image","触发器 → 函数 → 函数：一条流水线":"Trigger → functions: a pipeline","按前缀、后缀过滤，事件写进 topic":"Filter by prefix/suffix, then a topic","按序：每个分区一次只处理一个":"Ordered: one per partition","不按序：可以并发，不保证先后":"Unordered: concurrent","换成不按序":"Unordered","换成按序":"Ordered","函数资源引用仓库中的镜像":"Function references an image","函数资源 · 版本 2":"Function · rev 2","VAST 计算集群使用选定的 CNode 资源":"VAST compute uses CNode resources","外部 Kubernetes 运行函数":"Functions run on external Kubernetes","换成外部 Kubernetes":"External K8s","换成 CNode 计算集群":"CNode cluster","外部 Kubernetes":"External K8s","保留给存储":"Storage only","按标签路由，按条数或超时组批":"Route by label, batch by count or timeout","运行追踪":"Execution traces","死信 topic":"Dead-letter topic","追踪关联函数执行与结果":"Traces show function results","失败事件进入配置的死信 topic":"Failures go to a dead-letter topic","一次处理 3 个":"3 per call","Event Broker topic":"topic","元素触发器":"Element","定时触发器":"Schedule"};
 var ARIA="DataEngine：触发器、函数与流水线，事件驱动的函数在 VAST 上运行";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -87,8 +87,8 @@ const SCENE={
   {const ln=grp('1'),g=grp('1');const s={};E.s1=s;
    s.fr=m?R(8,10,464,380):R(24,24,912,250);box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'DataEngine 流水线',f.sm,'ttl',g);
    s.n=m?[R(140,56,200,60),R(140,166,200,60),R(140,276,200,60)]:[R(60,110,210,70),R(375,110,210,70),R(690,110,210,70)];
-   s.rg=m?R(8,420,464,170):R(300,320,636,130);box(s.rg,g,'box soft',14);tx(s.rg.x+16,s.rg.y+22,'镜像仓库（VAST 之外）',f.sm,'ttl','start',g);
-   tx(m?s.rg.x+16:s.rg.x+s.rg.w-16,m?s.rg.y+s.rg.h-20:s.rg.y+22,'函数只是指向镜像的指针',f.xs,'ink3-t',m?'start':'end',g);
+   s.rg=m?R(8,420,464,170):R(300,320,636,130);box(s.rg,g,'box soft',14);tx(s.rg.x+16,s.rg.y+22,'容器镜像仓库',f.sm,'ttl','start',g);
+   tx(m?s.rg.x+16:s.rg.x+s.rg.w-16,m?s.rg.y+s.rg.h-20:s.rg.y+22,'函数资源引用镜像',f.xs,'ink3-t',m?'start':'end',g);
    s.img=m?[R(40,490,180,44),R(260,490,180,44)]:[R(380,374,210,44),R(695,374,210,44)];
    s.img.forEach((r,i)=>{box(r,g,'box',8);tx(C(r).x,C(r).y,i?'img-b:v1':'img-a:v3',f.sm,'lbl mono','middle',g)});
    s.ev=[[out_(s.n[0]),in_(s.n[1])],[out_(s.n[1]),in_(s.n[2])]];s.ev.forEach(p=>poly(p,'',ln));
@@ -112,7 +112,7 @@ const SCENE={
    s.e2=m?elbowV(P(C(s.et).x,s.et.y+s.et.h),P(C(s.tp).x-30,s.tp.y)):elbowH(P(s.et.x+s.et.w,C(s.et).y),P(s.tp.x,C(s.tp).y-14),796);
    s.s2=m?elbowV(P(C(s.st).x,s.st.y+s.st.h),P(C(s.tp).x+30,s.tp.y)):elbowH(P(s.st.x+s.st.w,C(s.st).y),P(s.tp.x,C(s.tp).y+14),806);
    poly(s.e2,'',ln);poly(s.s2,'',ln);
-   nb(s.cl,'客户端','',g);box(s.vw,g,'box frame',14);vtitle(s.vw.x+16,s.vw.y+22,'源视图',f.sm,'ttl',g);tx(s.vw.x+s.vw.w-16,s.vw.y+22,'/photos/',f.sm,'ink3-t mono','end',g);
+   nb(s.cl,'客户端','',g);box(s.vw,g,'box frame',14);vtitle(s.vw.x+16,s.vw.y+22,'源视图',f.sm,'ttl',g);tx(s.vw.x+s.vw.w-16,s.vw.y+(m?22:50),'/photos/',f.sm,'ink3-t mono','end',g);
    s.fl=[0,1,2].map(k=>{const r=el('rect',{x:s.slot[k].x-60,y:s.slot[k].y-16,width:120,height:32,rx:6,class:'cell'},g);const t=tx(s.slot[k].x,s.slot[k].y,['cat.jpg','notes.txt','dog.jpg'][k],f.sm,'lbl mono','middle',g);r.style.opacity=0;t.style.opacity=0;return {r,t}});
    s.etB=nb(s.et,'元素触发器','后缀 .jpg',g);s.stB=nb(s.st,'定时触发器','按计划',g);s.tpB=nb(s.tp,'topic','',g,'box och');
    s.nm=tx(C(s.et).x,m?s.et.y-14:s.et.y-16,'',f.xs,'ink3-t st','middle',g);
@@ -202,19 +202,19 @@ const SCENE={
    const tab=(r,ttl,cols,rows,cls)=>{box(r,g,'box',10);tx(r.x+14,r.y+20,ttl,f.sm,'ttl','start',g);let x=r.x+8;const w=(r.w-16)/cols.length;
      cols.forEach((c,i)=>{el('rect',{x:x+i*w,y:r.y+36,width:w,height:28,class:'cell hd'},g);tx(x+i*w+w/2,r.y+50,c,f.xs,'ink2-t st','middle',g)});
      return rows.map((rw,k)=>{const y=r.y+66+k*30+13;const rr=el('rect',{x:r.x+8,y:y-13,width:r.w-16,height:26,rx:3,class:'cell'+(cls?' '+cls:'')},g);const ts=rw.map((v,i)=>tx(x+i*w+w/2,y,v,f.xs,'lbl','middle',g));rr.style.opacity=0;ts.forEach(t=>t.style.opacity=0);return {rr,ts}})};
-   s.trw=tab(s.tt,'追踪表（DataBase）',['运行','函数','结果'],[['#1','A','成功'],['#1','B','成功'],['#2','A','成功'],['#2','B','失败']]);
-   s.dlw=tab(s.dl,'死信 topic（也是表）',['运行','事件'],[['#2','dog.jpg']],'');
+   s.trw=tab(s.tt,'运行追踪',['运行','函数','结果'],[['#1','A','成功'],['#1','B','成功'],['#2','A','成功'],['#2','B','失败']]);
+   s.dlw=tab(s.dl,'死信 topic',['运行','事件'],[['#2','dog.jpg']],'');
   }
  },
  reset(){svg.querySelectorAll('.box').forEach(b=>b.classList.remove('on','ok','hot','off'));cap('','')},
  modes:[]
 };
 /* 1 */
-SCENE.modes[0]={enter(){cap('触发器 → 函数 → 函数：一条流水线','ink2-t');S.v.e=[0,1].map(()=>tile('事件',L.mobile?58:64,L.mobile?24:26,'vio',L.mobile?17:16))},
+SCENE.modes[0]={enter(){cap('触发器 → 函数 → 函数：一条流水线','ink2-t');S.v.e=[0,1].map(()=>dot('vio'))},
  frame(t){const s=E.s1,u=t%5;run(S.v.e[0],s.ev[0],u,0.3,1.0,0.1);run(S.v.e[1],s.ev[1],u,1.9,1.0,0.3);
   s.nB[0].classList.toggle('on',u<0.6);s.nB[1].classList.toggle('on',u>1.3&&u<2.0);s.nB[2].classList.toggle('on',u>2.9&&u<4.4)}};
 /* 2 */
-SCENE.modes[1]={enter(){cap('按前缀、后缀过滤，事件写进 topic','ink2-t');S.v.f=[0,1,2].map(k=>tile(['cat.jpg','notes.txt','dog.jpg'][k],L.mobile?100:110,L.mobile?26:28,'',L.mobile?17:16));S.v.e=[0,1].map(()=>dot('vio'));S.v.s=[0,1].map(()=>dot('och'))},
+SCENE.modes[1]={enter(){cap('按前缀、后缀过滤，事件写进 topic','ink2-t');S.v.f=[0,1,2].map(()=>pk());S.v.e=[0,1].map(()=>dot('vio'));S.v.s=[0,1].map(()=>dot('och'))},
  frame(t){const s=E.s2,u=t%9;const ev=[[0,0.3],[2,4.6]];
   [0,1,2].forEach(k=>{const t0=[0.3,2.4,4.6][k],p=s.pin(k),d=dur(p)*0.7;run(S.v.f[k],p,u,t0,d,0.1);const on=u>t0+d&&u<8.7;s.fl[k].r.style.opacity=on?1:0;s.fl[k].t.style.opacity=on?1:0});
   ev.forEach(([k,t0],j)=>{const p=s.pin(k),d=dur(p)*0.7,t1=t0+d+0.2,p2=cat(s.pe(k),s.e2),d2=dur(p2)*0.8;run(S.v.e[j],p2,u,t1,d2,0.2)});
@@ -238,14 +238,14 @@ SCENE.modes[2]={enter(v){const s=E.s3;S.v.md=v;S.v.ev=sched(v);S.v.p=S.v.ev.map(
   s.ig[md].b.forEach((b,k)=>b.classList.toggle('on',!!busy[k]));
   s.cnt.textContent=T('已处理 ')+n+' / 10'}};
 /* 4 */
-SCENE.modes[3]={enter(){cap('VAST 不托管镜像，函数资源只是指针','violet-t');S.v.c=tile('代码',L.mobile?64:70,L.mobile?26:28,'',L.mobile?17:16);S.v.i=tile('镜像 v2',L.mobile?84:90,L.mobile?26:28,'vio',L.mobile?17:16)},
+SCENE.modes[3]={enter(){cap('函数资源引用仓库中的镜像','violet-t');S.v.c=pk();S.v.i=pk('vio')},
  frame(t){const s=E.s4,u=t%7.5;run(S.v.c,s.p1,u,0.3,0.8,0.1);s.bdB.classList.toggle('vio',u>1.0&&u<1.9);
   run(S.v.i,s.p2,u,1.9,1.4,0.2);const v2=u>3.4;s.v2.forEach(e=>e.style.opacity=v2?1:0.15);s.chB[1].classList.toggle('on',v2&&u<7.2);
   s.ptrL.style.opacity=u>3.8?1:0.15;s.fnT.textContent=T(u>3.8?'函数资源 · 版本 2':'函数资源');s.fnB.classList.toggle('on',u>3.8&&u<7.2)}};
 /* 5：计算集群或外部 K8s */
 SCENE.modes[4]={enter(v){const s=E.s5;S.v.v=v;const cn=v==='cnode';
-  cap(cn?'计算集群：划出的 CNode 资源不再用于存储服务':'外部 Kubernetes：函数不占用 CNode 资源',cn?'violet-t':'slate-t');
-  s.kg.classList.toggle('dim',cn);s.kl.classList.toggle('off',cn);
+  cap(cn?'VAST 计算集群使用选定的 CNode 资源':'外部 Kubernetes 运行函数',cn?'violet-t':'slate-t');
+  s.kg.style.display=cn?'none':'';s.kl.style.display=cn?'none':'';
   s.bars.forEach((b,k)=>{const share=cn&&k<3?0.5:0;const h=b.tr.h*share;b.cp.setAttribute('height',h);b.st.setAttribute('y',b.tr.y+h);b.st.setAttribute('height',b.tr.h-h);
    b.cpT.style.opacity=share?1:0;b.note.textContent=cn&&k===3?T('保留给存储'):''});
   S.v.f=[0,1,2].map(()=>pk('ok',L.mobile?16:18,L.mobile?16:18));S.v.e=[0,1,2].map(()=>dot('och'))},
@@ -257,7 +257,7 @@ SCENE.modes[4]={enter(v){const s=E.s5;S.v.v=v;const cn=v==='cnode';
   s.knB.forEach((b,k)=>b.classList.toggle('on',!cn&&u>1.4+k*0.5))}};
 /* 6 */
 const LAB=[0,1,1,0,1,1,0];
-SCENE.modes[5]={enter(){cap('按标签路由，按条数或超时攒批','ink2-t');S.v.e=LAB.map(l=>pk(l?'och':''))},
+SCENE.modes[5]={enter(){cap('按标签路由，按条数或超时组批','ink2-t');S.v.e=LAB.map(l=>pk(l?'och':''))},
  frame(t){const s=E.s6,u=t%10;let inTray=0,callC=-1;const docs=[];LAB.forEach((l,i)=>{if(l)docs.push(i)});
   LAB.forEach((l,i)=>{const t0=0.3+i*0.75,d1=dur(s.pTA)*0.8,o=S.v.e[i];
    if(u<t0+d1){run(o,s.pTA,u,t0,d1,0);return}
@@ -278,7 +278,7 @@ SCENE.modes[6]={enter(){S.v.e=[0,1,2,3].map(()=>dot('vio'));S.v.r=[0,1,2,3].map(
    const p=s.toT(ni,k);const d=dur(p)*0.7;run(S.v.r[i],p,u,t0+0.5,d,0.2);const on=u>t0+0.5+d&&u<10.6;s.trw[k].rr.style.opacity=on?1:0;s.trw[k].ts.forEach(x=>x.style.opacity=on?1:0);
    s.trw[k].rr.setAttribute('class','cell'+(k===3?' och':'')+(ph&&on?'':''))});
   const dd=dur(s.toD)*0.7;run(S.v.d,s.toD,u,5.3,dd,0.2);const don=u>5.3+dd&&u<10.6;s.dlw[0].rr.style.opacity=don?1:0;s.dlw[0].ts.forEach(x=>x.style.opacity=don?1:0);s.dlw[0].rr.setAttribute('class','cell'+(don?' och':''));
-  cap(u<5.2?'每次调用自动记录追踪，存进 DataBase 表':'失败的事件进死信 topic，同样可以查询',u<5.2?'ink2-t':'rose-t')}};
+  cap(u<5.2?'追踪关联函数执行与结果':'失败事件进入配置的死信 topic',u<5.2?'ink2-t':'rose-t')}};
 /* ---------- 引擎 ---------- */
 const TG=SCENE.toggles||{};
 const tstate={};Object.keys(TG).forEach(k=>{const g=TG[k],v=qs.get(g.param);tstate[k]=g.values.indexOf(v)>-1?v:g.values[0]});
