@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RDMA 为什么快 · Shan's Stack</title>
-<meta name="description" content="六步讲清 RDMA 为什么比传统 TCP 快：网卡直接读写应用内存，绕过内核，对方 CPU 不参与。可以从头往下读，也可以一步一屏演示。">
+<meta name="description" content="分 6 步说明 RDMA 为什么比传统 TCP 快：网卡直接读写应用内存，绕过内核，对方 CPU 不参与。">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,145 +12,7 @@
 <link rel="stylesheet" href="../../assets/brand/brand.css">
 <link rel="stylesheet" href="../../assets/anim/rdma.css">
 <script>window.SS_ROOT='../../';</script>
-<!--
-  知识点页：两种模式。
-  文档模式（默认）：六步依次排成六节，可以从头往下读；电脑宽度下动画固定在右侧，读到哪一节就切到哪一步；
-    手机宽度下每一节自带一个动画区（放在这一节的标题和一句话说明下面），滚到哪节播哪节，看不见的停住。
-  演示模式（?mode=present、按 P 或点「演示」）：一步一屏，← → 翻步，Esc 回到文档模式。
-  步骤状态只有一份（本页脚本里的 cur），动画区不带自己的翻页控件，页面切到哪一步就调 anim.show(i)。
-  ?step=N 两种模式都能用：文档模式滚到第 N 节，演示模式停在第 N 步。
-  从 present.html 连播进来时直接进演示模式；翻过最后一步去下一站，往回翻停在上一站的最后一步。
--->
-<style>
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.7;font-synthesis:none;line-break:strict;overflow-wrap:break-word}
-a{color:inherit;text-decoration:none}
-a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-h1,h2,h3{text-wrap:balance;font-weight:500;margin:0;font-family:var(--fh)}
-p{text-wrap:pretty;margin:0}
-.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
-/* 页头（沿用设计稿） */
-.hd{border-bottom:1px solid var(--rule)}
-.hd .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em;white-space:nowrap}
-.brand svg{width:22px;height:22px;flex:none;fill:var(--ink)}
-.nav{display:flex;align-items:center;gap:4px}
-.nav a{padding:10px 12px;font-size:15px;color:var(--ink2);border-radius:2px}
-.nav a:hover{color:var(--ink)}
-.lang{min-width:44px;min-height:40px;border:1px solid var(--rule2);background:transparent;color:var(--ink);font:500 14px var(--f);border-radius:2px;cursor:pointer;margin-left:8px}
-.lang:hover{border-color:var(--ink)}
-.mini{width:14px;height:14px;vertical-align:-2px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:2px;font:500 15px var(--f);border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
-.btn:hover{filter:brightness(1.06)}
-.btn:disabled{opacity:.35;cursor:default;filter:none}
-kbd{font:500 12px var(--f);border:1px solid var(--rule2);border-radius:2px;padding:1px 5px;color:var(--ink3)}
-.tag{display:inline-block;font-size:12px;line-height:1.5;padding:0 6px;border:1px solid var(--rule2);border-radius:2px;color:var(--ink3);font-weight:400;vertical-align:1px;white-space:nowrap}
-.ft{border-top:1px solid var(--rule);margin-top:96px}
-.ft .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;padding-top:20px;padding-bottom:40px;font-size:14px;color:var(--ink3);flex-wrap:wrap}
-/* 标题区（沿用设计稿） */
-.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:36px;font-size:14px;color:var(--ink3)}
-.crumb svg{width:18px;height:18px;vertical-align:-3px}
-.crumb a:hover{color:var(--ink)}
-.crumb a{white-space:nowrap}
-.crumb .xc{width:9px;height:18px;border:2.5px solid var(--ink3);border-radius:5px}
-.tt{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-top:8px;padding-bottom:20px}
-.tt h1{font-size:clamp(28px,1rem + 2.4vw,44px);line-height:1.25}
-.tt .tags{font-size:14px;color:var(--ink3);margin-top:6px}
-.tt .talks{font-size:14px;color:var(--ink3);display:flex;flex-wrap:wrap;gap:2px 16px}
-.tt .talks a{color:var(--ink2);text-decoration:underline;text-decoration-color:var(--rule2);text-underline-offset:3px}
-.cbar{display:flex;height:4px;gap:3px}
-.cbar i{flex:1;background:var(--c)}
-/* 文档 / 演示切换 */
-.modes{display:inline-flex;border:1px solid var(--ink);border-radius:2px;flex:none}
-.modes button{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 16px;border:0;background:none;color:var(--ink);font:500 15px var(--f);cursor:pointer}
-.modes button+button{border-left:1px solid var(--ink)}
-.modes button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
-.modes button[aria-pressed=true] kbd{color:inherit;border-color:currentColor}
-
-/* ---------- 文档模式 ---------- */
-.doc{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;margin-top:40px;align-items:start}
-.sec{padding:0 0 64px;scroll-margin-top:24px}
-.sec:last-child{min-height:62vh}
-.sec .no{font-size:14px;color:var(--ink3);font-variant-numeric:tabular-nums}
-.sec h2{font-size:clamp(22px,1rem + 1vw,28px);line-height:1.35;margin-top:4px}
-.sec .lead{font-size:18px;color:var(--ink);margin-top:10px;padding-left:12px;border-left:3px solid var(--l4)}
-.sec .bd p,.sec .bd ul{font-size:17px;color:var(--ink2);margin:14px 0 0}
-.sec .bd ul{padding-left:1.2em}
-.sec .bd li{margin-top:6px}
-.sec .bd b{color:var(--ink);font-weight:600}
-.sec.on h2{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:var(--l4)}
-.side{position:sticky;top:16px}
-.figbox{background:var(--surface);border:1px solid var(--rule);padding:12px}
-.side .now{font-size:14px;color:var(--ink3);margin-top:10px;font-variant-numeric:tabular-nums}
-.mfig{display:none;margin-top:16px}
-/* 手机上动画是滚到才装上的，先按画布比例占好位置，免得装上时把下面的内容往下推、打乱滚动定位 */
-.mhost{aspect-ratio:960/476}
-@media (max-width:640px){.mhost{aspect-ratio:480/692}}
-/* 步骤目录：网络线上的一小段，每步一个站（沿用设计稿） */
-.rail{--lc:var(--l4);list-style:none;margin:14px 0 0;padding:0;position:relative}
-.rail::before{content:"";position:absolute;left:9px;top:22px;bottom:22px;width:6px;background:var(--lc)}
-.rail button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:center;width:100%;min-height:40px;padding:2px 0;cursor:pointer;font-size:15px;line-height:1.4;color:var(--ink3);position:relative}
-.rail button::before{content:"";justify-self:center;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--ink);box-sizing:border-box}
-.rail button.done::before{background:var(--lc);border-color:var(--lc)}
-.rail button.done{color:var(--ink2)}
-.rail button[aria-current=step]{color:var(--ink);font-weight:500}
-.rail button[aria-current=step]::before{width:24px;height:24px;background:var(--lc);border:4px solid var(--ink)}
-.rail button:hover{color:var(--ink)}
-.rail button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.side .hint{margin-top:10px;font-size:13px;color:var(--ink3)}
-/* 文末：先看、接着看、出处（沿用设计稿） */
-.rel{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:32px;margin-top:40px}
-.rel h3{font-size:16px;font-weight:500;color:var(--ink3);padding-bottom:8px;border-bottom:1px solid var(--ink)}
-.rel ul{list-style:none;margin:0;padding:0}
-.rel li{border-bottom:1px solid var(--rule)}
-.rel li a{display:flex;align-items:center;gap:10px;padding:12px 0;font-size:16px}
-.rel li a svg{width:20px;height:20px;flex:none}
-.rel li a:hover{text-decoration:underline}
-.rel .src li{padding:12px 0;font-size:14px;color:var(--ink2);line-height:1.6}
-
-/* ---------- 演示模式：一步一屏 ---------- */
-.stage{--lc:var(--l4);display:none}
-body.present{overflow:hidden}
-body.present .hd,body.present main,body.present .ft{display:none}
-body.present .stage{display:grid;grid-template-rows:minmax(0,1fr) auto auto;height:100vh;height:100dvh;padding:3vh 5vw 2.5vh;background:var(--bg)}
-.stage .figbox{border:0;background:transparent;padding:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.stage .cap{display:grid;grid-template-columns:auto 1fr;column-gap:3vw;align-items:baseline;margin-top:2vh}
-.stage .cnt{grid-row:1/3;font-size:clamp(16px,1.4vw,24px);color:var(--ink3);font-variant-numeric:tabular-nums}
-.stage h2{font-size:clamp(28px,3.2vw,54px);line-height:1.3}
-.stage .desc{font-size:clamp(19px,1.8vw,28px);color:var(--ink2);margin-top:.4em}
-.ctl{display:flex;align-items:center;gap:12px;margin-top:1.5vh;flex-wrap:wrap}
-.prog{display:flex;flex:1;min-width:150px;position:relative;justify-content:space-between}
-.prog::before{content:"";position:absolute;left:14px;right:14px;top:50%;height:4px;margin-top:-2px;background:var(--rule2)}
-.prog::after{content:"";position:absolute;left:14px;width:calc((100% - 28px) * var(--pv,0));top:50%;height:6px;margin-top:-3px;background:var(--lc);transition:width .25s}
-.prog button{all:unset;cursor:pointer;width:28px;height:44px;display:grid;place-items:center;position:relative;z-index:1}
-.prog button::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--bg);border:3px solid var(--ink3);box-sizing:content-box}
-.prog button.done::after{background:var(--lc);border-color:var(--lc)}
-.prog button[aria-current=step]::after{width:14px;height:14px;background:var(--lc);border:4px solid var(--ink)}
-.prog button:focus-visible{outline:2px solid var(--ink)}
-
-@media (max-width:960px){
-  .doc{display:block;margin-top:28px}
-  .side{display:none}
-  .mfig{display:block}
-  .sec{padding-bottom:48px}
-  .sec:last-child{min-height:0}
-  .rel{grid-template-columns:1fr;gap:28px}
-}
-@media (max-width:720px){
-  .wrap{padding:0 16px}
-  .nav a{padding:10px 6px;font-size:14px}.lang{margin-left:4px}.brand{font-size:16px}.brand svg{width:18px;height:18px}
-  body{font-size:16px}
-  .tt{display:block}.modes{margin-top:14px}
-  .tt .talks>span:first-child{width:100%}
-  .figbox{padding:6px}
-  .sec .lead{font-size:17px}.sec .bd p,.sec .bd ul{font-size:16px}
-  body.present .stage{padding:12px}
-  .stage .cap{display:block}
-  .ctl .btn{padding:0 12px}
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
-</style>
+<link rel="stylesheet" href="../../assets/topic.css">
 </head>
 <body>
 <script src="../../assets/symbols.js"></script>
@@ -158,32 +20,24 @@ body.present .stage{display:grid;grid-template-rows:minmax(0,1fr) auto auto;heig
 <header class="hd"><div class="wrap">
   <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
   <nav class="nav" aria-label="主导航" data-en-label="Main">
-    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a><a href="../../index.html#about" data-en="About">关于</a>
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
     <button class="lang" type="button" data-lang-toggle>EN</button>
   </nav>
 </div></header>
 
 <main class="wrap" data-station="rdma">
-  <div class="crumb" id="crumb"></div>
-  <div class="tt">
-    <div><h1 data-en="Why RDMA is fast">RDMA 为什么快</h1>
-      <p class="tags" data-en="6 steps. Tags: InfiniBand, RoCE, NIC">6 步。标签：InfiniBand、RoCE、网卡</p>
-      <p class="talks" id="intalks"></p></div>
-    <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
-      <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Why RDMA is fast">RDMA 为什么快</h1>
+        <p class="meta"><span data-en="6 steps · InfiniBand, RoCE, NIC">6 步 · InfiniBand、RoCE、网卡</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
     </div>
   </div>
-  <div class="cbar" id="cbar" aria-hidden="true"></div>
 
-  <div class="doc">
-    <article id="art"></article>
-    <aside class="side" aria-label="动画与步骤" data-en-label="Animation and steps">
-      <div class="figbox"><div id="animDoc"></div></div>
-      <p class="now" id="now" aria-live="polite"></p>
-      <ol class="rail" id="rail"></ol>
-      <p class="hint"><kbd>←</kbd> <kbd>→</kbd> <span data-en="previous / next section">上一节 / 下一节</span>　<kbd>P</kbd> <span data-en="present">演示模式</span></p>
-    </aside>
-  </div>
+  <div class="doc"><article id="art"></article></div>
 
   <div class="rel">
     <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
@@ -218,206 +72,54 @@ body.present .stage{display:grid;grid-template-rows:minmax(0,1fr) auto auto;heig
 <script src="../../data/talks.js"></script>
 <script src="../../assets/core.js"></script>
 <script src="../../assets/anim/rdma.js"></script>
-<script>/* 面包屑、出现在讲稿、先看／接着看：从 data/ 生成，和地图一致 */
-(function(){
-  var SS=window.SS,L=SS.L,id=document.querySelector('main').getAttribute('data-station'),s=SS.stations[id],HOME='home';
-  function li(x){var mid=SS.inMap(x,HOME)?HOME:SS.maps.filter(function(m){return SS.inMap(x,m.id)})[0].id,l=SS.linesIn(x,mid)[0];
-    return '<li><a href="'+SS.stationHref(x,mid)+'">'+SS.sym(l)+'<span>'+SS.esc(SS.title(x))+'</span>'+(SS.stations[x].st==='live'?'':' <span class="tag">'+SS.stName(SS.stations[x].st)+'</span>')+'</a></li>'}
-  function fill(){
-    var ls=SS.linesIn(id,HOME),x=ls.length>1;
-    document.getElementById('crumb').innerHTML=(x?'<span class="xc" aria-hidden="true"></span><a href="'+SS.url('index.html')+'?hl='+id+'#map">'+L('换乘站','Transfer stop')+'</a><span>/</span>':'<a href="'+SS.url('index.html')+'#map">'+L('总图','Main map')+'</a><span>/</span>')+
-      ls.map(function(l){return '<a href="'+SS.lineHref(HOME,l,id)+'">'+SS.sym(l)+'</a>'}).join('')+
-      '<span>'+(x?L(ls.map(function(l){return SS.lineName(l)+'线'}).join('、')+'都停这一站','The '+ls.map(SS.lineName).join(', ').toLowerCase().replace(/, ([^,]*)$/,' and $1')+' lines all stop here'):L(SS.lineName(ls[0])+'线',SS.lineName(ls[0])+' line'))+'</span>'+SS.brandMark(SS.brandOf(id),'cr-lg');
-    document.getElementById('cbar').innerHTML=ls.map(function(l){return '<i style="--c:'+SS.lc(l)+'"></i>'}).join('');
-    var t=SS.talksWith(id);
-    document.getElementById('intalks').innerHTML=t.length?'<span>'+L('出现在讲稿：','In talks:')+'</span>'+t.map(function(r){var m=SS.mapById[r.talk.map];
-      return '<a href="'+SS.url(m.href)+'?talk='+r.talk.id+'#map">'+SS.esc(SS.L(r.talk.zh,r.talk.en))+L('，第 '+r.n+' 站',', stop '+r.n)+'</a>'}).join(''):'';
-    document.getElementById('relprev').innerHTML=(s.prev||[]).map(li).join('');
-    document.getElementById('relnext').innerHTML=(s.next||[]).map(li).join('');
-    document.title=SS.title(id)+' · Shan\'s Stack';
-  }
-  document.addEventListener('ss-lang',fill);
-})();
-</script>
 <script>
-(function(){
-  var SS=window.SS,L=SS.L;
-  /* ---------- 六步：短名（目录用）、标题与一句话说明（演示模式只用这两样）、文档模式的正文 ----------
-     正文只取自作者学习笔记里讲 RDMA、InfiniBand、RoCE、内核与 CPU 拷贝的页面，不写具体性能数字。 */
-  var STEPS=[
-    {s:['慢在哪？','Where does the time go?'],t:['两台服务器传数据，慢在哪？','Two servers move data. Where does the time go?'],
-     d:['数据要从 A 的应用内存走到 B 的应用内存。我们沿着这条路，看时间花在哪里。','Data has to travel from app memory on A to app memory on B. Follow the path and see where the time goes.'],
+window.SS_TOPIC_CFG={anim:'rdma',ar:[960/476,480/692],
+  steps:[
+    {s:['耗时分布','Where the time goes'],t:['两台服务器传数据：时间花在哪里','Two servers move data: where the time goes'],
+     d:['数据要从 A 的应用内存走到 B 的应用内存。沿这条路径看时间花在哪里。','Data has to travel from app memory on A to app memory on B. The time spent is traced along this path.'],
      b:[['<p>两台服务器之间传数据，起点是 A 机器上应用程序的内存，终点是 B 机器上应用程序的内存。RDMA 要解决的，就是这段路上跨机器搬数据的成本。它的思路是把这件事从 CPU（服务器的中央处理器）手里，交给网卡来做。</p>',
-         '<p>慢在哪，要拿最常见的传统 TCP 网络来对照。TCP 是一种有应答、保证送达的网络传输方式。RDMA 的设计出发点，正是 TCP 的几个痛点：数据要多次拷贝，操作系统内核参与得多，频繁切换，协议难以交给硬件处理，网卡只当搬运工。</p>'],
+         '<p>耗时来源以最常见的传统 TCP 网络为对照。TCP 是一种有应答、保证送达的网络传输方式。RDMA 的设计出发点，正是 TCP 的几个痛点：数据要多次拷贝，操作系统内核参与得多，频繁切换，协议难以交给硬件处理，网卡只负责收发。</p>'],
         ['<p>When two servers exchange data, the data starts in an application\'s memory on server A and ends in an application\'s memory on server B. RDMA targets the cost of moving data across that gap: it shifts the work of moving data between machines from the CPU (the server\'s central processor) to the network card.</p>',
-         '<p>To see where the slowness comes from, compare with conventional TCP, a transport that acknowledges data and guarantees delivery. RDMA was designed around TCP\'s pain points: multiple data copies, heavy involvement of the operating system kernel, frequent switching, protocol work that is hard to hand to hardware, and a network card that only carries bytes.</p>']]},
+         '<p>The comparison point is conventional TCP, a transport that acknowledges data and guarantees delivery. RDMA was designed around TCP\'s pain points: multiple data copies, heavy involvement of the operating system kernel, frequent switching, protocol work that is hard to hand to hardware, and a network card that only carries bytes.</p>']]},
     {s:['传统 TCP','Classic TCP'],t:['传统 TCP：每一步都要 CPU 参与','Classic TCP: the CPU touches every step'],
      d:['数据先进内核，再由 CPU 复制给应用。发送端和接收端都要这样走一遍。','Data lands in the kernel first, then the CPU copies it to the application. Both sides go through this.'],
-     b:[['<p>传统 TCP 传数据时，数据不能从应用内存直接上网线。它要在应用自己的内存、操作系统内核和网络协议处理这几层之间来回拷贝好几次。内核就是操作系统的核心部分。每次拷贝都是 CPU 在干活。</p>',
-         '<p>除了拷贝，TCP 还有两笔开销。一是应用每次收发都要找内核办事，会带来频繁的切换。二是保证可靠送达的那套规则（出错重传、管理连接）由软件运行，也要占用 CPU。常有人问「TCP 到底慢在哪」，答案就是这三笔账：<b>拷贝、找内核、软件协议处理</b>。</p>'],
+     b:[['<p>传统 TCP 传数据时，数据不能从应用内存直接上网线。它要在应用自己的内存、操作系统内核和网络协议处理这几层之间来回拷贝好几次。内核就是操作系统的核心部分。每次拷贝都由 CPU 完成。</p>',
+         '<p>除了拷贝，TCP 还有两笔开销。一是应用每次收发都要调用内核，会带来频繁的切换。二是保证可靠送达的那套规则（出错重传、管理连接）由软件运行，也要占用 CPU。TCP 的开销即这三项：<b>拷贝、内核调用、软件协议处理</b>。</p>'],
         ['<p>With conventional TCP, data cannot go straight from application memory onto the wire. It is copied several times between the application\'s own memory, the operating system kernel (the core of the operating system) and the network protocol layer, and every copy is CPU work.</p>',
-         '<p>Beyond copying, TCP has two more costs. The application must call into the kernel for every send and receive, which causes frequent switching. And the rules that guarantee delivery (retransmission, connection management) run in software, which also uses CPU. When people ask what exactly makes TCP slow, the answer is these three costs: <b>copying, kernel calls and software protocol processing</b>.</p>']]},
+         '<p>Beyond copying, TCP has two more costs. The application must call into the kernel for every send and receive, which causes frequent switching. And the rules that guarantee delivery (retransmission, connection management) run in software, which also uses CPU. The overhead of TCP comes down to these three costs: <b>copying, kernel calls and software protocol processing</b>.</p>']]},
     {s:['数据越多，CPU 越忙','More data, busier CPU'],t:['数据越多，CPU 越忙着搬数据','More data, more CPU spent moving it'],
      d:['每一份数据都要 CPU 复制一次。流量一大，CPU 的时间就被搬数据占满。','Every chunk of data needs a CPU copy. As traffic grows, moving data eats the CPU\'s time.'],
      b:[['<p>上一步里的拷贝和协议处理都落在 CPU 身上，所以传得越多，CPU 花在搬数据上的时间越多。有测试在同一套环境里做同样的传输：走 TCP 时客户端的 CPU 占用明显高于走 RDMA。</p>',
-         '<p>CPU 忙于网络还会影响别的工作。网卡产生的中断（网卡通知 CPU「有数据到了」的信号）也要由 CPU 核心来处理。如果这些中断和后台任务落到正在处理业务数据的核心上，就会打断这些核心、冲掉 CPU 缓存，结果是延迟变高、忽快忽慢。更麻烦的是系统照样能跑，问题不会当场暴露，只是性能悄悄变差。</p>'],
-        ['<p>Because the copying and protocol processing from the previous step fall on the CPU, the more data you move, the more CPU time goes into moving it. In one test, the same transfer in the same setup used noticeably more client CPU over TCP than over RDMA.</p>',
+         '<p>CPU 忙于网络还会影响别的工作。网卡产生的中断（网卡通知 CPU「有数据到了」的信号）也要由 CPU 核心来处理。如果这些中断和后台任务落到正在处理业务数据的核心上，就会打断这些核心、冲掉 CPU 缓存，结果是延迟变高、忽快忽慢。更隐蔽的是：系统仍能正常运行，问题不会立即暴露，只表现为性能逐渐下降。</p>'],
+        ['<p>Because the copying and protocol processing from the previous step fall on the CPU, the more data is moved, the more CPU time goes into moving it. In one test, the same transfer in the same setup used noticeably more client CPU over TCP than over RDMA.</p>',
          '<p>A CPU busy with networking also hurts other work. Interrupts from the network card (its signal to the CPU that data has arrived) must be handled by CPU cores. If they land on the cores that are processing business data, they interrupt those cores and flush the CPU cache, so latency rises and becomes uneven. Worse, the system still runs, so nothing fails visibly; performance just degrades quietly.</p>']]},
     {s:['RDMA 直接读写','RDMA'],t:['RDMA：网卡直接读写应用内存','RDMA: the NIC reads and writes app memory directly'],
      d:['网卡直接读本机应用内存，写进对方应用内存。不经过双方内核，对方 CPU 不参与。','The NIC reads local app memory and writes into the remote app memory. Neither kernel is involved, and the remote CPU stays out of it.'],
-     b:[['<p>RDMA 是远程直接内存访问。它让一台服务器的网卡直接读写另一台服务器的内存，靠三件事做到，刚好一一对应上一步说的三笔开销：</p><ul><li><b>零拷贝</b>：数据从本端应用内存直达对端应用内存，不在内核里来回拷贝。</li><li><b>内核旁路</b>：应用通过一个程序库直接和网卡打交道，不用每次都找操作系统内核。</li><li><b>硬件卸载</b>：可靠传输、重传、连接管理这些活交给网卡硬件做。</li></ul>',
-         '<p>常有人问：对方的 CPU 真的完全不管吗？这要看用哪种操作。「单边」读写时，发起方提交一个请求，就能直接读写对方内存，对方 CPU 全程不参与；本端程序提交请求后，搬运由网卡完成，网卡做完留一条完成记录，程序去取回即可。「双边」收发时，双方都要各自准备，对方 CPU 要参与。</p>',
+     b:[['<p>RDMA 是远程直接内存访问。它让一台服务器的网卡直接读写另一台服务器的内存，依靠三项机制实现，分别对应上一步所述的三项开销：</p><ul><li><b>零拷贝</b>：数据从本端应用内存直达对端应用内存，不在内核里来回拷贝。</li><li><b>内核旁路</b>：应用通过程序库直接操作网卡，无需每次调用操作系统内核。</li><li><b>硬件卸载</b>：可靠传输、重传、连接管理由网卡硬件完成。</li></ul>',
+         '<p>对方 CPU 是否参与，取决于操作类型。「单边」读写时，发起方提交一个请求，就能直接读写对方内存，对方 CPU 全程不参与；本端程序提交请求后，搬运由网卡完成，网卡做完留一条完成记录，程序去取回即可。「双边」收发时，双方都要各自准备，对方 CPU 要参与。</p>',
          '<p>安全上，程序必须先把允许访问的内存登记好，并生成本端和远端各用一把的钥匙。没登记的内存访问不到，钥匙不对会被硬件直接拒绝。</p>'],
         ['<p>RDMA, Remote Direct Memory Access, lets one server\'s network card read and write another server\'s memory directly. It does this with three mechanisms that map one to one onto the three costs in the previous step:</p><ul><li><b>Zero copy</b>: data goes straight from local application memory to remote application memory, with no copying through the kernel.</li><li><b>Kernel bypass</b>: the application talks to the network card through a library instead of calling the kernel every time.</li><li><b>Hardware offload</b>: reliable delivery, retransmission and connection management are handled by the network card.</li></ul>',
-         '<p>People often ask whether the remote CPU is truly uninvolved. It depends on the operation. With one-sided reads and writes, the initiator submits one request and reads or writes the remote memory directly, and the remote CPU takes no part; the network card does the transfer and leaves a completion record for the program to pick up. With two-sided send and receive, both sides prepare, and the remote CPU does take part.</p>',
+         '<p>Whether the remote CPU takes part depends on the operation. With one-sided reads and writes, the initiator submits one request and reads or writes the remote memory directly, and the remote CPU takes no part; the network card does the transfer and leaves a completion record for the program to pick up. With two-sided send and receive, both sides prepare, and the remote CPU does take part.</p>',
          '<p>On security, a program must first register the memory it allows to be accessed, which produces one key for local use and one for remote use. Unregistered memory cannot be reached, and a wrong key is rejected by the hardware itself.</p>']]},
     {s:['结果','Result'],t:['结果：延迟更低，CPU 空出来','Result: lower latency, a free CPU'],
      d:['少了内核和复制，一次传输更快，CPU 空出来做计算。图里的数字只是示意，不代表实测。','Without the kernel hop and the copy, each transfer is quicker and the CPU is free for real work. The counts are schematic, not measurements.'],
-     b:[['<p>拷贝、找内核、软件协议处理这三笔开销被拿掉以后，传输延迟明显降低，CPU 开销从高变低，吞吐接近硬件本身的上限。用一句话说，跨机器搬数据从 CPU 的活变成了网卡的活。GPU 场景还能更进一步：GPUDirect RDMA 让 GPU 显存和网卡直接相连，数据不经过 CPU 和系统内存。</p>',
+     b:[['<p>拷贝、内核调用、软件协议处理这三项开销去除后，传输延迟明显降低，CPU 开销从高变低，吞吐接近硬件本身的上限。跨机器搬运数据的工作由 CPU 转移到了网卡。GPU 场景还能更进一步：GPUDirect RDMA 让 GPU 显存和网卡直接相连，数据不经过 CPU 和系统内存。</p>',
          '<p>所以 RDMA 成了 AI 训练和推理、高性能存储、超级计算常用的互联方式：训练时跨服务器同步梯度、保存检查点；推理时在服务器之间传递模型的中间结果；并行文件系统的数据通道。</p>',
-         '<p>常有人问「能快多少」。要先问清走的是哪条路：应用通过程序库直接操作网卡，性能最高；经过内核里的文件或块存储协议（例如 NFS over RDMA、NVMe-oF），部署省事，但多一层内核开销。两条路的表现和运维方式都不同，问清了再谈数字。</p>'],
-        ['<p>Once copying, kernel calls and software protocol processing are removed, transfer latency drops markedly, CPU overhead goes from high to low, and throughput approaches the hardware limit. In short, moving data between machines becomes the network card\'s job instead of the CPU\'s. GPU systems go one step further: GPUDirect RDMA connects GPU memory directly to the network card, so data bypasses both the CPU and system memory.</p>',
+         '<p>性能提升幅度取决于所走的路径：应用通过程序库直接操作网卡，性能最高；经过内核里的文件或块存储协议（例如 NFS over RDMA、NVMe-oF），部署省事，但多一层内核开销。两条路的表现和运维方式都不同，比较性能数字前需先明确路径。</p>'],
+        ['<p>Once copying, kernel calls and software protocol processing are removed, transfer latency drops markedly, CPU overhead goes from high to low, and throughput approaches the hardware limit. Moving data between machines becomes the network card\'s job instead of the CPU\'s. GPU systems go one step further: GPUDirect RDMA connects GPU memory directly to the network card, so data bypasses both the CPU and system memory.</p>',
          '<p>That is why RDMA is a common interconnect for AI training and inference, high-performance storage and supercomputing: synchronising gradients and saving checkpoints across servers in training, passing a model\'s intermediate results between servers in inference, and the data path of parallel file systems.</p>',
-         '<p>People often ask how much faster it is. First establish which path is used: an application driving the network card directly through a library gets the highest performance; going through a file or block storage protocol inside the kernel (such as NFS over RDMA or NVMe-oF) is easier to deploy but adds a layer of kernel overhead. The two paths behave and operate differently, so settle that before talking numbers.</p>']]},
+         '<p>How much faster it is depends on the path: an application driving the network card directly through a library gets the highest performance; going through a file or block storage protocol inside the kernel (such as NFS over RDMA or NVMe-oF) is easier to deploy but adds a layer of kernel overhead. The two paths behave and operate differently, so the path must be established before comparing numbers.</p>']]},
     {s:['两种网络','Two networks'],t:['两种网络都能跑 RDMA','Two kinds of network can carry RDMA'],
      d:['InfiniBand 原生就是为 RDMA 设计的；以太网上跑 RDMA 用的是 RoCE。','InfiniBand was built for RDMA from the start. On Ethernet, RDMA runs as RoCE.'],
      b:[['<p>RDMA 是一种能力，InfiniBand 不等于 RDMA，它是实现 RDMA 的一种方式。InfiniBand 是一种专门为高性能计算、集群和存储互连设计的网络，这个名字既指协议，也指整张专用网络。它天生就不丢包，RDMA 可以直接在上面跑。</p>',
          '<p>在普通以太网上跑 RDMA 叫 RoCE。第一代只能在同一个二层网段里用，不能跨路由；第二代基于 UDP/IP，可以路由。RoCE 有个前提：要把以太网调成不丢包。常用两种办法：</p><ul><li><b>PFC</b>（基于优先级的流控）：拥塞时让上一跳暂停发送某个优先级的流量。它要求沿途每台设备都支持，配置不当可能引起全网暂停。</li><li><b>ECN</b>（显式拥塞通知）：拥塞时给数据包打标记，让发送端自己降速。它不会引起暂停风暴，大规模网络常用，要配合 DCQCN 这类拥塞控制算法。</li></ul>',
-         '<p>常有人问是不是只有这两种。其实还有第三种叫 iWARP，它跑在 TCP 上，靠 TCP 重传，所以不需要不丢包的网络。</p>'],
+         '<p>此外还有第三种：iWARP，它跑在 TCP 上，靠 TCP 重传，所以不需要不丢包的网络。</p>'],
         ['<p>RDMA is a capability. InfiniBand is not a synonym for it but one way to implement it. InfiniBand is a network built for high-performance computing, clusters and storage interconnect; the name covers both the protocol and the dedicated network. It is lossless by design, so RDMA runs on it natively.</p>',
          '<p>Running RDMA over standard Ethernet is called RoCE. Version 1 works only within a single Layer 2 segment and cannot be routed; version 2 runs over UDP/IP and can be routed. RoCE assumes the Ethernet has been tuned not to drop packets, usually in one of two ways:</p><ul><li><b>PFC</b> (priority-based flow control): under congestion it tells the previous hop to pause traffic of a given priority. Every device on the path must support it, and a misconfiguration can pause the whole network.</li><li><b>ECN</b> (explicit congestion notification): under congestion it marks packets so senders slow down on their own. It causes no pause storms, is common in large networks, and is paired with a congestion-control algorithm such as DCQCN.</li></ul>',
-         '<p>People also ask whether these are the only two options. There is a third, iWARP, which runs over TCP and relies on TCP retransmission, so it does not need a lossless network.</p>']]}
-  ];
-  var N=STEPS.length,cur=0,present=false;
-  var P=new URLSearchParams(location.search);
-  var T=function(p){return SS.lang()==='en'?p[1]:p[0]};
-  var art=document.getElementById('art'),rail=document.getElementById('rail'),now=document.getElementById('now'),prog=document.getElementById('prog');
-  var narrow=matchMedia('(max-width:960px)');
-  var animDoc=null,animPres=null,mfigs=[],io=null,lastDoc=-1,lastPres=-1;
-
-  /* ---------- 讲稿连播（present.html 带进来的参数） ---------- */
-  var inDeck=P.has('i')&&(P.has('stops')||P.has('talk'));
-  function deckLen(){if(P.get('stops'))return P.get('stops').split(',').length;var t=SS.talkById[P.get('talk')];return t?t.stops.length:0}
-  function deckHas(d){var j=+P.get('i')+d;return inDeck&&j>=0&&j<deckLen()}
-  function deckGo(d){var u=new URLSearchParams(P);u.set('i',+P.get('i')+d);['step','present','mode'].forEach(function(k){u.delete(k)});if(d<0)u.set('step','last');location.replace(SS.url('present.html')+'?'+u.toString())}
-
-  /* ---------- 文档模式 ---------- */
-  function buildDoc(){
-    art.innerHTML=STEPS.map(function(s,i){
-      return '<section class="sec" id="step-'+(i+1)+'" data-i="'+i+'"><p class="no">'+L('第 '+(i+1)+' 步，共 '+N+' 步','Step '+(i+1)+' of '+N)+'</p><h2>'+SS.esc(T(s.t))+'</h2><p class="lead">'+SS.esc(T(s.d))+'</p>'+
-        '<div class="figbox mfig"><div class="mhost" data-i="'+i+'"></div></div><div class="bd">'+T(s.b).join('')+'</div></section>';
-    }).join('');
-    rail.innerHTML=STEPS.map(function(s,i){return '<li><button type="button" data-go="'+i+'">'+SS.esc(T(s.s))+'</button></li>'}).join('');
-    prog.innerHTML=STEPS.map(function(s,i){return '<button type="button" data-go="'+i+'" aria-label="'+(i+1)+'"></button>'}).join('');
-    mountDocAnims();
-  }
-  /* 电脑宽度：右侧一个固定动画；手机宽度：每节一个，滚到哪节播哪节，看不见的停住 */
-  function mountDocAnims(){
-    if(io){io.disconnect();io=null}
-    mfigs.forEach(function(a){a.destroy()});mfigs=[];
-    if(narrow.matches){
-      if(animDoc){animDoc.destroy();animDoc=null;lastDoc=-1}
-      io=new IntersectionObserver(function(es){es.forEach(function(e){
-        var h=e.target,a=h.__anim;
-        if(e.isIntersecting&&!present){if(!a){a=SSAnim.rdma.mount(h,{});a.show(+h.dataset.i);mfigs.push(a)}else a.resume()}
-        else if(a)a.pause();
-      })},{threshold:0.25});
-      art.querySelectorAll('.mhost').forEach(function(h){io.observe(h)});
-    }else{
-      if(!animDoc){animDoc=SSAnim.rdma.mount(document.getElementById('animDoc'),{});lastDoc=-1}
-      if(lastDoc!==cur&&!present){lastDoc=cur;animDoc.show(cur)}
-    }
-  }
-  narrow.addEventListener('change',function(){mountDocAnims();syncDoc()});
-  function activeFromScroll(){
-    var a=0,line=innerHeight*0.42;
-    art.querySelectorAll('.sec').forEach(function(s,i){if(s.getBoundingClientRect().top<line)a=i});
-    return a;
-  }
-  var ticking=false;
-  addEventListener('scroll',function(){if(present||ticking)return;ticking=true;requestAnimationFrame(function(){ticking=false;var a=activeFromScroll();if(a!==cur){cur=a;syncDoc();writeURL()}})},{passive:true});
-  function syncDoc(){
-    art.querySelectorAll('.sec').forEach(function(s,i){s.classList.toggle('on',i===cur)});
-    rail.querySelectorAll('button').forEach(function(b){var i=+b.dataset.go;b.setAttribute('aria-current',i===cur?'step':'false');b.classList.toggle('done',i<cur)});
-    now.textContent=L('第 '+(cur+1)+' 步，共 '+N+' 步：','Step '+(cur+1)+' of '+N+': ')+T(STEPS[cur].s);
-    if(animDoc&&!present&&lastDoc!==cur){lastDoc=cur;animDoc.show(cur)}
-  }
-  function scrollToStep(i,smooth){var s=document.getElementById('step-'+(i+1));if(!s)return;cur=i;syncDoc();writeURL();
-    var top=s.getBoundingClientRect().top+scrollY-24;window.scrollTo({top:top,behavior:smooth&&!matchMedia('(prefers-reduced-motion: reduce)').matches?'smooth':'auto'})}
-
-  /* ---------- 演示模式 ---------- */
-  var ratio=960/476;
-  function fit(){/* 演示时动画区按可用空间放大，保持画布比例（网络切换按钮按百分比定位，不能拉伸） */
-    var h=document.getElementById('animPres');if(!present){h.style.width='';return}
-    var b=document.getElementById('pfig').getBoundingClientRect();h.style.width=Math.floor(Math.min(b.width,b.height*ratio))+'px';
-  }
-  addEventListener('resize',fit);
-  function renderPres(){
-    var s=STEPS[cur],n=cur+1;
-    document.getElementById('ptitle').textContent=T(s.t);document.getElementById('pdesc').textContent=T(s.d);
-    var c=L('第 '+n+' 步，共 '+N+' 步','Step '+n+' of '+N);
-    if(inDeck)c+=L('，讲稿第 '+(+P.get('i')+1)+' 站，共 '+deckLen()+' 站',' · talk stop '+(+P.get('i')+1)+' of '+deckLen());
-    document.getElementById('pcnt').textContent=c;
-    prog.querySelectorAll('button').forEach(function(b){var i=+b.dataset.go;b.setAttribute('aria-current',i===cur?'step':'false');b.classList.toggle('done',i<cur)});
-    prog.style.setProperty('--pv',cur/(N-1));
-    document.getElementById('pprev').disabled=cur===0&&!deckHas(-1);
-    document.getElementById('pnext').disabled=cur===N-1&&!deckHas(1);
-    fit();
-    if(animPres&&lastPres!==cur){lastPres=cur;animPres.show(cur)}
-  }
-  function setPresent(on,fs){
-    present=on;document.body.classList.toggle('present',on);
-    document.querySelectorAll('[data-mode]').forEach(function(b){b.setAttribute('aria-pressed',(b.dataset.mode==='present')===on?'true':'false')});
-    if(on){
-      if(animDoc)animDoc.pause();mfigs.forEach(function(a){a.pause()});
-      if(!animPres){animPres=SSAnim.rdma.mount(document.getElementById('animPres'),{onLayout:function(r){ratio=r;fit()}});ratio=animPres.ratio();lastPres=-1}
-      else{animPres.resume();lastPres=-1}
-      if(fs&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(function(){});
-      renderPres();
-    }else{
-      if(animPres)animPres.pause();
-      if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});
-      fit();if(animDoc)animDoc.resume();lastDoc=-1;scrollToStep(cur,false);
-    }
-    writeURL();
-  }
-  function go(i){
-    if(present){if(i>N-1&&deckHas(1))return deckGo(1);if(i<0&&deckHas(-1))return deckGo(-1);cur=Math.max(0,Math.min(N-1,i));renderPres();writeURL()}
-    else scrollToStep(Math.max(0,Math.min(N-1,i)),true);
-  }
-  function writeURL(){try{var u=new URL(location.href);u.searchParams.set('step',cur+1);if(present)u.searchParams.set('mode','present');else u.searchParams.delete('mode');u.searchParams.delete('present');u.hash='';history.replaceState(null,'',u)}catch(e){}}
-
-  /* ---------- 事件 ---------- */
-  document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-mode],[data-go],#pprev,#pnext,#pexit');if(!t)return;
-    if(t.dataset.mode){if((t.dataset.mode==='present')!==present)setPresent(t.dataset.mode==='present',t.dataset.mode==='present');return}
-    if(t.id==='pprev')return go(cur-1);if(t.id==='pnext')return go(cur+1);if(t.id==='pexit')return setPresent(false,false);
-    go(+t.dataset.go);
-  });
-  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&present)setPresent(false,false)});
-  document.addEventListener('keydown',function(e){
-    if(e.metaKey||e.ctrlKey||e.altKey)return;if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;var k=e.key;
-    if(k==='p'||k==='P'){setPresent(!present,!present);return}
-    if(present){
-      if(k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();go(cur+1)}
-      else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
-      else if(k==='Escape'){setPresent(false,false)}
-      else if(k==='Home')go(0);else if(k==='End')go(N-1);
-    }else if(k==='ArrowRight'||k==='ArrowLeft'){e.preventDefault();go(cur+(k==='ArrowRight'?1:-1))}
-  });
-  document.addEventListener('ss-lang',function(){buildDoc();syncDoc();if(present)renderPres()});
-
-  /* ---------- 起始状态：?step=N（或 last）、?mode=present、#present（旧链接） ---------- */
-  var qs=P.get('step'),hm=location.hash.match(/^#step-(\d)$/);
-  cur=qs==='last'?N-1:(qs?Math.max(0,Math.min(N-1,(parseInt(qs,10)||1)-1)):(hm?Math.max(0,Math.min(N-1,+hm[1]-1)):0));
-  var startPresent=P.get('mode')==='present'||P.has('present')||location.hash==='#present';
-  function start(){
-    if(startPresent)setPresent(true,false);
-    else if(qs||hm)scrollToStep(cur,false);
-    else syncDoc();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(start,0)});else setTimeout(start,0);
-  window.SS_TOPIC={go:go,present:function(){return present},cur:function(){return cur},anim:function(){return present?animPres:animDoc}};
-})();
+         '<p>There is also a third option, iWARP, which runs over TCP and relies on TCP retransmission, so it does not need a lossless network.</p>']]}
+  ]
+};
 </script>
+<script src="../../assets/topic.js"></script>
 </body>
 </html>

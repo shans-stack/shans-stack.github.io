@@ -1,0 +1,237 @@
+/* 本地可解码纠删码：6 步动画（SVG，不依赖动画库）。由 out/v-ldc/anim.html 改写成和 rdma.js 同样的接口。
+   接口：
+     var a = SSAnim['v-ldc'].mount(容器元素, {paused:false, onLayout:function(宽高比, 是否手机版){}});
+     a.show(i)  切到第 i 步（0 起）并从头播放；a.pause() / a.resume()；a.destroy()；a.ratio()；a.step()
+   动画自己不带翻页控件，页面翻到哪一步就调 show(i)。每一步的画面是「本轮时间 t」的函数。
+   宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
+   文字有中英两套（EN 表 + T()），跟着页面的 ss-lang 事件重画。样式在 assets/anim/v-ldc.css。 */
+(function(){
+var EN={"CNode 重建": "CNode rebuild", "重建": "Rebuild", "已读 ": "Read ", " 份": " pieces", "示意：146 份数据 + 4 份校验": "Schematic: 146 data + 4 parity", "示意：一格一块盘，146 份数据（蓝）+ 4 份校验（黄）": "Schematic: one cell per drive, 146 data (blue) + 4 parity (yellow)", "校验 ": "Parity ", " 顶替这一组": " covers this group", "要读的只剩这一组": "Only this group is read", "示意：分组只为帮助理解": "Schematic: groups only for illustration", "示意：3 份校验各顶替一组数据，合起来顶掉四分之三；分组只为帮助理解": "Schematic: 3 parity pieces each cover a group, three quarters in all; the groups are only illustrative", "黄框：3 份校验各顶替一组数据": "Yellow: each parity covers a group", "蓝框：要读的只剩这一组": "Blue: only this group is read", "示意：补回的份分散写入": "Schematic: rebuilt pieces spread out", "示意：补回的份分散写到许多盘的空闲处，坏盘留在原处不换": "Schematic: rebuilt pieces go to free space on many drives; the failed drive stays in place", "本地可解码": "Locally decodable", "传统算法": "Classic algorithm", "补回 ✓": "Rebuilt ✓", "示意，不代表实测速度": "Schematic, not measured speed", "校验占的空间": "Space taken by parity", "坏一块盘要读的份数": "Pieces read to rebuild one drive", "按比例画": "Drawn to scale", "换成宽条带 146+4": "Switch to wide 146+4", "换成窄条带 8+2": "Switch to narrow 8+2", "约 2.7%": "~2.7%", "读取量很高": "Reads: very high", "读取量升高": "Reads: rising", "读取量较低": "Reads: low", "本地可解码纠删码：坏一块盘时，重建只需读一小部分存活数据": "Locally decodable codes: rebuilding a failed drive reads only a small part of the surviving data"};
+function lang(){return window.SS_LANG==='en'?'en':'zh'}
+function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
+/* VAST 字标（官方黑白两版同一路径，颜色由 CSS 按深浅色切换），全页只放一份 */
+function sprite(){if(document.getElementById('ss-vast-wm'))return;
+  var d=document.createElement('div');d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;width:0;height:0;overflow:hidden';
+  d.innerHTML='<svg width="0" height="0" focusable="false"><symbol id="ss-vast-wm" viewBox="0 0 66 14"><path d="m11.918.916-.783-.375a.919.919 0 0 0-1.23.444l-.22.414L6.235 8.77 2.788 1.4l-.22-.414a.917.917 0 0 0-1.23-.444L.556.916c-.466.219-.69.804-.474 1.273l.195.383 4.689 10.024a1.383 1.383 0 0 0 1.248.797h.042a1.385 1.385 0 0 0 1.248-.797l4.689-10.024.195-.383c.217-.469-.007-1.054-.47-1.273ZM19.311 12.926l.784.375a.918.918 0 0 0 1.23-.444l.22-.414 3.451-7.371 3.448 7.371.22.414a.918.918 0 0 0 1.23.444l.785-.375c.462-.221.687-.804.469-1.271l-.195-.383-4.689-10.024a1.384 1.384 0 0 0-1.248-.797h-.041a1.386 1.386 0 0 0-1.25.797l-4.688 10.024-.195.383c-.219.467.006 1.05.47 1.27ZM47.275 3.212a.918.918 0 0 0 .966-.882l.03-.868c.02-.512-.393-.982-.908-1.006L46.887.45h-5.413c-.03 0-.059 0-.092.004-1.433.095-3.565 1.126-3.565 3.572 0 2.487 2.104 3.599 3.236 3.846l2.823.677c.041.009.082.017.124.023.15.022.896.176.896 1.014 0 .504-.253.801-.754.885h-5.318l-.362.005a.918.918 0 0 0-.966.883l-.03.868c-.02.512.393.982.908 1.006l.45.005h5.413c.043 0 .086 0 .128-.005 1.327-.123 3.301-1.196 3.301-3.647 0-2.539-2.051-3.547-3.195-3.742l-2.787-.668-.039-.008c-.042-.01-1.058-.235-1.058-1.142 0-.606.578-.769.953-.81h5.347l.388-.004ZM66 1.365a.916.916 0 0 0-.938-.914H55.5a.919.919 0 0 0-.938.914v.878c0 .513.427.968.942.976H58.897v9.086a.914.914 0 0 0 .56.864.919.919 0 0 0 .355.073h.879c.512 0 .968-.426.976-.94V3.217H65.06c.515-.007.943-.463.942-.975l-.003-.878Z"/></symbol></svg>';
+  document.body.appendChild(d)}
+function mount(host,opts){
+opts=opts||{};sprite();
+/* ---------- 通用小引擎：每一步的画面都是「本轮时间 t」的函数 ---------- */
+const NS='http://www.w3.org/2000/svg';
+host.classList.add('v-ldc');host.innerHTML='';
+const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','v-ldc-scene');svg.setAttribute('role','img');host.appendChild(svg);
+const btn=document.createElement('button');btn.className='v-ldc-btn';btn.type='button';btn.hidden=true;host.appendChild(btn);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mq=matchMedia('(max-width: 640px)');
+let L,E={},step=0,T0=0,raf=0,tgl=false,lastTg=-1,paused=!!opts.paused,pausedAt=0,dead=false,SCENE;
+function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+function tx(x,y,s,size,cls,anchor,p){if(L&&L.mobile)size=Math.max(size,17);/* 手机版画布在 400 宽页面里约缩到 0.74 倍，最小 17 才能 ≥12px */const t=el('text',{x,y,'font-size':size,class:cls||''},p);if(anchor)t.setAttribute('text-anchor',anchor);t.textContent=T(s);return t}
+function grp(show,p,extra){const g=el('g',Object.assign({class:'vis'},extra||{}),p);if(show)g.dataset.show=show;return g}
+function rect(r,cls,p,rx){return el('rect',{x:r.x,y:r.y,width:r.w,height:r.h,rx:rx==null?10:rx,class:cls},p)}
+function line(pts,cls,p){return el('path',{d:'M'+pts.map(q=>q.x.toFixed(1)+' '+q.y.toFixed(1)).join(' L'),class:'ln '+cls},p)}
+const C=r=>({x:r.x+r.w/2,y:r.y+r.h/2});
+const P=(x,y)=>({x,y});
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
+const ramp=(t,t0,t1)=>clamp((t-t0)/(t1-t0),0,1);
+function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);return s}
+function along(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
+const rev=pts=>pts.slice().reverse();
+/* 数据块：pk(cls) 生成一个块；put(p,x,y,a) 放到某处 */
+function pk(cls,w,h){w=w||L.pw;h=h||L.ph;const r=el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:3,class:'pkt '+(cls||'')},E.pk);r.style.opacity=0;return r}
+function put(p,q,a){p.setAttribute('transform','translate('+q.x.toFixed(1)+' '+q.y.toFixed(1)+')');p.style.opacity=a==null?1:a}
+/* 一个块沿 pts 从 t0 出发，速度 v（单位/秒）；返回到达时刻 */
+function travel(p,pts,t,t0,v,opt){opt=opt||{};const dur=plen(pts)/v,u=(t-t0)/dur;
+  if(u<0){put(p,pts[0],opt.pre==null?0:opt.pre);return t0+dur}
+  const fin=opt.fadeIn?ramp(t,t0,t0+0.12):1;
+  if(u<=1){put(p,along(pts,u),fin);return t0+dur}
+  put(p,pts[pts.length-1],opt.post==null?1:opt.post);return t0+dur}
+const loopFade=(t,per)=>t>per-0.4?clamp((per-t)/0.4,0,1):t<0.35?clamp(t/0.35,0,1):1;
+const H={el,tx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,put,travel,loopFade,alt:()=>tgl};
+/* 厂商 logo：VAST 字标放在部件角上。(x,y) 为字标竖直中线上的锚点，h 为高度 */
+function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;return el('use',{href:'#ss-vast-wm',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm brand-part'},p)}
+/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
+function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.63*s.length;const w=h*66/14,gap=Math.round(fs*0.4),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
+/* 本地可解码纠删码：一条宽条带画成四组盘格，盘下横线 → 汇集线 → 重建框 */
+
+function makeScene(){
+const SCENE={
+layout(mobile){
+  if(!mobile){
+    const big={x0:40,cw:22,ch:22,colP:26,rowP:30,bandP:70,y0:62,lo:12,px:560,collX:600,
+      box:{x:510,y:342,w:180,h:50},cb:{x:600,y:342},be:{x:600,y:342},boxT:T('CNode 重建'),
+      cnt:{x:495,y:367,a:'end'},meter:{x:712,y:360,w:170,sy:384},lab:{x:620}};
+    const lane=(lx)=>{const x0=lx+14,px=x0+337,collX=x0+362;return {x0,cw:14,ch:14,colP:17,rowP:21,bandP:52,y0:96,lo:8.5,px,collX,
+      box:{x:collX-70,y:310,w:140,h:46},cb:{x:collX,y:310},be:{x:collX,y:310},boxT:T('CNode 重建'),
+      cnt:{x:collX-82,y:333,a:'end'},title:{x:x0,y:56},done:{x:collX,y:382}}};
+    return {mobile,W:960,H:476,pw:14,ph:12,spw:10,sph:9,f:{lbl:18,sm:16,big:22,note:16,box:19,hd:34},big,
+      lanes:[lane(20),lane(490)],sep:{x1:480,y1:40,x2:480,y2:420},
+      bars:{tx:480,ty:70,lx:180,bx:180,bw:560,bh:40,vx:760,va:'start',rows:[{ly:140,y:180},{ly:250,y:290}]},
+      note:{x:32,y:456},btn:{x:480,y:392},legend:{x:32,y:420}};
+  }
+  const big={x0:16,cw:16,ch:20,colP:20,rowP:30,bandP:74,y0:66,lo:11,px:410,collX:446,
+    box:{x:286,y:372,w:150,h:46},cb:{x:446,y:395},be:{x:436,y:395},boxT:T('CNode 重建'),
+    cnt:{x:276,y:395,a:'end'},meter:{x:286,y:434,w:150,sy:458},lab:null};
+  const lane=(off)=>({x0:16,cw:12,ch:12,colP:15,rowP:18,bandP:44,y0:off+80,lo:7.5,px:313,collX:338,
+    box:{x:350,y:off+256,w:118,h:44},cb:{x:338,y:off+278},be:{x:350,y:off+278},boxT:T('重建'),
+    cnt:{x:16,y:off+278,a:'start'},title:{x:16,y:off+44},done:{x:409,y:off+318}});
+  return {mobile,W:480,H:700,pw:12,ph:10,spw:9,sph:8,f:{lbl:17,sm:16,big:20,note:16,box:17,hd:30},big,
+    lanes:[lane(0),lane(345)],sep:{x1:16,y1:338,x2:464,y2:338},
+    bars:{tx:240,ty:70,lx:16,bx:16,bw:448,bh:40,vx:464,va:'end',rows:[{ly:150,y:190},{ly:270,y:310}]},
+    note:{x:16,y:684},btn:{x:240,y:420},legend:{x:16,y:520}};
+},
+SIZES:[37,37,36,36],BAD:{band:3,i:20},
+grid(G,g,small){
+  const {el,tx,rect,line,P}=H,out={cells:[],par:[],G};
+  const cy=(k,r)=>G.y0+k*G.bandP+r*G.rowP, cxx=c=>G.x0+G.cw/2+c*G.colP;
+  // 盘下横线与汇集线（先画线，盘格压在上面）
+  const lys=[];
+  for(let k=0;k<4;k++)for(let r=0;r<2;r++){const ly=cy(k,r)+G.lo;lys.push(ly);line([P(cxx(0),ly),P(G.collX,ly)],'base thin',g)}
+  line([P(G.collX,lys[0]),P(G.collX,G.cb.y)],'base',g);
+  if(G.be.x!==G.cb.x)line([P(G.cb.x,G.cb.y),P(G.be.x,G.be.y)],'base',g);
+  out.ext=[];
+  this.SIZES.forEach((n,k)=>{for(let i=0;i<n;i++){const r=Math.floor(i/19),c=i%19,x=cxx(c),y=cy(k,r);
+    const R=rect({x:x-G.cw/2,y:y-G.ch/2,w:G.cw,h:G.ch},'cell',g,3);
+    out.cells.push({x,y,ly:y+G.lo,k,i,R,bad:k===this.BAD.band&&i===this.BAD.i});}});
+  for(let k=0;k<4;k++){const y=cy(k,0),R=rect({x:G.px-G.cw/2,y:y-G.ch/2,w:G.cw,h:G.ch},'cell p',g,3);
+    out.par.push({x:G.px,y,ly:y+G.lo,k,R,p:1});
+    out.ext.push(line([P(cxx(18)+G.cw/2,y+G.lo),P(G.px,y+G.lo)],'ochreL',g));out.ext[k].style.opacity=0;}
+  // 坏盘
+  const b=out.cells.find(c=>c.bad);b.R.setAttribute('class','cell bad');out.bad=b;
+  const w=G.cw*0.36;out.x=el('g',{},g);line([P(b.x-w,b.y-w),P(b.x+w,b.y+w)],'xmark',out.x);line([P(b.x-w,b.y+w),P(b.x+w,b.y-w)],'xmark',out.x);
+  // 重建框
+  out.box=rect(G.box,'blk',g,10);
+  out.boxT=tx(G.box.x+G.box.w/2-(small?0:14),G.box.y+G.box.h/2,G.boxT,small?L.f.sm:L.f.box,'lbl b7','middle',g);
+  /* VAST 字标：重建框就是 CNode，框内放不下，放在框左上角外侧（铭牌）；只在大图的步骤出现 */
+  if(!small)out.mk=vmark(G.box.x+2,G.box.y-11,L.mobile?12:10,g,'start');
+  if(!small){const gx=G.box.x+G.box.w-24,gy=G.box.y+G.box.h/2;out.ghost=rect({x:gx-L.pw/2-1,y:gy-L.ph/2-1,w:L.pw+2,h:L.ph+2},'ghost',g,3);}
+  out.path=c=>[P(c.x,c.y),P(c.x,c.ly),P(G.collX,c.ly),P(G.cb.x,G.cb.y),P(G.be.x,G.be.y)];
+  out.all=out.cells.concat(out.par);
+  return out;
+},
+counter(c,g,size){const {el,tx}=H;const t=tx(c.x,c.y,'',size,'ink2-t',c.a,g);t.appendChild(document.createTextNode(T('已读 ')));
+  const n=el('tspan',{class:'num rose-t'},t);n.textContent='0';t.appendChild(document.createTextNode(T(' 份')));return {t,n}},
+build(){
+  const {el,tx,grp,rect,line,P}=H,f=L.f,G=L.big;
+  /* 大图：第 1、2、4、6 步 */
+  const gb=grp('1 2 4 6');
+  E.g=this.grid(G,gb,false);
+  const g2=grp('2');E.c2=this.counter(G.cnt,g2,L.mobile?17:20);
+  const m=G.meter;el('rect',{x:m.x,y:m.y-7,width:m.w,height:14,rx:4,class:'track'},g2);
+  E.mf=el('rect',{x:m.x,y:m.y-7,width:0,height:14,rx:4,class:'fill'},g2);E.ms=tx(m.x,m.sy,'',f.sm,'st ink3-t','start',g2);
+  tx(L.note.x,L.note.y,L.mobile?T('示意：146 份数据 + 4 份校验'):T('示意：一格一块盘，146 份数据（蓝）+ 4 份校验（黄）'),f.note,'ink3-t','start',grp('1 2'));
+  /* 第 4 步：分组框与说明 */
+  const g4=grp('4');E.bands=[];
+  for(let k=0;k<4;k++){const y=G.y0+k*G.bandP,x=G.x0-5,w=18*G.colP+G.cw+10;
+    const R=rect({x,y:y-G.ch/2-5,w,h:G.rowP+G.ch+10},k<3?'bandbox':'bandbox read',g4,6);R.style.opacity=0;
+    let TT=null;if(G.lab)TT=tx(G.lab.x,y+G.rowP/2,k<3?T('校验 ')+(k+1)+T(' 顶替这一组'):T('要读的只剩这一组'),f.sm,'st '+(k<3?'ochre-t':'slate-t'),'start',g4);
+    if(TT)TT.style.opacity=0;E.bands.push({R,T:TT});}
+  E.n4=tx(L.note.x,L.note.y,L.mobile?T('示意：分组只为帮助理解'):T('示意：3 份校验各顶替一组数据，合起来顶掉四分之三；分组只为帮助理解'),f.note,'ink3-t','start',g4);
+  if(L.mobile){const lg=L.legend;E.m4=[tx(lg.x,lg.y,T('黄框：3 份校验各顶替一组数据'),f.sm,'st ochre-t','start',g4),tx(lg.x,lg.y+26,T('蓝框：要读的只剩这一组'),f.sm,'st slate-t','start',g4)];}
+  tx(L.note.x,L.note.y,L.mobile?T('示意：补回的份分散写入'):T('示意：补回的份分散写到许多盘的空闲处，坏盘留在原处不换'),f.note,'ink3-t','start',grp('6'));
+  /* 第 5 步：两条重建同时跑 */
+  const g5=grp('5');E.ln=L.lanes.map((G2,j)=>{const o=this.grid(G2,g5,true);
+    tx(G2.title.x,G2.title.y,j?T('本地可解码'):T('传统算法'),f.big,'lbl b7','start',g5);
+    o.c=this.counter(G2.cnt,g5,L.mobile?16:18);
+    o.done=tx(G2.done.x,G2.done.y,T('补回 ✓'),f.lbl,'st sage-t','middle',g5);return o});
+  line([P(L.sep.x1,L.sep.y1),P(L.sep.x2,L.sep.y2)],'sep',g5);
+  tx(L.note.x,L.note.y,T('示意，不代表实测速度'),f.note,'ink3-t','start',g5);
+  /* 第 3 步：两难 */
+  const g3=grp('3'),B=L.bars;
+  E.cfg=tx(B.tx,B.ty,'',f.hd,'lbl b7','middle',g3);
+  E.b3=[[T('校验占的空间'),'ochre'],[T('坏一块盘要读的份数'),'']].map(([s,c],k)=>{const r=B.rows[k];
+    tx(B.lx,r.ly,s,f.lbl,'ink2-t','start',g3);
+    el('rect',{x:B.bx,y:r.y-B.bh/2,width:B.bw,height:B.bh,rx:6,class:'track'},g3);
+    const fl=el('rect',{x:B.bx,y:r.y-B.bh/2,width:0,height:B.bh,rx:6,class:'fill '+c},g3);
+    const v=L.mobile?tx(B.vx,r.ly,'',f.big,'b7 '+(c?'ochre-t':'rose-t'),'end',g3):tx(B.vx,r.y,'',f.big,'b7 '+(c?'ochre-t':'rose-t'),'start',g3);
+    return {fl,v,cur:0,from:0,to:0}});
+  tx(L.note.x,L.note.y,T('按比例画'),f.note,'ink3-t','start',g3);
+},
+toggle:{steps:[2],on:T('换成宽条带 146+4'),off:T('换成窄条带 8+2'),
+  set(v){if(!E.b3)return;const vals=v?[4/150,146]:[2/10,8];E.b3.forEach((b,k)=>{b.from=b.cur;b.to=k?vals[1]/146:vals[0]/0.2});
+    E.cfg.textContent=v?'146+4':'8+2';E.b3[0].v.textContent=v?T('约 2.7%'):'20%';E.b3[1].v.textContent=(v?146:8)+T(' 份');}},
+reset(o){o.all.forEach(c=>{c.R.setAttribute('class',c.bad?'cell bad':(c.p?'cell p':'cell'))});o.ext&&o.ext.forEach(l=>l.style.opacity=0)},
+modes:[
+ /* 1：坏一块盘 */
+ {freeze:3,enter(){SCENE.reset(E.g)},
+  draw(t){const a=H.ramp(t,0.6,1.0);E.g.x.style.opacity=a;E.g.bad.R.setAttribute('class',a>0.5?'cell bad':'cell');E.g.ghost.style.opacity=H.ramp(t,1.3,1.8)}},
+ /* 2：传统算法读 146 份 */
+ {period:10,enter(){SCENE.reset(E.g);E.g.x.style.opacity=1;E.g.ghost.style.opacity=1;
+   const src=E.g.cells.filter(c=>!c.bad).concat([E.g.par[0]]);
+   E.cp=src.map((c,j)=>({p:H.pk((c.p?'par':'')+' cp'),c,t0:0.5+j*0.045}))},
+  draw(t){let n=0,lv=0;E.cp.forEach(o=>{const arr=H.travel(o.p,E.g.path(o.c),t,o.t0,620,{post:0});
+     if(t>=arr){n++;o.p.style.opacity=1-H.ramp(t,arr,arr+0.2)}lv+=H.ramp(t,arr,arr+0.5)});
+   lv/=E.cp.length;E.c2.n.textContent=n;E.mf.setAttribute('width',(L.big.meter.w*Math.max(lv,0.02)).toFixed(1));
+   E.ms.textContent=lv>0.66?T('读取量很高'):lv>0.3?T('读取量升高'):T('读取量较低');E.ms.setAttribute('class','st '+(lv>0.3?'rose-t':'ink3-t'));
+   const fd=H.loopFade(t,10);[E.c2.t,E.mf,E.ms].forEach(e=>e.style.opacity=fd)}},
+ /* 3：两难，一个按钮切换 */
+ {draw(t){const u=H.sm(H.ramp(t,0,0.7)),B=L.bars;E.b3.forEach(b=>{b.cur=b.from+(b.to-b.from)*u;b.fl.setAttribute('width',(B.bw*Math.max(b.cur,0.004)).toFixed(1))})},freeze:1},
+ /* 4：每份校验顶替一组 */
+ {freeze:5,enter(){SCENE.reset(E.g);E.g.x.style.opacity=1;E.g.ghost.style.opacity=1},
+  draw(t){E.bands.forEach((b,k)=>{const a=H.ramp(t,0.6+k*1.0,1.0+k*1.0);b.R.style.opacity=a;if(b.T)b.T.style.opacity=a;
+     if(k<3){E.g.par[k].R.setAttribute('class',a>0.5?'cell p hl':'cell p');E.g.ext[k].style.opacity=a}});
+   if(E.m4)E.m4.forEach((m,k)=>m.style.opacity=H.ramp(t,1.0+k*3,1.4+k*3))}},
+ /* 5：两条重建同时跑 */
+ {period:10.5,enter(){E.ln.forEach(o=>SCENE.reset(o));
+   const [A,Bq]=E.ln;
+   const sA=A.cells.filter(c=>!c.bad).concat([A.par[0]]);
+   const sB=Bq.cells.filter(c=>!c.bad&&c.k===SCENE.BAD.band).concat(Bq.par.slice(0,3));
+   E.rc=[sA,sB].map((src,j)=>src.map((c,i)=>({p:H.pk((c.p?'par':'')+' cp',L.spw,L.sph),c,t0:0.4+i*0.05,o:E.ln[j]})))},
+  draw(t){E.rc.forEach((arr,j)=>{let n=0,last=0;arr.forEach(q=>{const a=H.travel(q.p,q.o.path(q.c),t,q.t0,520,{post:0});last=Math.max(last,a);
+      if(t>=a){n++;q.p.style.opacity=1-H.ramp(t,a,a+0.2)}});
+     const o=E.ln[j],done=t>=last;o.c.n.textContent=n;o.c.n.setAttribute('class','num '+(j?'sage-t':'rose-t'));
+     o.box.setAttribute('class',done?'blk ok':'blk');const fd=H.loopFade(t,10.5);o.done.style.opacity=done?fd:0;o.c.t.style.opacity=fd})}},
+ /* 6：补回的份分散写到许多盘 */
+ {period:8,enter(){SCENE.reset(E.g);E.g.x.style.opacity=1;E.g.ghost.style.opacity=0;
+   const pick=[[0,4],[0,30],[1,11],[1,25],[2,2],[2,33],[3,8],[3,29],[0,17],[1,36],[2,19],[3,14]];
+   E.rb=pick.map(([k,i],j)=>({c:E.g.cells.find(c=>c.k===k&&c.i===i),p:H.pk('sage'),t0:0.4+j*0.4}))},
+  draw(t){E.rb.forEach(o=>{const a=H.travel(o.p,H.rev(E.g.path(o.c)),t,o.t0,420,{fadeIn:1,post:0});
+     if(t>=a)o.p.style.opacity=1-H.ramp(t,a,a+0.25);
+     o.c.R.setAttribute('class',t>=a&&t<7.6?'cell ok':'cell')})}}
+]};
+
+return SCENE}
+/* ---------- 驱动 ---------- */
+function applyVis(){
+  svg.setAttribute('data-step',step+1);
+  svg.querySelectorAll('[data-show]').forEach(g=>g.classList.toggle('hid',!g.dataset.show.split(' ').includes(String(step+1))));
+  svg.querySelectorAll('[data-dim]').forEach(g=>g.classList.toggle('dim',g.dataset.dim.split(' ').includes(String(step+1))));
+  const ts=SCENE.toggle;btn.hidden=!(ts&&ts.steps.includes(step));
+}
+function setToggle(v,flash){tgl=v;const ts=SCENE.toggle;if(!ts)return;btn.textContent='⇄ '+T(v?ts.off:ts.on);btn.setAttribute('aria-label',btn.textContent);
+  if(L){const b=L.btn;btn.style.left=(b.x/L.W*100)+'%';btn.style.top=(b.y/L.H*100)+'%'}
+  ts.set&&ts.set(v,flash);T0=performance.now();pausedAt=T0;}
+btn.addEventListener('click',()=>{setToggle(!tgl,true);if(!paused&&!reduce&&!dead){cancelAnimationFrame(raf);raf=requestAnimationFrame(frame)}else still()});
+function frame(now){const M=SCENE.modes[step],t=Math.max(0,(now-T0)/1000),per=M.period||1e9;const tc=per<1e8?t%per:t;
+  E.pk.style.opacity=M.period&&!M.noFade?loopFade(tc,per):1;M.draw&&M.draw(tc,t);raf=requestAnimationFrame(frame)}
+function still(){const M=SCENE.modes[step],tt=M.freeze!=null?M.freeze:(M.period||4)*0.7;E.pk.style.opacity=1;M.draw&&M.draw(tt,tt)}
+function enter(i){
+  step=i;cancelAnimationFrame(raf);E.pk.innerHTML='';
+  applyVis();const M=SCENE.modes[i];M.enter&&M.enter();
+  if(SCENE.toggle&&SCENE.toggle.steps.includes(i)){if(lastTg!==-1&&lastTg!==i)tgl=false;lastTg=i;setToggle(tgl,false);}
+  T0=performance.now();pausedAt=T0;
+  if(reduce||paused||dead){still();return}
+  raf=requestAnimationFrame(frame);
+}
+function rebuild(){cancelAnimationFrame(raf);SCENE=makeScene();L=SCENE.layout(mq.matches);svg.innerHTML='';E={};svg.setAttribute('viewBox','0 0 '+L.W+' '+L.H);
+  svg.setAttribute('aria-label',T("本地可解码纠删码：坏一块盘时，重建只需读一小部分存活数据"));SCENE.build();E.pk=el('g',{});SCENE.overlay&&SCENE.overlay();setToggle(tgl,false);
+  if(opts.onLayout)opts.onLayout(L.W/L.H,L.mobile);enter(step)}
+mq.addEventListener('change',rebuild);
+const onLang=()=>rebuild();document.addEventListener('ss-lang',onLang);
+rebuild();
+const ctrl={
+  show(i){enter(Math.max(0,Math.min(SCENE.modes.length-1,i)))},
+  pause(){if(paused)return;paused=true;pausedAt=performance.now();cancelAnimationFrame(raf)},
+  resume(){if(!paused)return;paused=false;if(reduce||dead)return;T0+=performance.now()-pausedAt;cancelAnimationFrame(raf);raf=requestAnimationFrame(frame)},
+  destroy(){dead=true;cancelAnimationFrame(raf);mq.removeEventListener('change',rebuild);document.removeEventListener('ss-lang',onLang);host.innerHTML='';host.classList.remove('v-ldc')},
+  ratio(){return L.W/L.H},
+  step(){return step},
+  at(t){cancelAnimationFrame(raf);E.pk.style.opacity=1;SCENE.modes[step].draw(t,t)},
+  toggle(v){setToggle(!!v,false)}
+};
+host.__anim=ctrl;
+return ctrl;
+}
+window.SSAnim=window.SSAnim||{};
+window.SSAnim['v-ldc']={steps:6,mount:mount};
+})();

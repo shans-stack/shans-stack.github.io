@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DASE：计算节点不存数据，盘由所有节点共用 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 VAST 的 DASE 架构：CNode 不存数据，经 NVMe-oF 共用每一块盘，所以节点之间不用协调，坏一台 CNode 盘一块不少。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-dase.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-dase">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DASE: stateless compute over shared flash">DASE：计算节点不存数据，盘由所有节点共用</h1>
+        <p class="meta"><span data-en="6 steps · CNode, DBox, NVMe-oF">6 步 · CNode、DBox、NVMe-oF</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), DASE architecture chapter.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版），DASE 架构章节。</li>
+      <li data-en="VAST Data knowledge base (kb.vastdata.com): hardware roles in Getting Started.">VAST Data 官方知识库（kb.vastdata.com）：Getting Started 中的硬件角色说明。</li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-dase.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-dase',ar:[960/520,480/460],
+  steps:[
+    {"s": ["传统做法", "Traditional"], "t": ["传统做法：每台节点只管自己的盘", "Traditional: each node manages only its own drives"], "d": ["每台节点带着自己的盘和缓存，节点之间需要持续相互协调。", "Each node carries its own drives and cache, so nodes must constantly coordinate with one another."], "b": [["<p>很多存储系统是「各管各的」：一台服务器既跑存储软件，也挂着自己的一组盘，这些盘只归它管。业界把这种搭法叫 shared-nothing（无共享）。</p>", "<p>因为每台服务器手里都有缓存（为了快，把常用数据或元数据先放在内存里的那一份），多台服务器同时服务时就得互相确认：谁在改这个文件、谁手里那份已经过期了。这类锁、缓存一致性、元数据同步的消息，统称节点之间的「协调流量」。另一个后果是：节点坏了，它下面的盘也就一起下线了，所以在这种架构里，故障单位是整台节点。</p>"], ["<p>Many storage systems keep to themselves: each server runs the storage software and has its own set of drives that only it manages. The industry calls this shared-nothing.</p>", "<p>Because every server holds a cache (a copy of frequently used data or metadata kept in memory for speed), servers working together must keep confirming with one another who is changing a file and whose copy is out of date. These lock, cache-coherence and metadata-sync messages are together called coordination traffic between nodes. Another consequence: when a node fails, the drives under it go offline with it, so in this design the unit of failure is a whole node.</p>"]]},
+    {"s": ["解耦", "Disaggregated"], "t": ["第一个词「解耦」：存储逻辑放在 CNode，盘放进 DBox", "The first word, disaggregated: storage logic in CNodes, drives in DBoxes"], "d": ["DASE 的 D 是解耦：跑逻辑的 CNode 和装盘的 DBox 分开。", "The D in DASE stands for disaggregated: the CNodes that run the logic are separate from the DBoxes that hold the drives."], "b": [["<p>DASE 是 Disaggregated Shared Everything 的缩写，前半个词是解耦。VAST 把原来存储控制器干的活（协议、纠删码、数据缩减等）全部放进 CNode 里跑；CNode 本身不装数据盘。</p>", "<p>盘全部放进存储箱 DBox。DBox 里的 DNode 只负责把盘接到网络上，不跑任何存储逻辑。客户端的请求先到 CNode，由 CNode 经网络直接去读写 DBox 里的盘。CNode 和 DBox 之间走的是 NVMe-oF：把 NVMe 盘挂到网络上、让别的服务器像用本地盘一样访问的协议。</p>"], ["<p>DASE stands for Disaggregated Shared Everything, and the first word means separated. VAST runs everything a storage controller used to do (protocols, erasure coding, data reduction and so on) in CNodes, and CNodes themselves hold no data drives.</p>", "<p>All drives sit in storage enclosures called DBoxes. The DNodes inside a DBox only connect the drives to the network and run no storage logic. A client request reaches a CNode first, and the CNode reads and writes the DBox drives directly over the network. CNodes and DBoxes talk NVMe-oF, a protocol that puts NVMe drives on the network so other servers can use them as if they were local.</p>"]]},
+    {"s": ["全共享", "Shared everything"], "t": ["第二个词「全共享」：每台 CNode 都挂上每一块盘", "The second part, shared everything: every CNode mounts every drive"], "d": ["每台 CNode 开机就挂上集群里的每一块 SSD，没有哪块盘归哪台 CNode。", "Every CNode mounts every SSD in the cluster at start-up; no drive belongs to any particular CNode."], "b": [["<p>后半个词是 Shared Everything（全共享）。集群里每一台 CNode 开机时都经 NVMe-oF 挂上集群中的每一块 SSD。数据、元数据和事务状态都放在这些共享的盘上，而不是放在某台节点的内存里。</p>", "<p>这和第 1 步正好相反：那边一块盘只属于一台节点，这边任何一台 CNode 都能直接碰到任何一块盘。后面讲的很多设计（比如条带可以铺满整个集群的盘）都从这一条出发。</p>"], ["<p>The second part is Shared Everything. At start-up every CNode in the cluster mounts every SSD in the cluster over NVMe-oF. Data, metadata and transaction state all live on these shared drives rather than in any node&#x27;s memory.</p>", "<p>This is the opposite of step 1: there a drive belongs to one node; here any CNode can reach any drive directly. Many later design choices (such as stripes that can span every drive in the cluster) start from this point.</p>"]]},
+    {"s": ["写到盘上才回话", "ACK after the drive"], "t": ["状态只放在共享盘上：写到盘上才回话", "State lives only on shared drives: no reply until it is on the drive"], "d": ["CNode 不在内存里攒写入，数据和元数据落到共享盘上之后才确认。", "CNodes do not collect writes in memory; they confirm only after data and metadata reach the shared drives."], "b": [["<p>CNode 是无状态的：任何改变状态的动作，都要先写进共享盘才向客户端确认（ACK）。CNode 不在内存里攒写，也不做读缓存和元数据缓存。</p>", "<p>这样设计的前提是：CNode 经 NVMe-oF 到盘的路很短，元数据唯一的那份就在共享盘上，没必要在本机再抄一份。关于不缓存是否影响性能，VAST 的说法是，缓存的前提是取远端数据很贵，这个代价变小之后，缓存带来的一致性、协调和故障恢复的麻烦反而更大。</p>"], ["<p>CNodes are stateless: any action that changes state is written to the shared drives before the client gets an acknowledgement (ACK). CNodes do not collect writes in memory, and they keep no read cache or metadata cache.</p>", "<p>This works because the NVMe-oF path from a CNode to the drives is short, and the only copy of the metadata is on the shared drives, so there is no need for another copy on the node. On whether skipping the cache makes it slow, VAST&#x27;s answer is that caching assumes fetching remote data is expensive; once that cost is small, the consistency, coordination and recovery problems a cache brings outweigh its benefit.</p>"]]},
+    {"s": ["不用协调", "No coordination"], "t": ["没有缓存，就不用互相协调", "No cache, so no coordination"], "d": ["CNode 之间不用确认谁手里的数据新，每台都直接去盘上取；数据照样走网络。", "CNodes never need to check whose copy is newer; each goes straight to the drives. Data still travels over the network."], "b": [["<p>既然没有哪台 CNode 手里有「自己的一份」，也就没有缓存一致性要维护。第 1 步里节点之间那类锁和缓存同步的往返，在 DASE 的同步读写路径上就没有了。</p>", "<p>准确地说：被消除的是协调类流量（锁、缓存一致性、元数据同步）。数据本身仍然要经 NVMe-oF 网络从 CNode 送到盘、从盘取回来，这部分并没有消失。所以说「没有东西向流量」不准确，准确的说法是「没有节点之间的协调流量」。</p>"], ["<p>Since no CNode holds a copy of its own, there is no cache coherence to maintain. The lock and cache-sync round trips between nodes from step 1 disappear from DASE&#x27;s synchronous read and write path.</p>", "<p>To be precise: what goes away is coordination traffic (locks, cache coherence, metadata sync). The data itself still travels over the NVMe-oF network from CNodes to drives and back; that part does not disappear. So saying there is no east-west traffic is inaccurate; the accurate statement is that there is no coordination traffic between nodes.</p>"]]},
+    {"s": ["坏一台 CNode", "A CNode fails"], "t": ["坏一台 CNode，盘一块不少", "Lose a CNode, keep every drive"], "d": ["CNode 坏了，别的 CNode 照样能访问全部的盘；换成传统做法，节点坏了，它的盘也一起下线。", "When a CNode fails, the other CNodes still reach every drive. In the traditional design, a failed node takes its drives offline with it."], "b": [["<p>CNode 里不存数据，坏了一台，数据都还在共享盘上，其余 CNode 照样能访问每一块盘，客户端的请求改由它们处理。对比第 1 步的传统做法，一台节点坏了，挂在它下面的盘就一起访问不到了。</p>", "<p>这一步说明 DASE 把「算」和「存」的故障拆开了：CNode 坏只影响算力，不影响数据。盘那一侧的高可用由 DBox 自己负责，见 DBox 这一站。</p>"], ["<p>CNodes store no data, so when one fails all the data is still on the shared drives; the remaining CNodes can still reach every drive and take over the client requests. Compare the traditional design from step 1: when a node fails, the drives attached to it become unreachable too.</p>", "<p>This step shows that DASE separates compute failures from storage failures: a failed CNode costs processing capacity, not data. High availability on the drive side is the DBox&#x27;s own job; see the DBox stop.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

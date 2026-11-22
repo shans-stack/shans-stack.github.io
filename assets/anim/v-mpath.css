@@ -1,0 +1,63 @@
+/* 多路径：一个挂载点用上多块网卡和多台 CNode：动画区样式。由 assets/anim/v-mpath.js 使用，只作用于 .ssa-v-mpath 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-mpath{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-mpath .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-mpath .vwm{fill:#000000}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-mpath .vwm{fill:#FFFFFF}}
+:root[data-theme=dark] .ssa-v-mpath .vwm{fill:#FFFFFF}
+.ssa-v-mpath .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-mpath .tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.ssa-v-mpath .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-mpath .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-mpath .ssa-scene text{dominant-baseline:central}
+.ssa-v-mpath .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-mpath .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-mpath .ssa-scene .dim{opacity:.22}
+.ssa-v-mpath .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-mpath .box.soft{stroke:var(--rule)}
+.ssa-v-mpath .box.on{stroke:var(--slate)}
+.ssa-v-mpath .box.hot{stroke:var(--rose)}
+.ssa-v-mpath .box.ok{stroke:var(--sage)}
+.ssa-v-mpath .box.dead{opacity:.35}
+.ssa-v-mpath .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.ssa-v-mpath .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-mpath .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-mpath .b7{font-weight:700}
+.ssa-v-mpath .rose-t{fill:var(--rose)}
+.ssa-v-mpath .sage-t{fill:var(--sage)}
+.ssa-v-mpath .slate-t{fill:var(--slate)}
+.ssa-v-mpath .violet-t{fill:var(--violet)}
+.ssa-v-mpath .ink3-t{fill:var(--ink3)}
+.ssa-v-mpath .ink2-t{fill:var(--ink2)}
+.ssa-v-mpath .st{font-weight:600;transition:opacity .25s}
+.ssa-v-mpath .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-mpath .ln.thin{stroke-width:3}
+.ssa-v-mpath .ln.lit{stroke:var(--slate)}
+.ssa-v-mpath .ln.ok{stroke:var(--sage)}
+.ssa-v-mpath .ln.hot{stroke:var(--rose)}
+.ssa-v-mpath .ln.vio{stroke:var(--violet)}
+.ssa-v-mpath .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-mpath .ln.dead{opacity:.3}
+.ssa-v-mpath .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-mpath .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-mpath .disk.lit{stroke:var(--slate)}
+.ssa-v-mpath .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-mpath .disk.bad{stroke:var(--rose);stroke-width:3}
+.ssa-v-mpath .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-mpath .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.ssa-v-mpath .pkt.ok{fill:var(--sage)}
+.ssa-v-mpath .dot{fill:var(--slate)}
+.ssa-v-mpath .dot.v{fill:var(--violet)}
+.ssa-v-mpath .dot.ok{fill:var(--sage)}
+.ssa-v-mpath .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-mpath .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-mpath .track{fill:var(--rule)}
+.ssa-v-mpath .fill{fill:var(--rose)}
+.ssa-v-mpath .fill.sage{fill:var(--sage)}
+.ssa-v-mpath .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-mpath .ln.cx{stroke:var(--slate);stroke-width:3}
+.ssa-v-mpath .ln.cx.dim{opacity:.25}
+.ssa-v-mpath .hl{stroke:var(--ochre)!important;stroke-width:3!important}
+.ssa-v-mpath .ochre-t{fill:var(--ochre)}
+.ssa-v-mpath .q{fill:var(--card);stroke:var(--slate);stroke-width:2}
+.ssa-v-mpath .fill.sl{fill:var(--slate)}

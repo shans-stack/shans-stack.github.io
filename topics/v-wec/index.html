@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>宽条带纠删码 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 VAST 的宽条带纠删码：故障域缩到一块盘以后，条带可以铺满整套系统的盘，校验占的空间很小；代价是重建要读得多。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-wec.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-wec">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Wide-stripe erasure coding">宽条带纠删码</h1>
+        <p class="meta"><span data-en="6 steps · VAST, erasure coding, DBox, stripes">6 步 · VAST、纠删码、DBox、条带</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), data protection chapter.">VAST Data，《VAST AI Operating System》白皮书（2026 年 4 月版），数据保护章节。</li>
+      <li data-en="VAST knowledge base: Understanding VAST Capacity.">VAST 官方知识库：Understanding VAST Capacity。</li>
+      <li data-en="VAST knowledge base: DBox High Availability.">VAST 官方知识库：DBox High Availability。</li>
+      <li data-en="Animations are schematic. Drive and piece counts are not a real configuration.">动画为示意，图中盘数与块数不代表实际配置。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-wec.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-wec',ar:[960/476,480/716],
+  steps:[
+    {s:["纠删码", "Erasure coding"],t:["纠删码：数据切成几份，再加几份校验", "Erasure coding: split the data, add parity"],
+     d:["一条数据切成几份，再算出几份校验，分别放到不同的盘上；坏掉的份数不超过校验份数，就能算回来。", "Data is split into pieces, a few parity pieces are computed, and each goes to a different drive. As long as no more pieces fail than there is parity, the data can be recomputed."],
+     b:[["<p>纠删码（erasure coding）是存储系统省空间的保护办法：不把整份数据复制几遍，而是切成 N 份数据，再算出 M 份校验，合起来叫一个条带（stripe），每一份放在不同的盘上。坏掉的份数只要不超过 M，剩下的份就能把它算回来。</p>", "<p>校验份数决定能扛几块盘同时坏，数据份数决定条带有多宽。条带越宽，同样的校验份数摊到的数据越多，校验占的空间就越小。所以「条带能做多宽」直接决定这套存储要多花多少盘在保护上。</p>"],
+        ["<p>Erasure coding is how storage systems protect data without wasting space. Instead of copying the data several times, it splits the data into N data pieces and computes M parity pieces; together they form a stripe, and each piece sits on a different drive. As long as no more than M pieces are lost, the remaining pieces can recompute them.</p>", "<p>The number of parity pieces sets how many drives can fail at once; the number of data pieces sets how wide the stripe is. The wider the stripe, the more data the same parity covers, and the less space parity takes. So how wide a stripe can be directly sets how many drives a system spends on protection.</p>"]]},
+    {s:["服务器一起下线", "A server takes its drives down"],t:["传统架构里，一台服务器挂了，它的盘一起下线", "In classic designs, a failed server takes its drives with it"],
+     d:["服务器各管各的盘，一台挂掉，它下面所有盘一起下线，所以一条带在一台服务器上只能放一份。", "Each server owns its drives. When one fails, all its drives go offline together, so a stripe can put only one piece on each server."],
+     b:[["<p>在各自管盘的架构（shared-nothing，每台存储服务器只管自己机箱里的盘）里，服务器本身就是故障单位：主板、内存或软件出问题，它下面所有盘都一起读不到了。</p>", "<p>如果一条带在同一台服务器上放了两份，这台服务器一挂就同时丢两份。所以条带必须跨服务器摆，每台服务器最多放一份，条带宽度受服务器台数限制。这也是行业里条带通常只做到十几到二十几份宽的原因之一。</p>"],
+        ["<p>In a shared-nothing design, where each storage server manages only the drives in its own chassis, the server itself is the unit of failure: if its motherboard, memory or software fails, none of its drives can be read.</p>", "<p>If a stripe put two pieces on the same server, losing that server would lose both at once. So stripes must be spread across servers with at most one piece per server, and stripe width is capped by the number of servers. This is one reason stripes in the industry are usually only ten to twenty-something pieces wide.</p>"]]},
+    {s:["故障域缩到一块盘", "Failure domain: one drive"],t:["VAST 把故障域缩到一块盘", "VAST shrinks the failure domain to one drive"],
+     d:["DBox 从网口到盘都是双份，一个 DNode 掉线，它的盘由另一个 DNode 接管；任何单一故障最多带走一块盘。", "A DBox is redundant from network port to drive. If one DNode goes offline, the other DNode takes over its drives, so any single failure takes at most one drive."],
+     b:[["<p>VAST 的盘装在 DBox 里。DBox 是一种只装盘的机箱，里面有两个 DNode（只负责把盘挂到网络上，不跑存储逻辑），两个 DNode 同时工作，各连一半的盘。某个 DNode 掉线时，机箱里的 PCIe 交换会把它的盘改接到另一个 DNode 上，盘一直在线。</p>", "<p>这样一来，单一故障最多只带走一块盘。故障域（一次故障会波及的范围）从「一台服务器」缩成了「一块盘」。这是后面所有设计的前提。比较不同方案时，一个基本指标是一次故障会带走几块盘，这个数决定了保护开销的下限。</p>"],
+        ["<p>VAST drives sit in a DBox, an enclosure that holds only drives. Inside are two DNodes, which only attach the drives to the network and run no storage logic. Both DNodes work at once, each connected to half the drives. If a DNode goes offline, the PCIe switching in the enclosure reconnects its drives to the other DNode, so the drives stay online.</p>", "<p>As a result, a single failure takes at most one drive. The failure domain, the scope one failure can affect, shrinks from a whole server to a single drive. Everything that follows depends on this. When comparing designs, a basic metric is how many drives one failure can take out; that number sets the floor for protection overhead.</p>"]]},
+    {s:["条带铺满所有盘", "Stripes span every drive"],t:["条带按盘算，可以铺满整套系统的盘", "Stripes count drives, so they can span the whole system"],
+     d:["只要每份落在不同的盘上就行，不必跨服务器；条带可以横跨所有 DBox 的盘，最宽是 146 份数据加 4 份校验。", "Each piece only needs a different drive, not a different server. A stripe can span the drives of every DBox, up to 146 data pieces plus 4 parity."],
+     b:[["<p>故障单位变成一块盘之后，条带只需要保证每一份在不同的盘上，盘可以在同一个 DBox 里。条带因此能铺开到整套系统的盘，VAST 最宽的条带是 146 份数据加 4 份校验，共 150 份。</p>", "<p>校验份数固定是 4 份，所以任意 4 块盘同时坏也不丢数据。系统里 DBox 少时条带会窄一些：官方容量文档里，1 台 DBox 是 36+4，2 台是 80+4，3 台是 124+4，4 台及以上才到 146+4。</p>"],
+        ["<p>Once the unit of failure is one drive, a stripe only has to keep each piece on a different drive, and those drives can be in the same DBox. Stripes can therefore spread across every drive in the system. The widest VAST stripe is 146 data pieces plus 4 parity, 150 in all.</p>", "<p>Parity is always 4 pieces, so any 4 drives can fail at once without data loss. With fewer DBoxes the stripes are narrower: the official capacity documentation lists 36+4 for one DBox, 80+4 for two, 124+4 for three, and 146+4 only from four DBoxes up.</p>"]]},
+    {s:["校验占比", "Parity overhead"],t:["条带越宽，校验占的空间越小", "The wider the stripe, the less space parity takes"],
+     d:["8+2 的校验占 20%，14+2 占 12.5%，146+4 只占约 2.7%。", "Parity takes 20% in 8+2, 12.5% in 14+2, and only about 2.7% in 146+4."],
+     b:[["<p>校验占比就是校验份数除以条带总份数。常见的 8+2 是 2/10，即 20%；14+2 是 2/16，即 12.5%；146+4 是 4/150，约 2.7%。份数越多，同样多的盘里能存的数据就越多。</p>", "<p>2.7% 对应的是不开 DBox 高可用的配置。如果要求容忍整台 DBox 掉线，就要打开 DBox 高可用：每台 DBox 在一条带里最多放 2 份，条带宽度变成 DBox 台数的两倍，校验占比随之上升（官方文档举例：11 台 DBox 时约 18%）。比较不同产品的保护开销时，要先对齐能容忍的故障范围。</p>"],
+        ["<p>Parity overhead is the parity count divided by the total pieces in the stripe. The common 8+2 is 2/10, or 20%; 14+2 is 2/16, or 12.5%; 146+4 is 4/150, about 2.7%. The more pieces, the more data the same drives can hold.</p>", "<p>The 2.7% applies when DBox high availability is off. To survive the loss of a whole DBox, DBox high availability must be on: each DBox holds at most 2 pieces of a stripe, the stripe width becomes twice the number of DBoxes, and parity overhead rises (the official example: about 18% with 11 DBoxes). When comparing protection overhead across products, first match the failures each one tolerates.</p>"]]},
+    {s:["代价：重建读得多", "Cost: heavy rebuild reads"],t:["代价：坏一块盘，要读很多份才补得回来", "The cost: one failed drive means many reads to rebuild"],
+     d:["用传统算法补一块盘，要读条带里剩下的 146 份数据；这正是下一站要解决的问题。", "With the classic algorithm, rebuilding one drive reads the remaining 146 data pieces in the stripe. That is the problem the next stop solves."],
+     b:[["<p>条带宽了，重建也变重了。传统的 Reed-Solomon 纠删码（最常见的一种纠删码算法）要补回一份，得把同一条带里剩下的数据份全部读一遍。条带有 146 份数据，就要读 146 份，相当于坏盘容量的 146 倍。</p>", "<p>这么大的重建读取量会长时间占用系统，这也是行业普遍不把条带做宽的真正原因。VAST 用本地可解码纠删码把重建要读的份数降下来，见下一站。</p>"],
+        ["<p>Wider stripes make rebuilds heavier. To recover one piece, classic Reed-Solomon erasure coding, the most common algorithm, reads every remaining data piece in the same stripe. With 146 data pieces it reads 146, which is 146 times the capacity of the failed drive.</p>", "<p>A rebuild that reads this much keeps the system busy for a long time, and that is the real reason the industry generally avoids wide stripes. VAST cuts the number of pieces a rebuild reads with locally decodable codes; see the next stop.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

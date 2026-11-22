@@ -1,0 +1,41 @@
+/* DoM 小文件：动画区样式。由 assets/anim/d-dom.js 使用，只作用于 .an-d-dom 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.an-d-dom{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.an-d-dom .an-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.an-d-dom .an-scene text{dominant-baseline:central}
+.an-d-dom .an-scene .vis{transition:opacity .4s}
+.an-d-dom .an-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.an-d-dom .an-scene .dim{opacity:.22}
+.an-d-dom .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.an-d-dom .ttl{fill:var(--ink2);font-weight:700}
+.an-d-dom .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.an-d-dom .blk.on{stroke:var(--violet);stroke-width:3}
+.an-d-dom .blk.ok{stroke:var(--sage);stroke-width:3}
+.an-d-dom .blk.busy{stroke:var(--rose);stroke-width:3}
+.an-d-dom .blk.new{stroke:var(--sage);stroke-width:3}
+.an-d-dom .lbl{fill:var(--ink);font-weight:500}
+.an-d-dom .lblb{fill:var(--ink);font-weight:700}
+.an-d-dom .st{font-weight:600;transition:opacity .25s}
+.an-d-dom .rose-t{fill:var(--rose)}.an-d-dom .sage-t{fill:var(--sage)}.an-d-dom .slate-t{fill:var(--slate)}.an-d-dom .ink3-t{fill:var(--ink3)}.an-d-dom .ink2-t{fill:var(--ink2)}.an-d-dom .violet-t{fill:var(--violet)}.an-d-dom .ochre-t{fill:var(--ochre)}
+.an-d-dom .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.an-d-dom .ln.meta{stroke:var(--violet)}
+.an-d-dom .ln.data{stroke:var(--slate)}
+.an-d-dom .ln.fast{stroke:var(--sage);stroke-width:5}
+.an-d-dom .ln.slow{stroke:var(--rose);stroke-width:5}
+.an-d-dom .ln.thin{stroke-width:3}
+.an-d-dom .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.an-d-dom .pkt.b{fill:var(--ochre)}
+.an-d-dom .pkt.cp{stroke:var(--rose);stroke-width:3}
+.an-d-dom .pkt.ghost{fill:none;stroke:var(--rule2);stroke-dasharray:4 3}
+.an-d-dom .pktl{fill:var(--card);font-weight:700;text-anchor:middle}
+.an-d-dom .req{fill:var(--violet);stroke:var(--card);stroke-width:2}
+.an-d-dom .req.wait{stroke:var(--rose);stroke-width:3}
+.an-d-dom .lay{fill:var(--card);stroke:var(--violet);stroke-width:2.5}
+.an-d-dom .layl{stroke:var(--violet);stroke-width:2;stroke-linecap:round}
+.an-d-dom .ep{fill:var(--card);stroke:var(--slate);stroke-width:2}
+.an-d-dom .num{font-weight:700;font-variant-numeric:tabular-nums}
+.an-d-dom .sep{stroke:var(--rule);stroke-width:1.5}
+/* 部件上的厂商 logo：深色模式垫浅灰底，logo 不改色 */
+.an-d-dom .lgbk{fill:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .an-d-dom .lgbk{fill:#DADCDF}}
+:root[data-theme=dark] .an-d-dom .lgbk{fill:#DADCDF}

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXAScaler：成千上万台节点怎么同时读写同一份数据 · Shan's Stack</title>
+<meta name="description" content="分 7 步说明 EXAScaler 怎么让成千上万台节点同时读写同一份数据：元数据和数据分开管，客户端拿到布局后直接并行读写多台数据服务器。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/d-exa.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-exa">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="EXAScaler: how thousands of nodes read and write the same data at once">EXAScaler：成千上万台节点怎么同时读写同一份数据</h1>
+        <p class="meta"><span data-en="7 steps · Lustre, parallel file system, DDN">7 步 · Lustre、并行文件系统、DDN</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="Lustre Operations Manual (doc.lustre.org), chapter “Understanding Lustre Architecture”.">Lustre Operations Manual（doc.lustre.org），「Understanding Lustre Architecture」一章。</li>
+      <li data-en="Project overview on lustre.org.">lustre.org 项目介绍。</li>
+      <li data-en="DDN EXAScaler product page (ddn.com).">DDN EXAScaler 产品页（ddn.com）。</li>
+      <li data-en="Animations are schematic. No measured bandwidth or capacity numbers are shown.">动画为示意，未标注实测带宽与容量数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/d-exa.js"></script>
+<script>
+/* 七步：标题、一句话说明（演示模式也用）、文档模式正文。正文只取自 Lustre 公开手册与作者学习笔记里讲 Lustre 架构、EXAScaler 公开功能的页面，不写性能数字，不做厂商对比。 */
+window.SS_TOPIC_CFG={anim:"d-exa",ar:[960/476,480/692],
+  steps:[
+   {
+    "t": [
+     "一台服务器供不过来",
+     "One server cannot keep up"
+    ],
+    "d": [
+     "很多计算节点同时读同一份数据，单台文件服务器只有一个出口，请求在它门口排队。",
+     "Many compute nodes read the same data at once, but a single file server has only one way out, so requests queue at its door."
+    ],
+    "b": [
+     [
+      "<p>GPU 集群和超算里，几百上千台计算节点常常要同时读同一个训练集、写同一批结果。如果所有文件都放在一台文件服务器上（比如一台 NFS 服务器），每个节点都只能访问这一台，它的网口和处理能力就是全体的上限。节点越多，排在它门口的请求越长。</p>",
+      "<p>并行文件系统要解决的就是这件事：让数据分散在很多台服务器上，节点可以同时找它们要数据。EXAScaler 就是这样一套并行文件系统，下面几步讲它的基本做法。</p>"
+     ],
+     [
+      "<p>In GPU clusters and supercomputers, hundreds or thousands of compute nodes often need to read the same training set and write the same batch of results at once. If every file sits on one file server (an NFS server, say), every node can only talk to that one machine, and its network port and processing power cap the whole cluster. The more nodes, the longer the queue at its door.</p>",
+      "<p>A parallel file system solves exactly this: data is spread across many servers, and nodes can ask all of them for data at the same time. EXAScaler is such a parallel file system, and the next steps show how it works.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "元数据和数据分开管",
+     "Metadata and data are managed separately"
+    ],
+    "d": [
+     "元数据服务器只管目录、文件名和文件布局；数据服务器存文件内容。",
+     "The metadata server handles only directories, file names and file layouts; the data servers hold the file contents."
+    ],
+    "b": [
+     [
+      "<p>EXAScaler 基于开源的 Lustre。Lustre 把一个文件拆成两部分来管。<b>元数据</b>是描述文件的信息：叫什么、在哪个目录、谁能读，以及内容放在哪里（这叫<b>文件布局</b>）。元数据由<b>元数据服务器</b>（MDS）管，存在它的元数据目标（MDT，即元数据用的那组盘）上。文件真正的内容由<b>数据服务器</b>（OSS）存，放在它们的对象存储目标（OST，数据用的盘）上。</p>",
+      "<p>一个文件的内容可以分成几块，分别放在不同的数据服务器上。整个文件系统的总容量，就是所有 OST 容量加起来。另外还有一个管理服务（MGS），客户端挂载时先找它拿整个文件系统的配置，日常读写不经过它。</p>"
+     ],
+     [
+      "<p>EXAScaler is based on open-source Lustre. Lustre manages a file in two parts. <b>Metadata</b> is information about the file: its name, its directory, who may read it, and where its contents are stored (the <b>file layout</b>). Metadata is managed by the <b>metadata server</b> (MDS) and stored on its metadata target (MDT, the set of disks used for metadata). The actual file contents are stored by the <b>data servers</b> (OSS) on their object storage targets (OST, the disks used for data).</p>",
+      "<p>A file's contents can be split into several pieces stored on different data servers. The total capacity of the file system is the sum of all OST capacities. There is also a management service (MGS): a client contacts it first when mounting to get the file system's configuration, and day-to-day reads and writes do not go through it.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "先问元数据服务器要布局",
+     "First, ask the metadata server for the layout"
+    ],
+    "d": [
+     "打开文件时，客户端先向元数据服务器拿一张布局：这个文件的各块在哪几台数据服务器上。",
+     "When a file is opened, the client first gets a layout from the metadata server: which data servers hold each piece of the file."
+    ],
+    "b": [
+     [
+      "<p>计算节点上装的是 Lustre 的原生客户端，它在操作系统内核里运行。应用打开一个文件时，客户端先向元数据服务器发一个小请求，拿回文件属性和布局。这一来一回传的数据量很小，但它是后面所有读写的「地图」。</p>",
+      "<p>元数据服务器在读写大文件时只在开头出现一次，压力不大；但如果是海量小文件、或者成千上万个节点同时在一个目录里建文件，元数据请求本身就会变多。EXAScaler 用 DNE3（把元数据分散到多台元数据服务器）和 DoM（小文件直接放在元数据层）来应对，见后面的站。</p>"
+     ],
+     [
+      "<p>Compute nodes run the native Lustre client, which runs inside the operating system kernel. When an application opens a file, the client first sends a small request to the metadata server and gets back the file's attributes and layout. Very little data moves in this round trip, but it is the “map” for every read and write that follows.</p>",
+      "<p>For large files the metadata server appears only once at the start, so the load is light. But with huge numbers of small files, or thousands of nodes creating files in one directory at once, metadata requests themselves multiply. EXAScaler handles this with DNE3 (spreading metadata across several metadata servers) and DoM (storing small files directly on the metadata tier), covered in later stops.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "再直接找数据服务器，几台一起读",
+     "Then go straight to the data servers, several at once"
+    ],
+    "d": [
+     "拿到布局后，客户端直接并行读写多台数据服务器，元数据服务器不在这条路上。",
+     "With the layout in hand, the client reads and writes several data servers in parallel; the metadata server is not on this path."
+    ],
+    "b": [
+     [
+      "<p>有了布局，客户端就知道第 1 块在哪台、第 2 块在哪台，于是同时向这几台数据服务器要数据。数据从数据服务器直接流到计算节点，不经过元数据服务器，也没有中间的网关转一手。这就是「元数据路径和数据路径分开」：找数据的路和搬数据的路是两条。</p>",
+      "<p>客户端和服务器之间走 Lustre 自己的网络层 LNet，可以跑在以太网上，也可以跑在 InfiniBand 上，并支持 RDMA。</p>"
+     ],
+     [
+      "<p>With the layout, the client knows which server holds piece 1, which holds piece 2, and so on, so it asks those data servers for data at the same time. Data flows from the data servers straight to the compute node, not through the metadata server and not through a gateway in between. This is the separation of the metadata path from the data path: the road to find data and the road to move data are two different roads.</p>",
+      "<p>Clients and servers communicate over LNet, Lustre's own network layer, which runs over Ethernet or InfiniBand and supports RDMA.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "带宽叠在一起",
+     "Bandwidth adds up"
+    ],
+    "d": [
+     "同样一段时间，从几台服务器同时取数，送到的数据比只靠一台多得多。",
+     "In the same amount of time, pulling data from several servers at once delivers far more than relying on one."
+    ],
+    "b": [
+     [
+      "<p>一台服务器的网口和盘有上限；四台同时出数，客户端收到的数据就是四份速度叠在一起。集群里有很多客户端时也一样：各客户端分别访问不同的数据服务器，不会集中到同一台。</p>",
+      "<p>要注意的是，「叠加」是近似的：实际能叠多少，还取决于网络、客户端数量和数据在服务器之间分得是否均匀。不能把它当成「加一台就一定多一份」的保证。画面只是示意，不代表实测数字。</p>"
+     ],
+     [
+      "<p>One server's network port and disks have a limit; with four servers sending at once, the client receives four streams added together. The same holds with many clients in a cluster: they go to different data servers instead of crowding one door.</p>",
+      "<p>Note that the adding up is approximate: how much adds up in practice depends on the network, the number of clients and how evenly the data is spread across servers. It is not a guarantee that one more server always adds one more share. The animation is schematic, not measured.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "加数据服务器就加容量和带宽",
+     "Add data servers to add capacity and bandwidth"
+    ],
+    "d": [
+     "总容量是各数据服务器容量之和；新加的服务器接新数据，已有数据不会自动搬过去。",
+     "Total capacity is the sum of the data servers' capacity. New servers take new data; existing data does not move over automatically."
+    ],
+    "b": [
+     [
+      "<p>要更大、更快，就往文件系统里加数据服务器。加进来以后，总容量立刻变大，新写的文件也会用到新服务器，所以总带宽跟着变大。</p>",
+      "<p>旧数据不会自动重新分布到新服务器上：Lustre 加了数据服务器之后，已经写好的文件还在原来的服务器上，需要的话要另外做迁移或重写。规划扩容时需考虑这一点。</p>"
+     ],
+     [
+      "<p>To grow bigger and faster, add data servers to the file system. Once they are added, total capacity grows right away, and newly written files use the new servers too, so total bandwidth grows with them.</p>",
+      "<p>Old data does not redistribute to the new servers automatically. After Lustre adds data servers, files already written stay on their original servers; moving them takes a separate migration or rewrite. Expansion planning should account for this.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "EXAScaler：开源 Lustre 加上一整套功能",
+     "EXAScaler: open-source Lustre plus a full set of features"
+    ],
+    "d": [
+     "EXAScaler 以开源 Lustre 为底座，加上元数据扩展、小文件、分层、多租户、网关和管理监控，预装在 DDN 硬件上交付。",
+     "EXAScaler builds on open-source Lustre and adds metadata scaling, small-file handling, tiering, multi-tenancy, gateways, and management and monitoring, delivered preinstalled on DDN hardware."
+    ],
+    "b": [
+     [
+      "<p>前面几步讲的都是 Lustre 本身的机制。EXAScaler 是 DDN 基于 Lustre 的商业发行版，在这个底座上加了一些公开功能：把元数据分散到多台服务器（DNE3）、小文件直接放在元数据层（DoM）、文件越写越大时自动换布局（PFL）、闪存和硬盘之间自动分层（Hot Pools）、多租户隔离、给不装客户端的应用用的 NFS / SMB 和 S3 网关，以及管理和监控工具（Insight）。</p>",
+      "<p>交付形态上，EXAScaler 通常预装并调好在 DDN 的存储硬件上，上架就能给 GPU 集群用。</p>"
+     ],
+     [
+      "<p>Everything in the previous steps is Lustre itself. EXAScaler is DDN's commercial distribution based on Lustre, adding public features on top of that base: spreading metadata across several servers (DNE3), storing small files directly on the metadata tier (DoM), switching layout automatically as a file grows (PFL), automatic tiering between flash and disk (Hot Pools), multi-tenant isolation, NFS / SMB and S3 gateways for applications without the client, and management and monitoring tools (Insight).</p>",
+      "<p>As for delivery, EXAScaler usually comes preinstalled and tuned on DDN storage hardware, ready to serve a GPU cluster once racked.</p>"
+     ]
+    ]
+   }
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

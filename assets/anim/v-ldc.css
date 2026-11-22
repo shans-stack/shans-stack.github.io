@@ -1,0 +1,63 @@
+/* 本地可解码纠删码：动画区样式。由 assets/anim/v-ldc.js 使用，只作用于 .v-ldc 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.v-ldc{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.v-ldc .v-ldc-scene{display:block;width:100%;height:auto;font-family:"Schibsted Grotesk","Noto Sans SC",system-ui,sans-serif}
+.v-ldc .v-ldc-scene text{dominant-baseline:central}
+.v-ldc .v-ldc-scene .vis{transition:opacity .4s}
+.v-ldc .v-ldc-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.v-ldc .v-ldc-scene .dim{opacity:.25}
+.v-ldc .frame{fill:none;stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.v-ldc .frame.bad{stroke:var(--rose);stroke-width:3}
+.v-ldc .ttl{fill:var(--ink2);font-weight:700}
+.v-ldc .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.v-ldc .blk.bad{stroke:var(--rose);stroke-width:3}
+.v-ldc .blk.on{stroke:var(--slate);stroke-width:3}
+.v-ldc .blk.ok{stroke:var(--sage);stroke-width:3}
+.v-ldc .lbl{fill:var(--ink);font-weight:500}
+.v-ldc .b7{font-weight:700}
+.v-ldc .ln{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.v-ldc .base{stroke:var(--rule2);stroke-width:3}
+.v-ldc .base.thin{stroke-width:2}
+.v-ldc .sageL{stroke:var(--sage);stroke-width:4}
+.v-ldc .roseL{stroke:var(--rose);stroke-width:4}
+.v-ldc .slateL{stroke:var(--slate);stroke-width:3}
+.v-ldc .dash{stroke-dasharray:7 6}
+.v-ldc .track{fill:var(--rule)}
+.v-ldc .fill{fill:var(--rose)}
+.v-ldc .fill.sage{fill:var(--sage)}
+.v-ldc .fill.slate{fill:var(--slate)}
+.v-ldc .fill.ochre{fill:var(--ochre)}
+.v-ldc .st{font-weight:600;transition:opacity .25s}
+.v-ldc .rose-t{fill:var(--rose)}
+.v-ldc .sage-t{fill:var(--sage)}
+.v-ldc .slate-t{fill:var(--slate)}
+.v-ldc .ochre-t{fill:var(--ochre)}
+.v-ldc .ink3-t{fill:var(--ink3)}
+.v-ldc .ink2-t{fill:var(--ink2)}
+.v-ldc .ink-t{fill:var(--ink)}
+.v-ldc .pkt{fill:var(--slate);stroke:var(--card);stroke-width:1.5}
+.v-ldc .pkt.par{fill:var(--ochre)}
+.v-ldc .pkt.rose{fill:var(--rose)}
+.v-ldc .pkt.sage{fill:var(--sage)}
+.v-ldc .pkt.cp{stroke:var(--rose);stroke-width:3}
+.v-ldc .xmark{stroke:var(--rose);stroke-width:3.5;stroke-linecap:round;fill:none}
+.v-ldc .drive{fill:var(--card);stroke:var(--rule2);stroke-width:1.8;transition:opacity .3s,stroke .3s}
+.v-ldc .drive.off{opacity:.3}
+.v-ldc .drive.bad{stroke:var(--rose);stroke-width:3;opacity:1}
+.v-ldc .num{font-weight:700;font-variant-numeric:tabular-nums}
+.v-ldc .sep{stroke:var(--rule);stroke-width:1.5}
+.v-ldc .v-ldc-btn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
+.v-ldc .v-ldc-btn[hidden]{display:block;opacity:0;pointer-events:none}
+@media (max-width:640px){.v-ldc .v-ldc-btn{font-size:14px;padding:6px 12px}}
+.v-ldc .cell{fill:var(--slate);stroke:var(--card);stroke-width:1;transition:stroke .25s}
+.v-ldc .cell.p{fill:var(--ochre)}
+.v-ldc .cell.bad{fill:var(--card);stroke:var(--rose);stroke-width:2.5}
+.v-ldc .cell.hl{stroke:var(--ink);stroke-width:2.5}
+.v-ldc .cell.ok{stroke:var(--sage);stroke-width:3.5}
+.v-ldc .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:4 3}
+.v-ldc .bandbox{fill:none;stroke:var(--ochre);stroke-width:2.5;stroke-dasharray:6 4;transition:opacity .3s}
+.v-ldc .bandbox.read{stroke:var(--slate)}
+.v-ldc .ochreL{stroke:var(--ochre);stroke-width:3.5}
+.v-ldc .vwm{fill:#000000}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .v-ldc .vwm{fill:#FFFFFF}}
+:root[data-theme="dark"] .v-ldc .vwm{fill:#FFFFFF}

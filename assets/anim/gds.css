@@ -1,0 +1,64 @@
+/* GPUDirect Storage：GPU 直接读存储：动画区样式。由 assets/anim/gds.js 使用，只作用于 .an-gds 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.an-gds{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.an-gds .netbtn:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+.an-gds .an-gds-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.an-gds .an-gds-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.an-gds .an-gds-scene text{dominant-baseline:central}
+.an-gds .an-gds-scene .vis{transition:opacity .4s}
+.an-gds .an-gds-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.an-gds .an-gds-scene .dim{opacity:.22}
+.an-gds .an-gds-scene .down{opacity:.3}
+.an-gds .frame{fill:none;stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.an-gds .ttl{fill:var(--ink2);font-weight:700}
+.an-gds .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.an-gds .blk.on{stroke:var(--rose);stroke-width:3}
+.an-gds .blk.ok{stroke:var(--sage);stroke-width:3}
+.an-gds .blk.ask{stroke:var(--slate);stroke-width:3}
+.an-gds .blk.bad{stroke:var(--rose);stroke-width:3;stroke-dasharray:6 5}
+.an-gds .lbl{fill:var(--ink);font-weight:500}
+.an-gds .cpul{fill:var(--ink);font-weight:700}
+.an-gds .track{fill:var(--rule)}
+.an-gds .fill{fill:var(--rose)}
+.an-gds .fill.slate{fill:var(--slate)}
+.an-gds .fill.sage{fill:var(--sage)}
+.an-gds .fill.ochre{fill:var(--ochre)}
+.an-gds .fill.violet{fill:var(--violet)}
+.an-gds .st{font-weight:600;transition:opacity .25s}
+.an-gds .rose-t{fill:var(--rose)}
+.an-gds .sage-t{fill:var(--sage)}
+.an-gds .slate-t{fill:var(--slate)}
+.an-gds .ink3-t{fill:var(--ink3)}
+.an-gds .ink2-t{fill:var(--ink2)}
+.an-gds .ochre-t{fill:var(--ochre)}
+.an-gds .violet-t{fill:var(--violet)}
+.an-gds .ln{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.an-gds .base{stroke:var(--rule2);stroke-width:4}
+.an-gds .wire{stroke:var(--rule2);stroke-width:4;transition:stroke .25s}
+.an-gds .wire.on,.an-gds .rose-l{stroke:var(--rose)}
+.an-gds .wire.ok,.an-gds .sage-l{stroke:var(--sage)}
+.an-gds .wire.ask{stroke:var(--slate)}
+.an-gds .tcp{stroke:var(--rose);stroke-width:5}
+.an-gds .rdma{stroke:var(--sage);stroke-width:5}
+.an-gds .cmdl{stroke:var(--slate);stroke-width:3;stroke-dasharray:7 6;fill:none}
+.an-gds .cmddot{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.an-gds .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.an-gds .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.an-gds .pkt.par{fill:var(--ochre)}
+.an-gds .pkt.kv{fill:var(--violet)}
+.an-gds .pkt.nw{stroke:var(--sage);stroke-width:3.5}
+.an-gds .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:5 4}
+.an-gds .ghost.sage{stroke:var(--sage)}
+.an-gds .stn{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .2s}
+.an-gds .stn.on{stroke:var(--rose);stroke-width:3}
+.an-gds .ep{fill:var(--card);stroke:var(--slate);stroke-width:2}
+.an-gds .num{font-weight:700;font-variant-numeric:tabular-nums}
+.an-gds .sw{fill:var(--card);stroke:var(--slate);stroke-width:3}
+.an-gds .sw.flip{animation:an-gds-flip .5s ease}
+@keyframes an-gds-flip{0%{stroke-width:3}40%{stroke-width:7}100%{stroke-width:3}}
+.an-gds .swt{fill:var(--slate);font-weight:700}
+.an-gds .sep{stroke:var(--rule);stroke-width:1.5}
+.an-gds .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.an-gds .netbtn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
+.an-gds .netbtn[hidden]{display:block;opacity:0;pointer-events:none}
+@media (max-width:640px){.an-gds .netbtn{font-size:14px;padding:6px 12px}}

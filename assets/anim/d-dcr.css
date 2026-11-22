@@ -1,0 +1,49 @@
+/* 分簇 RAID：动画区样式。由 assets/anim/d-dcr.js 使用，只作用于 .ddcr 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ddcr{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ddcr .ddcr-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ddcr .ddcr-scene text{dominant-baseline:central}
+.ddcr .ddcr-scene .vis{transition:opacity .4s}
+.ddcr .ddcr-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ddcr .lbl{fill:var(--ink);font-weight:500}
+.ddcr .b7{font-weight:700}
+.ddcr .track{fill:var(--rule)}
+.ddcr .fill{fill:var(--slate);transition:fill .3s}
+.ddcr .fill.rose{fill:var(--rose)}
+.ddcr .fill.sage{fill:var(--sage)}
+.ddcr .fill.ochre{fill:var(--ochre)}
+.ddcr .st{font-weight:600;transition:opacity .25s}
+.ddcr .rose-t{fill:var(--rose)}
+.ddcr .sage-t{fill:var(--sage)}
+.ddcr .slate-t{fill:var(--slate)}
+.ddcr .ochre-t{fill:var(--ochre)}
+.ddcr .violet-t{fill:var(--violet)}
+.ddcr .ink3-t{fill:var(--ink3)}
+.ddcr .ink2-t{fill:var(--ink2)}
+.ddcr .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .4s,stroke .3s}
+.ddcr .base{stroke:var(--rule2);stroke-width:4}
+.ddcr .q1{stroke-width:2}
+.ddcr .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ddcr .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.ddcr .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ddcr .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:opacity .4s,stroke .3s}
+.ddcr .disk.fail{stroke:var(--rose);stroke-dasharray:6 5}
+.ddcr .disk.new{stroke:var(--sage)}
+.ddcr .disk.off{opacity:.35}
+.ddcr .cell{stroke:var(--card);stroke-width:2;transition:fill .3s,opacity .3s,stroke .3s}
+.ddcr .cell.a{fill:var(--slate)}
+.ddcr .cell.b{fill:var(--violet)}
+.ddcr .cell.s{fill:none;stroke:var(--rule2);stroke-width:1.6;stroke-dasharray:4 3}
+.ddcr .cell.d{fill:var(--slate)}
+.ddcr .cell.dead{fill:var(--rule2)}
+.ddcr .cell.hl{stroke:var(--ochre);stroke-width:3.5}
+.ddcr .cell.fade{opacity:.3}
+.ddcr .ct{fill:var(--card);font-weight:700;pointer-events:none;transition:opacity .3s}
+.ddcr .xm{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ddcr .quota{stroke-width:2;transition:fill .4s,stroke .4s}
+.ddcr .quota.free{fill:var(--sage);stroke:var(--sage)}
+.ddcr .quota.used{fill:none;stroke:var(--rose);stroke-dasharray:4 3}
+/* 部件上的厂商 logo：DDN 没有白色版，深色模式在 logo 后垫浅灰底 #DADCDF，logo 不改色 */
+.ddcr .lgbk{fill:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ddcr .lgbk{fill:#DADCDF}}
+:root[data-theme=dark] .ddcr .lgbk{fill:#DADCDF}

@@ -1,0 +1,54 @@
+/* 宽条带纠删码：动画区样式。由 assets/anim/v-wec.js 使用，只作用于 .v-wec 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.v-wec{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.v-wec .v-wec-scene{display:block;width:100%;height:auto;font-family:"Schibsted Grotesk","Noto Sans SC",system-ui,sans-serif}
+.v-wec .v-wec-scene text{dominant-baseline:central}
+.v-wec .v-wec-scene .vis{transition:opacity .4s}
+.v-wec .v-wec-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.v-wec .v-wec-scene .dim{opacity:.25}
+.v-wec .frame{fill:none;stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.v-wec .frame.bad{stroke:var(--rose);stroke-width:3}
+.v-wec .ttl{fill:var(--ink2);font-weight:700}
+.v-wec .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.v-wec .blk.bad{stroke:var(--rose);stroke-width:3}
+.v-wec .blk.on{stroke:var(--slate);stroke-width:3}
+.v-wec .blk.ok{stroke:var(--sage);stroke-width:3}
+.v-wec .lbl{fill:var(--ink);font-weight:500}
+.v-wec .b7{font-weight:700}
+.v-wec .ln{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.v-wec .base{stroke:var(--rule2);stroke-width:3}
+.v-wec .base.thin{stroke-width:2}
+.v-wec .sageL{stroke:var(--sage);stroke-width:4}
+.v-wec .roseL{stroke:var(--rose);stroke-width:4}
+.v-wec .slateL{stroke:var(--slate);stroke-width:3}
+.v-wec .dash{stroke-dasharray:7 6}
+.v-wec .track{fill:var(--rule)}
+.v-wec .fill{fill:var(--rose)}
+.v-wec .fill.sage{fill:var(--sage)}
+.v-wec .fill.slate{fill:var(--slate)}
+.v-wec .fill.ochre{fill:var(--ochre)}
+.v-wec .st{font-weight:600;transition:opacity .25s}
+.v-wec .rose-t{fill:var(--rose)}
+.v-wec .sage-t{fill:var(--sage)}
+.v-wec .slate-t{fill:var(--slate)}
+.v-wec .ochre-t{fill:var(--ochre)}
+.v-wec .ink3-t{fill:var(--ink3)}
+.v-wec .ink2-t{fill:var(--ink2)}
+.v-wec .ink-t{fill:var(--ink)}
+.v-wec .pkt{fill:var(--slate);stroke:var(--card);stroke-width:1.5}
+.v-wec .pkt.par{fill:var(--ochre)}
+.v-wec .pkt.rose{fill:var(--rose)}
+.v-wec .pkt.sage{fill:var(--sage)}
+.v-wec .pkt.cp{stroke:var(--rose);stroke-width:3}
+.v-wec .xmark{stroke:var(--rose);stroke-width:3.5;stroke-linecap:round;fill:none}
+.v-wec .drive{fill:var(--card);stroke:var(--rule2);stroke-width:1.8;transition:opacity .3s,stroke .3s}
+.v-wec .drive.off{opacity:.3}
+.v-wec .drive.bad{stroke:var(--rose);stroke-width:3;opacity:1}
+.v-wec .num{font-weight:700;font-variant-numeric:tabular-nums}
+.v-wec .sep{stroke:var(--rule);stroke-width:1.5}
+.v-wec .v-wec-btn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
+.v-wec .v-wec-btn[hidden]{display:block;opacity:0;pointer-events:none}
+@media (max-width:640px){.v-wec .v-wec-btn{font-size:14px;padding:6px 12px}}
+.v-wec .vwm{fill:#000000}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .v-wec .vwm{fill:#FFFFFF}}
+:root[data-theme="dark"] .v-wec .vwm{fill:#FFFFFF}

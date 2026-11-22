@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCM 写缓冲 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 VAST 的 SCM 写缓冲：写入先落进几块耐写的 SCM 盘就回话，缩减、组条带、对齐闪存这些重活放到回话之后在后台做；大块写直接进 QLC。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-scm.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-scm">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="SCM write buffer">SCM 写缓冲</h1>
+        <p class="meta"><span data-en="5 steps · VAST, SCM, write buffer, QLC">5 步 · VAST、SCM、写缓冲、QLC</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), write buffer and data flow chapters.">VAST Data，《VAST AI Operating System》白皮书（2026 年 4 月版），写缓冲与数据流章节。</li>
+      <li data-en="VAST knowledge base: Write Buffers on VAST Clusters.">VAST 官方知识库：Write Buffers on VAST Clusters。</li>
+      <li data-en="VAST statement: VAST's Position on Intel Optane Discontinuation.">VAST 官方说明：VAST's Position on Intel Optane Discontinuation。</li>
+      <li data-en="Animations are schematic. Speeds and waiting times are not measurements.">动画为示意，图中速度与等待时间不代表实测。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-scm.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-scm',ar:[960/476,480/650],
+  steps:[
+    {s:["写入后的重活", "The work behind a write"],t:["写入后面跟着一串重活", "A write is followed by a lot of heavy work"],
+     d:["数据写进便宜的 QLC 闪存之前，要先缩减、攒成超宽条带、按闪存的页对齐；如果写的时候同步做完，客户端要一直等着。", "Before data goes onto cheap QLC flash it has to be reduced, gathered into very wide stripes and aligned to flash pages. Doing all that during the write would keep the client waiting."],
+     b:[["<p>VAST 用的是 QLC 闪存（每个存储单元存 4 个比特，便宜、容量大，但写入慢、能擦写的次数少）。要让它又快又耐用，数据落盘前得做几件费时的事：切块并做数据缩减，攒成很宽的纠删码条带，再按闪存内部的页和擦除块对齐后整块写入。</p>", "<p>如果这些事都在写入的路上同步做，客户端发出写请求后，要等全部做完、数据落进 QLC，才能收到「写好了」的回话（ACK）。重活越多，客户端等得越久。本页说明 VAST 如何把这两件事拆开。</p>"],
+        ["<p>VAST uses QLC flash, which stores 4 bits per cell: cheap and dense, but slow to write and limited in how many times it can be erased. To make it fast and durable, data needs time-consuming work before it lands: chunking and data reduction, gathering into very wide erasure-coded stripes, and aligning to the flash's internal pages and erase blocks so it is written in whole units.</p>", "<p>If all of this happened synchronously on the write path, a client would wait until everything was done and the data was on QLC before getting the acknowledgement (ACK) that the write succeeded. The more work, the longer the wait. This page shows how VAST separates the two.</p>"]]},
+    {s:["先落 SCM 就回话", "ACK once on SCM"],t:["先落进 SCM 就回话", "Acknowledge as soon as data is on SCM"],
+     d:["写入先写进至少两块 SCM 盘（分在不同的 DBox），元数据也写好几份，然后马上回话。", "A write goes to at least two SCM drives in different DBoxes, metadata is written in several copies, and the ACK goes out right away."],
+     b:[["<p>SCM（Storage Class Memory，存储级内存）是介于内存和普通闪存之间的一类介质：掉电不丢、延迟低、耐擦写。CNode 收到写入后，把数据写进至少两块 SCM 盘，这两块盘特意分在不同的 DBox；元数据则写三份，放在不同机箱的 SCM 上。都写好，就给客户端回话。</p>", "<p>这时数据已经有冗余保护，客户端不用等后面的任何重活。早期 SCM 用的是 Intel Optane，Optane 停产后换成了 SLC 闪存（每个单元只存 1 个比特，又快又耐写），官方文档里这一层有时也叫 NVRAM，层本身一直都在。写缓冲的保护也从早期的两路镜像，改成了跨多块 SCM 的双校验纠删码。</p>"],
+        ["<p>SCM (Storage Class Memory) is a class of media between memory and ordinary flash: it keeps data without power, has low latency and withstands many writes. When a CNode receives a write, it writes the data to at least two SCM drives, deliberately placed in different DBoxes, and writes metadata three times on SCM in different enclosures. Once all of that is written, it acknowledges the client.</p>", "<p>At that point the data is already redundantly protected, and the client does not wait for any of the heavy work. Early SCM was Intel Optane; after Optane was discontinued it became SLC flash, which stores 1 bit per cell and is fast and durable. Official documentation sometimes calls this layer NVRAM; the layer itself has always been there. Protection of the write buffer has also moved from early two-way mirroring to dual-parity erasure coding across several SCM drives.</p>"]]},
+    {s:["后台做重活", "Heavy work in the background"],t:["重活放到回话之后，在后台做", "The heavy work happens after the ACK, in the background"],
+     d:["缓冲攒到一定量，CNode 在后台把数据读出来，做相似性压缩、攒成超宽条带、按闪存对齐，再写进 QLC。", "When enough has built up in the buffer, CNodes read it back in the background, apply similarity reduction, gather it into very wide stripes, align it to flash and write it to QLC."],
+     b:[["<p>回话之后，数据在 SCM 里等着。攒到一定水位，多台 CNode 并行把它读出来，先按内容切块并做数据缩减（去重、压缩、相似性压缩），再把结果编进超宽的纠删码条带，最后按闪存的页大小和擦除块对齐，整块写进 QLC。</p>", "<p>这三件事都很费时，但都不在客户端的等待时间里。VAST 白皮书的说法是：SCM 为这三件事「买到了时间」。所以压缩可以用更费算力的算法，条带可以攒得很宽，管理员也不用去调条带宽度这类参数。</p>"],
+        ["<p>After the ACK, the data waits on SCM. Once it reaches a certain level, several CNodes read it back in parallel, chunk it by content and reduce it (deduplication, compression, similarity reduction), encode the result into very wide erasure-coded stripes, and finally align it to flash page and erase block sizes and write it to QLC in whole units.</p>", "<p>All three steps take time, but none of it is in the client's wait. The VAST white paper puts it as SCM buying time for these three steps. So compression can use more compute-heavy algorithms, stripes can be gathered very wide, and administrators do not have to tune parameters such as stripe width.</p>"]]},
+    {s:["排空快过涌入", "Drain faster than fill"],t:["只要排空比涌入快，处理多久都不要紧", "As long as draining outpaces filling, processing time does not matter"],
+     d:["新写入不停进来，后台不停把缓冲排空；只要排空的速度跟得上，缓冲就一直不满，单份数据的处理时长无关紧要。", "New writes keep arriving while the background keeps draining the buffer. As long as draining keeps up, the buffer never fills, and how long any one piece takes does not matter."],
+     b:[["<p>写缓冲像一个中转站：一头是客户端不断写入，一头是 CNode 不断排空。只要多台 CNode 并行排空的速度快过新数据涌入，缓冲的占用就稳定在较低的水平，客户端的每次写入都能很快回话。</p>", "<p>反过来，如果持续写入的量长期超过后台排空的能力，缓冲会被填满，写入就要等排空。所以评估持续写入很重的场景时，要看的是后台排空的能力，而不只是写缓冲回话有多快。</p>"],
+        ["<p>The write buffer works like a transit station: clients keep writing at one end and CNodes keep draining at the other. As long as the CNodes, draining in parallel, outpace new data coming in, buffer usage stays low and every client write is acknowledged quickly.</p>", "<p>Conversely, if sustained writes exceed the background's draining capacity for a long time, the buffer fills and writes have to wait for draining. So for workloads with heavy sustained writes, what matters is the background draining capacity, not just how fast the write buffer acknowledges.</p>"]]},
+    {s:["大块写直写 QLC", "Large writes go straight to QLC"],t:["例外：大块写直接写进 QLC", "The exception: large writes go straight to QLC"],
+     d:["像 checkpoint 这样的大块写入（约 256 KB 以上）不进 SCM，直接写进 QLC 上专门留出的一块区域。", "Large writes such as checkpoints (roughly 256 KB and up) skip SCM and go straight to a reserved area on QLC."],
+     b:[["<p>「写入一律先落 SCM」并不完全准确。VAST 有一个叫 Write Buffer Bursting 的机制：大块写入（约 256 KB 以上，典型的是训练时保存的 checkpoint）绕过 SCM，直接写进 QLC 上专门保留的一小块区域，这块区域用较窄的条带保护。</p>", "<p>原因是集群里 QLC 盘的数量比 SCM 盘多得多，大块顺序写直接分摊到更多盘上，整体写入带宽更高。小块写仍然先进 SCM，享受快速回话。</p>"],
+        ["<p>\"Every write lands on SCM first\" is not entirely accurate. VAST has a mechanism called Write Buffer Bursting: large writes (roughly 256 KB and up, typically checkpoints saved during training) bypass SCM and go straight to a small reserved area on QLC, protected with narrower stripes.</p>", "<p>The reason is that a cluster has far more QLC drives than SCM drives, so large sequential writes spread across more drives and overall write bandwidth is higher. Small writes still go to SCM first and get a fast ACK.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>本地可解码纠删码 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 VAST 的本地可解码纠删码：一份校验能顶替一大组数据，坏一块盘时重建只读约四分之一的存活数据，补回的份分散写到许多盘上。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-ldc.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-ldc">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Locally decodable codes">本地可解码纠删码</h1>
+        <p class="meta"><span data-en="6 steps · VAST, erasure coding, rebuild">6 步 · VAST、纠删码、重建</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), data protection chapter (locally decodable codes).">VAST Data，《VAST AI Operating System》白皮书（2026 年 4 月版），数据保护章节（locally decodable codes）。</li>
+      <li data-en="Reed-Solomon erasure coding (general coding theory).">Reed-Solomon 纠删码（通用编码理论）。</li>
+      <li data-en="Animations are schematic. Groupings and speeds are not the real implementation or measurements.">动画为示意，图中分组与速度不代表实际实现与实测。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-ldc.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-ldc',ar:[960/476,480/700],
+  steps:[
+    {s:["坏了一块盘", "A drive fails"],t:["坏了一块盘，要把它那一份补回来", "A drive fails and its piece must be rebuilt"],
+     d:["一条 146+4 的宽条带里有一块盘坏了，系统要用剩下的份把丢掉的那一份算回来。", "A drive in a wide 146+4 stripe fails, and the system must recompute the lost piece from the rest."],
+     b:[["<p>上一站讲到，VAST 的条带可以宽到 146 份数据加 4 份校验，每一份在不同的盘上。现在其中一块盘坏了，这条带就少了一份。只要坏的不超过 4 块，数据都还在，但要尽快把丢掉的那份算回来、写到别的盘上，恢复完整的保护。</p>", "<p>这个「算回来」的过程叫重建（rebuild）。重建要从其他盘读数据，读得越多，占用系统越久。所以宽条带能不能用，关键看重建要读多少。</p>"],
+        ["<p>The previous stop showed that a VAST stripe can be as wide as 146 data pieces plus 4 parity, each on a different drive. Now one of those drives fails and the stripe is one piece short. As long as no more than 4 drives fail, the data is still there, but the lost piece must be recomputed and written to another drive soon to restore full protection.</p>", "<p>This recomputing is called a rebuild. A rebuild reads data from other drives, and the more it reads, the longer it keeps the system busy. Whether wide stripes are practical comes down to how much a rebuild has to read.</p>"]]},
+    {s:["传统算法", "Classic algorithm"],t:["传统算法：要读剩下的全部数据份", "The classic algorithm reads every remaining data piece"],
+     d:["用传统的 Reed-Solomon 纠删码，补回一份要读同一条带里 146 份存活的数据。", "With classic Reed-Solomon erasure coding, recovering one piece reads the 146 surviving data pieces in the stripe."],
+     b:[["<p>Reed-Solomon 是最常见的纠删码算法。它的规则是：一条带有多少份数据，补回任何一份就要读回同样多份。条带是 146+4，就要读 146 份，读取量相当于坏盘容量的 146 倍。</p>", "<p>坏一块盘时，这块盘上每一条带的份都要补，每一条都要这样读一遍。读取量这么大，会长时间占用整套系统。</p>"],
+        ["<p>Reed-Solomon is the most common erasure coding algorithm. Its rule: to recover any one piece, read back as many pieces as the stripe has data pieces. For a 146+4 stripe that means 146 pieces, a read volume 146 times the capacity of the failed drive.</p>", "<p>When a drive fails, every stripe with a piece on it needs that piece back, and each stripe is read this way. Reads on this scale keep the whole system busy for a long time.</p>"]]},
+    {s:["宽条带的两难", "The wide-stripe dilemma"],t:["宽条带的两难：省空间，但重建读得多", "The wide-stripe dilemma: less space, more rebuild reads"],
+     d:["条带窄，重建读得少，但校验占的空间多；条带宽，校验占比小，但重建要读的份数跟着变多。", "A narrow stripe reads little on rebuild but spends more space on parity. A wide stripe spends little on parity but reads more pieces to rebuild."],
+     b:[["<p>8+2 的条带，校验占 20%，坏一块盘只要读 8 份；146+4 的条带，校验只占约 2.7%，坏一块盘却要读 146 份。用传统算法，省空间和重建快只能二选一。</p>", "<p>这正是行业普遍把条带控制在十几到二十几份宽的原因：原因不在于无法做宽，而在于条带过宽时重建负担过重。VAST 要用宽条带，就必须先把重建要读的量降下来。</p>"],
+        ["<p>An 8+2 stripe spends 20% on parity and reads 8 pieces to rebuild a drive; a 146+4 stripe spends only about 2.7% on parity but reads 146 pieces. With the classic algorithm, the choice is between saving space and rebuilding quickly.</p>", "<p>That is why the industry generally keeps stripes ten to twenty-something pieces wide: not because wider is impossible, but because rebuilds cannot keep up. To use wide stripes, VAST first has to cut how much a rebuild reads.</p>"]]},
+    {s:["一份校验顶一组", "One parity covers a group"],t:["本地可解码：每份校验能顶替一大组数据", "Locally decodable: each parity piece stands in for a large group"],
+     d:["每份校验从一组跨多个条带、略有差异的数据算出来，重建时一份校验就能代替一大组数据份；3 份校验顶掉四分之三的数据份。", "Each parity piece is computed from a slightly different set of data spanning several stripes, so in a rebuild one parity piece replaces a large group of data pieces. Three parity pieces cover three quarters of the data."],
+     b:[["<p>本地可解码纠删码（locally decodable codes）改的是校验怎么算。传统做法里，每份校验都由同一条带的全部数据算出；VAST 让每份校验从一组跨越多个条带、彼此略有差异的数据集合算出来。这样在重建计算里，一份校验就能「顶替」一大组数据份，不必把那组数据一份份读回来。</p>", "<p>按 VAST 白皮书的说法，3 份校验能顶掉四分之三的数据份，重建只需读剩下的四分之一。图里把数据分成四组只是示意，帮助理解「顶替」的意思，不是真实的分组方式。</p>"],
+        ["<p>Locally decodable codes change how parity is computed. Classically, every parity piece is computed from all the data in the same stripe. VAST computes each parity piece from a set of data that spans several stripes, with each set slightly different. In the rebuild calculation, one parity piece can then stand in for a large group of data pieces, so that group does not have to be read back piece by piece.</p>", "<p>According to the VAST white paper, 3 parity pieces stand in for three quarters of the data pieces, so a rebuild reads only the remaining quarter. The four groups in the picture are only an aid to understanding what standing in means; they are not the real grouping.</p>"]]},
+    {s:["只读四分之一", "Read only a quarter"],t:["重建只读四分之一：38 份对 146 份", "Rebuild reads a quarter: 38 pieces instead of 146"],
+     d:["同样补回一份，传统算法要读 146 份，本地可解码只读 38 份。", "To recover the same piece, the classic algorithm reads 146 pieces and locally decodable codes read 38."],
+     b:[["<p>146+4 的条带坏一块盘，传统 Reed-Solomon 要读 146 份；本地可解码只需读约四分之一的存活份，也就是 38 份。同样的读取速度下，要读的份数少了约四分之三，重建占用系统的时间也就短得多。</p>", "<p>这一步是宽条带能落地的关键。上一站的宽条带解决了空间开销，这一站解决了它的代价，两者缺一不可。保护能力不变：每条带仍有 4 份校验，同时坏 4 块盘也不丢数据。</p>"],
+        ["<p>When a drive in a 146+4 stripe fails, classic Reed-Solomon reads 146 pieces; locally decodable codes read only about a quarter of the survivors, 38 pieces. At the same read speed that is about three quarters fewer pieces, so the rebuild keeps the system busy for much less time.</p>", "<p>This is what makes wide stripes practical. The previous stop's wide stripes solved the space overhead; this stop removes their cost, and each needs the other. Protection is unchanged: every stripe still has 4 parity pieces, so 4 drives can fail at once without data loss.</p>"]]},
+    {s:["分散写回", "Spread the rebuilt data"],t:["补回来的数据摊到所有盘上，不用热备盘", "Rebuilt data spreads over many drives, with no hot spare"],
+     d:["重建出来的份按各盘剩余空间和寿命分散写到许多盘上，不设专门的热备盘，坏盘不换也能继续跑。", "Rebuilt pieces are written across many drives according to each drive's free space and remaining life. There is no dedicated hot spare, and the system keeps running without replacing the failed drive."],
+     b:[["<p>VAST 不设固定的校验盘或热备盘（hot spare，专门等着顶替坏盘的空盘）。重建出来的份按各盘的剩余容量和剩余寿命，挑许多块盘分散写入，所有盘一起分担写入量。重建也只补有效数据，空闲和已删除的空间直接跳过。</p>", "<p>坏盘可以先不换（fail-in-place）：空间够就照常跑；空间不够时，系统会自动把条带重新组得窄一些继续运行。所以坏盘不必马上换。</p>"],
+        ["<p>VAST has no fixed parity drive and no hot spare, the empty drive that waits to replace a failed one. Rebuilt pieces are written across many drives chosen by remaining capacity and remaining life, so all drives share the write load. The rebuild also restores only live data and skips free and deleted space.</p>", "<p>A failed drive can stay where it is (fail-in-place): with enough space the system runs as usual, and when space runs short it automatically rebuilds stripes a little narrower and keeps going. So a failed drive need not be replaced right away.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

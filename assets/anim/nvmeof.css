@@ -1,0 +1,64 @@
+/* NVMe-oF：远端的盘当本地用：动画区样式。由 assets/anim/nvmeof.js 使用，只作用于 .an-nvmeof 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.an-nvmeof{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.an-nvmeof .netbtn:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+.an-nvmeof .an-nvmeof-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.an-nvmeof .an-nvmeof-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.an-nvmeof .an-nvmeof-scene text{dominant-baseline:central}
+.an-nvmeof .an-nvmeof-scene .vis{transition:opacity .4s}
+.an-nvmeof .an-nvmeof-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.an-nvmeof .an-nvmeof-scene .dim{opacity:.22}
+.an-nvmeof .an-nvmeof-scene .down{opacity:.3}
+.an-nvmeof .frame{fill:none;stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.an-nvmeof .ttl{fill:var(--ink2);font-weight:700}
+.an-nvmeof .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.an-nvmeof .blk.on{stroke:var(--rose);stroke-width:3}
+.an-nvmeof .blk.ok{stroke:var(--sage);stroke-width:3}
+.an-nvmeof .blk.ask{stroke:var(--slate);stroke-width:3}
+.an-nvmeof .blk.bad{stroke:var(--rose);stroke-width:3;stroke-dasharray:6 5}
+.an-nvmeof .lbl{fill:var(--ink);font-weight:500}
+.an-nvmeof .cpul{fill:var(--ink);font-weight:700}
+.an-nvmeof .track{fill:var(--rule)}
+.an-nvmeof .fill{fill:var(--rose)}
+.an-nvmeof .fill.slate{fill:var(--slate)}
+.an-nvmeof .fill.sage{fill:var(--sage)}
+.an-nvmeof .fill.ochre{fill:var(--ochre)}
+.an-nvmeof .fill.violet{fill:var(--violet)}
+.an-nvmeof .st{font-weight:600;transition:opacity .25s}
+.an-nvmeof .rose-t{fill:var(--rose)}
+.an-nvmeof .sage-t{fill:var(--sage)}
+.an-nvmeof .slate-t{fill:var(--slate)}
+.an-nvmeof .ink3-t{fill:var(--ink3)}
+.an-nvmeof .ink2-t{fill:var(--ink2)}
+.an-nvmeof .ochre-t{fill:var(--ochre)}
+.an-nvmeof .violet-t{fill:var(--violet)}
+.an-nvmeof .ln{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.an-nvmeof .base{stroke:var(--rule2);stroke-width:4}
+.an-nvmeof .wire{stroke:var(--rule2);stroke-width:4;transition:stroke .25s}
+.an-nvmeof .wire.on,.an-nvmeof .rose-l{stroke:var(--rose)}
+.an-nvmeof .wire.ok,.an-nvmeof .sage-l{stroke:var(--sage)}
+.an-nvmeof .wire.ask{stroke:var(--slate)}
+.an-nvmeof .tcp{stroke:var(--rose);stroke-width:5}
+.an-nvmeof .rdma{stroke:var(--sage);stroke-width:5}
+.an-nvmeof .cmdl{stroke:var(--slate);stroke-width:3;stroke-dasharray:7 6;fill:none}
+.an-nvmeof .cmddot{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.an-nvmeof .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.an-nvmeof .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.an-nvmeof .pkt.par{fill:var(--ochre)}
+.an-nvmeof .pkt.kv{fill:var(--violet)}
+.an-nvmeof .pkt.nw{stroke:var(--sage);stroke-width:3.5}
+.an-nvmeof .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:5 4}
+.an-nvmeof .ghost.sage{stroke:var(--sage)}
+.an-nvmeof .stn{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .2s}
+.an-nvmeof .stn.on{stroke:var(--rose);stroke-width:3}
+.an-nvmeof .ep{fill:var(--card);stroke:var(--slate);stroke-width:2}
+.an-nvmeof .num{font-weight:700;font-variant-numeric:tabular-nums}
+.an-nvmeof .sw{fill:var(--card);stroke:var(--slate);stroke-width:3}
+.an-nvmeof .sw.flip{animation:an-nvmeof-flip .5s ease}
+@keyframes an-nvmeof-flip{0%{stroke-width:3}40%{stroke-width:7}100%{stroke-width:3}}
+.an-nvmeof .swt{fill:var(--slate);font-weight:700}
+.an-nvmeof .sep{stroke:var(--rule);stroke-width:1.5}
+.an-nvmeof .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.an-nvmeof .netbtn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
+.an-nvmeof .netbtn[hidden]{display:block;opacity:0;pointer-events:none}
+@media (max-width:640px){.an-nvmeof .netbtn{font-size:14px;padding:6px 12px}}

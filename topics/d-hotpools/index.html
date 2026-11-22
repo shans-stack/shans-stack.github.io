@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hot Pools：闪存和硬盘在同一个目录里自动分冷热 · Shan's Stack</title>
+<meta name="description" content="分 7 步说明 Hot Pools：同一个目录里，新写入先落闪存，后台建硬盘副本、清理闪存，冷文件变热后自动回到闪存。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/d-hotpools.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-hotpools">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Hot Pools: automatic hot/cold placement between flash and disk in one namespace">Hot Pools：闪存和硬盘在同一个目录里自动分冷热</h1>
+        <p class="meta"><span data-en="7 steps · EXAScaler, Lustre, flash, tiering">7 步 · EXAScaler、Lustre、闪存、冷热分层</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="Lustre Operations Manual (doc.lustre.org), chapter &quot;File Level Redundancy (FLR)&quot;.">Lustre Operations Manual（doc.lustre.org），「File Level Redundancy (FLR)」一章。</li>
+      <li data-en="The lamigo and lpurge tools in the open-source Lustre code (lustre-release).">Lustre 开源代码（lustre-release）中的 lamigo / lpurge 工具。</li>
+      <li data-en="DDN Hot Pools demo site (hot-pools.ddn.com).">DDN Hot Pools 演示站（hot-pools.ddn.com）。</li>
+      <li data-en="DDN EXAScaler public product material: the Hybrid (flash plus disk) solution.">DDN EXAScaler 公开产品资料：Hybrid（闪存加硬盘）方案说明。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/d-hotpools.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'d-hotpools',ar:[960/476,480/752],
+  steps:[
+   {
+    "s": [
+     "两个池",
+     "Two pools"
+    ],
+    "t": [
+     "两个池，一个目录",
+     "Two pools, one directory"
+    ],
+    "d": [
+     "闪存池快但小，硬盘池大而便宜，用户看到的是同一个目录。",
+     "The flash pool is fast but small, the disk pool large and cheap, and users see a single directory."
+    ],
+    "b": [
+     [
+      "<p>EXAScaler 可以把数据服务器按介质分成两个存储池：闪存池（Hot Pool，NVMe 闪存，快、单位容量贵、容量小）和硬盘池（Cool Pool，机械硬盘，慢一些、便宜、容量大）。存储池就是一组同类数据服务器，目录或文件可以指定放在哪个池。</p>",
+      "<p>Hot Pools 要解决的是：不让用户自己决定文件放哪个池，也不让用户看到两套目录。应用照常读写同一个路径，文件在闪存还是在硬盘、还是两边都有，由系统在后台按冷热自动调整。Hot Pools 不是独立的缓存层：两边的数据都是同一个文件的组成部分，都在同一个命名空间（命名空间：用户看到的那一棵目录树）里。</p>"
+     ],
+     [
+      "<p>EXAScaler can group data servers by media into two storage pools: a flash pool (the Hot Pool: NVMe flash, fast, costly per unit of capacity, small) and a disk pool (the Cool Pool: hard drives, somewhat slower, cheap, large). A storage pool is a group of similar data servers, and a directory or file can be assigned to a pool.</p>",
+      "<p>What Hot Pools solves: users do not have to decide which pool a file goes to, and they never see two sets of directories. Applications read and write the same path as usual, and whether a file is on flash, on disk or on both is adjusted automatically in the background by how hot it is. It does not add a separate cache layer: both copies are parts of the same file, in the same namespace (the directory tree users see).</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "先落闪存",
+     "Flash first"
+    ],
+    "t": [
+     "新写入先落闪存",
+     "New writes land on flash first"
+    ],
+    "d": [
+     "新文件默认先写进闪存池，写得快。",
+     "New files go to the flash pool by default, so writes are fast."
+    ],
+    "b": [
+     [
+      "<p>新文件按目录上设好的默认布局写入，默认布局把文件的全部或前一部分放在闪存池，所以写入时拿到的是闪存的速度。超大的文件可以只把开头放在闪存、后面的部分直接写进硬盘池，这由渐进布局（PFL，文件越写越大时后面部分自动换池）决定。</p>",
+      "<p>写得越多，闪存池占用越高。闪存总量是有限的，下面几步讲的就是闪存怎么持续腾出地方给新数据。</p>"
+     ],
+     [
+      "<p>New files are written with the default layout set on the directory, which puts all of a file, or its first part, in the flash pool, so writes get flash speed. A very large file can keep only its start on flash and write the rest straight to the disk pool; this is decided by the progressive file layout (PFL, where later parts of a growing file move to another pool automatically).</p>",
+      "<p>The more is written, the fuller the flash pool gets. Flash is finite, and the next steps show how it keeps making room for new data.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "建硬盘副本",
+     "Disk copy"
+    ],
+    "t": [
+     "后台给文件在硬盘上建副本",
+     "A disk copy is made in the background"
+    ],
+    "d": [
+     "文件写完、一段时间没人碰，后台就在硬盘池复制一份，闪存那份暂时还留着。",
+     "Once a file is written and left alone for a while, a copy is made in the disk pool in the background; the flash copy stays for now."
+    ],
+    "b": [
+     [
+      "<p>Hot Pools 的底子是 Lustre 的文件级镜像（FLR）：同一个文件可以有几份镜像，分别放在不同的池。每台元数据服务器上有一个后台程序（lamigo），它看着文件的关闭事件，文件关闭后超过设定的时间（min-age）还没被再改动，就在硬盘池给它加一份镜像。</p>",
+      "<p>这时文件两边都有：闪存那份继续服务读写，硬盘那份是「退路」。建副本在后台做，应用感觉不到。上线前要定的第一个参数就是这个等待时间。</p>"
+     ],
+     [
+      "<p>Hot Pools is built on Lustre file-level redundancy (FLR): one file can have several mirrors in different pools. A background program on each metadata server (lamigo) watches file close events, and when a closed file has not been modified again for a set time (min-age), it adds a mirror in the disk pool.</p>",
+      "<p>The file now exists in both places: the flash copy keeps serving reads and writes, and the disk copy is the fallback. Mirroring runs in the background, so applications do not notice it. The first parameter to settle before going live is this waiting time.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "清理闪存",
+     "Flash cleanup"
+    ],
+    "t": [
+     "闪存快满，就删掉已有硬盘副本的旧文件",
+     "When flash fills up, old files that have disk copies leave flash"
+    ],
+    "d": [
+     "闪存用到水位线，后台从最老的文件开始，删掉它们在闪存上的那份，硬盘上那份还在。",
+     "When flash reaches the watermark, the background removes flash copies starting with the oldest files; their disk copies stay."
+    ],
+    "b": [
+     [
+      "<p>每台闪存数据服务器上还有一个清理程序（lpurge）。闪存池占用越过上水位，它就从较老的文件开始，删除闪存上的镜像，直到占用回落到下水位。它只删那些已经在硬盘池有副本的文件，所以删掉的只是一份拷贝，文件本身没丢，路径也不变。</p>",
+      "<p>上下两条水位线是上线前要定的另外两个参数。被清理出闪存的文件仍然可读，读取路径见下一步。</p>"
+     ],
+     [
+      "<p>Each flash data server also runs a cleanup program (lpurge). When flash pool usage crosses the high watermark, it deletes flash mirrors starting with older files until usage falls back to the low watermark. It only deletes files that already have a copy in the disk pool, so all that goes is one copy: the file itself is not lost and its path does not change.</p>",
+      "<p>The high and low watermarks are the other two parameters to settle before going live. A file cleaned from flash can still be read, by the path described in the next step.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "从硬盘读",
+     "Read from disk"
+    ],
+    "t": [
+     "读只在硬盘上的文件，直接从硬盘读",
+     "A file that is only on disk is read straight from disk"
+    ],
+    "d": [
+     "冷文件被读到时，直接从硬盘池供数，不先搬回闪存再返回数据。",
+     "When a cold file is read, the disk pool serves it directly instead of moving it back to flash first."
+    ],
+    "b": [
+     [
+      "<p>一个文件只剩硬盘上的那份时，读请求直接由硬盘池服务，不会先把整个文件召回闪存、让应用等着（没有 staging 等待）。这次读拿到的是硬盘的速度。</p>",
+      "<p>这一点与很多分层方案不同：后者在冷数据被访问时要先回迁。Hot Pools 里两个池本来就在同一个文件系统里，客户端可以直接读硬盘池里的那份。</p>"
+     ],
+     [
+      "<p>When only the disk copy of a file is left, read requests are served directly by the disk pool. The whole file is not recalled to flash first while the application waits (no staging delay). That read gets disk speed.</p>",
+      "<p>This differs from many tiering schemes, which must move cold data back before it can be accessed. In Hot Pools both pools are part of the same file system, so the client can read the copy in the disk pool directly.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "热了回闪存",
+     "Back to flash"
+    ],
+    "t": [
+     "反复被读，文件会自己回到闪存",
+     "Read again and again, a file moves back to flash on its own"
+    ],
+    "d": [
+     "同一个冷文件被读得越来越频繁，热度过了门槛，后台就把它复制回闪存，之后从闪存读。",
+     "As a cold file is read more and more often, its heat crosses a threshold, it is copied back to flash in the background, and later reads come from flash."
+    ],
+    "b": [
+     [
+      "<p>在双向模式下，后台程序也统计硬盘池里文件的读写热度。热度达到门槛的文件，会在后台被镜像一份到闪存池，此后的读就命中闪存。触发升温的那几次读本身仍走硬盘，升温是异步的。</p>",
+      "<p>单向模式只自动做「闪存到硬盘」这一个方向，硬盘回闪存要管理员手动触发。正在被持续写的文件不会被拿去升温。</p>"
+     ],
+     [
+      "<p>In bidirectional mode the background program also tracks how hot the files in the disk pool are. A file whose heat reaches the threshold gets a mirror in the flash pool in the background, and later reads hit flash. The reads that triggered the promotion still go to disk, because promotion is asynchronous.</p>",
+      "<p>Unidirectional mode only automates the flash-to-disk direction; moving a file from disk back to flash has to be triggered by an administrator. Files that are still being written are not promoted.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "溢出到硬盘",
+     "Spill to disk"
+    ],
+    "t": [
+     "闪存快写满时，新写入临时改去硬盘",
+     "When flash is nearly full, new writes go to disk for a while"
+    ],
+    "d": [
+     "闪存池占用到溢出阈值，新写入暂时跳过闪存、直接写进硬盘池，不会把闪存写爆。",
+     "When the flash pool reaches the overflow threshold, new writes skip flash for a while and go straight to the disk pool, so flash never overfills."
+    ],
+    "b": [
+     [
+      "<p>清理需要时间。如果写入来得比清理快，闪存池占用继续上涨，到了溢出阈值（可配置）时，新文件暂时不按默认布局落闪存，而是直接写到预先指定的溢出池（默认就是硬盘池）。应用不会因为闪存满了而写失败。</p>",
+      "<p>溢出是容量保护，不是 Hot Pools 的主要机制。正常情况下，靠第 3、4 步的「建副本、删旧副本」让闪存始终有空间。</p>"
+     ],
+     [
+      "<p>Cleanup takes time. If writes arrive faster than cleanup, flash pool usage keeps rising, and at the overflow threshold (configurable) new files temporarily skip the default flash layout and are written straight to a preset overflow pool, which is the disk pool by default. Applications do not fail to write because flash is full.</p>",
+      "<p>Overflow is capacity protection, not the main mechanism of Hot Pools. Normally the copy-then-remove cycle of steps 3 and 4 keeps room free on flash.</p>"
+     ]
+    ]
+   }
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

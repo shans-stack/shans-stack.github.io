@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPUDirect Storage：GPU 直接读存储 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 GPUDirect Storage：数据从本地盘或远端存储直接进 GPU 显存，不在主机内存中转，CPU 只发起、不搬数据。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/gds.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="gds">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="GPUDirect Storage: GPUs reading storage directly">GPUDirect Storage：GPU 直接读存储</h1>
+        <p class="meta"><span data-en="5 steps · GPU, PCIe, cuFile, RDMA">5 步 · GPU、PCIe、cuFile、RDMA</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="NVIDIA GPUDirect Storage documentation (docs.nvidia.com/gpudirect-storage).">NVIDIA GPUDirect Storage 官方文档（docs.nvidia.com/gpudirect-storage）。</li>
+      <li data-en="NVIDIA GTC 2025 session S73012, How to Get Data Between Storage and the GPU at the Speed of Light.">NVIDIA GTC 2025 演讲 S73012《How to Get Data Between Storage and the GPU at the Speed of Light》。</li>
+      <li data-en="NVIDIA blog, As AI Increases Demands on Memory, Storage Steps Up (August 2026, cuFile open-sourced).">NVIDIA 官方博客《As AI Increases Demands on Memory, Storage Steps Up》（2026-08，cuFile 开源）。</li>
+      <li data-en="cuFile open-source repository (github.com/xio-sig).">cuFile 开源仓库（github.com/xio-sig）。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/gds.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'gds',ar:[960/476,480/506],
+  steps:[
+   {
+    "s": [
+     "老路：中转",
+     "Old path: bounce"
+    ],
+    "t": [
+     "老路：先进主机内存，再拷给 GPU",
+     "The old path: into host memory first, then copied to the GPU"
+    ],
+    "d": [
+     "数据从盘上读出来，先落进主机内存里的中转区，再由 CPU 拷一次到 GPU 显存。",
+     "Data read from the drive first lands in a staging area in host memory, then the CPU copies it again into GPU memory."
+    ],
+    "b": [
+     [
+      "<p>GPU 要读存储里的数据（训练样本、模型文件、检查点），走标准文件系统时，数据先由盘送到主机内存里一块临时的中转区，业内叫 bounce buffer，再由 CPU 发起第二次拷贝，送进 GPU 自己的显存。GPU 显存（HBM）是 GPU 自带的高速内存，计算只能用这里的数据。</p>",
+      "<p>同一份数据搬运两次，中间还需要 CPU 参与。数据量小时影响不明显，数据量增大后的情况见下一步。</p>"
+     ],
+     [
+      "<p>When a GPU reads data from storage (training samples, model files, checkpoints) through a standard file system, the drive first delivers the data to a temporary staging area in host memory, known in the industry as a bounce buffer. The CPU then starts a second copy into the GPU's own memory. GPU memory (HBM) is the GPU's built-in high-speed memory, and computation can only use data that is there.</p>",
+      "<p>One piece of data is moved twice, with the CPU involved in between. With little data the effect is not noticeable; the next step shows larger volumes.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "中转成瓶颈",
+     "The bounce bottleneck"
+    ],
+    "t": [
+     "数据一多，中转就成了瓶颈",
+     "With more data, the bounce becomes the bottleneck"
+    ],
+    "d": [
+     "数据越来越多，主机内存那一段要来回走两趟，CPU 也越来越忙。",
+     "As data grows, the link to host memory carries every piece twice, and the CPU gets busier and busier."
+    ],
+    "b": [
+     [
+      "<p>盘挂在 CPU 下面时，数据先从盘经 PCIe 上到主机内存，再从主机内存经同一段 PCIe 下到 GPU：CPU 与 PCIe 交换芯片之间的这段链路被占用了两次，同一份数据要用掉这段两回的带宽，同时 CPU 要花时间做拷贝。PCIe 是服务器里连接 CPU、GPU、固态盘、网卡的高速通道。</p>",
+      "<p>GPU 越来越快，供数路径如果仍要绕行，GPU 就会停下来等数据。</p>"
+     ],
+     [
+      "<p>When the drive hangs off the CPU, data first travels from the drive over PCIe up to host memory, then from host memory down the same stretch of PCIe to the GPU. The link between the CPU and the PCIe switch chip is used twice, so the same data uses its bandwidth twice over, and the CPU spends time copying. PCIe is the high-speed channel inside a server that connects the CPU, GPUs, solid-state drives and network cards.</p>",
+      "<p>GPUs keep getting faster. If the path that feeds them data still takes a detour, the GPU stops and waits for data.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "直接进显存",
+     "Straight to GPU memory"
+    ],
+    "t": [
+     "GPUDirect Storage：直接进显存",
+     "GPUDirect Storage: straight into GPU memory"
+    ],
+    "d": [
+     "CPU 只发起一次请求，数据从盘经 PCIe 交换芯片直接写进 GPU 显存，不经过主机内存。",
+     "The CPU issues one request, and data goes from the drive through the PCIe switch chip straight into GPU memory, skipping host memory."
+    ],
+    "b": [
+     [
+      "<p>GPUDirect Storage（GDS）是 NVIDIA 让 GPU 直接和本地或远端存储交换数据的技术：数据走 DMA（设备之间直接搬数据、不用 CPU 逐字节拷贝）从盘或网卡直达 GPU 显存，不在主机内存里中转。应用通过 cuFile 这套接口调用它，NVIDIA 已把 cuFile 接口及其下层的存储软件栈开源。</p>",
+      "<p>要走这条直通路，盘或网卡最好和 GPU 挂在同一个 PCIe 交换芯片下面（独立的 PCIe 交换芯片，或用 DPU 充当），数据就不必绕上 CPU。CPU 仍然负责发起请求，但不再搬数据。</p>"
+     ],
+     [
+      "<p>GPUDirect Storage (GDS) is NVIDIA's technology for letting GPUs exchange data directly with local or remote storage. Data moves by DMA (devices moving data between themselves without the CPU copying it byte by byte) from the drive or network card straight into GPU memory, with no staging in host memory. Applications call it through the cuFile interface, and NVIDIA has open-sourced the cuFile interface and the storage software stack beneath it.</p>",
+      "<p>For this direct path, the drive or network card should ideally sit under the same PCIe switch chip as the GPU (a separate PCIe switch chip, or a DPU acting as one), so data does not have to go up to the CPU. The CPU still issues the requests but no longer moves the data.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "两条路一起跑",
+     "Side by side"
+    ],
+    "t": [
+     "两条路一起跑",
+     "The two paths side by side"
+    ],
+    "d": [
+     "同样的数据量，直通路送到 GPU 的更多，CPU 也空出来了。",
+     "With the same amount of data, the direct path delivers more to the GPU, and the CPU is freed up."
+    ],
+    "b": [
+     [
+      "<p>把两条路放在一起跑：经主机内存中转的那条，数据在中转区排队、CPU 一直在拷贝；直通的那条，数据一路送到 GPU，CPU 几乎不参与。省下来的是两样东西：被占两次的那段带宽，以及做拷贝的 CPU 时间。</p>",
+      "<p>典型受益的场景是模型加载、保存和读取检查点，以及推理时读取 KV Cache。并非所有读写都会变快：取决于数据路径上原本有没有这次中转，以及存储系统是否支持 GDS。</p>"
+     ],
+     [
+      "<p>Run the two paths together. On the path through host memory, data queues in the bounce buffer and the CPU is busy copying the whole time; on the direct path, data flows all the way to the GPU and the CPU barely takes part. Two things are saved: the bandwidth on the link that was used twice, and the CPU time spent copying.</p>",
+      "<p>Typical beneficiaries are loading models, saving and reading checkpoints, and reading KV cache during inference. Not every read and write gets faster. That depends on whether the data path had this bounce in the first place, and whether the storage system supports GDS.</p>"
+     ]
+    ]
+   },
+   {
+    "s": [
+     "本地或远端",
+     "Local or remote"
+    ],
+    "t": [
+     "本地盘、远端存储都能直通",
+     "Local drives and remote storage both go direct"
+    ],
+    "d": [
+     "数据可以来自本机的 NVMe 盘，也可以来自远端存储，经网卡用 RDMA 直接进显存。",
+     "Data can come from a local NVMe drive, or from remote storage through the network card over RDMA, straight into GPU memory."
+    ],
+    "b": [
+     [
+      "<p>GDS 不只读本机的盘：远端的共享存储可以经支持 RDMA 的网卡，把数据直接写进 GPU 显存，同样不经过主机内存。RDMA 是让网卡直接读写内存、不经过 CPU 的网络技术，见「RDMA 为什么快」。对象存储也有对应的做法（S3 over RDMA），控制命令走普通 HTTP，数据走 RDMA。</p>",
+      "<p>GDS 适合由 CPU 提前知道要读哪些数据、成批发起的请求。如果每个 GPU 线程都要在运行中自己决定读什么，NVIDIA 另有让 GPU 自己发起存储请求的方案。</p>"
+     ],
+     [
+      "<p>GDS does not only read local drives. Remote shared storage can write data straight into GPU memory through an RDMA-capable network card, again without passing through host memory. RDMA is the network technology that lets a network card read and write memory directly without the CPU; see \"Why RDMA is fast\". Object storage has a counterpart too (S3 over RDMA): control commands travel over ordinary HTTP, and data over RDMA.</p>",
+      "<p>GDS suits requests where the CPU knows in advance which data to read and issues them in batches. When each GPU thread has to decide at run time what to read, NVIDIA has a separate approach that lets the GPU issue storage requests itself.</p>"
+     ]
+    ]
+   }
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

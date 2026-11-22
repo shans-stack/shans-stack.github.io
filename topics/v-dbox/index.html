@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBox：内部没有单点的全闪存储箱 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 VAST 的 DBox：DNode 只转发，两个 DNode 双活各管一半盘，一个坏了另一个接管，一次故障最多带走一块盘，所以条带可以按盘来铺。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-dbox.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-dbox">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DBox: an all-flash enclosure with no single point of failure">DBox：内部没有单点的全闪存储箱</h1>
+        <p class="meta"><span data-en="6 steps · DNode, SCM, QLC, PCIe">6 步 · DNode、SCM、QLC、PCIe</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): DBox high availability and data protection chapters.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：DBox 高可用与数据保护章节。</li>
+      <li data-en="VAST Data knowledge base (kb.vastdata.com): DBox and DNode hardware data sheets in Getting Started, and DBox High Availability.">VAST Data 官方知识库（kb.vastdata.com）：Getting Started 中的 DBox 与 DNode 硬件数据表、DBox High Availability。</li>
+      <li data-en="Animations are schematic. The number of stripe pieces in step 6 is not a real stripe width, and no measured numbers are shown.">动画为示意，第 6 步的条带片数不代表真实条带宽度，也不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-dbox.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-dbox',ar:[960/494,480/466],
+  steps:[
+    {"s": ["数据都在这", "Where data lives"], "t": ["全部数据都放在 DBox 里", "All the data lives in DBoxes"], "d": ["CNode 写下来的数据都落进 DBox；DBox 里有少量 SCM 盘和大量 QLC 盘。", "Everything CNodes write lands in DBoxes, which hold a few SCM drives and many QLC drives."], "b": [["<p>DBox 是 VAST 定制的存储箱，属于 JBOF（只装盘、不跑存储软件的盘柜）。集群的全部数据和元数据都放在 DBox 里，CNode 经 NVMe-oF 网络直接读写这些盘。</p>", "<p>箱子里有两种盘：少量 SCM（存储级内存，又快又耐写，用作写缓冲和存元数据）和大量 QLC 闪存（单位容量便宜，用来长期存数据）。VAST 靠软件把便宜的 QLC 用得久，这部分见 SCM 写缓冲和闪存几何对齐两站。</p>"], ["<p>A DBox is VAST&#x27;s custom storage enclosure, a JBOF (an enclosure that holds drives and runs no storage software). All the cluster&#x27;s data and metadata live in DBoxes, and CNodes read and write those drives directly over the NVMe-oF network.</p>", "<p>The enclosure holds two kinds of drive: a few SCM drives (storage-class memory, fast and high-endurance, used as the write buffer and for metadata) and many QLC flash drives (low cost per unit of capacity, used to keep data long term). VAST relies on software to make the inexpensive QLC last; see the SCM write buffer and flash geometry stops.</p>"]]},
+    {"s": ["DNode 只转发", "DNodes forward"], "t": ["DNode 只转发，不跑存储逻辑", "DNodes only forward; they run no storage logic"], "d": ["DNode 只把盘接到网络上；纠删码、数据缩减这些计算都在 CNode 上做。", "DNodes only connect the drives to the network; computation such as erasure coding and data reduction happens on CNodes."], "b": [["<p>DBox 里有两个 DNode。外形上像传统双控阵列的两个控制器，但 DNode 不是控制器：它不跑文件系统、不算纠删码，只负责把 SSD 暴露到 NVMe-oF 网络上。</p>", "<p>因为 DNode 不做存储逻辑，加再多功能，它的 CPU 也不会成为瓶颈，新功能都在 CNode 上实现。有的 DBox 型号用 NVIDIA BlueField DPU 当 DNode，箱子更小、更省电。</p>"], ["<p>A DBox has two DNodes. They look like the two controllers of a traditional dual-controller array, but a DNode is not a controller: it runs no file system and computes no erasure coding; it only exposes the SSDs to the NVMe-oF network.</p>", "<p>Because DNodes do no storage logic, adding features never makes their CPUs a bottleneck; new features are built on CNodes. Some DBox models use NVIDIA BlueField DPUs as DNodes, making the enclosure smaller and more power-efficient.</p>"]]},
+    {"s": ["双活", "Active-active"], "t": ["两个 DNode 同时工作，各管一半盘", "Both DNodes work at once, each serving half the drives"], "d": ["两个 DNode 同时在线，经 PCIe 交换芯片各连一半的盘。", "Both DNodes are online at the same time, each connected to half the drives through a PCIe switch."], "b": [["<p>两个 DNode 是双活的：平时同时工作，各自经箱子里的 PCIe 交换芯片连着一半的 SSD。CNode 要读写哪块盘，就经网络找到管这块盘的那个 DNode。</p>", "<p>PCIe 交换芯片是箱子里把 DNode 和盘连在一起的部件，它可以改变哪条通道接到哪个 DNode，下一步的故障切换就靠它。</p>"], ["<p>The two DNodes are active-active: normally both work at the same time, each connected to half of the SSDs through the PCIe switch inside the enclosure. To read or write a drive, a CNode goes over the network to the DNode that serves that drive.</p>", "<p>The PCIe switch is the part of the enclosure that connects DNodes to drives. It can change which lanes connect to which DNode, and the failover in the next step depends on that.</p>"]]},
+    {"s": ["DNode 故障切换", "DNode failover"], "t": ["一个 DNode 下线，另一个接管全部的盘", "One DNode goes offline, the other takes over every drive"], "d": ["DNode 坏了，PCIe 交换芯片把它那一半盘改接到另一个 DNode，数据照常读写。", "If a DNode fails, the PCIe switch reconnects its half of the drives to the other DNode, and reads and writes carry on."], "b": [["<p>某个 DNode 下线时，PCIe 交换芯片把它的通道重新映射给还活着的那个 DNode，于是全部盘都由一个 DNode 接着服务，切换过程中原子写的一致性保持不变（一次写要么全写进去，要么全没写）。</p>", "<p>一个控制器坏了，不会丢掉一半盘。这正是 DBox 和「一台服务器挂一组盘」的区别：服务器坏了，它下面的盘就访问不到了。</p>"], ["<p>When a DNode goes offline, the PCIe switch remaps its lanes to the surviving DNode, so one DNode carries on serving every drive. Atomic write consistency holds throughout the switchover (a write is either fully written or not written at all).</p>", "<p>A failed controller does not mean losing half the drives. That is the difference between a DBox and a server with its own set of drives: when that server fails, the drives under it become unreachable.</p>"]]},
+    {"s": ["一次故障一块盘", "One fault, one drive"], "t": ["一次故障最多带走一块盘", "One fault takes out at most one drive"], "d": ["从网口到盘全程没有单点：DNode 坏了一块盘都不少，盘坏了也只少它自己。", "There is no single point of failure from network port to drive: a failed DNode loses no drives, and a failed drive loses only itself."], "b": [["<p>DBox 从网口到 SSD 全程没有单点，DNode 也是两个，一个坏了另一个接管（上一步）。所以箱子里任何一个部件坏掉，最多只带走一块 SSD，也就是坏的那块盘自己。</p>", "<p>这里说的「一次故障」是指箱子内部的单个部件。整台 DBox 断电或下线是另一回事：在默认的 Classic 方式下，整台 DBox 掉线会让整个集群停下来；要扛住整台 DBox 掉线，需要另外打开 DBox-HA，见 Classic 与 DBox-HA 一站。</p>"], ["<p>A DBox has no single point of failure from network port to SSD, and its DNodes come in pairs, so if one fails the other takes over (previous step). Any single component failure inside the enclosure therefore takes out at most one SSD: the failed drive itself.</p>", "<p>One fault here means a single component inside the enclosure. A whole DBox losing power or going offline is a different matter: in the default Classic mode, a whole DBox dropping out stops the cluster. Surviving the loss of a whole DBox requires turning on DBox-HA; see the Classic and DBox-HA stop.</p>"]]},
+    {"s": ["按盘铺条带", "Stripes per drive"], "t": ["所以条带可以按盘来铺", "So stripes can be laid out drive by drive"], "d": ["故障单位缩小到一块盘，一条条带的每一片就可以放在不同的盘上，铺满整个集群。", "With the unit of failure shrunk to one drive, each piece of a stripe can go on a different drive, spread across the whole cluster."], "b": [["<p>纠删码把一份数据切成若干片，再算出几片校验，分散存放；坏掉几片还能用其余的算回来。分散的前提是：每一片都要放在不同的故障单位上。在一台服务器管一组盘的架构里，故障单位是整台服务器，条带只能按服务器来分。</p>", "<p>DBox 把故障单位缩小到一块盘，条带就可以按盘来分，每一片放在不同的盘上，可以铺满整个集群的盘。坏一块盘，一条条带只少一片。条带能铺得很宽，校验占的空间就能很少，见宽条带纠删码一站。</p>"], ["<p>Erasure coding splits data into pieces, computes a few parity pieces and stores them apart; if some pieces are lost, the rest can rebuild them. Spreading them out only works if each piece sits in a different unit of failure. Where each server manages its own drives, the unit of failure is a whole server, so stripes can only be split across servers.</p>", "<p>The DBox shrinks the unit of failure to a single drive, so stripes can be split across drives, each piece on a different drive, spanning every drive in the cluster. Losing a drive costs a stripe only one piece. Because stripes can be very wide, parity can take up very little space; see the wide-stripe erasure coding stop.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

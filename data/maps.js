@@ -12,8 +12,8 @@
 window.SS = window.SS || {};
 SS.maps = [
   {id:'home', kind:'main', href:'index.html', zh:'总图', en:'Main map', st:'live',
-   lines:['a','d','c','n','s'], talk:'ai-basics',
-   d:{zh:'五条主干线，只放通用概念。', en:'Five trunk lines, general concepts only.'}},
+   lines:['a','m','d','c','n','s'], talk:'ai-basics',
+   d:{zh:'六条主干线，只放通用概念。', en:'Six trunk lines, general concepts only.'}},
   {id:'vast', kind:'topic', href:'maps/vast/index.html', zh:'VAST', en:'VAST', st:'live', brand:'vast',
    lines:['v-aios','v-proto','v-arch','v-deploy','v-prot','v-red'], talk:'vast-core',
    d:{zh:'六条线：从 DASE 架构讲到数据保护、数据缩减、访问协议和 AI OS。', en:'Six lines, from the DASE architecture through data protection, reduction and access protocols to the AI OS.'}},

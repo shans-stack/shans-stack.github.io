@@ -22,7 +22,7 @@ function talkName(){if(st.custom||!st.talk)return st.name;var t=SS.talkById[st.t
 if(q.get('stops')){st.stops=q.get('stops').split(',').filter(function(id){return SS.stations[id]&&SS.inMap(id,mapId)});st.name=q.get('name')||'';st.custom=true;st.panel=true}
 else if(q.get('talk')&&SS.talkById[q.get('talk')]&&SS.talkById[q.get('talk')].map===mapId)loadTalk(SS.talkById[q.get('talk')]);
 else if(q.get('route')!==null&&talks[+q.get('route')])loadTalk(talks[+q.get('route')]);
-else if(topic&&map.talk)loadTalk(SS.talkById[map.talk]);
+else if(SS.TALKS&&topic&&map.talk)loadTalk(SS.talkById[map.talk]);
 if(!topic&&st.talk)st.pinned=st.talk;
 if(q.get('edit')){st.panel=true;st.mode='edit';if(!st.stops)loadTalk(SS.talkById[map.talk])}
 if(st.hl&&!SS.inMap(st.hl,mapId))st.hl=null;
@@ -63,7 +63,7 @@ function draw(){
     stationHref:function(id){return SS.stationHref(id,mapId)},lineHref:function(l){return SS.lineHref(mapId,l)}});
   m.warn.filter(function(w){return w!=='TOOFULL'}).forEach(function(w){console.warn('[地铁图 '+mapId+'] '+w)});
   if(m.tooFull){console.warn('[地铁图 '+mapId+'] 这张图太满，建议拆图（需要列距 '+m.pNeed+'px，标准宽度下只有 '+Math.round(954/(m.K-1))+'px）');
-    showWarn(L('这张图太满，建议拆图：站名放进标准宽度会重叠，已整体缩小显示。','This map is too full; consider splitting it. Station names would overlap at the standard width, so the map has been scaled down.'))}
+    /* 这条是给作者的提示，只留在控制台，不显示给读者 */}
   else showWarn('');
   drawList(c);
 }
@@ -114,9 +114,8 @@ function caption(){
   if(st.line){cap.hidden=true;return}cap.hidden=false;
   var c=current();
   if(!c.rt){
-    cap.innerHTML='<p>'+(topic?SS.esc(SS.T(map.d))+L(' 带 ↗ 的站在总图上也有，点开可以换乘回总图。点左侧线名，看这条线的每一站。',' Stops marked ↗ also appear on the main map. Click a line name to see every stop on it.'):
-      L('竖着的胶囊是换乘站：上下相邻的几条线共用的基础，比如 RDMA、NVMe-oF。KV Cache 在 AI 应用线和存储线上各有一站（虚线圈），两条线中间隔着三条线，所以不画成胶囊。从左往右大致是先学后学的顺序。点左侧线名，看这条线的每一站。',
-        'The upright capsules are transfer stops: foundations shared by lines that sit next to each other, such as RDMA and NVMe-oF. KV Cache has one stop on the AI application line and one on the storage line (dashed rings); three lines sit between them, so it is not drawn as a capsule. Left to right is roughly the order to learn them in. Click a line name to see every stop on it.'))+'</p>';
+    if(!topic){cap.hidden=true;return}
+    cap.innerHTML='<p>'+SS.esc(SS.T(map.d))+'</p>';
     return;
   }
   var r=c.rt,n=r.stops.length,t=st.preview?SS.talkById[st.preview]:(!st.custom&&st.talk?SS.talkById[st.talk]:null);
@@ -133,7 +132,7 @@ function legend(){
     (topic?'<span><i class="gn-k"></i>'+L('粗圈：总图上也有的通识站，点开可换乘回总图','Bold ring: a general stop that is also on the main map')+'</span>':'');
 }
 function chips(){
-  var h='<span>'+L('选一场讲稿，看它怎么走：','Pick a talk to see its route:')+'</span>';
+  var h='<span>'+L('讲稿','Talks')+'</span>';
   talks.forEach(function(t){h+='<button class="chip" type="button" data-talk="'+t.id+'" aria-pressed="'+((st.pinned===t.id||(topic||st.panel)&&st.talk===t.id&&!st.custom)?'true':'false')+'"><span>'+SS.esc(SS.L(t.zh,t.en))+'</span><small>'+L(t.stops.length+' 站 '+t.min+' 分钟',t.stops.length+' stops · '+t.min+' min')+'</small></button>'});
   h+='<button class="chip" type="button" data-edit aria-pressed="'+(st.panel?'true':'false')+'"><span>'+L('编辑路线','Edit a route')+'</span></button>';
   pick.innerHTML=h;

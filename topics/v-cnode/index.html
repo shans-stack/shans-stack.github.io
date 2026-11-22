@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CNode：跑全部存储逻辑、自己不存数据的计算节点 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 VAST 的 CNode：存储逻辑全在它上面跑，自己不存数据也不留缓存，写入落到两块以上 SCM 盘才确认，坏了一台地址漂到别的 CNode。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-cnode.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-cnode">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="CNode: the stateless node that runs all the storage logic">CNode：跑全部存储逻辑、自己不存数据的计算节点</h1>
+        <p class="meta"><span data-en="6 steps · protocols, SCM, virtual IP">6 步 · 协议、SCM、虚拟 IP</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): DASE, DataStore write path and protocol chapters.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：DASE、DataStore 写路径、协议章节。</li>
+      <li data-en="VAST Data knowledge base (kb.vastdata.com): CNode hardware data sheet and glossary in Getting Started.">VAST Data 官方知识库（kb.vastdata.com）：Getting Started 中的 CNode 硬件数据表与术语表。</li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-cnode.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-cnode',ar:[960/470,480/476],
+  steps:[
+    {"s": ["存储逻辑", "Storage logic"], "t": ["存储逻辑全在 CNode 上跑", "All storage logic runs on the CNode"], "d": ["NFS、SMB、S3 的请求都进 CNode；协议处理、纠删码、数据缩减也都由 CNode 来算。", "NFS, SMB and S3 requests all go to CNodes, and CNodes also do the protocol processing, erasure coding and data reduction."], "b": [["<p>CNode 是 VAST 集群里跑存储软件的服务器。传统存储控制器干的活，在 VAST 里全部放在 CNode 上：各种访问协议（NFS、SMB、S3、块等，都是 VAST 自己实现的，不是套开源网关）、纠删码（把数据切块并算出校验块，坏几块盘也能恢复）、数据缩减（压缩、去重、相似性缩减）。</p>", "<p>CNode 以容器方式运行。VAST 没有单独的元数据服务器，元数据放在共享的 SCM 盘上，由 CNode 直接去读。</p>"], ["<p>A CNode is the server that runs the storage software in a VAST cluster. Everything a traditional storage controller does runs on CNodes in VAST: the access protocols (NFS, SMB, S3, block and others, all implemented by VAST rather than wrapped around open-source gateways), erasure coding (splitting data into pieces and computing parity pieces so data survives several failed drives) and data reduction (compression, deduplication and similarity-based reduction).</p>", "<p>CNodes run as containers. VAST has no separate metadata server. Metadata sits on shared SCM drives, and CNodes read it directly.</p>"]]},
+    {"s": ["不存数据", "No data"], "t": ["自己不存数据", "It stores no data itself"], "d": ["CNode 除了启动盘没有别的盘，读数据要经 NVMe-oF 到 DBox 里去取。", "Apart from a boot drive a CNode has no drives; to read data it fetches it from a DBox over NVMe-oF."], "b": [["<p>CNode 只带一块启动盘，不装数据盘。全部数据和元数据都放在 DBox 里的盘上。客户端读一个文件时，CNode 经 NVMe-oF 网络（把 NVMe 盘挂到网络上，让别的服务器像用本地盘一样访问）从 DBox 的盘里取数据，再交给客户端。</p>", "<p>所以 CNode 坏了可以直接换一台，不需要先把数据搬走或者重建。这和 DASE 那一站讲的「盘由所有节点共用」是同一件事的两面。</p>"], ["<p>A CNode carries only a boot drive and no data drives. All data and metadata sit on the drives in DBoxes. When a client reads a file, the CNode fetches the data from DBox drives over the NVMe-oF network (which puts NVMe drives on the network so other servers can use them like local drives) and hands it to the client.</p>", "<p>So a failed CNode can simply be replaced, with no data to move or rebuild first. This is the other side of the shared drives described at the DASE stop.</p>"]]},
+    {"s": ["写入确认", "Write ACK"], "t": ["写入落到两块以上 SCM 盘，才回确认", "A write is acknowledged only once it is on two or more SCM drives"], "d": ["一次写入至少落进两块分在不同 DBox 的 SCM 盘，都写好了 CNode 才向客户端确认。", "Each write lands on at least two SCM drives in different DBoxes, and only when both are written does the CNode confirm to the client."], "b": [["<p>SCM（存储级内存）是一种又快又耐写的盘，在 VAST 里用作写缓冲和元数据的存放处。客户端写数据时，CNode 把数据写进至少两块 SCM 盘，这两块盘刻意分在不同的 DBox 或不同的 DNode 上；元数据也同时写下去。都写好之后，CNode 才回确认（ACK）。</p>", "<p>CNode 自己不在内存里攒写入，所以确认之后它就算立刻断电，数据也不会丢。压缩、组条带这些重活放在确认之后再做，见 SCM 写缓冲那一站。</p>"], ["<p>SCM (storage-class memory) is a fast, high-endurance kind of drive; VAST uses it as the write buffer and the home of metadata. When a client writes, the CNode writes the data to at least two SCM drives, deliberately placed in different DBoxes or on different DNodes, and writes the metadata at the same time. Only when all of that is written does the CNode send the acknowledgement (ACK).</p>", "<p>The CNode does not collect writes in its own memory, so even if it lost power right after the ACK, no data would be lost. Heavy work such as compression and building stripes happens after the ACK; see the SCM write buffer stop.</p>"]]},
+    {"s": ["不留缓存", "No cache"], "t": ["不留缓存：读两遍，两遍都去盘上取", "No cache: read twice, fetch from the drive twice"], "d": ["同一份数据读第二次，CNode 照样去 DBox 的盘上取，不在本机留一份。", "Reading the same data a second time, the CNode still fetches it from the DBox drives and keeps no copy locally."], "b": [["<p>CNode 不做读缓存，也不缓存元数据。这看似浪费，原因在于：CNode 经 NVMe-oF 到盘的路很短，元数据唯一的那份就在共享盘上，不值得在本机再抄一份。</p>", "<p>一旦哪台 CNode 手里留了一份，就得保证它和盘上的、和别的 CNode 手里的保持一致，这正是传统存储里锁和缓存同步这一大类问题的来源。不留缓存，这类问题也就不存在。</p>"], ["<p>CNodes keep no read cache and no metadata cache. It looks wasteful, but the reasoning is that the NVMe-oF path from a CNode to the drives is short and the only copy of the metadata is on the shared drives, so another copy on the node is not worth keeping.</p>", "<p>As soon as a CNode kept a copy, it would have to stay consistent with the drives and with every other CNode&#x27;s copy, which is exactly where the whole class of lock and cache-sync problems in traditional storage comes from. Without a cache, that class of problems disappears entirely.</p>"]]},
+    {"s": ["任何一台都能接", "Any CNode"], "t": ["任何一台 CNode 都能接任何请求", "Any CNode can take any request"], "d": ["哪个客户端连到哪台 CNode 都行，每台读到的都是同一份数据。", "Any client can connect to any CNode, and every CNode reads the same data."], "b": [["<p>因为数据和元数据都在共享盘上，每台 CNode 看到的都是同一份最新的样子，没有「这个文件归哪台 CNode 管」这回事。客户端连到哪台 CNode，那台都能直接处理它的请求，块存储的卷也一样：任何一台 CNode 都能处理任何一个卷的请求。</p>", "<p>新加入的 CNode 一上线就能分担任何请求，不需要先给它分配数据。</p>"], ["<p>Because data and metadata are all on the shared drives, every CNode sees the same, current state, and no file belongs to a particular CNode. Whichever CNode a client connects to can handle its requests directly, and block volumes work the same way: any CNode can serve requests for any volume.</p>", "<p>A newly added CNode can take on any request as soon as it comes online, with no data to assign to it first.</p>"]]},
+    {"s": ["地址漂移", "Address failover"], "t": ["坏了一台：它的地址漂到别的 CNode", "One fails: its address moves to another CNode"], "d": ["一台 CNode 坏了，它对外的地址转到另一台，客户端的请求接着发过去。", "When a CNode fails, its external address moves to another CNode, and client requests keep going to it."], "b": [["<p>客户端是通过地址（虚拟 IP）连到 CNode 的。一台 CNode 坏了，它负责的地址会漂到另一台还活着的 CNode 上，客户端继续往同一个地址发请求，只是背后换了一台机器在处理。</p>", "<p>SMB 这类要记住会话的协议，会话状态也存在共享的 SCM 上，所以接手的 CNode 能接着用，Windows 客户端只会感到一次短暂的停顿。</p>"], ["<p>Clients connect to CNodes through addresses (virtual IPs). When a CNode fails, the addresses it served move to another CNode that is still running; clients keep sending requests to the same address, and a different machine now handles them.</p>", "<p>For protocols that keep session state, such as SMB, that state is also stored on shared SCM, so the CNode that takes over can carry on; Windows clients see only a brief pause.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

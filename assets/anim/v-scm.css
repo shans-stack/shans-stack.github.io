@@ -1,0 +1,55 @@
+/* SCM 写缓冲：动画区样式。由 assets/anim/v-scm.js 使用，只作用于 .v-scm 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.v-scm{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.v-scm .v-scm-scene{display:block;width:100%;height:auto;font-family:"Schibsted Grotesk","Noto Sans SC",system-ui,sans-serif}
+.v-scm .v-scm-scene text{dominant-baseline:central}
+.v-scm .v-scm-scene .vis{transition:opacity .4s}
+.v-scm .v-scm-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.v-scm .v-scm-scene .dim{opacity:.25}
+.v-scm .frame{fill:none;stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.v-scm .frame.bad{stroke:var(--rose);stroke-width:3}
+.v-scm .ttl{fill:var(--ink2);font-weight:700}
+.v-scm .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.v-scm .blk.bad{stroke:var(--rose);stroke-width:3}
+.v-scm .blk.on{stroke:var(--slate);stroke-width:3}
+.v-scm .blk.ok{stroke:var(--sage);stroke-width:3}
+.v-scm .lbl{fill:var(--ink);font-weight:500}
+.v-scm .b7{font-weight:700}
+.v-scm .ln{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.v-scm .base{stroke:var(--rule2);stroke-width:3}
+.v-scm .base.thin{stroke-width:2}
+.v-scm .sageL{stroke:var(--sage);stroke-width:4}
+.v-scm .roseL{stroke:var(--rose);stroke-width:4}
+.v-scm .slateL{stroke:var(--slate);stroke-width:3}
+.v-scm .dash{stroke-dasharray:7 6}
+.v-scm .track{fill:var(--rule)}
+.v-scm .fill{fill:var(--rose)}
+.v-scm .fill.sage{fill:var(--sage)}
+.v-scm .fill.slate{fill:var(--slate)}
+.v-scm .fill.ochre{fill:var(--ochre)}
+.v-scm .st{font-weight:600;transition:opacity .25s}
+.v-scm .rose-t{fill:var(--rose)}
+.v-scm .sage-t{fill:var(--sage)}
+.v-scm .slate-t{fill:var(--slate)}
+.v-scm .ochre-t{fill:var(--ochre)}
+.v-scm .ink3-t{fill:var(--ink3)}
+.v-scm .ink2-t{fill:var(--ink2)}
+.v-scm .ink-t{fill:var(--ink)}
+.v-scm .pkt{fill:var(--slate);stroke:var(--card);stroke-width:1.5}
+.v-scm .pkt.par{fill:var(--ochre)}
+.v-scm .pkt.rose{fill:var(--rose)}
+.v-scm .pkt.sage{fill:var(--sage)}
+.v-scm .pkt.cp{stroke:var(--rose);stroke-width:3}
+.v-scm .xmark{stroke:var(--rose);stroke-width:3.5;stroke-linecap:round;fill:none}
+.v-scm .drive{fill:var(--card);stroke:var(--rule2);stroke-width:1.8;transition:opacity .3s,stroke .3s}
+.v-scm .drive.off{opacity:.3}
+.v-scm .drive.bad{stroke:var(--rose);stroke-width:3;opacity:1}
+.v-scm .num{font-weight:700;font-variant-numeric:tabular-nums}
+.v-scm .sep{stroke:var(--rule);stroke-width:1.5}
+.v-scm .v-scm-btn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
+.v-scm .v-scm-btn[hidden]{display:block;opacity:0;pointer-events:none}
+@media (max-width:640px){.v-scm .v-scm-btn{font-size:14px;padding:6px 12px}}
+.v-scm .ackdot{fill:var(--sage);stroke:var(--card);stroke-width:2}
+.v-scm .vwm{fill:#000000}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .v-scm .vwm{fill:#FFFFFF}}
+:root[data-theme="dark"] .v-scm .vwm{fill:#FFFFFF}

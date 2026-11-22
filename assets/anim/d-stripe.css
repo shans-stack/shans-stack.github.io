@@ -1,0 +1,55 @@
+/* 条带化：动画区样式。由 assets/anim/d-stripe.js 使用，只作用于 .d-stripe 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.d-stripe{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.d-stripe .d-stripe-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.d-stripe .d-stripe-scene text{dominant-baseline:central}
+.d-stripe .vis{transition:opacity .4s}
+.d-stripe .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.d-stripe .dim{opacity:.22}
+.d-stripe .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.d-stripe .ttl{fill:var(--ink2);font-weight:700}
+.d-stripe .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.d-stripe .blk.on{stroke:var(--violet);stroke-width:3}
+.d-stripe .blk.ok{stroke:var(--sage);stroke-width:3}
+.d-stripe .blk.busy{stroke:var(--rose);stroke-width:3}
+.d-stripe .blk.new{stroke:var(--sage);stroke-width:3}
+.d-stripe .lbl{fill:var(--ink);font-weight:500}
+.d-stripe .lblb{fill:var(--ink);font-weight:700}
+.d-stripe .st{font-weight:600;transition:opacity .25s}
+.d-stripe .rose-t{fill:var(--rose)}.d-stripe .sage-t{fill:var(--sage)}.d-stripe .slate-t{fill:var(--slate)}.d-stripe .ink3-t{fill:var(--ink3)}.d-stripe .ink2-t{fill:var(--ink2)}.d-stripe .violet-t{fill:var(--violet)}.d-stripe .ochre-t{fill:var(--ochre)}
+.d-stripe .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.d-stripe .ln.meta{stroke:var(--violet)}
+.d-stripe .ln.data{stroke:var(--slate)}
+.d-stripe .ln.thin{stroke-width:3}
+.d-stripe .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.d-stripe .pkt.b{fill:var(--ochre)}
+.d-stripe .pkt.cp{stroke:var(--rose);stroke-width:3}
+.d-stripe .pkt.ghost{fill:none;stroke:var(--rule2);stroke-dasharray:4 3}
+.d-stripe .pktl{fill:var(--card);font-weight:700;text-anchor:middle}
+.d-stripe .req{fill:var(--violet);stroke:var(--card);stroke-width:2}
+.d-stripe .req.wait{stroke:var(--rose);stroke-width:3}
+.d-stripe .lay{fill:var(--card);stroke:var(--violet);stroke-width:2.5}
+.d-stripe .layl{stroke:var(--violet);stroke-width:2;stroke-linecap:round}
+.d-stripe .cell{fill:var(--card);stroke:var(--violet);stroke-width:2;transition:fill .3s}
+.d-stripe .cell.on{fill:var(--violet)}
+.d-stripe .celll{fill:var(--violet);font-weight:700;text-anchor:middle;transition:fill .3s}
+.d-stripe .cell.on+.celll{fill:var(--card)}
+.d-stripe .ep{fill:var(--card);stroke:var(--slate);stroke-width:2}
+.d-stripe .num{font-weight:700;font-variant-numeric:tabular-nums}
+.d-stripe .sep{stroke:var(--rule);stroke-width:1.5}
+.d-stripe .capseg{fill:var(--slate);transition:opacity .4s}
+.d-stripe .capseg.new{fill:var(--sage)}
+.d-stripe .chip{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:opacity .4s}
+.d-stripe .chip.add{stroke:var(--slate)}
+.d-stripe .chip.hw{stroke:var(--ink3)}
+.d-stripe .brk{fill:none;stroke:var(--ink3);stroke-width:2}
+.d-stripe .brk.rose{stroke:var(--rose)}
+/* 画面里的切换按钮 */
+.d-stripe .d-stripe-tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
+.d-stripe .d-stripe-tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.d-stripe .d-stripe-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.d-stripe .d-stripe-tgl{font-size:14px;padding:6px 12px}}
+/* 部件上的 DDN logo：没有白色版，深色模式在 logo 后垫浅灰底 #DADCDF，logo 不改色 */
+.d-stripe .lgbk{fill:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .d-stripe .lgbk{fill:#DADCDF}}
+:root[data-theme=dark] .d-stripe .lgbk{fill:#DADCDF}

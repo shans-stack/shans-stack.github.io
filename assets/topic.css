@@ -1,0 +1,119 @@
+/* 知识点页共用样式（所有 topics/<站>/index.html 引用）。线色由页面脚本按站所在的线设到 body 的 --lc。 */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.7;font-synthesis:none;line-break:strict;overflow-wrap:break-word}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+h1,h2,h3{text-wrap:balance;font-weight:500;margin:0;font-family:var(--fh)}
+p{text-wrap:pretty;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+/* 页头（沿用设计稿） */
+.hd{border-bottom:1px solid var(--rule)}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em;white-space:nowrap}
+.brand svg{width:22px;height:22px;flex:none;fill:var(--ink)}
+.nav{display:flex;align-items:center;gap:4px}
+.nav a{padding:10px 12px;font-size:15px;color:var(--ink2);border-radius:2px}
+.nav a:hover{color:var(--ink)}
+.lang{min-width:44px;min-height:40px;border:1px solid var(--rule2);background:transparent;color:var(--ink);font:500 14px var(--f);border-radius:2px;cursor:pointer;margin-left:8px}
+.lang:hover{border-color:var(--ink)}
+
+.mini{width:14px;height:14px;vertical-align:-2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:2px;font:500 15px var(--f);border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.35;cursor:default;filter:none}
+kbd{font:500 12px var(--f);border:1px solid var(--rule2);border-radius:2px;padding:1px 5px;color:var(--ink3)}
+.tag{display:inline-block;font-size:12px;line-height:1.5;padding:0 6px;border:1px solid var(--rule2);border-radius:2px;color:var(--ink3);font-weight:400;vertical-align:1px;white-space:nowrap}
+.ft{border-top:1px solid var(--rule);margin-top:96px}
+.ft .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;padding-top:20px;padding-bottom:40px;font-size:14px;color:var(--ink3);flex-wrap:wrap}
+
+.sec .bd b{color:var(--ink);font-weight:600}
+.sec .bd code{font:500 .92em ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);background:var(--surface);padding:1px 5px;border-radius:3px}
+/* 文末：先看、接着看、出处（沿用设计稿） */
+.rel{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:32px;margin-top:72px}
+.rel h3{font-size:16px;font-weight:500;color:var(--ink3);padding-bottom:8px;border-bottom:1px solid var(--ink)}
+.rel ul{list-style:none;margin:0;padding:0}
+.rel li{border-bottom:1px solid var(--rule)}
+.rel li a{display:flex;align-items:center;gap:10px;padding:12px 0;font-size:16px}
+.rel li a svg{width:20px;height:20px;flex:none}
+.rel li a:hover{text-decoration:underline}
+.rel .src li{padding:12px 0;font-size:14px;color:var(--ink2);line-height:1.6}
+
+
+/* ---------- 标题区 ---------- */
+.top{max-width:960px;margin:0 auto}
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:40px;font-size:14px;color:var(--ink3)}
+.crumb a{white-space:nowrap}.crumb a:hover{color:var(--ink)}
+.crumb .sep{color:var(--rule2)}
+.crumb .lg{margin-left:6px}
+.tt{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-top:10px}
+.tt h1{font-size:clamp(30px,1rem + 2.4vw,46px);line-height:1.25}
+.tt .meta{font-size:14px;color:var(--ink3);margin-top:10px;display:flex;flex-wrap:wrap;gap:4px 18px}
+.tt .meta a{color:var(--ink2);text-decoration:underline;text-decoration-color:var(--rule2);text-underline-offset:3px}
+.tt .meta a:hover{color:var(--ink)}
+.modes{display:inline-flex;border:1px solid var(--rule2);border-radius:2px;flex:none}
+.modes button{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border:0;background:none;color:var(--ink2);font:500 14px var(--f);cursor:pointer}
+.modes button+button{border-left:1px solid var(--rule2)}
+.modes button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.modes button[aria-pressed=true] kbd{color:inherit;border-color:currentColor}
+
+/* ---------- 文档模式：单栏，正文 680，动画 960 ---------- */
+.doc{margin-top:8px}
+.sec{max-width:960px;margin:0 auto;padding:72px 0 0;scroll-margin-top:16px}
+.sec .hd2,.sec .lead,.sec .bd{max-width:680px;margin-left:auto;margin-right:auto}
+.sec h2{font-size:clamp(22px,1rem + 1vw,30px);line-height:1.35}
+.sec .lead{font-size:19px;line-height:1.65;color:var(--ink);margin-top:12px}
+.figbox{background:var(--surface);padding:16px;margin:32px 0;border-radius:4px}
+.mhost{aspect-ratio:var(--ar,960/476)}
+.sec .bd p,.sec .bd ul{font-size:17px;line-height:1.8;color:var(--ink2);margin:16px 0 0}
+.sec .bd p:first-child{margin-top:0}
+.sec .bd ul{padding-left:1.2em}
+.sec .bd li{margin-top:6px}
+.sec .bd b{color:var(--ink);font-weight:600}
+.rel{max-width:960px;margin-left:auto;margin-right:auto}
+
+@media (max-width:720px){
+  .wrap{padding:0 16px}
+  .nav a{padding:10px 6px;font-size:14px}.lang{margin-left:4px}.brand{font-size:16px}.brand svg{width:18px;height:18px}
+  body{font-size:16px}
+  .tt{display:block}.modes{margin-top:16px}
+  .sec{padding-top:40px}
+  .sec .lead{font-size:17px}.sec .bd p,.sec .bd ul{font-size:16px}
+  .figbox{padding:6px;margin:24px 0}
+  .mhost{aspect-ratio:var(--arm,480/692)}
+  .rel{grid-template-columns:1fr;gap:28px}
+  body.present .stage{padding:12px}
+  .stage .cap{display:block}
+  .ctl .btn{padding:0 12px}
+}
+
+/* ---------- 演示模式：一步一屏 ---------- */
+.stage{display:none}
+body.present{overflow:hidden}
+body.present .hd,body.present main,body.present .ft{display:none}
+body.present .stage{display:grid;grid-template-rows:minmax(0,1fr) auto auto;height:100vh;height:100dvh;padding:3vh 5vw 2.5vh;background:var(--bg)}
+.stage .figbox{border:0;background:transparent;padding:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.stage .cap{display:grid;grid-template-columns:auto 1fr;column-gap:3vw;align-items:baseline;margin-top:2vh}
+.stage .cnt{grid-row:1/3;font-size:clamp(16px,1.4vw,24px);color:var(--ink3);font-variant-numeric:tabular-nums}
+.stage h2{font-size:clamp(28px,3.2vw,54px);line-height:1.3}
+.stage .desc{font-size:clamp(19px,1.8vw,28px);color:var(--ink2);margin-top:.4em}
+.ctl{display:flex;align-items:center;gap:12px;margin-top:1.5vh;flex-wrap:wrap}
+.prog{display:flex;flex:1;min-width:150px;position:relative;justify-content:space-between}
+.prog::before{content:"";position:absolute;left:14px;right:14px;top:50%;height:4px;margin-top:-2px;background:var(--rule2)}
+.prog::after{content:"";position:absolute;left:14px;width:calc((100% - 28px) * var(--pv,0));top:50%;height:6px;margin-top:-3px;background:var(--lc);transition:width .25s}
+.prog button{all:unset;cursor:pointer;width:28px;height:44px;display:grid;place-items:center;position:relative;z-index:1}
+.prog button::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--bg);border:3px solid var(--ink3);box-sizing:content-box}
+.prog button.done::after{background:var(--lc);border-color:var(--lc)}
+.prog button[aria-current=step]::after{width:14px;height:14px;background:var(--lc);border:4px solid var(--ink)}
+.prog button:focus-visible{outline:2px solid var(--ink)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+.langs{display:inline-flex;margin-left:8px;border:1px solid var(--rule2);border-radius:2px;flex:none}
+.langs button{min-width:34px;min-height:34px;padding:0 8px;border:0;background:transparent;color:var(--ink3);font:500 14px var(--f);cursor:pointer}
+.langs button+button{border-left:1px solid var(--rule2)}
+.langs button:hover{color:var(--ink)}
+.langs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+@media (max-width:720px){.langs{margin-left:4px}.langs button{min-width:30px;padding:0 6px;font-size:13px}}
+@media (max-width:440px){.nav a{padding:10px 4px;font-size:13px}.brand{font-size:15px;gap:8px}.langs button{min-width:28px;padding:0 5px}}
+.no-talks #pick,.no-talks #talks,.no-talks a[href$="#talks"],.no-talks #intalks{display:none!important}

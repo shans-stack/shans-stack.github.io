@@ -1,0 +1,62 @@
+/* CNode：跑全部存储逻辑、自己不存数据的计算节点：动画区样式。由 assets/anim/v-cnode.js 使用，只作用于 .ssa-v-cnode 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ssa-v-cnode{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ssa-v-cnode .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ssa-v-cnode .vwm{fill:#000000}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-cnode .vwm{fill:#FFFFFF}}
+:root[data-theme=dark] .ssa-v-cnode .vwm{fill:#FFFFFF}
+.ssa-v-cnode .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
+.ssa-v-cnode .tgl[hidden]{display:block;opacity:0;pointer-events:none}
+.ssa-v-cnode .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+@media (max-width:640px){.ssa-v-cnode .tgl{font-size:14px;padding:6px 12px}}
+.ssa-v-cnode .ssa-scene text{dominant-baseline:central}
+.ssa-v-cnode .ssa-scene .vis{transition:opacity .4s}
+.ssa-v-cnode .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ssa-v-cnode .ssa-scene .dim{opacity:.22}
+.ssa-v-cnode .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s}
+.ssa-v-cnode .box.soft{stroke:var(--rule)}
+.ssa-v-cnode .box.on{stroke:var(--slate)}
+.ssa-v-cnode .box.hot{stroke:var(--rose)}
+.ssa-v-cnode .box.ok{stroke:var(--sage)}
+.ssa-v-cnode .box.dead{opacity:.35}
+.ssa-v-cnode .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.ssa-v-cnode .lbl{fill:var(--ink);font-weight:500}
+.ssa-v-cnode .ttl{fill:var(--ink2);font-weight:700}
+.ssa-v-cnode .b7{font-weight:700}
+.ssa-v-cnode .rose-t{fill:var(--rose)}
+.ssa-v-cnode .sage-t{fill:var(--sage)}
+.ssa-v-cnode .slate-t{fill:var(--slate)}
+.ssa-v-cnode .violet-t{fill:var(--violet)}
+.ssa-v-cnode .ink3-t{fill:var(--ink3)}
+.ssa-v-cnode .ink2-t{fill:var(--ink2)}
+.ssa-v-cnode .st{font-weight:600;transition:opacity .25s}
+.ssa-v-cnode .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--rule2);stroke-width:4;transition:stroke .3s,opacity .3s}
+.ssa-v-cnode .ln.thin{stroke-width:3}
+.ssa-v-cnode .ln.lit{stroke:var(--slate)}
+.ssa-v-cnode .ln.ok{stroke:var(--sage)}
+.ssa-v-cnode .ln.hot{stroke:var(--rose)}
+.ssa-v-cnode .ln.vio{stroke:var(--violet)}
+.ssa-v-cnode .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-cnode .ln.dead{opacity:.3}
+.ssa-v-cnode .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-cnode .disk.w{stroke:var(--sage);stroke-width:3.5}
+.ssa-v-cnode .disk.lit{stroke:var(--slate)}
+.ssa-v-cnode .disk.off{opacity:.3;stroke-dasharray:4 4}
+.ssa-v-cnode .disk.bad{stroke:var(--rose);stroke-width:3}
+.ssa-v-cnode .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ssa-v-cnode .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.ssa-v-cnode .pkt.ok{fill:var(--sage)}
+.ssa-v-cnode .dot{fill:var(--slate)}
+.ssa-v-cnode .dot.v{fill:var(--violet)}
+.ssa-v-cnode .dot.ok{fill:var(--sage)}
+.ssa-v-cnode .xmark{stroke:var(--rose);stroke-width:4;stroke-linecap:round}
+.ssa-v-cnode .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ssa-v-cnode .track{fill:var(--rule)}
+.ssa-v-cnode .fill{fill:var(--rose)}
+.ssa-v-cnode .fill.sage{fill:var(--sage)}
+.ssa-v-cnode .sep{stroke:var(--rule);stroke-width:1.5}
+.ssa-v-cnode .chip{fill:var(--card);stroke:var(--rule);stroke-width:1.5;transition:stroke .25s,fill .25s}
+.ssa-v-cnode .chip.on{stroke:var(--slate);stroke-width:2.5}
+.ssa-v-cnode .chip.warn{stroke:var(--rose)}
+.ssa-v-cnode .scm{stroke:var(--ochre)}
+.ssa-v-cnode .tag{fill:var(--card);stroke:var(--slate);stroke-width:2}

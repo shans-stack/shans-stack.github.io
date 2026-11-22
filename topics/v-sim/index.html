@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相似性压缩 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 VAST 的相似性压缩：给数据块算一组故意做粗的相似指纹，找到只差几个字节的块，用参考块的字典只存差异；指纹表放在共享 SCM 上，整套系统一个缩减域。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/v-sim.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-sim">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Similarity-based data reduction">相似性压缩</h1>
+        <p class="meta"><span data-en="6 steps · VAST, data reduction, deduplication, compression">6 步 · VAST、数据缩减、去重、压缩</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026), data reduction chapter.">VAST Data，《VAST AI Operating System》白皮书（2026 年 4 月版），数据缩减章节。</li>
+      <li data-en="VAST knowledge base: Data Reduction.">VAST 官方知识库：Data Reduction。</li>
+      <li data-en="VAST knowledge base: Similarity-based Data Reduction.">VAST 官方知识库：Similarity-based Data Reduction。</li>
+      <li data-en="Zstandard (ZSTD) compression algorithm.">Zstandard（ZSTD）压缩算法。</li>
+      <li data-en="Animations are schematic. Block sizes and space savings are not measurements.">动画为示意，图中块大小与省下的空间不代表实测。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/v-sim.js"></script>
+<script>
+window.SS_TOPIC_CFG={anim:'v-sim',ar:[960/476,480/720],
+  steps:[
+    {s:["去重的局限", "The limit of dedupe"],t:["去重只认一模一样的块", "Deduplication only recognises identical blocks"],
+     d:["两块数据只差几个字节，算出来的指纹就完全不同，去重认不出它们，只好整块再存一份。", "If two blocks differ by only a few bytes, their fingerprints are completely different, so deduplication cannot match them and stores the whole block again."],
+     b:[["<p>去重（deduplication）的做法是给每块数据算一个「指纹」，也就是强哈希：同样的内容一定得到同样的指纹，不同的内容几乎不可能撞上。新写入的块先查指纹表，已经有了就只记一个指针，不再存第二份。</p>", "<p>问题在于强哈希对一个比特的差别都很敏感。两块数据只差几个字节，指纹就完全不同，去重认为它们毫无关系，只好整块再存一份。去重对这种「几乎一样」的块无能为力。</p>"],
+        ["<p>Deduplication computes a fingerprint for each block, a strong hash: identical content always gets the same fingerprint, and different content almost never collides. A newly written block is looked up in the fingerprint table; if it is already there, only a pointer is recorded and no second copy is stored.</p>", "<p>The catch is that a strong hash reacts to a single changed bit. If two blocks differ by only a few bytes, their fingerprints are completely different, deduplication treats them as unrelated, and the whole block is stored again. Deduplication can do nothing with blocks that are almost the same.</p>"]]},
+    {s:["按内容切块", "Content-defined chunks"],t:["先按内容把数据切成块", "First, cut the data into chunks by content"],
+     d:["用滚动哈希按内容找切点，把数据切成长短不一的块，平均 16 到 64 KB。", "A rolling hash finds cut points by content, cutting the data into chunks of varying length, 16 to 64 KB on average."],
+     b:[["<p>VAST 不按固定长度切块，而是用滚动哈希（rolling hash，一边滑动一边计算的哈希）在数据里按内容找切点，切出来的块长短不一，平均 16 到 64 KB。</p>", "<p>这一步发生在写缓冲之后：数据先落进 SCM、给客户端回过话，CNode 在把数据迁往 QLC 的路上才做切块和缩减，所以多花的计算不进写延迟。</p>"],
+        ["<p>VAST does not cut data into fixed-length blocks. It uses a rolling hash, computed as a window slides along the data, to find cut points by content. The resulting chunks vary in length, 16 to 64 KB on average.</p>", "<p>This happens after the write buffer: the data has already landed on SCM and the client has been acknowledged, and CNodes do the chunking and reduction while moving data to QLC. The extra computation therefore adds nothing to write latency.</p>"]]},
+    {s:["两种指纹", "Two fingerprints"],t:["每块算两种指纹", "Each chunk gets two kinds of fingerprint"],
+     d:["强哈希照常用来去重；另外再算一组故意做得「粗」的相似性哈希，只差几个比特的块会算出同一个值。", "The strong hash is still used for deduplication. A set of deliberately coarse similarity hashes is also computed, so chunks that differ by a few bits get the same value."],
+     b:[["<p>每一块都算两类哈希。强哈希抗碰撞，用于常规去重，要求内容完全一致。相似性哈希是故意做弱的：内容只差一点的块，会算出相同的相似性哈希。</p>", "<p>所以一块「几乎一样」的数据，强指纹查不到，相似指纹却能撞上已经存过的某一块。撞上说明这两块有大量相同的字节串，可以拿来做下一步。</p>"],
+        ["<p>Every chunk gets two kinds of hash. The strong hash resists collisions and is used for ordinary deduplication, which requires identical content. The similarity hash is deliberately weak: chunks whose content differs only slightly get the same similarity hash.</p>", "<p>So a chunk that is almost the same finds nothing with its strong fingerprint, but its similarity fingerprint can hit a chunk already stored. A hit means the two share long runs of identical bytes, which the next step uses.</p>"]]},
+    {s:["只存差异", "Store only the difference"],t:["撞上了，就用参考块的字典压，只存差异", "On a hit, compress with the reference chunk's dictionary and store only the difference"],
+     d:["相似指纹撞上后，取出那块已存的参考块，用它的压缩字典压新块，只存差异，不存第二本字典；没撞上的块用 ZSTD 单独压缩。", "After a similarity hit, the stored reference chunk is fetched and its compression dictionary is used on the new chunk, so only the difference is stored and no second dictionary is needed. Chunks without a hit are compressed on their own with ZSTD."],
+     b:[["<p>撞上之后，系统把已存的参考块取出来，用它的压缩字典去压新块。因为两块大部分字节相同，压出来只剩一小段差异（delta），而且不用再存一本字典。这样两块「差几个字节」的数据，实际只多占一点点空间。</p>", "<p>相似指纹没撞上的全新块，就用 ZSTD（一种通用压缩算法）单独压缩。按官方文档，缩减的顺序是先去重，再在普通压缩和相似性压缩之间挑收益更高的那个。</p>"],
+        ["<p>After a hit, the system fetches the stored reference chunk and compresses the new chunk with its dictionary. Because most of the bytes are the same, what remains is a small difference (a delta), and no extra dictionary has to be stored. Two chunks that differ by a few bytes take up only a little more space than one.</p>", "<p>A brand-new chunk with no similarity hit is compressed on its own with ZSTD, a general-purpose compression algorithm. According to the official documentation, reduction first deduplicates, then picks whichever of ordinary compression and similarity compression saves more.</p>"]]},
+    {s:["一个缩减域", "One reduction realm"],t:["指纹表放在共享 SCM 上，整套系统一个缩减域", "The fingerprint table sits on shared SCM, so the whole system is one reduction realm"],
+     d:["传统去重设备的指纹表放在单台控制器的内存里，规模大了只能拆成几个互不相通的去重域；VAST 把表放在所有 CNode 共享的 SCM 上，整套系统只有一个缩减域。", "Classic deduplication appliances keep the fingerprint table in one controller's memory, so at scale they split into separate deduplication domains that cannot see each other. VAST keeps the table on SCM shared by all CNodes, so the whole system is one reduction realm."],
+     b:[["<p>去重要快，指纹表就得放在很快的地方。传统去重设备把它放在控制器的内存里，内存有上限，存储规模大到一定程度就得拆成多台、各成一个去重域。不同域之间互相看不到，同一块数据写进两个域，就会存两份。</p>", "<p>VAST 的指纹表放在 SCM 上，所有 CNode 查的是同一张表，所以整个集群是一个缩减域（reduction realm）：不管数据从哪台 CNode 写进来，都能和全集群已存的数据比对。</p>"],
+        ["<p>For deduplication to be fast, the fingerprint table must live somewhere fast. Classic deduplication appliances keep it in controller memory, which has a limit, so beyond a certain scale they must be split into several systems, each its own deduplication domain. Domains cannot see each other, so the same data written into two domains is stored twice.</p>", "<p>VAST keeps the fingerprint table on SCM, and every CNode looks up the same table, so the whole cluster is one reduction realm: whichever CNode the data arrives through, it is compared with everything already stored in the cluster.</p>"]]},
+    {s:["按收益开关", "Switches with the payoff"],t:["系统按收益自动开关", "The system switches it on and off by payoff"],
+     d:["相似性压缩可能明显拖慢读取，所以系统会看最近写入省下了多少，收益低时自动关掉，收益高时再打开。", "Similarity reduction can noticeably slow reads, so the system watches how much recent writes saved, switching it off when the payoff is low and back on when it is high."],
+     b:[["<p>官方文档写明，相似性压缩可能造成明显的读性能下降。因此即使打开了这个功能，系统也会根据最近写入的缩减收益，在内部动态地关掉、再打开它。</p>", "<p>另外两点：已经存在的数据要享受相似性压缩，需要在后台整体重写一遍，这个过程一旦开始就不能暂停，对盘的磨损约等于把这些数据删掉再写一遍；缩减效果和数据本身关系很大，评估时应该用实际数据实测。</p>"],
+        ["<p>The official documentation states that similarity reduction can noticeably reduce read performance. So even with the feature enabled, the system internally switches it off and on again based on the reduction payoff of recent writes.</p>", "<p>Two more points: for existing data to benefit from similarity reduction it must be rewritten in the background, a process that cannot be paused once started and wears the drives about as much as deleting and rewriting that data; and how much is saved depends heavily on the data itself, so it should be evaluated with the actual data.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

@@ -4,30 +4,70 @@
 var SS=window.SS=window.SS||{};
 SS.root=window.SS_ROOT||'';
 SS.url=function(p){return SS.root+(p||'')};
+/* 讲稿功能还没做完，先整体隐藏：首页讲稿区、地图上方的讲稿选择与编辑路线、导航「讲稿」、知识点页的「讲稿：」。改成 true 就放出来。 */
+SS.TALKS=false;
+if(!SS.TALKS)document.documentElement.classList.add('no-talks');
 
 /* ---------- 语言与主题（沿用设计稿） ---------- */
 var q=new URLSearchParams(location.search);
 if(q.get('theme')==='dark'||q.get('theme')==='light')document.documentElement.setAttribute('data-theme',q.get('theme'));
-function getLang(){if(q.get('lang')==='en'||q.get('lang')==='zh')return q.get('lang');try{return localStorage.getItem('ss-lang')||'zh'}catch(e){return 'zh'}}
+/* 三种语言：zh 简体（原文）、tw 繁體（页面照简体渲染后整页转成繁体，用 OpenCC，选到才加载）、en 英文。
+   SS.lang() 只回 zh 或 en（内容用哪套），繁体时也是 zh；window.SS_LANG 记实际选的那一个。 */
+var LANGS=[['zh','简','简体中文'],['tw','繁','繁體中文'],['en','EN','English']];
+function okLang(v){return v==='zh'||v==='tw'||v==='en'}
+function getLang(){var v=q.get('lang');if(okLang(v))return v;try{v=localStorage.getItem('ss-lang');return okLang(v)?v:'zh'}catch(e){return 'zh'}}
 function putLang(v){try{localStorage.setItem('ss-lang',v)}catch(e){}}
+var conv=null,obs=null,loading=null;
+function loadT2(){
+  if(conv)return Promise.resolve(conv);
+  if(loading)return loading;
+  loading=new Promise(function(ok,no){var sc=document.createElement('script');
+    sc.src='https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/cn2t.js';
+    sc.onload=function(){try{conv=window.OpenCC.Converter({from:'cn',to:'tw'});ok(conv)}catch(e){no(e)}};sc.onerror=no;document.head.appendChild(sc)});
+  return loading;
+}
+var SKIP={SCRIPT:1,STYLE:1,CODE:1,KBD:1,TEXTAREA:1};
+function convNode(n){
+  if(n.nodeType===3){var p=n.parentNode;if(p&&(SKIP[p.nodeName]||(p.closest&&p.closest('[data-noconv]'))))return;var v=n.nodeValue,t=conv(v);if(t!==v)n.nodeValue=t;return}
+  if(n.nodeType!==1||SKIP[n.nodeName]||n.hasAttribute('data-noconv'))return;
+  ['aria-label','title','placeholder','alt'].forEach(function(k){var v=n.getAttribute(k);if(v){var t=conv(v);if(t!==v)n.setAttribute(k,t)}});
+  for(var c=n.firstChild;c;c=c.nextSibling)convNode(c);
+}
+function toTW(){
+  loadT2().then(function(){
+    if(window.SS_LANG!=='tw')return;
+    convNode(document.body);document.title=conv(document.title);
+    if(!obs){obs=new MutationObserver(function(ms){if(window.SS_LANG!=='tw')return;ms.forEach(function(m){
+      if(m.type==='characterData')convNode(m.target);else if(m.type==='attributes')convNode(m.target);else m.addedNodes.forEach(convNode)})});
+      obs.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title']})}
+  }).catch(function(){});
+}
 function apply(lang){
-  document.documentElement.lang=lang==='en'?'en':'zh-CN';
+  var en=lang==='en';
+  document.documentElement.lang=en?'en':(lang==='tw'?'zh-Hant-TW':'zh-CN');
   document.querySelectorAll('[data-en]').forEach(function(el){
     if(el.dataset.zh===undefined)el.dataset.zh=el.innerHTML;
-    el.innerHTML=lang==='en'?el.dataset.en:el.dataset.zh;
+    el.innerHTML=en?el.dataset.en:el.dataset.zh;
   });
   document.querySelectorAll('[data-en-label]').forEach(function(el){
     if(el.dataset.zhLabel===undefined)el.dataset.zhLabel=el.getAttribute('aria-label')||'';
-    el.setAttribute('aria-label',lang==='en'?el.dataset.enLabel:el.dataset.zhLabel);
+    el.setAttribute('aria-label',en?el.dataset.enLabel:el.dataset.zhLabel);
   });
-  var b=document.querySelector('[data-lang-toggle]');
-  if(b){b.textContent=lang==='en'?'中文':'EN';b.setAttribute('aria-label',lang==='en'?'切换到中文':'Switch to English')}
+  document.querySelectorAll('[data-lang-set]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-lang-set')===lang?'true':'false')});
   window.SS_LANG=lang;document.dispatchEvent(new CustomEvent('ss-lang',{detail:lang}));
+  if(lang==='tw')toTW();
 }
-window.ssToggleLang=function(){var n=window.SS_LANG==='en'?'zh':'en';putLang(n);apply(n)};
+window.ssSetLang=function(v){if(!okLang(v))return;var was=window.SS_LANG;putLang(v);
+  try{var u=new URL(location.href);if(u.searchParams.has('lang')){u.searchParams.set('lang',v);history.replaceState(null,'',u)}}catch(e){}
+  if(was==='tw'&&v!=='tw'){location.reload();return}/* 繁体是整页转换出来的，切回别的语言最稳是重新载入 */
+  apply(v)};
 window.SS_LANG=getLang();
 document.addEventListener('DOMContentLoaded',function(){
-  var b=document.querySelector('[data-lang-toggle]');if(b)b.addEventListener('click',window.ssToggleLang);
+  var b=document.querySelector('[data-lang-toggle]');
+  if(b){var g=document.createElement('div');g.className='langs';g.setAttribute('role','group');g.setAttribute('aria-label','语言 / Language');g.setAttribute('data-noconv','');
+    LANGS.forEach(function(o){var x=document.createElement('button');x.type='button';x.textContent=o[1];x.title=o[2];x.setAttribute('lang',o[0]==='en'?'en':(o[0]==='tw'?'zh-Hant':'zh-Hans'));
+      x.setAttribute('data-lang-set',o[0]);x.addEventListener('click',function(){if(window.SS_LANG!==o[0])window.ssSetLang(o[0])});g.appendChild(x)});
+    b.replaceWith(g)}
   apply(getLang());
 });
 SS.lang=function(){return window.SS_LANG==='en'?'en':'zh'};

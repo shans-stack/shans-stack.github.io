@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>条带化：一个文件怎么分到多台服务器上 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 Lustre 条带化：一个文件切成固定大小的块，轮流放到多台数据服务器上；条带大小、条带数怎么定，对不齐时会怎样。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css">
+<link rel="stylesheet" href="../../assets/brand/brand.css">
+<link rel="stylesheet" href="../../assets/anim/d-stripe.css">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css">
+</head>
+<body>
+<script src="../../assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-stripe">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Striping: how one file is spread over many servers">条带化：一个文件怎么分到多台服务器上</h1>
+        <p class="meta"><span data-en="6 steps · Lustre, striping, DDN">6 步 · Lustre、条带、DDN</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="Lustre Operations Manual (doc.lustre.org), chapter “Managing File Layout (Striping) and Free Space”.">Lustre Operations Manual（doc.lustre.org），「Managing File Layout (Striping) and Free Space」一章。</li>
+      <li data-en="Lustre Operations Manual, the lfs setstripe command.">Lustre Operations Manual，lfs setstripe 命令说明。</li>
+      <li data-en="Lustre Wiki (wiki.lustre.org), Progressive File Layouts entry.">Lustre Wiki（wiki.lustre.org），Progressive File Layouts 条目。</li>
+      <li data-en="Animations are schematic. No measured bandwidth numbers are shown.">动画为示意，未标注实测带宽数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js"></script>
+<script src="../../data/stations.js"></script>
+<script src="../../data/maps.js"></script>
+<script src="../../data/talks.js"></script>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/anim/d-stripe.js"></script>
+<script>
+/* 六步：标题、一句话说明（演示模式也用）、文档模式正文。正文只取自 Lustre 公开手册与作者学习笔记里讲条带布局的页面，不写性能数字和规格上限。 */
+window.SS_TOPIC_CFG={anim:"d-stripe",ar:[960/476,480/692],
+  steps:[
+   {
+    "t": [
+     "不条带：整个文件在一台服务器上",
+     "No striping: the whole file on one server"
+    ],
+    "d": [
+     "文件全放在一台数据服务器上时，读它只能用这一台的带宽，其他几台闲着。",
+     "When a file sits entirely on one data server, reading it can use only that server's bandwidth while the others sit idle."
+    ],
+    "b": [
+     [
+      "<p>上一站讲到，EXAScaler（Lustre）把文件内容放在数据服务器的存储目标（OST）上。最简单的放法是一个文件整个放在一个 OST 上。这样读这个文件时，所有数据都要从这一台服务器出来，它的网口和盘就是这个文件的速度上限；其他服务器即使空闲也无法分担。</p>",
+      "<p>小文件这样放没有问题。但训练集里的大文件、很大的检查点文件，如果只放在一台上，就浪费了整个集群的带宽。</p>"
+     ],
+     [
+      "<p>The previous stop showed that EXAScaler (Lustre) stores file contents on the data servers' storage targets (OSTs). The simplest placement puts a whole file on one OST. Then all of that file's data has to come out of that one server, so its network port and disks set the speed limit for the file; idle servers next to it cannot help.</p>",
+      "<p>For small files this is fine. But large files in a training set, or very large checkpoint files, placed on a single server waste the whole cluster's bandwidth.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "切成条带，轮流放到几台上",
+     "Cut into stripes, placed in turn across several servers"
+    ],
+    "d": [
+     "文件按固定大小切成块，第 1 块放第 1 台、第 2 块放第 2 台，轮完一圈再从头来。",
+     "The file is cut into fixed-size chunks: chunk 1 goes to server 1, chunk 2 to server 2, and after one round it starts again."
+    ],
+    "b": [
+     [
+      "<p><b>条带化</b>（striping）就是把一个文件切成固定大小的块，按顺序轮流放到几个 OST 上。例如分到 4 台：第 1 块去第 1 台，第 2 块去第 2 台，第 4 块去第 4 台，第 5 块又回到第 1 台。每一块叫一个条带块，整个文件的放法记在元数据服务器的「文件布局」里，客户端打开文件时拿到它，就知道每一块在哪。</p>",
+      "<p>条带是按字节位置切的，和 RAID 0 把数据切块跨盘写是同一个思路，只是这里跨的是服务器。</p>"
+     ],
+     [
+      "<p><b>Striping</b> cuts a file into fixed-size chunks and places them in turn across several OSTs. With 4 servers, for example, chunk 1 goes to server 1, chunk 2 to server 2, chunk 4 to server 4, and chunk 5 back to server 1. Each piece is a stripe chunk, and the whole placement is recorded in the “file layout” on the metadata server; when a client opens the file it receives the layout and knows where every chunk is.</p>",
+      "<p>Striping cuts by byte position. It is the same idea as RAID 0 cutting data into chunks across disks, except that here the chunks span servers.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "几台一起出数，带宽叠在一起",
+     "Several servers send at once, and bandwidth adds up"
+    ],
+    "d": [
+     "读的时候几台服务器同时送块，同样时间送到的比一台多。",
+     "On a read, several servers send chunks at the same time, so more arrives in the same time than from one server."
+    ],
+    "b": [
+     [
+      "<p>因为相邻的块在不同的服务器上，客户端读一个大文件时可以同时向几台要数据，每台各送自己那几块，速度叠在一起。写也一样：客户端把各块同时发往不同的服务器。</p>",
+      "<p>画面是示意，不代表实测数字。实际能叠多少，还取决于网络、客户端和其他作业是否在用同样的服务器。</p>"
+     ],
+     [
+      "<p>Because neighbouring chunks are on different servers, a client reading a large file can ask several servers at once, each sending its own chunks, and the speeds add up. Writes work the same way: the client sends chunks to different servers at the same time.</p>",
+      "<p>The animation is schematic, not measured. How much adds up in practice also depends on the network, the client, and whether other jobs are using the same servers.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "两个参数：条带大小和条带数",
+     "Two parameters: stripe size and stripe count"
+    ],
+    "d": [
+     "条带大小是每块多大才换下一台；条带数是这个文件铺几台。",
+     "Stripe size is how big a chunk gets before moving to the next server; stripe count is how many servers the file spans."
+    ],
+    "b": [
+     [
+      "<p>条带化由两个参数决定。<b>条带大小</b>（stripe size）：写满多大一块就换下一个 OST。<b>条带数</b>（stripe count）：这个文件铺在几个 OST 上。用户或管理员可以用 <code>lfs setstripe</code> 命令设定，<code>-S</code> 是条带大小，<code>-c</code> 是条带数，<code>-p</code> 还可以指定放到哪个存储池（例如闪存池或硬盘池）。</p>",
+      "<p>条带数并非越大越好。大文件铺得太少，带宽叠不起来；小文件铺得太多，读一次就要找很多台服务器，来回反而变多。所以条带参数要按文件大小和读写方式来定，避免「过度条带化」和「条带化不足」。</p>"
+     ],
+     [
+      "<p>Striping is set by two parameters. <b>Stripe size</b>: how large a chunk to write before moving to the next OST. <b>Stripe count</b>: how many OSTs the file spans. Users or administrators set them with the <code>lfs setstripe</code> command: <code>-S</code> is the stripe size, <code>-c</code> the stripe count, and <code>-p</code> can also choose a storage pool (for example a flash pool or a disk pool).</p>",
+      "<p>A larger stripe count is not always better. Large files spread too thinly cannot add up bandwidth; small files spread too widely need many servers for every read, which adds round trips. Stripe parameters should match file size and access pattern, avoiding both over-striping and under-striping.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "条带不看文件内容：对不齐要多跑",
+     "Striping ignores file contents: misalignment costs extra trips"
+    ],
+    "d": [
+     "条带只按字节位置切，不管应用里一条记录在哪；一条记录跨在两块之间时，要找两台服务器。",
+     "Striping cuts by byte position and ignores where a record sits in the application; a record that straddles two chunks needs two servers."
+    ],
+    "b": [
+     [
+      "<p>文件系统切条带时完全不看文件内容。应用自己的数据结构（比如图像格式里的分块、数据库里的一条记录）有自己的边界，和条带的边界是两回事。如果应用要读的一段正好跨在两个条带块之间，这一次读就要同时找两台服务器，每台的那一块都只用到一部分。读的次数多了，就变成大量零碎的小读。</p>",
+      "<p>排查这类问题时，常见的方向是让应用的块大小和条带大小对齐，或者用更大的块去读，让每次读尽量落在一个条带块里。</p>"
+     ],
+     [
+      "<p>The file system cuts stripes without looking at file contents. The application's own data structures (tiles in an image format, a record in a database) have their own boundaries, unrelated to stripe boundaries. If the piece the application wants to read straddles two stripe chunks, that one read has to go to two servers, using only part of each chunk. With many such reads, I/O turns into lots of small, fragmented reads.</p>",
+      "<p>When troubleshooting this, the usual directions are to align the application's block size with the stripe size, or to read in larger blocks so that each read falls within one stripe chunk as far as possible.</p>"
+     ]
+    ]
+   },
+   {
+    "t": [
+     "按目录设定，建文件时就定好",
+     "Set per directory, fixed when a file is created"
+    ],
+    "d": [
+     "目录可以设默认条带，新文件自动继承；布局在建文件时定好，之后改设置只影响新文件。",
+     "A directory can carry a default stripe setting that new files inherit; the layout is fixed when a file is created, and later changes affect only new files."
+    ],
+    "b": [
+     [
+      "<p>条带参数通常设在目录上：大文件多的目录设更大的条带数，小文件多的目录设条带数为 1，目录里新建的文件自动继承。这样用户不用每个文件单独设。</p>",
+      "<p>一个文件的条带布局在创建时就定了，整个文件用同一套参数。之后改了目录设置，只影响以后新建的文件；已经写好的文件要换布局，需要重写或迁移。扩容加了新的数据服务器，旧文件也不会自动铺过去。如果事先不知道文件会长多大，可以用渐进布局（PFL）：文件越写越大时，后面的部分自动换成更宽的条带。</p>"
+     ],
+     [
+      "<p>Stripe parameters are usually set on directories: a larger stripe count for directories full of large files, a stripe count of 1 for directories full of small files, and new files in the directory inherit the setting. Users then do not have to set each file.</p>",
+      "<p>A file's stripe layout is fixed when it is created, and the whole file uses one set of parameters. Changing the directory setting later affects only files created afterwards; changing the layout of a file already written requires a rewrite or migration. When new data servers are added, old files do not spread onto them automatically either. When the final size of a file is not known in advance, a progressive file layout (PFL) can be used: as the file grows, later parts automatically switch to a wider stripe.</p>"
+     ]
+    ]
+   }
+  ]
+};
+</script>
+<script src="../../assets/topic.js"></script>
+</body>
+</html>

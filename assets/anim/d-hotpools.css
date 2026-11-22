@@ -1,0 +1,33 @@
+/* Hot Pools：动画区样式。由 assets/anim/d-hotpools.js 使用，只作用于 .an-d-hotpools 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.an-d-hotpools{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.an-d-hotpools .an-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.an-d-hotpools .an-scene text{dominant-baseline:central}
+.an-d-hotpools .an-scene .vis{transition:opacity .4s}
+.an-d-hotpools .an-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.an-d-hotpools .an-scene .dim{opacity:.22}
+.an-d-hotpools .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.an-d-hotpools .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .4s}
+.an-d-hotpools .blk.sage{stroke:var(--sage)}.an-d-hotpools .blk.rose{stroke:var(--rose)}.an-d-hotpools .blk.slate{stroke:var(--slate)}.an-d-hotpools .blk.ochre{stroke:var(--ochre)}
+.an-d-hotpools .lbl{fill:var(--ink);font-weight:500}
+.an-d-hotpools .b7{font-weight:700}
+.an-d-hotpools .track{fill:var(--rule)}
+.an-d-hotpools .fill{fill:var(--slate);transition:fill .3s}
+.an-d-hotpools .fill.rose{fill:var(--rose)}.an-d-hotpools .fill.sage{fill:var(--sage)}.an-d-hotpools .fill.ochre{fill:var(--ochre)}
+.an-d-hotpools .st{font-weight:600;transition:opacity .25s}
+.an-d-hotpools .rose-t{fill:var(--rose)}.an-d-hotpools .sage-t{fill:var(--sage)}.an-d-hotpools .slate-t{fill:var(--slate)}.an-d-hotpools .ochre-t{fill:var(--ochre)}.an-d-hotpools .violet-t{fill:var(--violet)}.an-d-hotpools .ink3-t{fill:var(--ink3)}.an-d-hotpools .ink2-t{fill:var(--ink2)}
+.an-d-hotpools .ln{fill:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .4s,stroke .3s}
+.an-d-hotpools .base{stroke:var(--rule2);stroke-width:4}
+.an-d-hotpools .base.on{stroke:var(--slate)}
+.an-d-hotpools .base.sg{stroke:var(--sage)}
+.an-d-hotpools .base.rs{stroke:var(--rose)}
+.an-d-hotpools .base.oc{stroke:var(--ochre)}
+.an-d-hotpools .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.an-d-hotpools .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.an-d-hotpools .pkt.v{fill:var(--violet)}.an-d-hotpools .pkt.o{fill:var(--ochre)}.an-d-hotpools .pkt.s{fill:var(--sage)}.an-d-hotpools .pkt.r{fill:var(--rose)}
+.an-d-hotpools .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:5 4}
+.an-d-hotpools .tick{stroke:var(--ink3);stroke-width:2}
+/* 部件上的厂商 logo：深色模式垫浅灰底，logo 不改色 */
+.an-d-hotpools .lgbk{fill:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .an-d-hotpools .lgbk{fill:#DADCDF}}
+:root[data-theme=dark] .an-d-hotpools .lgbk{fill:#DADCDF}

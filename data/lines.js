@@ -8,7 +8,9 @@
      d      一句线说明（zh / en） */
 window.SS = window.SS || {};
 SS.lines = [
-  /* ---------- 总图：五条主干线 ---------- */
+  /* ---------- 总图：六条主干线 ---------- */
+  {id:'m', map:'home', zh:'模型', en:'Model', slot:'l6', sym:'i-layers',
+   d:{zh:'模型本身怎么搭、占多少显存、怎么训出来。', en:'How the model itself is built, how much memory it takes, and how it gets trained.'}},
   {id:'a', map:'home', zh:'AI 应用', en:'AI Application', gut:{en:'AI apps'}, slot:'l1', sym:'i-ai',
    d:{zh:'模型上线以后，推理服务和应用在做什么。', en:'What inference and applications do once a model ships.'}},
   {id:'d', map:'home', zh:'数据', en:'Data', slot:'l2', sym:'i-dat',
