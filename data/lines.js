@@ -23,8 +23,8 @@ SS.lines = [
    d:{zh:'数据放在哪，又怎么快速读回来。', en:'Where data lives and how it comes back fast.'}},
 
   /* ---------- VAST 专题图 ---------- */
-  {id:'v-aios', map:'vast', zh:'AI OS', en:'AI OS', slot:'l1', sym:'i-ai',
-   d:{zh:'存储之上长出来的数据库、向量检索和事件处理。', en:'The database, vector search and event processing that grow out of the storage.'}},
+  {id:'v-aios', map:'vast', zh:'软件（AI OS）', en:'Software (AI OS)', gut:{en:'Software'}, slot:'l8', sym:'i-ai',
+   d:{zh:'VAST 的软件层，官方统称 VAST AI OS：数据存储、数据库、全局数据空间和计算引擎，以及在它上面做的检索、事件处理和 KV Cache 卸载。', en:'VAST\'s software layer, officially the VAST AI OS: data storage, the database, the global data space and the compute engine, plus the search, event processing and KV cache offload built on them.'}},
   {id:'v-proto', map:'vast', zh:'访问协议', en:'Access Protocols', gut:{en:'Protocols'}, slot:'l4', sym:'i-net',
    d:{zh:'客户端用什么方式读写同一份数据。', en:'The ways clients read and write the same data.'}},
   {id:'v-arch', map:'vast', zh:'架构', en:'Architecture', slot:'l3', sym:'i-arch',
@@ -35,8 +35,6 @@ SS.lines = [
    d:{zh:'盘坏了、站点出事了，数据怎么不丢。', en:'How data survives failed drives and lost sites.'}},
   {id:'v-red', map:'vast', zh:'数据缩减', en:'Data Reduction', gut:{en:'Reduction'}, slot:'l2', sym:'i-squeeze',
    d:{zh:'同样的闪存怎么放下更多数据，还用得久。', en:'How the same flash holds more data and lasts longer.'}},
-  {id:'v-sw', map:'vast', zh:'软件', en:'Software', slot:'l8', sym:'i-ai',
-   d:{zh:'VAST 自己的软件产品。', en:'VAST\'s own software products.'}},
   {id:'v-hw', map:'vast', zh:'硬件', en:'Hardware', slot:'l7', sym:'i-rack',
    d:{zh:'VAST 自己的硬件产品。', en:'VAST\'s own hardware products.'}},
 
