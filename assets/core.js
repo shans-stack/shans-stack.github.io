@@ -76,10 +76,7 @@ document.addEventListener('DOMContentLoaded',function(){
     LANGS.forEach(function(o){var x=document.createElement('button');x.type='button';x.textContent=o[1];x.title=o[2];x.setAttribute('lang',o[0]==='en'?'en':(o[0]==='tw'?'zh-Hant':'zh-Hans'));
       x.setAttribute('data-lang-set',o[0]);x.addEventListener('click',function(){if(window.SS_LANG!==o[0])window.ssSetLang(o[0])});g.appendChild(x)});
     b.replaceWith(g);
-    if(SS.views&&SS.views.length){var vg=document.createElement('div');vg.className='langs views';vg.setAttribute('role','group');vg.setAttribute('aria-label','视角 / View');
-      [['','通用','General']].concat(SS.views.map(function(v){return [v.id,v.zh,v.en]})).forEach(function(o){var x=document.createElement('button');x.type='button';x.textContent=o[1];x.setAttribute('data-en',o[2]);
-        x.setAttribute('aria-pressed',(SS.VIEW||'')===o[0]?'true':'false');x.addEventListener('click',function(){if((SS.VIEW||'')!==o[0])window.ssSetView(o[0])});vg.appendChild(x)});
-      g.parentNode.insertBefore(vg,g)}}
+    /* 厂商视角不放按钮（2026-11-22 用户定），只靠 ?v=vast / ?v=all 链接切换 */}
   apply(getLang());
 });
 SS.lang=function(){return window.SS_LANG==='en'?'en':'zh'};
