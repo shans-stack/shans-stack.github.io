@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="zh-CN" data-palette="{{PAL}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RDMA 为什么快 · Shan's Stack</title>
+<meta name="description" content="六步讲清 RDMA 为什么比传统 TCP 快：网卡直接读写应用内存，绕过内核，对方 CPU 不参与。">
+{{FONTS}}
+<!--
+  方向 A2 · 安静的地铁图（知识点页），三套配色同一份源文件。
+  颜色只用在：标题下的细色条（这个知识点停靠的三条线）、步骤栏与进度（网络线的颜色）、所属线的符号。
+-->
+{{PALJS}}
+<style>
+{{PALCSS}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.7;
+  font-synthesis:none;line-break:strict;overflow-wrap:break-word}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+h1,h2,h3{text-wrap:balance;font-weight:500;margin:0;font-family:var(--fh)}
+p{text-wrap:pretty;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+/* 页头 */
+.hd{border-bottom:1px solid var(--rule)}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em;white-space:nowrap}
+.brand svg{width:22px;height:22px;flex:none;fill:var(--ink)}
+.nav{display:flex;align-items:center;gap:4px}
+.nav a{padding:10px 12px;font-size:15px;color:var(--ink2);border-radius:2px}
+.nav a:hover{color:var(--ink)}
+.lang{min-width:44px;min-height:40px;border:1px solid var(--rule2);background:transparent;color:var(--ink);
+  font:500 14px var(--f);border-radius:2px;cursor:pointer;margin-left:8px}
+.lang:hover{border-color:var(--ink)}
+/* 符号 */
+.mini{width:14px;height:14px;vertical-align:-2px}
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:2px;
+  font:500 15px var(--f);border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn:hover{filter:brightness(1.06)}
+kbd{font:500 12px var(--f);border:1px solid var(--rule2);border-radius:2px;padding:1px 5px;color:var(--ink3)}
+.ft{border-top:1px solid var(--rule);margin-top:96px}
+.ft .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;padding-top:20px;padding-bottom:40px;font-size:14px;color:var(--ink3);flex-wrap:wrap}
+{{PALSWCSS}}
+@media (max-width:720px){
+  .wrap{padding:0 16px}
+  .nav a{padding:10px 6px;font-size:14px}.lang{margin-left:4px}.brand{font-size:16px}.brand svg{width:18px;height:18px}
+  body{font-size:16px}
+}
+
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:36px;font-size:14px;color:var(--ink3)}
+.crumb svg{width:18px;height:18px}
+.crumb a:hover{color:var(--ink)}
+.crumb a{white-space:nowrap}
+.tt{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-top:8px;padding-bottom:20px}
+/* 标题下的细色条：这个知识点停靠的几条线，按从上到下的顺序 */
+.cbar{display:flex;height:4px;gap:3px}
+.cbar i{flex:1;background:var(--c)}
+.tt h1{font-size:clamp(28px,1rem + 2.4vw,44px);line-height:1.25}
+.tt .tags{font-size:14px;color:var(--ink3);margin-top:6px}
+.tt .talks{font-size:14px;color:var(--ink3);display:flex;flex-wrap:wrap;gap:2px 16px}
+.tt .talks a{color:var(--ink2);text-decoration:underline;text-decoration-color:var(--rule2);text-underline-offset:3px}
+.tt .talks a:hover{text-decoration-color:var(--ink)}
+.crumb .xc{width:9px;height:18px;border:2.5px solid var(--ink3);border-radius:5px}
+.crumb svg+svg{margin-left:-4px}
+.body{display:grid;grid-template-columns:232px 1fr;gap:40px;margin-top:32px}
+/* 步骤栏：网络线上的一小段，每步一个站 */
+.rail ol{list-style:none;margin:0;padding:0;position:relative}
+.rail ol::before{content:"";position:absolute;left:9px;top:22px;bottom:22px;width:6px;background:var(--lc)}
+.rail button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:center;width:100%;min-height:44px;padding:4px 0;cursor:pointer;font-size:15px;line-height:1.4;color:var(--ink3);position:relative}
+.rail button::before{content:"";justify-self:center;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--ink);box-sizing:border-box}
+.rail button.done::before{background:var(--lc);border-color:var(--lc)}
+.rail button.done{color:var(--ink2)}
+.rail button[aria-current=step]{color:var(--ink);font-weight:500}
+.rail button[aria-current=step]::before{width:24px;height:24px;background:var(--lc);border:4px solid var(--ink)}
+.rail button:hover{color:var(--ink)}
+.rail button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.rail .hint{margin-top:16px;font-size:13px;color:var(--ink3);line-height:1.8}
+/* 舞台 */
+.stage{min-width:0;--lc:var(--l4)}
+.rail{--lc:var(--l4)}
+.figbox{background:var(--surface);border:1px solid var(--rule);padding:20px}
+.rd{display:block;width:100%;height:auto;max-height:min(54vh,560px);margin:0 auto;font-family:var(--f)}
+.rd .canvas{fill:var(--surface)}
+.rd .fr{fill:none;stroke:var(--rule2);stroke-width:1.5}
+.rd .bx{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.rd .nm{font-size:24px;font-weight:600;fill:var(--ink)}
+.rd .lb{font-size:22px;fill:var(--ink)}
+.rd .nt{fill:var(--ink2)}
+.rd .st{fill:var(--ink2);font-weight:500}
+.rd .cp{font-size:20px;fill:var(--ink2)}
+.rd .link{fill:none;stroke:var(--ink);stroke-width:3}
+.rd .link-f{stroke:var(--ink);stroke-width:5}
+.rd .p-s{fill:none;stroke:var(--ink3);stroke-width:3;stroke-dasharray:7 6}
+.rd .ah-s{fill:var(--ink3)}
+.rd .p-f{fill:none;stroke:var(--ink);stroke-width:6}
+.rd .ah-f{fill:var(--ink)}
+.rd .copy{fill:none;stroke:var(--ink3);stroke-width:2;stroke-dasharray:3 4}
+.rd .blk{fill:var(--blk)}
+.rd .bar-lo,.rd .bar-hi{fill:var(--blk);opacity:.55}
+.rd .bar-cmp{fill:var(--ink);opacity:.22}
+.rd .bar-t{fill:var(--blk)}
+.rd .bar-r{fill:var(--ink)}
+.rd .q{fill:var(--bg);stroke:var(--ink);stroke-width:2}
+.rd .qt{font-size:26px;font-weight:700;fill:var(--ink)}
+.rd .k{transition:opacity .25s}
+.stage[data-step="4"] .rd .k,.stage[data-step="5"] .rd .k,.stage[data-step="6"] .rd .k{opacity:.3}
+.stage[data-step="2"] .rd rect.k,.stage[data-step="3"] .rd rect.k{stroke-width:2.5}
+.cap{margin-top:24px;max-width:40em}
+.cap .cnt{font-size:14px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.cap h2{font-size:clamp(22px,1rem + 1vw,30px);line-height:1.35;margin-top:4px}
+.cap p{font-size:18px;color:var(--ink2);margin-top:10px;min-height:3.4em}
+.ctl{display:flex;align-items:center;gap:12px;margin-top:24px;flex-wrap:wrap}
+.prog{display:flex;flex:1;min-width:150px;position:relative;justify-content:space-between}
+.prog::before{content:"";position:absolute;left:14px;right:14px;top:50%;height:4px;margin-top:-2px;background:var(--rule2)}
+.prog::after{content:"";position:absolute;left:14px;width:calc((100% - 28px) * var(--pv,0));top:50%;height:6px;margin-top:-3px;background:var(--lc);transition:width .25s}
+.prog button{all:unset;cursor:pointer;width:28px;height:44px;display:grid;place-items:center;position:relative;z-index:1}
+.prog button::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--bg);border:3px solid var(--ink3);box-sizing:content-box}
+.prog button.done::after{background:var(--lc);border-color:var(--lc)}
+.prog button[aria-current=step]::after{width:14px;height:14px;background:var(--lc);border:4px solid var(--ink)}
+.prog button:focus-visible{outline:2px solid var(--ink)}
+.btn:disabled{opacity:.35;cursor:default;filter:none}
+.pres{margin-left:auto}
+/* 关联与出处 */
+.rel{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:32px;margin-top:72px}
+.rel h3{font-size:16px;font-weight:500;color:var(--ink3);padding-bottom:8px;border-bottom:1px solid var(--ink)}
+.rel ul{list-style:none;margin:0;padding:0}
+.rel li{border-bottom:1px solid var(--rule)}
+.rel li a{display:flex;align-items:center;gap:10px;padding:12px 0;font-size:16px}
+.rel li a svg{width:20px;height:20px;flex:none}
+.rel li a:hover{text-decoration:underline}
+.rel .src li{padding:12px 0;font-size:14px;color:var(--ink2);line-height:1.6}
+.exit{display:none}
+/* 演示模式：只留图、标题、说明、翻页 */
+body.present{overflow:hidden}
+body.present .hd,body.present .crumb,body.present .tt,body.present .cbar,body.present .rail,body.present .rel,body.present .ft{display:none}
+body.present main.wrap{max-width:none;padding:0}
+body.present .body{display:block;margin:0}
+body.present .stage{height:100vh;height:100dvh;display:grid;grid-template-rows:1fr auto auto;padding:3vh 5vw 2.5vh;background:var(--bg)}
+body.present .figbox{border:0;background:transparent;padding:0;min-height:0;display:flex;align-items:center;justify-content:center}
+body.present .rd{max-height:100%;width:auto;max-width:100%;height:100%}
+body.present .rd .canvas{fill:var(--bg)}
+body.present .cap{max-width:none;display:grid;grid-template-columns:auto 1fr;column-gap:3vw;align-items:baseline;margin-top:2vh}
+body.present .cap .cnt{grid-row:1/3;font-size:clamp(18px,1.6vw,26px)}
+body.present .cap h2{font-size:clamp(30px,3.4vw,58px)}
+body.present .cap p{font-size:clamp(20px,1.9vw,30px);min-height:0}
+body.present .ctl{margin-top:1.5vh}
+body.present .exit{display:inline-flex}
+body.present .pres{display:none}
+@media (max-width:960px){.body{grid-template-columns:1fr}.rail{display:none}.rel{grid-template-columns:1fr;gap:28px}}
+@media (max-width:720px){
+  .tt{display:block}.tt .btn{margin-top:14px}
+  .tt .talks>span:first-child{width:100%}
+  .figbox{padding:8px}
+  .cap p{font-size:17px}
+  .ctl .btn{padding:0 14px}
+  .pres{margin-left:0}
+  body.present .stage{padding:16px}
+  body.present .cap{display:block}
+}
+</style>
+</head>
+<body>
+{{SYMS}}
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="home.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="home.html#topics" data-en="Topics">知识点</a><a href="home.html#talks" data-en="Talks">讲稿</a><a href="home.html#about" data-en="About">关于</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div class="crumb"><span class="xc" aria-hidden="true"></span><a href="home.html#map" data-en="Transfer stop">换乘站</a><span>/</span><svg style="fill:var(--l3)"><use href="#i-cmp"/></svg><svg style="fill:var(--l4)"><use href="#i-net"/></svg><svg style="fill:var(--l5)"><use href="#i-sto"/></svg><span data-en="The compute, network and storage lines all stop here">计算线、网络线、存储线都停这一站</span></div>
+  <div class="tt">
+    <div><h1 data-en="Why RDMA is fast">RDMA 为什么快</h1>
+      <p class="tags" data-en="6 steps. Tags: InfiniBand, RoCE, NIC">6 步。标签：InfiniBand、RoCE、网卡</p>
+      <p class="talks"><span data-en="In talks:">出现在讲稿：</span><a href="home.html?route=0#map" data-en="AI clusters, the basics, stop 3">AI 集群入门，第 3 站</a><a href="home.html?route=1#map" data-en="How data gets to the GPU, stop 4">数据怎么喂给 GPU，第 4 站</a></p></div>
+    <button class="btn pri" type="button" data-present><span data-en="Present">演示模式</span> <kbd style="color:inherit;border-color:currentColor">P</kbd></button>
+  </div>
+  <div class="cbar" aria-hidden="true"><i style="--c:var(--l3)"></i><i style="--c:var(--l4)"></i><i style="--c:var(--l5)"></i></div>
+
+  <div class="body">
+    <aside class="rail" aria-label="步骤" data-en-label="Steps">
+      <ol>
+        <li><button data-go="0" data-n="1" data-en="Where does the time go?">慢在哪？</button></li>
+        <li><button data-go="1" data-n="2" data-en="Classic TCP">传统 TCP</button></li>
+        <li><button data-go="2" data-n="3" data-en="More data, busier CPU">数据越多，CPU 越忙</button></li>
+        <li><button data-go="3" data-n="4" data-en="RDMA">RDMA 直接读写</button></li>
+        <li><button data-go="4" data-n="5" data-en="Result">结果</button></li>
+        <li><button data-go="5" data-n="6" data-en="Two networks">两种网络</button></li>
+      </ol>
+      <p class="hint"><kbd>←</kbd> <kbd>→</kbd> <span data-en="change step">翻页</span><br><kbd>P</kbd> <span data-en="present">演示模式</span></p>
+    </aside>
+
+    <div class="stage" data-stage>
+      <div class="figbox"><svg class="rd" viewBox="0 0 640 480" role="img" aria-labelledby="rd-t">
+<title id="rd-t" data-en="Data path: TCP vs RDMA (schematic)">数据路径：TCP 与 RDMA（示意）</title>
+<defs>
+ <marker id="ah-s" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto-start-reverse"><path class="ah-s" d="M0 0L10 5L0 10z"/></marker>
+ <marker id="ah-f" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto-start-reverse"><path class="ah-f" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="canvas" width="640" height="480"/>
+<!-- 网络：单链路（1-5）与双网络（6） -->
+<path class="link" data-s="1 2 3 4 5" d="M155 322V380H485V322"/>
+<path class="link link-f" data-s="4 5" d="M155 322V380H485V322"/>
+<g data-s="6"><path class="link link-f" d="M140 322V372H500V322"/><path class="link link-f" d="M170 322V404H470V322"/>
+ <text class="lb nt" x="320" y="362" text-anchor="middle">InfiniBand</text>
+ <text class="lb nt" x="320" y="432" text-anchor="middle" data-en="Ethernet · RoCE">以太网 · RoCE</text></g>
+<g data-s="1"><circle class="q" cx="320" cy="380" r="22"/><text class="qt" x="320" y="389" text-anchor="middle">?</text></g>
+<!-- 服务器 A -->
+<rect class="fr" x="10" y="20" width="290" height="320" rx="4"/>
+<text class="nm" x="24" y="52" data-en="Server A">服务器 A</text>
+<rect class="bx app" x="24" y="74" width="196" height="56" rx="3"/><text class="lb" x="122" y="109" text-anchor="middle" data-en="App memory">应用内存</text>
+<rect class="bx k" x="74" y="170" width="146" height="56" rx="3"/><text class="lb k" x="147" y="205" text-anchor="middle" data-en="Kernel">内核</text>
+<rect class="bx cpu" x="232" y="74" width="54" height="152" rx="3"/><text class="lb" x="259" y="99" text-anchor="middle">CPU</text>
+<rect class="bx nic" x="24" y="266" width="262" height="56" rx="3"/><text class="lb" x="155" y="301" text-anchor="middle" data-en="NIC">网卡 NIC</text>
+<!-- 服务器 B -->
+<rect class="fr" x="340" y="20" width="290" height="320" rx="4"/>
+<text class="nm" x="616" y="52" text-anchor="end" data-en="Server B">服务器 B</text>
+<rect class="bx app" x="420" y="74" width="196" height="56" rx="3"/><text class="lb" x="518" y="109" text-anchor="middle" data-en="App memory">应用内存</text>
+<rect class="bx k" x="420" y="170" width="146" height="56" rx="3"/><text class="lb k" x="493" y="205" text-anchor="middle" data-en="Kernel">内核</text>
+<rect class="bx cpu" x="354" y="74" width="54" height="152" rx="3"/><text class="lb" x="381" y="99" text-anchor="middle">CPU</text>
+<rect class="bx nic" x="354" y="266" width="262" height="56" rx="3"/><text class="lb" x="485" y="301" text-anchor="middle" data-en="NIC">网卡 NIC</text>
+<!-- CPU 负载 -->
+<g data-s="2"><rect class="bar-lo" x="240" y="186" width="38" height="32"/><rect class="bar-lo" x="362" y="186" width="38" height="32"/></g>
+<g data-s="3"><rect class="bar-hi" x="240" y="112" width="38" height="106"/><rect class="bar-hi" x="362" y="112" width="38" height="106"/>
+ <text class="lb st" x="259" y="250" text-anchor="middle" data-en="busy">忙</text><text class="lb st" x="381" y="250" text-anchor="middle" data-en="busy">忙</text></g>
+<g data-s="4"><text class="lb st" x="381" y="250" text-anchor="middle" data-en="idle">空闲</text></g>
+<g data-s="5"><rect class="bar-cmp" x="240" y="112" width="38" height="106"/><rect class="bar-cmp" x="362" y="112" width="38" height="106"/>
+ <text class="lb st" x="259" y="250" text-anchor="middle" data-en="compute">计算</text><text class="lb st" x="381" y="250" text-anchor="middle" data-en="compute">计算</text></g>
+<!-- TCP 路径 -->
+<g data-s="2 3">
+ <path class="p-s" d="M147 130V168M147 226V264" marker-end="url(#ah-s)"/>
+ <path class="p-s" d="M493 266V228M493 170V132" marker-end="url(#ah-s)"/>
+ <path class="copy" d="M232 150H150"/><path class="copy" d="M408 150H490"/>
+ <text class="lb cp" x="259" y="166" text-anchor="middle" data-en="copy">复制</text>
+ <text class="lb cp" x="381" y="166" text-anchor="middle" data-en="copy">复制</text>
+</g>
+<g data-s="3">
+ <rect class="blk" x="90" y="210" width="18" height="10"/><rect class="blk" x="112" y="210" width="18" height="10"/><rect class="blk" x="134" y="210" width="18" height="10"/><rect class="blk" x="156" y="210" width="18" height="10"/>
+ <rect class="blk" x="436" y="210" width="18" height="10"/><rect class="blk" x="458" y="210" width="18" height="10"/><rect class="blk" x="480" y="210" width="18" height="10"/>
+ <rect class="blk" x="200" y="375" width="18" height="10"/><rect class="blk" x="240" y="375" width="18" height="10"/><rect class="blk" x="280" y="375" width="18" height="10"/><rect class="blk" x="320" y="375" width="18" height="10"/><rect class="blk" x="360" y="375" width="18" height="10"/><rect class="blk" x="400" y="375" width="18" height="10"/>
+</g>
+<!-- RDMA 路径 -->
+<g data-s="4 5 6">
+ <path class="p-f" d="M46 130V264" marker-end="url(#ah-f)"/>
+ <path class="p-f" d="M594 266V132" marker-end="url(#ah-f)"/>
+</g>
+<g data-s="4"><text class="lb nt" x="320" y="420" text-anchor="middle" data-en="NIC reads and writes app memory directly">网卡直接读写应用内存</text></g>
+<!-- 结果：耗时示意 -->
+<g data-s="5">
+ <text class="lb" x="10" y="432">TCP</text><rect class="bar-t" x="96" y="417" width="520" height="16"/>
+ <text class="lb" x="10" y="466">RDMA</text><rect class="bar-r" x="96" y="451" width="150" height="16"/>
+ <text class="lb nt" x="262" y="466" data-en="time per transfer, schematic">一次传输耗时（示意）</text>
+</g>
+</svg>
+</div>
+      <div class="cap" aria-live="polite">
+        <span class="cnt" data-step-count></span>
+        <div><h2 data-step-title></h2><p data-step-desc></p></div>
+      </div>
+      <div class="ctl">
+        <button class="btn" type="button" data-prev data-en="Previous">上一步</button>
+        <div class="prog" aria-label="进度" data-en-label="Progress">
+          <button data-go="0" aria-label="1"></button><button data-go="1" aria-label="2"></button><button data-go="2" aria-label="3"></button><button data-go="3" aria-label="4"></button><button data-go="4" aria-label="5"></button><button data-go="5" aria-label="6"></button>
+        </div>
+        <button class="btn" type="button" data-next data-en="Next">下一步</button>
+        <button class="btn pres" type="button" data-present data-en="Present (P)">演示模式（P）</button>
+        <button class="btn exit" type="button" data-present data-en="Exit (Esc)">退出演示（Esc）</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="rel">
+    <div><h3 data-en="Read first (previous stops)">先看（前几站）</h3><ul>
+      <li><a href="#"><svg style="fill:var(--l3)"><use href="#i-cmp"/></svg><span data-en="GPUs and HBM memory">GPU 与 HBM 显存</span></a></li>
+      <li><a href="#"><svg style="fill:var(--l4)"><use href="#i-net"/></svg><span data-en="How InfiniBand networks are built">InfiniBand 怎么组网</span></a></li>
+    </ul></div>
+    <div><h3 data-en="Read next (next stops)">接着看（后几站）</h3><ul>
+      <li><a href="#"><svg style="fill:var(--l4)"><use href="#i-net"/></svg><span data-en="RoCE: RDMA over Ethernet">RoCE：以太网上的 RDMA</span></a></li>
+      <li><a href="#"><svg style="fill:var(--l4)"><use href="#i-net"/></svg><span data-en="NVMe-oF: remote drives that act local">NVMe-oF：远端的盘当本地用</span></a></li>
+      <li><a href="#"><svg style="fill:var(--l3)"><use href="#i-cmp"/></svg><span data-en="GPUDirect Storage: GPUs reading storage directly">GPUDirect Storage：GPU 直接读存储</span></a></li>
+    </ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="InfiniBand Trade Association, InfiniBand Architecture Specification (RDMA on InfiniBand).">InfiniBand Trade Association，InfiniBand Architecture Specification（InfiniBand 上的 RDMA）。</li>
+      <li data-en="IBTA press release, 16 Sep 2014: RoCEv2 adds Layer 3 routing to RoCE (first released April 2010).">IBTA 新闻稿，2014-09-16：RoCEv2 在 RoCE（2010 年 4 月首发）基础上增加三层路由。</li>
+      <li data-en="Figures are schematic. No measured latency or CPU numbers are shown.">图为示意，未标注实测延迟与 CPU 数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span>
+  {{PALSW}}
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+{{LANGJS}}
+<script>(function(){
+  var STEPS=[
+    {t:"两台服务器传数据，慢在哪？",te:"Two servers move data. Where does the time go?",
+     d:"数据要从 A 的应用内存走到 B 的应用内存。我们沿着这条路，看时间花在哪里。",
+     de:"Data has to travel from app memory on A to app memory on B. Follow the path and see where the time goes."},
+    {t:"传统 TCP：每一步都要 CPU 参与",te:"Classic TCP: the CPU touches every step",
+     d:"数据先进内核，再由 CPU 复制给应用。发送端和接收端都要这样走一遍。",
+     de:"Data lands in the kernel first, then the CPU copies it to the application. Both sides go through this."},
+    {t:"数据越多，CPU 越忙着搬数据",te:"More data, more CPU spent moving it",
+     d:"每一份数据都要 CPU 复制一次。流量一大，CPU 的时间就被搬数据占满。",
+     de:"Every chunk of data needs a CPU copy. As traffic grows, moving data eats the CPU's time."},
+    {t:"RDMA：网卡直接读写应用内存",te:"RDMA: the NIC reads and writes app memory directly",
+     d:"网卡直接读本机应用内存，写进对方应用内存。不经过双方内核，对方 CPU 不参与。",
+     de:"The NIC reads local app memory and writes into the remote app memory. Neither kernel is involved, and the remote CPU stays out of it."},
+    {t:"结果：延迟更低，CPU 空出来",te:"Result: lower latency, a free CPU",
+     d:"少了内核和复制，一次传输更快，CPU 空出来做计算。图里的长短只是示意，不代表具体数字。",
+     de:"Without the kernel hop and the copy, each transfer is quicker and the CPU is free for real work. Bar lengths are schematic, not measurements."},
+    {t:"两种网络都能跑 RDMA",te:"Two kinds of network can carry RDMA",
+     d:"InfiniBand 原生就是为 RDMA 设计的；以太网上跑 RDMA 用的是 RoCE。",
+     de:"InfiniBand was built for RDMA from the start. On Ethernet, RDMA runs as RoCE."}
+  ];
+  var N=STEPS.length, cur=0;
+  var stage=document.querySelector('[data-stage]');
+  var fig=document.querySelector('.rd');
+  var tEl=document.querySelector('[data-step-title]'), dEl=document.querySelector('[data-step-desc]');
+  var cEl=document.querySelector('[data-step-count]');
+  var prog=[].slice.call(document.querySelectorAll('[data-go]'));
+  var prev=document.querySelector('[data-prev]'), next=document.querySelector('[data-next]');
+  function lang(){return window.SS_LANG==='en'?'en':'zh'}
+  function render(){
+    var s=STEPS[cur], en=lang()==='en', n=cur+1;
+    tEl.textContent=en?s.te:s.t; dEl.textContent=en?s.de:s.d;
+    cEl.textContent=en?('Step '+n+' of '+N):('第 '+n+' 步，共 '+N+' 步');
+    fig.querySelectorAll('[data-s]').forEach(function(g){
+      g.style.display=(' '+g.getAttribute('data-s')+' ').indexOf(' '+n+' ')>-1?'':'none';
+    });
+    stage.setAttribute('data-step',n);
+    prog.forEach(function(b){var i=+b.getAttribute('data-go');b.setAttribute('aria-current',i===cur?'step':'false');b.classList.toggle('done',i<cur)});
+    var pg=document.querySelector('.prog');if(pg)pg.style.setProperty('--pv',cur/(N-1));
+    prev.disabled=cur===0; next.disabled=cur===N-1;
+    try{history.replaceState(null,'',location.pathname+location.search+(document.body.classList.contains('present')?'#present':'#step-'+n))}catch(e){}
+  }
+  function go(i){cur=Math.max(0,Math.min(N-1,i));render()}
+  prev.addEventListener('click',function(){go(cur-1)});
+  next.addEventListener('click',function(){go(cur+1)});
+  prog.forEach(function(b){b.addEventListener('click',function(){go(+b.getAttribute('data-go'))})});
+  function setPresent(on,fs){
+    document.body.classList.toggle('present',on);
+    var pb=document.querySelectorAll('[data-present]');
+    if(on&&fs&&document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(function(){})}
+    if(!on&&document.fullscreenElement&&document.exitFullscreen){document.exitFullscreen().catch(function(){})}
+    render();
+  }
+  document.querySelectorAll('[data-present]').forEach(function(b){b.addEventListener('click',function(){setPresent(!document.body.classList.contains('present'),true)})});
+  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&document.body.classList.contains('present'))setPresent(false,false)});
+  document.addEventListener('keydown',function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'||(k===' '&&document.body.classList.contains('present'))){e.preventDefault();go(cur+1)}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+    else if(k==='p'||k==='P'){setPresent(!document.body.classList.contains('present'),true)}
+    else if(k==='Escape'&&document.body.classList.contains('present')){setPresent(false,false)}
+    else if(k==='Home'){go(0)}else if(k==='End'){go(N-1)}
+  });
+  document.addEventListener('ss-lang',render);
+  var h=location.hash, m=h.match(/step-(\d)/);
+  if(m)cur=Math.max(0,Math.min(N-1,+m[1]-1));
+  if(h==='#present'||new URLSearchParams(location.search).has('present'))document.body.classList.add('present');
+  var qs=new URLSearchParams(location.search).get('step');if(qs)cur=Math.max(0,Math.min(N-1,+qs-1));
+  render();
+})();
+</script>
+</body>
+</html>

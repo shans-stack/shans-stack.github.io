@@ -1,0 +1,51 @@
+/* RDMA 为什么快：动画区样式。由 assets/anim/rdma.js 使用，只作用于 .ra 容器之内。
+   颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
+.ra{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
+.ra .ra-scene{display:block;width:100%;height:auto}
+.ra .netbtn:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+.ra .ra-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.ra .ra-scene text{dominant-baseline:central}
+.ra .ra-scene .vis{transition:opacity .4s}
+.ra .ra-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ra .ra-scene .dim{opacity:.22}
+.ra .frame{fill:none;stroke:var(--rule2);stroke-width:2}
+.ra .ttl{fill:var(--ink2);font-weight:700}
+.ra .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2}
+.ra .lbl{fill:var(--ink);font-weight:500}
+.ra .cpubox{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s}
+.ra .cpubox.on{stroke:var(--rose)}
+.ra .cpubox.ask{stroke:var(--slate)}
+.ra .cpubox.idle{stroke:var(--sage)}
+.ra .cpul{fill:var(--ink);font-weight:700}
+.ra .track{fill:var(--rule)}
+.ra .fill{fill:var(--rose)}
+.ra .fill.slate{fill:var(--slate)}
+.ra .fill.sage{fill:var(--sage)}
+.ra .st{font-weight:600;transition:opacity .25s}
+.ra .rose-t{fill:var(--rose)}.sage-t{fill:var(--sage)}.slate-t{fill:var(--slate)}.ink3-t{fill:var(--ink3)}.ink2-t{fill:var(--ink2)}
+.ra .ln{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ra .base{stroke:var(--rule2);stroke-width:4}
+.ra .tcp{stroke:var(--rose);stroke-width:5}
+.ra .rdma{stroke:var(--sage);stroke-width:5}
+.ra .con{stroke:var(--rule2);stroke-width:4;transition:stroke .2s}
+.ra .con.on{stroke:var(--rose)}
+.ra .ra-scene[data-step="1"] .tcpl{stroke:var(--rule2);stroke-width:4}
+.ra .cmdl{stroke:var(--slate);stroke-width:3;stroke-dasharray:7 6;fill:none}
+.ra .cmddot{fill:var(--slate)}
+.ra .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
+.ra .pkt.cp{stroke:var(--rose);stroke-width:3.5}
+.ra .q{fill:var(--card);stroke:var(--slate);stroke-width:2.5}
+.ra .qt{fill:var(--slate);font-weight:700}
+.ra .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:5 4}
+.ra .stn{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .2s}
+.ra .stn.on{stroke:var(--rose);stroke-width:3}
+.ra .ep{fill:var(--card);stroke:var(--slate);stroke-width:2}
+.ra .num{font-weight:700;font-variant-numeric:tabular-nums}
+.ra .sw{fill:var(--card);stroke:var(--slate);stroke-width:3}
+.ra .sw.flip{animation:ra-flip .5s ease}
+@keyframes ra-flip{0%{stroke-width:3}40%{stroke-width:7}100%{stroke-width:3}}
+.ra .swt{fill:var(--slate);font-weight:700}
+.ra .sep{stroke:var(--rule);stroke-width:1.5}
+.ra .netbtn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
+.ra .netbtn[hidden]{display:block;opacity:0;pointer-events:none}
+@media (max-width:640px){.ra .netbtn{font-size:14px;padding:6px 12px}}

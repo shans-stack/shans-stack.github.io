@@ -1,0 +1,23 @@
+/* 厂商 logo（SS.brandMark，见 assets/core.js）。每个页面都要引这个文件（知识点页不引 site.css）。
+   --L 是 logo 里字母的目测高度，各家按自己的版式换算成图片高度，
+   让三家看起来一样大。NVIDIA 用裁掉四周空白的版本，规定的留白（至少一个「n」高）由周围的空白保证。深色模式：有白色版的换白色版（dk），只有深色字的垫一块浅灰底（bk，#DADCDF，取浅色模式的分隔线色，比纯白不刺眼）。WEKA 官网只有白色字版本，浅色模式用把字改成站内墨色 #1C1E22 的那份（见 SOURCES.md）。出处与规定见 assets/brand/SOURCES.md。 */
+.lg{--L:12px;display:inline-flex;align-items:center;flex:none;line-height:0}
+.lg img{display:block;width:auto;max-width:none}
+.lg .lg-d{display:none}
+.lg-vast img{height:calc(var(--L) * 1.08)}
+.lg-ddn img{height:calc(var(--L) * 1.75)}
+.lg-nvidia img{height:calc(var(--L) * 1.75)}
+.lg-weka img{height:calc(var(--L) * 1.63)}
+.lg-rafay img{height:calc(var(--L) * 1.53)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]) .lg.dk .lg-l{display:none}
+  :root:not([data-theme=light]) .lg.dk .lg-d{display:block}
+  :root:not([data-theme=light]) .lg.bk{background:#DADCDF;border-radius:2px;padding:calc(var(--L) * .22) calc(var(--L) * .35)}
+}
+:root[data-theme=dark] .lg.dk .lg-l{display:none}
+:root[data-theme=dark] .lg.dk .lg-d{display:block}
+:root[data-theme=dark] .lg.bk{background:#DADCDF;border-radius:2px;padding:calc(var(--L) * .22) calc(var(--L) * .35)}
+.tm-lg{--L:11px;margin-left:auto}
+.mh-lg{--L:16px}
+.cr-lg{--L:10px;margin-left:auto}
+@media (max-width:720px){.mh-lg{--L:13px}}

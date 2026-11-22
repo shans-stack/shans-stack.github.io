@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shan's Stack · AI 基础设施，一屏一个点</title>
+<meta name="description" content="Lin Shan 的 AI 基础设施知识点：五条线的总图，加上 VAST、DDN 专题图。每个站是一段 5 到 7 步的讲解，可以全屏演示。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/palette.css">
+<link rel="stylesheet" href="assets/brand/brand.css">
+<link rel="stylesheet" href="assets/site.css">
+<!-- 总图。地图、讲稿、知识点列表都由 data/ 生成，见 README。 -->
+</head>
+<body>
+<script src="assets/symbols.js"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="#map" data-en="Map">线路图</a><a href="#maps" data-en="Topics">专题</a><a href="#talks" data-en="Talks">讲稿</a><a href="#about" data-en="About">关于</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <h1 data-en="AI infrastructure, taken apart.<br>One point per screen.">把 AI 基础设施拆开讲，<br>一屏只讲一个点。</h1>
+    <p class="lead" id="lead"></p>
+  </div>
+
+  <div id="map" data-map="home">
+    <div class="mhd">
+      <h2 data-en="Line map">线路图</h2>
+      <div class="pick" id="pick" role="group" aria-label="讲稿路线" data-en-label="Talk routes"></div>
+    </div>
+    <div class="mwrap">
+      <div class="mmain">
+        <div class="mapbox" id="mapbox">
+          <svg class="metro" id="metro" role="img"></svg>
+          <div class="mlist" id="mlist"></div>
+          <div class="lv" id="lv" hidden></div>
+          <div class="pop" id="pop" hidden role="dialog"></div>
+        </div>
+        <p class="warn" id="warn" hidden></p>
+        <div class="cap" id="cap" aria-live="polite"></div>
+        <div class="key" id="key"></div>
+      </div>
+      <aside class="pnl" id="pnl" hidden aria-label="本次讲解" data-en-label="This talk"></aside>
+    </div>
+  </div>
+
+  <section id="maps">
+    <div class="sh"><h2 data-en="Topic maps">专题</h2><p data-en="One vendor or one field per map. General stops on a topic map link back here.">一张专题图讲一家厂商或一个领域。专题图上的通识站可以换乘回这张总图。</p></div>
+    <div class="tms" id="topicmaps"></div>
+  </section>
+
+  <section id="talks">
+    <div class="sh"><h2 data-en="Talks">讲稿</h2><p data-en="A talk is a few stops in a set order. Hover one to light its route on the map.">几个站排好顺序，就是一场讲解。鼠标移上去，线路图上会亮出这条路线。</p></div>
+    <div class="talks" id="talklist"></div>
+  </section>
+
+  <section id="topics">
+    <div class="sh"><h2 data-en="Stops by line">按线路找知识点</h2><p data-en="Vendors appear as tags inside a topic, never as a line.">厂商只是知识点里的标签，不单独成线。</p></div>
+    <div class="cols" id="cols"></div>
+    <div class="xfer" id="xfer"></div>
+  </section>
+
+  <section id="new">
+    <div class="sh"><h2 data-en="Recently added">最近新增</h2></div>
+    <div class="news" id="news"></div>
+  </section>
+
+  <section id="about" class="about">
+    <h2 data-en="About">关于作者</h2>
+    <div>
+      <p data-en="I'm Lin Shan, a presales solution architect for AI data infrastructure in Singapore. Before that I spent several years in computer vision research.">我是 Lin Shan，在新加坡做 AI 数据基础设施的售前方案架构师，之前做过几年计算机视觉研究。</p>
+      <p data-en="These are the notes I use with customers: one point per screen, readable on a phone, and ready to present in the room.">这里是我给客户讲东西时用的笔记：一屏只讲一个点，手机上能看，会议室里能直接讲。</p>
+    </div>
+  </section>
+</main>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="data/lines.js"></script>
+<script src="data/stations.js"></script>
+<script src="data/maps.js"></script>
+<script src="data/talks.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/metro.js"></script>
+<script src="assets/mapview.js"></script>
+<script src="assets/home.js"></script>
+</body>
+</html>

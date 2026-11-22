@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="zh-CN" data-palette="{{PAL}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shan's Stack · AI 基础设施，一屏一个点</title>
+<meta name="description" content="Lin Shan 的 AI 基础设施知识点：五条线、二十七个站，每个站是一段 5 到 7 步的讲解，可以全屏演示。">
+{{FONTS}}
+<!--
+  方向 A2 · 安静的地铁图，五条线，三套配色（马卡龙 / 低饱和 / 老钱风）。
+  这份文件由 build.py 从同一份源文件生成，三套之间只有默认配色不同。
+  颜色只出现在：线路图的线、知识点所属线的标记、知识点页标题下的色条、步骤进度。其余是 A 版的灰阶。
+-->
+{{PALJS}}
+<style>
+{{PALCSS}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.7;
+  font-synthesis:none;line-break:strict;overflow-wrap:break-word}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+h1,h2,h3{text-wrap:balance;font-weight:500;margin:0;font-family:var(--fh)}
+p{text-wrap:pretty;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+.hd{border-bottom:1px solid var(--rule)}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em;white-space:nowrap}
+.brand svg{width:22px;height:22px;flex:none;fill:var(--ink)}
+.nav{display:flex;align-items:center;gap:4px}
+.nav a{padding:10px 12px;font-size:15px;color:var(--ink2);border-radius:2px}
+.nav a:hover{color:var(--ink)}
+.lang{min-width:44px;min-height:40px;border:1px solid var(--rule2);background:transparent;color:var(--ink);
+  font:500 14px var(--f);border-radius:2px;cursor:pointer;margin-left:8px}
+.lang:hover{border-color:var(--ink)}
+.mini{width:14px;height:14px;vertical-align:-2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:2px;
+  font:500 15px var(--f);border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.dark{background:var(--ink);color:var(--bg)}
+.btn:hover{filter:brightness(1.08)}
+.btn[aria-pressed=true]{box-shadow:inset 0 0 0 1px var(--ink)}
+.ft{border-top:1px solid var(--rule);margin-top:96px}
+.ft .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;padding-top:20px;padding-bottom:40px;font-size:14px;color:var(--ink3);flex-wrap:wrap}
+{{PALSWCSS}}
+
+/* 首屏 */
+.hero{padding:64px 0 0;display:grid;grid-template-columns:7fr 5fr;gap:24px 48px;align-items:end}
+.hero h1{font-size:clamp(30px,1.2rem + 2.6vw,48px);line-height:1.28;letter-spacing:-.005em}
+.hero .lead{font-size:18px;color:var(--ink2);max-width:30em}
+
+/* 线路图 */
+#map{margin-top:48px}
+.mhd{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-top:2px solid var(--ink);padding-top:16px}
+.mhd h2{font-size:22px;line-height:1.3}
+.pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pick>span{font-size:14px;color:var(--ink3);margin-right:4px}
+.chip{min-height:40px;padding:0 14px;border:1px solid var(--rule2);background:transparent;color:var(--ink);font:500 15px var(--f);border-radius:2px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip small{font-size:13px;color:var(--ink3);font-weight:400;font-variant-numeric:tabular-nums}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.chip[aria-pressed=true] small{color:var(--ink2)}
+.mapbox{margin-top:20px}
+.metro{display:block;width:100%;height:auto;font-family:var(--f);overflow:visible}
+.metro .ln{fill:none;stroke-width:8;stroke-linecap:butt}
+.metro .ln,.metro .gut,.metro .stn{transition:opacity .2s}
+.metro .gname{font-size:14px;font-weight:500;fill:var(--ink2)}
+.metro .st{fill:var(--bg);stroke:var(--ink);stroke-width:3}
+.metro .pr{fill:none;stroke-width:2;stroke-dasharray:3 3}
+.metro .xc{fill:var(--bg);stroke:var(--ink);stroke-width:3.5}
+.metro text{fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
+.metro .lb{font-size:15px}
+.metro .lbx{font-size:15px;font-weight:600}
+.metro a.stn{cursor:pointer}
+.metro a.stn:hover text,.metro a.stn:focus text,.metro a.stn.pl text{text-decoration:underline}
+.metro a.stn.pl .pr{stroke-dasharray:none;stroke-width:3}
+.metro a.stn:focus{outline:none}
+.metro a.stn:focus-visible .st,.metro a.stn:focus-visible .xc{stroke-width:5}
+.metro .rs{fill:none;stroke-width:13;stroke-linecap:round}
+.metro .rx{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round}
+.metro .num{font-size:12.5px;font-weight:700;fill:var(--ink);stroke:none}
+.metro .nb{fill:var(--bg);stroke-width:4}
+.metro .stop .lb,.metro .stop .lbx{font-weight:700}
+.metro .via .xc,.metro .stop .xc{stroke-width:4.5}
+.metro.on .ln{opacity:.26}
+.metro.on .gut{opacity:.45}
+.metro.on a.stn:not(.stop):not(.via){opacity:.32}
+.cap{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule);display:flex;gap:16px 40px;flex-wrap:wrap;align-items:baseline;min-height:56px}
+.cap p{font-size:15px;color:var(--ink2);max-width:46em}
+.cap b{font-weight:700;color:var(--ink)}
+.cap ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:15px}
+.cap ol li{display:flex;align-items:center;gap:6px}
+.cap ol li i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:3px solid var(--lc);color:var(--ink);font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.key{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:14px;font-size:14px;color:var(--ink2)}
+.key span{display:inline-flex;align-items:center;gap:8px}
+.key svg{width:18px;height:18px}
+.key .bar{width:26px;height:6px;display:inline-block}
+.key .cap-k{width:12px;height:22px;border:3px solid var(--ink);border-radius:6px;display:inline-block}
+.key .pr-k{width:20px;height:20px;border:2px dashed var(--ink3);border-radius:50%;display:inline-block}
+
+/* 手机：按线路分列 */
+.mlist{display:none}
+.mline{border-top:1px solid var(--ink);padding-top:12px;margin-top:20px}
+.mline:first-child{margin-top:0}
+.mline h3{display:flex;align-items:center;gap:10px;font-size:18px}
+.mline h3 svg{width:22px;height:22px}
+.mline h3 small{font-size:13px;color:var(--ink3);font-weight:400;margin-left:auto;font-family:var(--f)}
+.mline ol{list-style:none;margin:8px 0 0;padding:0;position:relative}
+.mline ol::before{content:"";position:absolute;left:11px;top:14px;bottom:14px;width:6px;background:var(--lc)}
+.mline li a{position:relative;display:flex;align-items:center;gap:14px;min-height:44px;padding:4px 0}
+.mline .mk{flex:none;width:28px;display:grid;place-items:center;position:relative;z-index:1}
+.mline .mk i{display:block;width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--ink);font-style:normal}
+.mline .x .mk i{width:28px;height:16px;border-radius:8px;border-width:3px}
+.mline .p .mk i{outline:2px dashed var(--lc);outline-offset:2px}
+.mline .nm{font-size:16px;line-height:1.4}
+.mline .x .nm{font-weight:600}
+.mline .tr{display:inline-flex;align-items:center;gap:3px;margin-left:8px;vertical-align:-1px;font-size:12px;color:var(--ink3);font-weight:400;white-space:nowrap}
+.mline .tr svg{width:13px;height:13px}
+.mlist.on .mline ol::before{opacity:.3}
+.mlist.on li:not(.stop) a{opacity:.42}
+.mlist.on li.stop .mk i{border-color:var(--lc)}
+.mline .stop .mk i{border-width:4px;color:var(--ink);font-size:11px;font-weight:700;display:grid;place-items:center;width:24px;height:24px;line-height:1}
+.mline .x.stop .mk i{width:30px;height:24px;border-radius:12px}
+.mline .stop .nm{font-weight:700}
+
+/* 讲稿 */
+section{margin-top:104px}
+.sh{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:28px}
+.sh h2{font-size:30px;line-height:1.3}
+.sh p{color:var(--ink3);font-size:15px}
+.talks{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.talk{background:var(--surface);border:1px solid var(--rule);padding:28px 28px 24px;transition:border-color .2s}
+.talk.lit{border-color:var(--ink)}
+.talk h3{font-size:24px}
+.talk .meta{font-size:14px;color:var(--ink3);margin-top:4px;font-variant-numeric:tabular-nums}
+.talk ol{margin:20px 0 24px;padding:0;list-style:none;counter-reset:t}
+.talk li{counter-increment:t;display:grid;grid-template-columns:28px 1fr auto;align-items:center;padding:8px 0;border-top:1px solid var(--rule);font-size:16px}
+.talk li::before{content:counter(t);color:var(--ink3);font-weight:500;font-variant-numeric:tabular-nums}
+.talk.lit li::before{color:var(--ink)}
+.talk li svg{width:15px;height:15px;margin-left:3px}
+.talk .acts{display:flex;gap:10px;flex-wrap:wrap}
+
+/* 知识点列表 */
+.cols{display:grid;grid-template-columns:repeat(5,1fr);gap:0 28px}
+.col{border-top:1px solid var(--ink);padding-top:16px}
+.col h3{display:flex;align-items:center;gap:10px;font-size:20px}
+.col h3 svg{width:26px;height:26px;flex:none}
+.col h3 i{display:inline-block;width:22px;height:6px;margin-left:auto;background:var(--lc);flex:none}
+.col .d{font-size:14px;color:var(--ink3);margin:6px 0 10px;min-height:5.1em}
+.col ul{list-style:none;margin:0;padding:0}
+.col li a{display:block;padding:11px 0;border-top:1px solid var(--rule)}
+.col li a:hover .n{text-decoration:underline}
+.col .n{display:block;font-size:16px;font-weight:500;line-height:1.45}
+.col .m{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink3);line-height:1.5;margin-top:2px;flex-wrap:wrap}
+.xfer{display:grid;grid-template-columns:4fr 8fr;gap:32px;margin-top:56px;align-items:start}
+.xfer h3{font-size:20px;display:flex;align-items:center;gap:10px}
+.xfer h3::before{content:"";width:10px;height:20px;border:3px solid var(--ink);border-radius:6px}
+.xfer .xh p{font-size:15px;color:var(--ink2);margin-top:8px}
+.xfer ol{list-style:none;margin:0;padding:0;counter-reset:x}
+.xfer li{counter-increment:x}
+.xfer li a{display:grid;grid-template-columns:28px 1fr auto;gap:0 12px;align-items:baseline;padding:11px 0;border-top:1px solid var(--rule)}
+.xfer li:last-child a{border-bottom:1px solid var(--rule)}
+.xfer li a::before{content:counter(x);color:var(--ink3);font-variant-numeric:tabular-nums;font-size:15px}
+.xfer .n{font-size:16px;font-weight:500}
+.xfer .m{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink3)}
+.xfer li a:hover .n{text-decoration:underline}
+.xfer .pair a{grid-template-columns:28px 1fr auto}
+.xfer .pair a::before{content:"";width:16px;height:16px;border:2px dashed var(--ink3);border-radius:50%;align-self:center}
+.news{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.news a{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:20px 0;border-top:1px solid var(--ink)}
+.news svg{width:40px;height:40px}
+.news b{font-size:19px;font-weight:500;display:block}
+.news span{font-size:15px;color:var(--ink2)}
+.news a:hover b{text-decoration:underline}
+.about{display:grid;grid-template-columns:4fr 8fr;gap:32px;border-top:1px solid var(--rule);padding-top:28px}
+.about h2{font-size:20px}
+.about p{font-size:18px;color:var(--ink2);max-width:34em}
+.about p+p{margin-top:12px}
+
+@media (max-width:1100px){.cols{grid-template-columns:repeat(3,1fr);gap:40px 28px}.col .d{min-height:3.4em}}
+@media (max-width:960px){
+  .about,.xfer{grid-template-columns:1fr;gap:16px}
+  .hero{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .metro{display:none}
+  .mlist{display:block}
+  .key{display:none}
+}
+@media (max-width:720px){
+  .wrap{padding:0 16px}
+  .nav a{padding:10px 6px;font-size:14px}.lang{margin-left:4px}.brand{font-size:16px}.brand svg{width:18px;height:18px}
+  body{font-size:16px}
+  .hero{padding-top:40px}
+  .hero .lead{font-size:17px}
+  #map{margin-top:36px}
+  .pick{width:100%}
+  .pick>span{width:100%}
+  .chip{flex:1 1 auto;justify-content:space-between}
+  .cap{display:block}.cap ol{margin-top:8px}
+  section{margin-top:72px}
+  .sh{display:block}.sh h2{font-size:24px}.sh p{margin-top:4px}
+  .cols{grid-template-columns:1fr;gap:36px}
+  .col .d{min-height:0}
+  .xfer li a,.xfer .pair a{grid-template-columns:24px 1fr}.xfer .m{grid-column:2}
+  .talks,.news{grid-template-columns:1fr;gap:20px}
+  .talk{padding:20px 18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+{{SYMS}}
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="home.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="#map" data-en="Map">线路图</a><a href="#talks" data-en="Talks">讲稿</a><a href="#about" data-en="About">关于</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <h1 data-en="AI infrastructure, taken apart.<br>One point per screen.">把 AI 基础设施拆开讲，<br>一屏只讲一个点。</h1>
+    <p class="lead" data-en="Five lines, from AI applications at the top down to storage at the bottom, and twenty-seven stops. Each stop is one topic, a 5 to 7 step walkthrough. Read it on your own, or go full screen and present it in the meeting room.">五条线，从最上面的 AI 应用一直到最下面的存储，二十七个站。每个站是一个知识点，五到七步讲完。可以自己慢慢看，也可以一键全屏，拿到会议室里直接讲。</p>
+  </div>
+
+  <div id="map">
+    <div class="mhd">
+      <h2 data-en="Line map">线路图</h2>
+      <div class="pick" role="group" aria-label="讲稿路线" data-en-label="Talk routes">
+        <span data-en="Pick a talk to see its route:">选一场讲稿，看它怎么走：</span>
+        <button class="chip" type="button" data-route="0" aria-pressed="false"><span data-en="AI clusters, the basics">AI 集群入门</span><small data-en="6 stops · 15 min">6 站 15 分钟</small></button>
+        <button class="chip" type="button" data-route="1" aria-pressed="false"><span data-en="How data gets to the GPU">数据怎么喂给 GPU</span><small data-en="5 stops · 12 min">5 站 12 分钟</small></button>
+      </div>
+    </div>
+    <div class="mapbox">
+      <svg class="metro" id="metro" role="img"></svg>
+      <div class="mlist" id="mlist"></div>
+    </div>
+    <div class="cap" id="cap" aria-live="polite"></div>
+    <div class="key" id="key"></div>
+  </div>
+
+  <section id="talks">
+    <div class="sh"><h2 data-en="Talks">讲稿</h2><p data-en="A talk is a few stops in a set order. Hover one to light its route on the map.">几个站排好顺序，就是一场讲解。鼠标移上去，线路图上会亮出这条路线。</p></div>
+    <div class="talks" id="talklist"></div>
+  </section>
+
+  <section id="topics">
+    <div class="sh"><h2 data-en="Stops by line">按线路找知识点</h2><p data-en="Vendors appear as tags inside a topic, never as a line.">厂商只是知识点里的标签，不单独成线。</p></div>
+    <div class="cols" id="cols"></div>
+    <div class="xfer" id="xfer"></div>
+  </section>
+
+  <section id="new">
+    <div class="sh"><h2 data-en="Recently added">最近新增</h2></div>
+    <div class="news">
+      <a href="topic.html"><svg style="fill:var(--l4)"><use href="#i-net"/></svg><div><b data-en="Why RDMA is fast">RDMA 为什么快</b><span data-en="Transfer stop on the compute, network and storage lines. The NIC writes straight into the other machine's app memory.">计算、网络、存储三线换乘站。网卡直接写进对方的应用内存，不经过双方内核。</span></div></a>
+      <a href="#"><svg style="fill:var(--l5)"><use href="#i-sto"/></svg><div><b data-en="How erasure coding saves space">纠删码怎么省空间</b><span data-en="Storage line. Survive disk failures with far less extra capacity than full copies.">存储线。用比多副本少得多的额外容量，扛住硬盘损坏。</span></div></a>
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <h2 data-en="About">关于作者</h2>
+    <div>
+      <p data-en="I'm Lin Shan, a presales solution architect for AI data infrastructure in Singapore. Before that I spent several years in computer vision research.">我是 Lin Shan，在新加坡做 AI 数据基础设施的售前方案架构师，之前做过几年计算机视觉研究。</p>
+      <p data-en="These are the notes I use with customers: one point per screen, readable on a phone, and ready to present in the room.">这里是我给客户讲东西时用的笔记：一屏只讲一个点，手机上能看，会议室里能直接讲。</p>
+    </div>
+  </section>
+</main>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span>
+  {{PALSW}}
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+{{LANGJS}}
+<script>(function(){
+/* ======== 数据：五条线，从上到下 ======== */
+var LINES=[
+  {id:'a',sym:'i-ai', v:'--l1',zh:'AI 应用',en:'AI Application',gut:'AI apps',d:'模型上线以后，推理服务和应用在做什么。',de:'What inference and applications do once a model ships.'},
+  {id:'d',sym:'i-dat',v:'--l2',zh:'数据',en:'Data',d:'训练和推理用的数据从哪来、怎么流动。',de:'Where training and inference data comes from, and how it flows.'},
+  {id:'c',sym:'i-cmp',v:'--l3',zh:'计算',en:'Compute',d:'GPU 服务器和训练集群里面在发生什么。',de:'What happens inside GPU servers and training clusters.'},
+  {id:'n',sym:'i-net',v:'--l4',zh:'网络',en:'Network',d:'数据怎么在机器之间走。',de:'How data moves between machines.'},
+  {id:'s',sym:'i-sto',v:'--l5',zh:'存储',en:'Storage',d:'数据放在哪，又怎么快速读回来。',de:'Where data lives and how it comes back fast.'}
+];
+/* 列位置：从左到右大致是先学后学 */
+var COLS=[170,276,382,488,594,700,806,912,1018,1124];
+var LY=[62,152,242,332,422];
+/* id: [中文站名, 英文站名, 中文全名, 英文全名, 所在线（从上到下）, 列, 步数, 关联站] */
+var S={
+ infer:['推理服务','Inference serving','推理服务怎么把模型跑起来','How inference serving runs a model','a',0,6],
+ agent:['Agent','Agents','Agent 怎么调用工具','How agents call tools','a',2,5],
+ dynamo:['Dynamo','Dynamo','Dynamo：分布式推理怎么调度','Dynamo: scheduling distributed inference','a',4,6],
+ rag:['RAG','RAG','RAG：先检索，再回答','RAG: retrieve, then answer','a',5,5],
+ kv:['KV Cache','KV Cache','推理里的 KV Cache','KV Cache in inference','a',9,6,'kvoff'],
+ vec:['向量检索','Vector search','向量检索','Vector search','ad',7,5],
+ lake:['数据湖','Data lake','数据湖','Data lakes','d',0,5],
+ pipe:['数据管道','Data pipeline','数据管道：从原始数据到训练样本','Data pipelines: raw data to training samples','d',1,6],
+ ds:['训练数据集','Training data','训练数据集怎么组织','How training datasets are organised','d',4,5],
+ ckpt:['检查点','Checkpoints','训练检查点','Training checkpoints','dc',6,5],
+ gpu:['GPU 与 HBM','GPU and HBM','GPU 与 HBM 显存','GPUs and HBM memory','c',0,6],
+ nvl:['NVLink','NVLink','NVLink：一台机器里 GPU 怎么互联','NVLink: how GPUs talk inside one server','c',1,6],
+ clus:['训练集群','Training cluster','一个训练集群由什么组成','What makes up a training cluster','c',4,5],
+ dist:['分布式训练','Distributed training','分布式训练怎么同步','How distributed training stays in sync','cn',5,6],
+ rdma:['RDMA','RDMA','RDMA 为什么快','Why RDMA is fast','cns',2,6],
+ gds:['GPUDirect Storage','GPUDirect Storage','GPUDirect Storage：GPU 直接读存储','GPUDirect Storage: GPUs reading storage directly','cns',8,5],
+ ib:['InfiniBand','InfiniBand','InfiniBand 怎么组网','How InfiniBand networks are built','n',1,6],
+ roce:['RoCE','RoCE','RoCE：以太网上的 RDMA','RoCE: RDMA over Ethernet','n',4,5],
+ topo:['交换机拓扑','Switch topology','交换机拓扑：胖树与轨道','Switch topology: fat-tree and rail','n',6,5],
+ cong:['拥塞控制','Congestion control','拥塞控制与无损网络','Congestion control and lossless networks','n',9,7],
+ nvmeof:['NVMe-oF','NVMe-oF','NVMe-oF：远端的盘当本地用','NVMe-oF: remote drives that act local','ns',3,6],
+ nvme:['NVMe','NVMe','NVMe 硬盘为什么快','Why NVMe drives are fast','s',0,5],
+ ec:['纠删码','Erasure coding','纠删码怎么省空间','How erasure coding saves space','s',1,6],
+ pfs:['并行文件系统','Parallel FS','并行文件系统','Parallel file systems','s',4,6],
+ obj:['对象存储','Object storage','对象存储和文件存储','Object storage and file storage','s',5,5],
+ dr:['数据缩减','Data reduction','数据缩减：压缩与去重','Data reduction: compression and dedupe','s',7,5],
+ kvoff:['KV Cache 卸载','KV offload','KV Cache 卸载到存储','Offloading KV Cache to storage','s',9,5,'kv']
+};
+var ROUTES=[
+  {zh:'AI 集群入门',en:'AI clusters, the basics',min:15,stops:['gpu','nvl','rdma','roce','dist','ckpt']},
+  {zh:'数据怎么喂给 GPU',en:'How data gets to the GPU',min:12,stops:['obj','pfs','nvmeof','rdma','gpu']}
+];
+var NS='http://www.w3.org/2000/svg';
+function en(){return window.SS_LANG==='en'}
+function L(zh,e){return en()?e:zh}
+function lineIdx(id){for(var i=0;i<LINES.length;i++)if(LINES[i].id===id)return i}
+function linesOf(id){return S[id][4].split('').map(lineIdx)}
+function isX(id){return S[id][4].length>1}
+function lc(li){return 'var('+LINES[li].v+')'}
+function href(id){return id==='rdma'?'topic.html':'#'}
+function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function symSvg(li,cls){return '<svg'+(cls?' class="'+cls+'"':'')+' style="fill:'+lc(li)+'" aria-hidden="true"><use href="#'+LINES[li].sym+'"/></svg>'}
+function onLine(li){return Object.keys(S).filter(function(id){return linesOf(id).indexOf(li)>-1}).sort(function(a,b){return S[a][5]-S[b][5]})}
+
+/* ======== 路线：沿线走，在换乘站换线（最短路） ======== */
+var G={};
+(function(){
+  LINES.forEach(function(ln,li){
+    var ids=onLine(li);
+    ids.forEach(function(id){G[li+':'+id]={li:li,id:id,x:COLS[S[id][5]],y:LY[li],adj:[]}});
+    for(var i=1;i<ids.length;i++){var a=li+':'+ids[i-1],b=li+':'+ids[i],w=COLS[S[ids[i]][5]]-COLS[S[ids[i-1]][5]];G[a].adj.push([b,w]);G[b].adj.push([a,w])}
+  });
+  /* 换乘：只在胶囊内部、相邻线之间换 */
+  Object.keys(S).forEach(function(id){if(!isX(id))return;var ls=linesOf(id);
+    for(var i=1;i<ls.length;i++){var a=ls[i-1]+':'+id,b=ls[i]+':'+id;G[a].adj.push([b,140]);G[b].adj.push([a,140])}});
+})();
+function sp(src){
+  var dist={},prev={},seen={},k;dist[src]=0;
+  while(true){
+    var u=null,best=Infinity;
+    for(k in dist)if(!seen[k]&&dist[k]<best){best=dist[k];u=k}
+    if(u===null)break;seen[u]=1;
+    G[u].adj.forEach(function(e){var nd=best+e[1];if(dist[e[0]]===undefined||nd<dist[e[0]]){dist[e[0]]=nd;prev[e[0]]=u}});
+  }
+  return {dist:dist,prev:prev};
+}
+function nodesOf(id){return linesOf(id).map(function(li){return li+':'+id})}
+/* 整条讲稿一起求最短：每一站可以停在它任意一条线上 */
+var TR={};
+function trace(r){
+  if(TR[r])return TR[r];
+  var stops=ROUTES[r].stops,layer={};
+  nodesOf(stops[0]).forEach(function(k){layer[k]={c:0,path:[k],at:[k]}});
+  for(var i=1;i<stops.length;i++){
+    var next={};
+    Object.keys(layer).forEach(function(src){
+      var t=sp(src);
+      nodesOf(stops[i]).forEach(function(dst){
+        if(t.dist[dst]===undefined)return;
+        var c=layer[src].c+t.dist[dst];
+        if(next[dst]&&next[dst].c<=c)return;
+        var p=[dst];while(p[0]!==src)p.unshift(t.prev[p[0]]);
+        next[dst]={c:c,path:layer[src].path.concat(p.slice(1)),at:layer[src].at.concat([dst])};
+      });
+    });
+    layer=next;
+  }
+  var bestK=Object.keys(layer).sort(function(a,b){return layer[a].c-layer[b].c})[0],res=layer[bestK];
+  var via={},transfers=0,segs=[];
+  for(var j=1;j<res.path.length;j++){
+    var A=G[res.path[j-1]],B=G[res.path[j]];
+    if(A.li!==B.li){transfers++;via[B.id]=1}
+    segs.push({x1:A.x,y1:A.y,x2:B.x,y2:B.y,li:A.li===B.li?A.li:-1});
+  }
+  return TR[r]={segs:segs,via:via,transfers:transfers,at:res.at.map(function(k){return G[k]})};
+}
+/* ======== 画图（桌面：横向线路图） ======== */
+var svg=document.getElementById('metro'),cur=-1,pinned=-1;
+function draw(){
+  svg.innerHTML='';
+  svg.setAttribute('viewBox','0 0 1196 466');
+  svg.setAttribute('aria-label',L('线路图：从上到下是 AI 应用、数据、计算、网络、存储五条线，二十七个站，六个换乘站','Line map: AI application, data, compute, network and storage, top to bottom. Twenty-seven stops, six transfer stops.'));
+  var gL=el('g',{},svg),gR=el('g',{},svg),gS=el('g',{},svg);
+  LINES.forEach(function(ln,li){
+    var y=LY[li],col=lc(li);
+    el('line',{x1:140,y1:y,x2:1156,y2:y,class:'ln',stroke:col},gL);
+    var g=el('g',{class:'gut'},gL);
+    el('use',{href:'#'+ln.sym,x:0,y:y-13,width:26,height:26,fill:col},g);
+    var t=el('text',{x:34,y:y+5,class:'gname'},g);t.textContent=L(ln.zh,ln.gut||ln.en);
+    el('use',{href:'#'+ln.sym,x:1164,y:y-13,width:26,height:26,fill:col},g);
+  });
+  var rt=cur>-1?trace(cur):null,stops=cur>-1?ROUTES[cur].stops:[];
+  if(rt){
+    /* 先画换乘段（胶囊里的竖段），再画沿线的彩色段 */
+    rt.segs.forEach(function(s){if(s.li<0)el('line',{x1:s.x1,y1:s.y1,x2:s.x2,y2:s.y2,class:'rx'},gR)});
+    rt.segs.forEach(function(s){if(s.li>-1)el('line',{x1:s.x1,y1:s.y1,x2:s.x2,y2:s.y2,class:'rs',stroke:lc(s.li)},gR)});
+  }
+  Object.keys(S).forEach(function(id){
+    var s=S[id],x=COLS[s[5]],ls=linesOf(id),n=stops.indexOf(id);
+    var cls='stn'+(n>-1?' stop':'')+(rt&&rt.via[id]&&n<0?' via':'');
+    var a=el('a',{href:href(id),class:cls,'data-id':id},gS);
+    var tip=L(s[2],s[3])+' · '+ls.map(function(i){return L(LINES[i].zh,LINES[i].en)}).join(' / ');
+    if(s[7])tip+=' · '+L('另见','See also')+' '+L(S[s[7]][0],S[s[7]][1])+'（'+L(LINES[linesOf(s[7])[0]].zh+'线',LINES[linesOf(s[7])[0]].en+' line')+'）';
+    el('title',{},a).textContent=tip;
+    var t;
+    if(ls.length>1){
+      var y1=LY[ls[0]],y2=LY[ls[ls.length-1]];
+      el('rect',{x:x-12,y:y1-12,width:24,height:y2-y1+24,rx:12,class:'xc'},a);
+      t=el('text',{x:x,y:y1-22,'text-anchor':'middle',class:'lbx'},a);
+    }else{
+      var y=LY[ls[0]];
+      if(s[7])el('circle',{cx:x,cy:y,r:15,class:'pr',stroke:lc(ls[0])},a);
+      el('circle',{cx:x,cy:y,r:8,class:'st'},a);
+      t=el('text',{x:x,y:y+33,'text-anchor':'middle',class:'lb'},a);
+    }
+    t.textContent=L(s[0],s[1]);
+    if(s[7]){a.addEventListener('mouseenter',function(){pairLit(id,1)});a.addEventListener('mouseleave',function(){pairLit(id,0)});
+      a.addEventListener('focus',function(){pairLit(id,1)});a.addEventListener('blur',function(){pairLit(id,0)})}
+  });
+  /* 讲稿各站的序号，放在路线真正停靠的那条线上 */
+  if(rt)rt.at.forEach(function(g,i){
+    var gg=el('g',{class:'stop'},gS);
+    el('circle',{cx:g.x,cy:g.y,r:12,class:'nb',stroke:lc(g.li)},gg);
+    var nt=el('text',{x:g.x,y:g.y+4.4,'text-anchor':'middle',class:'num'},gg);nt.textContent=i+1;
+  });
+  svg.classList.toggle('on',cur>-1);
+}
+function pairLit(id,on){[id,S[id][7]].forEach(function(k){var a=svg.querySelector('[data-id="'+k+'"]');if(a)a.classList.toggle('pl',!!on)})}
+/* ======== 手机：按线路分列 ======== */
+function drawList(){
+  var box=document.getElementById('mlist'),stops=cur>-1?ROUTES[cur].stops:[],rt=cur>-1?trace(cur):null,h='';
+  LINES.forEach(function(ln,li){
+    var ids=onLine(li);
+    h+='<div class="mline" style="--lc:'+lc(li)+'"><h3>'+symSvg(li)+L(ln.zh+'线',ln.en+' line')+'<small>'+ids.length+L(' 站',' stops')+'</small></h3><ol>';
+    ids.forEach(function(id){
+      var n=stops.indexOf(id),x=isX(id),p=S[id][7];
+      /* 换乘站停在哪条线就在哪条线上亮序号 */
+      var here=n>-1&&(!x||rt.at[n].li===li);
+      var tr=x?'<span class="tr" aria-label="'+L('换乘','transfer')+'">'+linesOf(id).filter(function(i){return i!==li}).map(function(i){return symSvg(i)}).join('')+'</span>':'';
+      if(p)tr='<span class="tr">'+L('另见','see also')+' '+symSvg(linesOf(p)[0])+L(S[p][0],S[p][1])+'</span>';
+      h+='<li class="'+(x?'x':'')+(p?' p':'')+(here?' stop':'')+'"><a href="'+href(id)+'"><span class="mk"><i>'+(here?n+1:'')+'</i></span><span class="nm">'+L(S[id][0],S[id][1])+tr+'</span></a></li>';
+    });
+    h+='</ol></div>';
+  });
+  box.innerHTML=h;box.classList.toggle('on',cur>-1);
+}
+function caption(){
+  var c=document.getElementById('cap');
+  if(cur<0){c.innerHTML='<p>'+L('竖着的胶囊是换乘站：上下相邻的几条线共用的基础，比如 RDMA、NVMe-oF。KV Cache 在 AI 应用线和存储线上各有一站（虚线圈），两条线中间隔着三条线，所以不画成胶囊。从左往右大致是先学后学的顺序。','The upright capsules are transfer stops: foundations shared by lines that sit next to each other, such as RDMA and NVMe-oF. KV Cache has one stop on the AI application line and one on the storage line (dashed rings); three lines sit between them, so it is not drawn as a capsule. Left to right is roughly the order to learn them in.')+'</p>';return}
+  var r=ROUTES[cur],t=trace(cur);
+  c.innerHTML='<p><b>'+L(r.zh,r.en)+'</b>　'+L(r.stops.length+' 站，'+r.min+' 分钟，换乘 '+t.transfers+' 次',r.stops.length+' stops, '+r.min+' min, '+t.transfers+(t.transfers===1?' transfer':' transfers'))+'</p><ol>'+
+    r.stops.map(function(id,i){return '<li style="--lc:'+lc(t.at[i].li)+'"><i>'+(i+1)+'</i>'+L(S[id][0],S[id][1])+'</li>'}).join('')+'</ol>';
+}
+function key(){
+  document.getElementById('key').innerHTML=LINES.map(function(ln,li){return '<span>'+symSvg(li)+'<i class="bar" style="background:'+lc(li)+'"></i>'+L(ln.zh,ln.en)+'</span>'}).join('')+
+   '<span><i class="cap-k"></i>'+L('换乘站','Transfer stop')+'</span><span><i class="pr-k"></i>'+L('同一主题，另一站在不相邻的线上','Same topic, other stop on a non-adjacent line')+'</span>';
+}
+function talks(){
+  document.getElementById('talklist').innerHTML=ROUTES.map(function(r,i){
+    return '<div class="talk" data-talk="'+i+'"><h3>'+L(r.zh,r.en)+'</h3><p class="meta">'+L(r.stops.length+' 个知识点，'+r.min+' 分钟',r.stops.length+' topics, '+r.min+' min')+'</p><ol>'+
+      r.stops.map(function(id){return '<li><span>'+L(S[id][2],S[id][3])+'</span><span>'+linesOf(id).map(function(li){return symSvg(li)}).join('')+'</span></li>'}).join('')+
+      '</ol><div class="acts"><button class="btn" type="button" data-route="'+i+'" aria-pressed="false">'+L('在线路图上看','Show on the map')+'</button><a class="btn dark" href="topic.html#present">'+L('开始讲','Present')+'</a><a class="btn" href="topic.html">'+L('网页看','Read on the web')+'</a></div></div>';
+  }).join('');
+  document.querySelectorAll('[data-talk]').forEach(function(card){
+    var i=+card.getAttribute('data-talk');
+    card.addEventListener('mouseenter',function(){show(i)});
+    card.addEventListener('mouseleave',function(){show(pinned)});
+  });
+  bindRoute();
+}
+function cols(){
+  document.getElementById('cols').innerHTML=LINES.map(function(ln,li){
+    var ids=Object.keys(S).filter(function(id){return S[id][4]===ln.id}).sort(function(a,b){return S[a][5]-S[b][5]});
+    return '<div class="col" style="--lc:'+lc(li)+'"><h3>'+symSvg(li)+'<span>'+L(ln.zh,ln.en)+'</span><i aria-hidden="true"></i></h3><p class="d">'+L(ln.d,ln.de)+'</p><ul>'+
+      ids.map(function(id){var p=S[id][7];return '<li><a href="'+href(id)+'"><span class="n">'+L(S[id][2],S[id][3])+'</span><span class="m">'+S[id][6]+L(' 步',' steps')+
+        (p?'<span>·</span><span>'+L('另见','see also')+'</span>'+symSvg(linesOf(p)[0],'mini')+'<span>'+L(S[p][0],S[p][1])+'</span>':'')+'</span></a></li>'}).join('')+'</ul></div>';
+  }).join('');
+  var xs=Object.keys(S).filter(isX).sort(function(a,b){return S[a][5]-S[b][5]});
+  document.getElementById('xfer').innerHTML='<div class="xh"><h3>'+L('换乘站','Transfer stops')+'</h3><p>'+L('上下相邻的几条线共用的基础。按从左到右的顺序先看它们，再看各线上的站。','Foundations shared by lines that sit next to each other. Read them left to right before the rest.')+'</p></div><ol>'+
+    xs.map(function(id){return '<li><a href="'+href(id)+'"><span class="n">'+L(S[id][2],S[id][3])+'</span><span class="m">'+linesOf(id).map(function(i){return symSvg(i,'mini')}).join('')+'<span>'+linesOf(id).map(function(i){return L(LINES[i].zh,LINES[i].en)}).join(L('、',', '))+'</span></span></a></li>'}).join('')+'</ol>';
+}
+function show(i){
+  cur=i;draw();drawList();caption();
+  document.querySelectorAll('[data-talk]').forEach(function(c){c.classList.toggle('lit',+c.getAttribute('data-talk')===i)});
+}
+function bindRoute(){
+  document.querySelectorAll('button[data-route]').forEach(function(b){
+    if(b._bound)return;b._bound=1;
+    b.addEventListener('click',function(){
+      var i=+b.getAttribute('data-route');pinned=(pinned===i)?-1:i;show(pinned);sync();
+      if(pinned>-1&&b.closest('.talk')){var m=document.getElementById('map');var r=m.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)m.scrollIntoView({behavior:'smooth',block:'start'})}
+    });
+    if(b.classList.contains('chip')){b.addEventListener('mouseenter',function(){show(+b.getAttribute('data-route'))});b.addEventListener('mouseleave',function(){show(pinned)})}
+  });
+}
+function sync(){document.querySelectorAll('button[data-route]').forEach(function(b){b.setAttribute('aria-pressed',+b.getAttribute('data-route')===pinned?'true':'false')})}
+function all(){talks();cols();key();show(pinned);sync()}
+var q=new URLSearchParams(location.search);
+if(q.get('route')!==null&&ROUTES[+q.get('route')])pinned=+q.get('route');
+document.addEventListener('ss-lang',all);
+bindRoute();
+window.SS_TRACE=trace;window.SS_S=S;
+})();
+</script>
+</body>
+</html>
