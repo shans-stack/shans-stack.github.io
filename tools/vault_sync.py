@@ -512,6 +512,8 @@ def main():
             open(INTRO + '.new', 'w', encoding='utf-8').write(in_new)
             os.replace(INTRO + '.new', INTRO)
         print('已写回 %d 站%s%s' % (len(changed), '，术语表已更新' if gl_new else '', '，专题图介绍已更新' if in_new else ''))
+        if changed or gl_new or in_new:  # 内容变了，给网页里引用的脚本和样式重打版本号，防浏览器用旧缓存
+            subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'stamp.py')], check=True)
     return 2 if failed else 0
 
 
