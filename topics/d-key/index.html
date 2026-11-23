@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Infinia Key Construction: From Tenant Scope to Fragment Lookup · Shan's Stack</title>
-<meta name="description" content="Data keys include a tenant identifier, and the client can use a key hash to locate cache fragments.">
+<title>Infinia Key Construction and Tenant Keyspaces: From Fragment Lookup to Access Isolation · Shan's Stack</title>
+<meta name="description" content="Infinia uses tenant-scoped keys to locate records, access controls to govern requests, and policies to allocate resources across tenants.">
 <!-- share:start -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Shan's Stack">
-<meta property="og:title" content="Infinia Key Construction: From Tenant Scope to Fragment Lookup · Shan's Stack">
-<meta property="og:description" content="Data keys include a tenant identifier, and the client can use a key hash to locate cache fragments.">
+<meta property="og:title" content="Infinia Key Construction and Tenant Keyspaces: From Fragment Lookup to Access Isolation · Shan's Stack">
+<meta property="og:description" content="Infinia uses tenant-scoped keys to locate records, access controls to govern requests, and policies to allocate resources across tenants.">
 <meta property="og:url" content="https://shans-stack.github.io/topics/d-key/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Infinia Key Construction: From Tenant Scope to Fragment Lookup · Shan's Stack">
-<meta name="twitter:description" content="Data keys include a tenant identifier, and the client can use a key hash to locate cache fragments.">
+<meta name="twitter:title" content="Infinia Key Construction and Tenant Keyspaces: From Fragment Lookup to Access Isolation · Shan's Stack">
+<meta name="twitter:description" content="Infinia uses tenant-scoped keys to locate records, access controls to govern requests, and policies to allocate resources across tenants.">
 <!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/d-key.css?v=5d29a5b4">
+<link rel="stylesheet" href="../../assets/anim/d-key.css?v=b9bb90b6">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -40,8 +40,8 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Infinia Key Construction: From Tenant Scope to Fragment Lookup">Infinia 键构造：从租户范围到片段定位</h1>
-        <p class="meta"><span data-en="5 steps · Data keys, tenant identifiers, hash lookup">5 步 · 数据键、租户标识、哈希定位</span><span id="intalks"></span></p></div>
+      <div><h1 data-en="Infinia Key Construction and Tenant Keyspaces: From Fragment Lookup to Access Isolation">Infinia 键构造与租户键空间：从片段定位到访问隔离</h1>
+        <p class="meta"><span data-en="7 steps · Data keys, keyspaces, fragment lookup, and access isolation">7 步 · 数据键、键空间、片段定位与访问隔离</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -58,6 +58,7 @@
       <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-multi-tenancy-2024-rebrand.pdf&quot;&gt;DDN Technical Brief · Tenant Identifiers and Hierarchy&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-multi-tenancy-2024-rebrand.pdf">DDN 技术简报 · 租户标识与层级</a></li>
       <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/&quot;&gt;DDN Technical Blog · Infinia’s Distributed Engine&lt;/a&gt;"><a href="https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/">DDN 技术博客 · Infinia 的分布式引擎</a></li>
       <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/&quot;&gt;DDN Technical Blog · The Data Path from Checkpoint to First Token&lt;/a&gt;"><a href="https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/">DDN 技术博客 · 从检查点到首个 Token 的数据路径</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-data-sheet-2024-rebrand-V4-3-1.pdf&quot;&gt;DDN Infinia Data Sheet · Adaptive I/O and Dynamic Erasure Coding&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-data-sheet-2024-rebrand-V4-3-1.pdf">DDN Infinia 数据表 · 自适应 I/O 与动态纠删码</a></li>
     </ul></div>
   </div>
 </main>
@@ -79,12 +80,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/d-key.js?v=7e4ab16f"></script>
+<script src="../../assets/anim/d-key.js?v=0f24b22b"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "d-key",
@@ -117,33 +118,51 @@ window.SS_TOPIC_CFG={
     "The Tenant Identifier Is Part of the Key"
    ],
    "d": [
-    "同一局部标识可在不同租户范围内指向不同记录。",
-    "The same local identifier can refer to different records in separate tenant scopes."
+    "同一局部标识在不同租户键空间中可以指向不同记录。",
+    "The same local identifier can refer to different records in different tenant keyspaces."
    ],
    "b": [
     [
-     "<p>DDN 公开说明，Infinia 的键包含租户标识。租户标识限定记录所属的逻辑范围。图中 A 和 B 的局部标识均为 K，两个完整键仍各自指向本租户的记录。</p>"
+     "<p>租户是共享物理集群中一组用户或应用的数据与管理范围。DDN 的多租户简报说明，Infinia 的数据对象带有租户标识。在逻辑寻址中，租户标识与局部键共同确定记录。图中 A、B 两个租户都使用局部键 K，各自定位到本租户的记录。</p>"
     ],
     [
-     "<p>DDN states that Infinia keys include the tenant identifier. The identifier establishes the logical scope for the record. In the diagram, tenants A and B use the same local identifier K, and the resulting keys refer to tenant-specific records.</p>"
+     "<p>A tenant defines a data and administrative scope for users or applications on a shared physical cluster. DDN’s multi-tenancy brief describes tagging Infinia data objects with a tenant ID. The tenant ID and local key together identify the record logically. In the diagram, tenants A and B both use local key K and resolve it to a record in their own keyspaces.</p>"
     ]
    ]
   },
   {
    "t": [
-    "租户范围可以分层",
-    "Tenant Scopes Can Be Hierarchical"
+    "子租户与数据集形成层级",
+    "Subtenants and Datasets Form a Hierarchy"
    ],
    "d": [
-    "租户下可划分子租户，子租户下可配置数据集。",
-    "A tenant can contain subtenants, and a subtenant can contain datasets."
+    "租户可向子租户分配资源，子租户可继续分配给数据集。",
+    "A tenant can allocate resources to subtenants, which can allocate them to datasets."
    ],
    "b": [
     [
-     "<p>键空间是系统管理的键的集合。Infinia 公开的多租户架构采用分层键空间，支持给子租户分配资源，再把资源分配给数据集。这个层次描述资源与数据归属。</p>"
+     "<p>键空间是系统在一个逻辑范围内管理的键的集合。Infinia 的分层键空间描述数据归属及资源分配。管理权限也可按租户或子租户的角色委派。</p>"
     ],
     [
-     "<p>A keyspace is the set of keys managed by the system. Infinia’s published multi-tenant architecture uses a hierarchical keyspace. Resources can be assigned to subtenants and then to datasets. The hierarchy describes ownership of resources and data.</p>"
+     "<p>A keyspace is the set of keys managed within a logical scope. Infinia’s hierarchical keyspace describes data ownership and resource allocation. Administrative rights can also be delegated by tenant or subtenant role.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "授权约束请求范围",
+    "Authorization Governs Request Scope"
+   ],
+   "d": [
+    "租户范围用于定位记录，访问控制用于判定请求权限。",
+    "Tenant scope identifies the target record, and access controls determine request permissions."
+   ],
+   "b": [
+    [
+     "<p>定位数据和授予权限解决两个问题：数据位于哪个逻辑范围，请求者在该范围内可以执行哪些操作。DDN 将访问控制与租户隔离列为 Infinia 的安全机制。图中展现各请求的权限结果。</p>"
+    ],
+    [
+     "<p>Addressing and authorization answer two questions: which logical scope contains the data, and which operations the requester may perform in that scope. DDN identifies access control and tenant isolation as Infinia security mechanisms. The diagram shows example authorization outcomes.</p>"
     ]
    ]
   },
@@ -182,10 +201,28 @@ window.SS_TOPIC_CFG={
      "<p>After resolving locations, the client can send each request to the corresponding node. Fragments on separate nodes can travel independently. The diagram shows only the fragments needed for the read returning to the client.</p>"
     ]
    ]
+  },
+  {
+   "t": [
+    "多个数据接口沿用同一租户范围",
+    "Data Interfaces Use the Same Tenant Scope"
+   ],
+   "d": [
+    "对象、文件和原生 KV Cache 沿用底层键空间，资源份额由 QoS 管理。",
+    "Object, file, and native KV cache interfaces use the underlying keyspace, with resource shares managed by QoS."
+   ],
+   "b": [
+    [
+     "<p>S3 对象、POSIX 文件和原生 KV Cache 由同一键值引擎承载，并保留各自的请求语义。租户范围适用于这些接口访问的数据。服务质量（QoS）策略管理共享资源的份额。</p>"
+    ],
+    [
+     "<p>S3 objects, POSIX files, and native KV cache use the same key-value engine and retain their own request semantics. The tenant scope applies to the data each interface accesses. Quality of service (QoS) policies govern shares of the underlying resources.</p>"
+    ]
+   ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

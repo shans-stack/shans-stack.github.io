@@ -79,12 +79,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/d-mds.js?v=358313b7"></script>
+<script src="../../assets/anim/d-mds.js?v=912592a8"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "d-mds",
@@ -149,43 +149,43 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "打开与读取走不同路径",
-    "Separate Paths for Open and Read"
+    "打开文件时取得布局",
+    "Retrieving the Layout at Open"
    ],
    "d": [
-    "客户端打开文件时取得布局，随后直接向提供相关 OST 的数据服务器读取文件内容。",
-    "The client obtains the layout at open and then reads file contents directly from the object storage server that serves the relevant OST."
+    "客户端向 MDS 打开文件并取得布局，后续读取据此定位对象。",
+    "The client opens the file through the MDS and obtains the layout used to locate objects for reads."
    ],
    "b": [
     [
-     "<p>对于数据位于 OST 上的文件，客户端使用布局把文件的字节范围映射到相应的对象。对象存储服务器（Object Storage Server，OSS）将对象数据直接返回客户端。MDS 处理打开等元数据操作，文件内容沿客户端与 OSS 之间的路径传输。</p>"
+     "<p>对数据位于 OST 上的文件，文件布局把字节范围映射到具体对象。分布式命名空间（DNE）还可以将目录元数据分布到多个 MDT。</p>"
     ],
     [
-     "<p>For a file with data on OSTs, the client uses the layout to map a byte range to the relevant objects. The object storage server (OSS) returns object data directly to the client. The MDS handles metadata operations such as open, while file contents travel between the OSS and the client.</p>"
+     "<p>For files with data on OSTs, the layout maps byte ranges to individual objects. Distributed Namespace Environment (DNE) can distribute directory metadata across multiple MDTs.</p>"
     ]
    ]
   },
   {
    "t": [
-    "多个 MDT 承载同一目录树",
-    "A Single Directory Tree Across Multiple MDTs"
+    "从 OSS 直接读取数据",
+    "Reading Data Directly from the OSS"
    ],
    "d": [
-    "MDT0 保存根目录，分布式命名空间可把其他目录的元数据放到其他 MDT。",
-    "MDT0 holds the root, and the distributed namespace can place metadata for other directories on additional MDTs."
+    "取得布局后，客户端直接向提供相关 OST 的数据服务器读取文件内容。",
+    "After obtaining the layout, the client reads file contents directly from the object storage server that serves the relevant OST."
    ],
    "b": [
     [
-     "<p>分布式命名空间（Distributed Namespace Environment，DNE）允许同一个文件系统使用多个 MDT。例如，根目录位于 MDT0，某个子目录可由另一台 MDS 上的 MDT 承载。应用仍通过同一棵目录树访问这些目录。</p>"
+     "<p>对象存储服务器（Object Storage Server，OSS）将对象数据直接返回客户端。打开请求与布局走 MDS，文件内容在客户端和 OSS 之间传输。</p>"
     ],
     [
-     "<p>Distributed Namespace Environment (DNE) lets a single file system use multiple MDTs. For example, MDT0 holds the root, while an MDT on another MDS can host a subdirectory. Applications access both through the same directory tree.</p>"
+     "<p>The object storage server (OSS) returns object data directly to the client. The open request and layout go through the MDS, while file contents travel between the client and the OSS.</p>"
     ]
    ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

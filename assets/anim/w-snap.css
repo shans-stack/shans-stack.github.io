@@ -6,6 +6,7 @@
 .w-snap-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.2}
 .w-snap-key .w-snap-card{stroke:var(--l6);stroke-width:2}
 .w-snap-muted .w-snap-card{stroke-dasharray:5 5}
+.w-snap-muted .w-snap-row{fill:var(--ink3)}
 .w-snap-scene .w-snap-good{fill:var(--ink);font-weight:700}
 .w-snap-scene .w-snap-deleted{fill:var(--l1);font-weight:700}
 .w-snap-scene .w-snap-out{fill:var(--ink3);text-decoration:line-through}

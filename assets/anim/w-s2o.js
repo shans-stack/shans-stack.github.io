@@ -22,7 +22,13 @@
       ["活动文件|Live files", ["数据放置|Data placement"], "plain", 0],
       ["只读快照|Snapshot", ["固定恢复点|Recovery point"], "plain", 0],
       ["同一对象桶|Shared bucket", ["文件数据和快照|File data and snapshots"], "key", 0]
-    ], [[0, 2, "分层|Tiering", "file", 0.4, 0], [1, 2, "快照上传|Snapshot upload", "meta", 1.25, 0]]]
+    ], [[0, 2, "分层|Tiering", "file", 0.4, 0], [1, 2, "快照上传|Snapshot upload", "meta", 1.25, 0]]],
+    ["对象桶保留恢复点，目标集群重建文件系统后应用接回|The bucket retains the recovery point and applications reconnect after the filesystem is recreated", "restart", [
+      ["源实例|Source instances", [["上传完成|Upload complete", "plain", 0, 1.1, 0], ["已停止|Stopped", "paused", 1.1, 9, 0]], "muted", 0],
+      ["对象桶|Object bucket", ["保留恢复点|Recovery point"], "key", 0],
+      ["目标集群|Destination cluster", [["等待重建|Awaiting restore", "plain", 0, 2.65, 0], ["文件系统已重建|Filesystem recreated", "good", 2.65, 9, 0]], "plain", 0],
+      ["应用|Application", [["访问暂停|Access paused", "plain", 0, 4.05, 0], ["已接回|Reconnected", "good", 4.05, 9, 0]], "plain", 0]
+    ], [[1, 2, "按定位符重建|Restore by locator", "file", 1.6, 0], [2, 3, "", "signal", 3, 0]]],
   ];
   const NS = 'http://www.w3.org/2000/svg';
   let mounts = 0;
@@ -66,6 +72,7 @@
         chain: mobile ? [[185, 63, 234], [185, 202, 234], [185, 333, 234]] : [[140, 148, 218], [424, 148, 218], [708, 148, 218]],
         join: mobile ? [[96, 87, 164], [274, 87, 164], [185, 303, 244]] : [[159, 84, 230], [159, 225, 230], [683, 154, 250]],
         fork: mobile ? [[185, 88, 244], [96, 304, 164], [274, 304, 164]] : [[159, 154, 250], [683, 84, 230], [683, 225, 230]],
+        restart: mobile ? [[89, 55, 158], [271, 55, 158], [185, 216, 234], [185, 340, 234]] : [[120, 244, 200], [120, 111, 200], [458, 111, 202], [733, 111, 178]],
         versions: mobile ? [[96, 86, 164], [274, 86, 164], [65, 304, 100], [185, 304, 100], [305, 304, 100]] : [[159, 86, 230], [159, 224, 230], [690, 58, 218], [690, 155, 218], [690, 252, 218]]
       }[layout];
       const boxes = cards.map(([title, entries], i) => {
@@ -181,5 +188,5 @@
   }
 
   window.SSAnim = window.SSAnim || {};
-  window.SSAnim[id] = {steps: 5, mount};
+  window.SSAnim[id] = {steps: 6, mount};
 })();

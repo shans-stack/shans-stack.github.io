@@ -488,6 +488,8 @@ def main():
         for sid in sorted(os.listdir(os.path.join(ROOT, 'topics'))):
             if not os.path.exists(os.path.join(ROOT, 'topics', sid, 'index.html')):
                 continue
+            if 'ss-redirect' in open(os.path.join(ROOT, 'topics', sid, 'index.html'), encoding='utf-8').read(800):
+                continue  # 已并入别站的跳转页
             b = to_block(sid)
             inner = b.split('\n', 1)[1].rsplit('<!-- public:end', 1)[0]
             title, steps, sources = parse_block(inner)

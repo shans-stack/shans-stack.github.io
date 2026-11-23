@@ -2,22 +2,31 @@
   const id = 'v-dataspace';
   const NS = 'http://www.w3.org/2000/svg';
   const steps = [
-    ({mobile, width, box, track, visible}) => {
-      const cx = width / 2;
-      const y = mobile ? 75 : 80, hub = mobile ? 283 : 240, bus = (y + hub) / 2;
-      const xs = mobile ? [61, 175, 289] : [153, 420, 687];
-      const sites = [
-        [['站点 A', 'Site A'], ['本地集群', 'On-Prem']],
-        [['站点 B', 'Site B'], ['远端集群', 'Remote']],
-        [['云站点', 'Cloud Site'], ['云集群', 'Cloud Cluster']]
-      ];
-      box(cx, hub, mobile ? 238 : 273, ['全局命名空间', 'Global Namespace'], ['已共享的目录', 'Shared Directories']);
-      const links = sites.map(([title, detail], i) => {
-        const x = xs[i];
-        box(x, y, mobile ? 104 : 171, title, detail);
-        return track([[x, y + 30], [x, bus], [cx, bus], [cx, hub - 30]], 'config');
+    ({mobile, width, label, box, track, tile, move}) => {
+      const origin = [width / 2, mobile ? 70 : 65];
+      const y = mobile ? 276 : 246;
+      const xs = mobile ? [88, 262] : [206, 634];
+      const title = [['本地客户端', 'Local Client'], ['远程客户端', 'Remote Client']];
+      box(...origin, mobile ? 158 : 176, ['源集群', 'Origin Cluster']);
+      tile(origin[0], origin[1] + 30);
+      const lanes = xs.map((x, i) => {
+        box(x, y, mobile ? 162 : 182, title[i]);
+        const bend = origin[1] + (mobile ? 76 : 87);
+        const route = track([[origin[0], origin[1] + 30], [origin[0], bend], [x, bend], [x, y - 30]], i ? 'wan' : 'line');
+        label(x, bend - 12, i ? ['广域网', 'WAN'] : ['本地网络', 'Local Network']);
+        const count = label(x, y + 59, ['完成读取：0', 'Reads Done: 0'], i ? 'lag' : 'ready');
+        const leg = i ? 2 : 1;
+        const request = move(route, 0.2, leg, true, true);
+        const reply = move(route, leg + 0.12, leg * 2);
+        return t => {
+          const phase = t % (leg * 2 + 0.3);
+          request(phase);
+          reply(phase);
+          const completed = Math.floor(t / (leg * 2 + 0.3)) + Number(phase >= leg * 2);
+          count.textContent = T(['完成读取：', 'Reads Done: ']) + completed;
+        };
       });
-      return t => links.forEach((line, i) => visible(line, t >= 0.6 + i * 0.65));
+      return t => lanes.forEach(animate => animate(t));
     },
     ({mobile, box, track, tile, visible}) => {
       const origin = mobile ? [175, 63] : [420, 56];
@@ -38,6 +47,7 @@
       return t => links.forEach((line, i) => visible(line, t >= 0.6 + i * 1.15));
     },
     diagramRead,
+    diagramSync,
     diagramLease,
     ({mobile, label, box, track, tile, move}) => {
       const o = mobile ? [165, 55] : [146, 145];
@@ -49,14 +59,17 @@
       box(...b, w, ['卫星 B', 'Satellite B']);
       box(...c, w, ['卫星 C', 'Satellite C']);
       box(...app, w, ['客户端写入', 'Client Write']);
-      const first = mobile ? [[app[0], 325], [b[0], 259]]
-        : [[618, app[1]], [501, b[1]]];
+      const first = track(mobile ? [[app[0], 325], [b[0], 259]]
+        : [[618, app[1]], [501, b[1]]]);
       const middle = mobile ? [[b[0], 199], [b[0], 135], [o[0], 135], [o[0], 85]]
         : [[333, b[1]], [282, b[1]], [282, o[1]], [230, o[1]]];
       const idle = mobile ? [[o[0], 85], [o[0], 135], [c[0], 135], [c[0], 199]]
         : [[230, o[1]], [282, o[1]], [282, c[1]], [333, c[1]]];
-      const accept = move(track(first), 0.6, 1.65);
-      const forward = move(track(middle), 1.65, 3.65);
+      const accept = move(first, 0.6, 1.65);
+      const intersite = track(middle);
+      const forward = move(intersite, 1.65, 3.65);
+      const commit = move(intersite, 4.05, 5.6, true, true);
+      const acknowledge = move(first, 5.6, 6.55, true, true);
       track(idle, 'idle');
       const status = label(mobile ? 250 : o[0], o[1] + 55, ['原版本', 'Original Version']);
       const cached = tile(c[0], c[1] + 49);
@@ -64,8 +77,11 @@
       return t => {
         accept(t);
         forward(t);
+        commit(t);
+        acknowledge(t);
         const updated = t >= 3.65;
-        status.textContent = updated ? T(['源端已更新', 'Origin Updated']) : T(['原版本', 'Original Version']);
+        status.textContent = T(t >= 6.55 ? ['客户端已确认', 'Client ACK']
+          : updated ? ['源站已提交', 'Origin Committed'] : ['原版本', 'Original Version']);
         stale.textContent = updated ? T(['缓存失效', 'Cache Invalidated']) : T(['已缓存', 'Cached']);
         cached.classList.toggle(id + '-stale', updated);
       };
@@ -107,7 +123,7 @@
     box(...origin, w, ['源集群', 'Origin Cluster']);
     box(...satellite, w, ['卫星集群', 'Satellite Cluster']);
     box(...client, w, ['本地客户端', 'Local Client']);
-    const status = lab(mobile ? 86 : satellite[0], satellite[1] + (mobile ? 61 : 62),
+    const status = lab(mobile ? 91 : satellite[0], satellite[1] + (mobile ? 61 : 62),
       lease ? ['读租约有效', 'Read Lease Valid'] : ['缓存未命中', 'Cache Miss']);
     const farPoints = mobile ? [[175, 85], [175, 194]] : [[234, 142], [331, 142]];
     const localPoints = mobile ? [[175, 254], [175, 328]] : [[509, 142], [606, 142]];
@@ -136,6 +152,35 @@
       visible(prefetched, t >= 6.1);
       status.textContent = T(t < 4.25 ? ['缓存未命中', 'Cache Miss']
         : t < 6.1 ? ['已缓存', 'Cached'] : ['已缓存及预取', 'Cached + Prefetched']);
+    };
+  }
+
+  function diagramSync({mobile, width, box, label, track, tile, visible, move}) {
+    const center = [width / 2, mobile ? 86 : 67];
+    const siteY = mobile ? 287 : 227;
+    const xs = mobile ? [86, 264] : [216, 624];
+    box(...center, mobile ? 192 : 220, ['同步目标', 'Sync Target']);
+    const versions = [label(center[0], center[1] - 44, ['', '']), label(width * 0.24, center[1] + 63, ['', ''])];
+    const bend = mobile ? 201 : 146;
+    const sites = xs.map((x, i) => {
+      const site = i ? 'B' : 'A';
+      box(x, siteY, mobile ? 155 : 196, ['站点 ' + site, 'Site ' + site]);
+      const state = label(x, siteY + 56, ['初始版本', 'Initial Version']);
+      const line = track([[x, siteY - 30], [x, bend], [center[0], bend], [center[0], center[1] + 30]], 'config');
+      const send = move(line, 3.4 + i * 0.25, 5.1 + i * 0.25);
+      return {state, send, version:tile(x, siteY + 30, i ? 'ready-tile' : 'lag-tile')};
+    });
+    const sync = label(width / 2, siteY + (mobile ? 86 : 62), ['', '']);
+    return t => {
+      sites.forEach(({state, send, version}, i) => {
+        send(t);
+        visible(version, t >= 0.7 + i * 0.85);
+        state.textContent = T(t < 0.7 + i * 0.85 ? ['初始版本', 'Initial Version']
+          : i ? ['B 的版本', 'Version B'] : ['A 的版本', 'Version A']);
+      });
+      sync.textContent = T(t < 3.4 ? ['同步前', 'Before Sync'] : t < 5.35 ? ['定期同步', 'Scheduled Sync'] : ['按较晚写入决定当前版', 'Later Write Wins']);
+      versions[0].textContent = T(t < 5.35 ? ['初始版本', 'Initial Version'] : ['当前版本 B', 'Current: Version B']);
+      versions[1].textContent = T(t < 5.35 ? ['', ''] : ['历史版本 A', 'History: Version A']);
     };
   }
 
@@ -289,5 +334,5 @@
     return host.__anim;
   }
 
-  (window.SSAnim ||= {})[id] = {steps: 6, mount};
+  (window.SSAnim ||= {})[id] = {steps: steps.length, mount};
 })();

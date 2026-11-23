@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WEKA Filesystem Snapshots · Shan's Stack</title>
-<meta name="description" content="Filesystem snapshots preserve a point-in-time state for accessing older files, creating writable branches, or restoring the filesystem.">
+<title>WEKA Filesystem Snapshots and Writable Clones · Shan's Stack</title>
+<meta name="description" content="WEKA filesystem snapshots preserve a point in time for file recovery, writable cloning, or whole-filesystem restoration.">
 <!-- share:start -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Shan's Stack">
-<meta property="og:title" content="WEKA Filesystem Snapshots · Shan's Stack">
-<meta property="og:description" content="Filesystem snapshots preserve a point-in-time state for accessing older files, creating writable branches, or restoring the filesystem.">
+<meta property="og:title" content="WEKA Filesystem Snapshots and Writable Clones · Shan's Stack">
+<meta property="og:description" content="WEKA filesystem snapshots preserve a point in time for file recovery, writable cloning, or whole-filesystem restoration.">
 <meta property="og:url" content="https://shans-stack.github.io/topics/w-snap/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="WEKA Filesystem Snapshots · Shan's Stack">
-<meta name="twitter:description" content="Filesystem snapshots preserve a point-in-time state for accessing older files, creating writable branches, or restoring the filesystem.">
+<meta name="twitter:title" content="WEKA Filesystem Snapshots and Writable Clones · Shan's Stack">
+<meta name="twitter:description" content="WEKA filesystem snapshots preserve a point in time for file recovery, writable cloning, or whole-filesystem restoration.">
 <!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/w-snap.css?v=f5aabcff">
+<link rel="stylesheet" href="../../assets/anim/w-snap.css?v=d19c880f">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -40,8 +40,8 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="WEKA Filesystem Snapshots">WEKA 文件系统快照</h1>
-        <p class="meta"><span data-en="5 steps · Point in Time, File Recovery, Writable Snapshots">5 步 · 时间点、文件恢复、可写快照</span><span id="intalks"></span></p></div>
+      <div><h1 data-en="WEKA Filesystem Snapshots and Writable Clones">WEKA 文件系统快照与可写克隆</h1>
+        <p class="meta"><span data-en="7 steps · Filesystem snapshots, writable clones, and recovery">7 步 · 文件系统快照、可写克隆与恢复</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -57,6 +57,8 @@
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshots&quot;&gt;WEKA Docs · Snapshots&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshots">WEKA 文档 · 快照</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots-1&quot;&gt;WEKA Docs · Manage Snapshots (CLI)&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots-1">WEKA 文档 · 管理快照（CLI）</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots&quot;&gt;WEKA Docs · Manage Snapshots (GUI)&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots">WEKA 文档 · 管理快照（GUI）</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj&quot;&gt;WEKA Docs · Snap-to-Object&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj">WEKA 文档 · Snap-to-Object</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/getting-started-with-weka/weka-rest-api-and-equivalent-cli-commands#snapshots&quot;&gt;WEKA REST API and CLI · Snapshot Upload&lt;/a&gt;"><a href="https://docs.weka.io/getting-started-with-weka/weka-rest-api-and-equivalent-cli-commands#snapshots">WEKA REST API 和 CLI · 快照上传</a></li>
       <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -79,12 +81,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-snap.js?v=f06f07dd"></script>
+<script src="../../assets/anim/w-snap.js?v=a2d46a41"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "w-snap",
@@ -92,8 +94,8 @@ window.SS_TOPIC_CFG={
   steps: [
     {
       t: ["保存文件系统状态", "Capture Filesystem State"],
-      d: ["应用持续运行时，WEKA 可以为整个文件系统创建时间点快照。", "WEKA can capture a point-in-time snapshot of an entire filesystem while applications continue running."],
-      b: [["\u003cp>文件系统快照保存捕获时的文件数据和元数据。元数据描述文件系统中的对象及其组织方式，例如文件名和目录结构。捕获后，活动文件系统可以继续接受写入，快照保留对应时间点的视图。\u003c/p>"], ["\u003cp>A filesystem snapshot preserves file data and metadata at capture time. Metadata describes filesystem objects and their organization, such as file names and directory structure. After capture, the live filesystem can continue accepting writes while the snapshot preserves the point-in-time view.\u003c/p>"]]
+      d: ["应用持续运行时，WEKA 可以为整个文件系统创建默认只读的时间点快照。", "WEKA can capture an entire filesystem at a point in time while applications continue running. Snapshots are read-only by default."],
+      b: [["<p>文件系统快照保存捕获时的文件数据和元数据。元数据描述文件名、目录结构及其他文件系统属性。捕获时，活动文件系统与快照引用已有数据块。活动文件系统可继续接受写入。</p>"],["<p>A filesystem snapshot preserves file data and metadata at capture time. Metadata describes names, directory structure, and other filesystem attributes. At capture time the live filesystem and snapshot reference the existing blocks. The live filesystem can continue accepting writes.</p>"]]
     },
     {
       t: ["保留变化前后的版本", "Retain Old and New Versions"],
@@ -106,14 +108,24 @@ window.SS_TOPIC_CFG={
       b: [["\u003cp>.snapshots 可从文件系统根目录访问，也可从其子目录进入对应范围的历史视图。单个文件可以从快照中复制出来，活动文件系统的其他内容可以保留现状。\u003c/p>"], ["\u003cp>The hidden .snapshots directory is available from the filesystem root and also exposes the relevant historical view from subdirectories. A file can be copied out of a snapshot while the rest of the live filesystem stays in its current state.\u003c/p>"]]
     },
     {
-      t: ["派生可写快照", "Derive a Writable Snapshot"],
-      d: ["复制只读快照可以创建一条单独可写的分支。", "Duplicating a read-only snapshot can create a separate writable branch."],
-      b: [["\u003cp>可写快照以原快照的数据为起点，可以承载测试等会修改数据的工作负载。写入发生在派生分支，原快照继续保存历史状态。WEKA 不支持将可写快照改回只读快照。\u003c/p>"], ["\u003cp>A writable snapshot starts with the source snapshot's data and can serve workloads that modify it, such as tests. Writes affect the derived branch while the original continues to preserve the historical state. WEKA does not support changing a writable snapshot back to read-only.\u003c/p>"]]
+      t: ["创建并访问可写克隆", "Create and Access a Writable Clone"],
+      d: ["同一文件系统中的可写克隆以只读快照为起点，并有自己的访问点。", "A writable clone starts from a read-only snapshot in the same filesystem and has its own access point."],
+      b: [["<p>在 WEKA 图形界面中，Duplicate Snapshot 会预填源文件系统与源快照，并允许将新快照设为可写。源和克隆初始引用同一份数据。</p>", "<p>克隆的访问点是挂载文件系统中 <code>.snapshots</code> 下的独立目录。测试任务可修改其中的文件，原只读快照继续保留历史版本。</p>"],["<p>In the WEKA GUI, Duplicate Snapshot preselects the source filesystem and snapshot and offers a writable setting. The source and clone initially reference the same data.</p>", "<p>The clone has its own access directory under <code>.snapshots</code> in the mounted filesystem. Test workloads can edit files there while the source snapshot retains its earlier version.</p>"]]
+    },
+    {
+      t: ["从克隆另建只读快照", "Capture a New Read-Only Snapshot from the Clone"],
+      d: ["可写快照保持可写。另建只读快照可以固定克隆当前的内容。", "The writable snapshot stays writable. A new read-only snapshot captures its current contents."],
+      b: [["<p>WEKA 的快照更新操作允许修改名称和访问点。可写状态无法改回只读。以克隆为源另建的只读快照会保留测试后的版本，克隆可以继续接收写入。</p>"],["<p>WEKA’s snapshot update operation can change the name and access point. Writability cannot be reversed. A new read-only snapshot of the clone preserves the post-test version while the clone can continue accepting writes.</p>"]]
+    },
+    {
+      t: ["将新的只读快照上传到对象存储", "Upload the New Read-Only Snapshot to Object Storage"],
+      d: ["Snap-to-Object 可将新的只读快照上传到配置好的对象存储。", "Snap-to-Object can upload the new read-only snapshot to configured object storage."],
+      b: [["<p>对象存储保留新快照所记录的测试后状态。Snap-to-Object 只接受只读快照，可写克隆继续留在原文件系统中。</p>"], ["<p>Object storage preserves the post-test state captured by the new snapshot. Snap-to-Object accepts only read-only snapshots, and the writable clone remains in the original filesystem.</p>"]]
     },
     {
       t: ["恢复整个文件系统", "Restore a Whole Filesystem"],
       d: ["文件系统级恢复会以快照状态更新目标的数据和元数据。", "A filesystem restore updates the target's data and metadata to the snapshot state."],
-      b: [["\u003cp>文件系统级恢复覆盖目标文件系统的数据和元数据。WEKA 要求恢复期间停止目标文件系统的 I/O 服务，使应用在恢复过程中暂停对目标的读写。\u003c/p>"], ["\u003cp>A whole-filesystem restore replaces the target's data and metadata with the snapshot state. WEKA requires the target filesystem's I/O services to stop during the restore, suspending application reads and writes to it.\u003c/p>"]]
+      b: [["<p>文件系统级恢复用快照状态更新目标的数据和元数据。图中是直接覆盖目标的恢复流程，目标文件系统的 I/O 在恢复期间需要暂停。</p>"], ["<p>A whole-filesystem restore updates the target's data and metadata to the snapshot state. The diagram shows a direct overwrite of the target, which requires pausing I/O on that filesystem during the restore.</p>"]]
     }
   ]
 };
@@ -122,7 +134,7 @@ window.SS_TOPIC_CFG={
 document.addEventListener('ss-lang', ({detail}) => {
   const controls = document.querySelector('.nav .langs');
   const english = detail === 'en';
-  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const labels = english ? ['SC', 'TC', 'EN'] : ['简', '繁', 'EN'];
   const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
   controls.setAttribute('aria-label', english ? 'Language' : '语言');
   controls.querySelectorAll('button').forEach((button, i) => {
@@ -133,6 +145,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

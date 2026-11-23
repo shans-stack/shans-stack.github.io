@@ -59,3 +59,7 @@
 .ssa-v-dbox .disk.scm{stroke:var(--ochre)}
 .ssa-v-dbox .disk.bad{stroke:var(--rose);stroke-width:3}
 .ssa-v-dbox .ochre-t{fill:var(--ochre)}
+
+@media(max-width:440px){
+  body:has(main[data-station="v-dbox"]) .hd .wrap{flex-wrap:wrap;gap:0 8px}
+}

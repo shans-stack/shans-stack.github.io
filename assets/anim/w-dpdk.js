@@ -13,9 +13,24 @@
     link('dpdk','fe',{delay:860,duration:860});
     link('linux','mgmt',{delay:860,duration:860,tone:'control'});
   },
+  ({node, link, panel}) => {
+    panel([26,30,405,308],[18,18,344,215],['独占分配','Dedicated allocation']);
+    panel([449,30,405,308],[18,248,344,221],['共享分配','Shared allocation']);
+    node('da',[126,116],[102,94],['WEKA 客户端','WEKA client']);
+    node('db',[331,116],[278,94],['应用任务','App task']);
+    node('ca',[126,252],[102,181],['独占核心','Dedicated core'],{tone:'active'});
+    node('cb',[331,252],[278,181],['应用核心','App core']);
+    node('sa',[551,116],[102,324],['WEKA 客户端','WEKA client']);
+    node('sb',[752,116],[278,324],['应用任务','App task']);
+    node('shared',[652,259],[190,426],['共享核心','Shared core'],{tone:'active'});
+    link('da','ca');
+    link('db','cb',{tone:'control'});
+    link('sa','shared',{port:-12,duration:920});
+    link('sb','shared',{port:12,delay:1060,duration:920,tone:'control'});
+  },
   ({node, link, text}) => {
     node('queue',[153,188],[190,91],['网卡接收队列','NIC RX queue'],{sub:['就绪包','Packets ready'],wide:true});
-    node('poll',[455,188],[190,265],['轮询线程','Polling thread'],{tone:'active'});
+    node('poll',[455,188],[190,265],['轮询线程','Polling thread'],{sub:['独占核心','Dedicated core'],tone:'active'});
     node('process',[735,188],[190,430],['用户态处理','User-space I/O']);
     text([305,137],[277,171],['批量取包','Batch receive']);
     link('queue','poll',{count:3,duration:1100});
@@ -31,22 +46,35 @@
     link('qa','ca',{count:2});
     link('qb','cb',{count:2,tone:'control'});
   },
+  ({node, link, text}) => {
+    node('nic',[111,100],[190,61],['网卡','NIC']);
+    node('dpdk',[401,100],[100,211],['DPDK 前端','DPDK frontend'],{tone:'active'});
+    node('app',[401,277],[280,211],['应用任务','App task']);
+    node('shared',[735,193],[190,407],['共享核心','Shared core']);
+    text([250,59],[90,117],['接收中断','RX interrupt']);
+    link('nic','dpdk',{tone:'signal',duration:630,offset:-12,via:[240,138]});
+    link('nic','dpdk',{delay:680,duration:840,offset:12,via:[250,164]});
+    link('dpdk','shared',{delay:1520,duration:830,port:-14});
+    link('app','shared',{delay:2490,duration:830,port:14,tone:'control'});
+  },
   ({node, link, panel}) => {
-    panel([28,31,824,141],[20,26,340,211],['用户态网络','User-space networking']);
+    panel([28,31,824,141],[20,26,340,211],['DPDK 数据路径','DPDK data path']);
     panel([28,204,824,141],[20,260,340,211],['内核 UDP 模式 · 客户端','Kernel UDP · client']);
     node('dpdk',[230,115],[190,111],['DPDK','DPDK'],{tone:'active'});
     node('data',[654,115],[190,190],['经 UDP 发包','UDP on wire']);
-    node('linux',[230,288],[190,345],['Linux 网络栈','Linux networking'],{tone:'kernel',wide:true});
-    node('udp',[654,288],[190,424],['经 UDP 发包','UDP on wire']);
+    node('linux',[230,288],[190,330],['Linux 网络栈','Linux networking'],{sub:['共享核','Shared cores'],tone:'kernel',wide:true});
+    node('udp',[654,288],[190,433],['经 UDP 发包','UDP on wire']);
     link('dpdk','data');
     link('linux','udp',{tone:'control'});
   },
-  ({node, link}) => {
-    node('dpdk',[170,102],[100,99],['客户端 DPDK','Client DPDK'],{sub:['轮询或接收中断','Polling or RX IRQ'],tone:'active'});
-    node('udp',[170,270],[280,99],['客户端内核 UDP','UDP client'],{sub:['Linux 网络栈','Linux networking'],tone:'kernel'});
-    node('back',[658,190],[190,365],['后端 DPDK','Backend DPDK'],{sub:['后端数据网络','Backend data network'],tone:'active',wide:true});
-    link('dpdk','back',{port:-13});
-    link('udp','back',{port:13,tone:'control'});
+  ({node, link, panel}) => {
+    panel([46,42,483,256],[20,25,340,166],['预留 CPU','Reserved CPUs']);
+    panel([557,42,277,256],[20,216,340,250],['Pod 可调度 CPU','CPUs available to pods']);
+    node('os',[172,167],[102,119],['系统核心','System cores'],{tone:'kernel'});
+    node('client',[402,167],[278,119],['客户端','WEKA client'],{sub:['预留核心','Reserved cores'],tone:'active'});
+    node('pod',[696,125],[190,310],['Pod 任务','Pod work']);
+    node('avail',[696,243],[190,418],['可调度核心','Pod cores'],{tone:'active'});
+    link('pod','avail',{tone:'control'});
   },
 ];
 
@@ -233,7 +261,7 @@
     rebuild();
     run();
 
-    return {
+    const control = {
       show,
       pause() { paused = true; cancelAnimationFrame(frame); },
       resume() { paused = false; run(); },
@@ -243,12 +271,15 @@
         reduce.removeEventListener('change', motionChanged);
         document.removeEventListener('ss-lang', rebuild);
         svg.remove();
+        delete host.__anim;
       },
       ratio,
       step: () => step,
     };
+    host.__anim = control;
+    return control;
   }
 
   window.SSAnim = window.SSAnim || {};
-  window.SSAnim[id] = {steps: 5, mount};
+  window.SSAnim[id] = {steps: 7, mount};
 })();

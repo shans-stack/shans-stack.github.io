@@ -1,45 +1,51 @@
-/* 去重：6 步动画（SVG，按时间写死的时间线，不依赖动画库）。一样的块只存一份：指纹与指针、块大小的取舍、内存表限住去重范围、VAST 把表放在共享 SCM、确认之后再去重、去重后的读取。
-   接口同 assets/anim/rdma.js：
-     var a = SSAnim['v-dedup'].mount(容器元素, {paused:false, onLayout:function(宽高比, 是否手机版){}});
-     a.show(i) 切到第 i 步（0 起）并从头播放；a.pause() / a.resume()；a.destroy()；a.ratio()；a.step()
-   动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
-   宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
-   画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-dedup.css，全部限定在 .ssa-v-dedup 容器之内。 */
+/* Data reduction: exact deduplication, migration and similarity reduction. */
 (function(){
 var ID='v-dedup';
-var EN={"写入":"Writes","算指纹":"Fingerprint","指纹表":"Fingerprint table","已存数据":"Stored data","只记指针":"Pointers only","新指纹：存下":"New: stored","见过：只记指针":"Seen: pointer only","写入":"Writes","实际存":"Stored","块":"blocks","示意，不代表实测数字":"Schematic, not measured",
-"大块":"Large blocks","小块":"Small blocks","已存的版本":"Stored","新版本":"New","要再存":"Stored again","格":"cells","指纹表":"Fingerprint table","行":"rows","只有一格不同":"One cell differs",
-"客户端":"Client","设备 1":"Appliance 1","设备 2":"Appliance 2","内存里的表":"Table in RAM","去重域 1":"Domain 1","去重域 2":"Domain 2","查不到：再存一份":"Not found: stored again","同一块存了两份":"Same block stored twice","存下":"stored",
-"NVMe-oF 网络":"NVMe-oF network","SCM：指纹表":"SCM: fingerprint table","QLC：数据":"QLC: data","CNode 1 写入：表里没有，存下":"CNode 1 writes: not in table, stored","CNode 3 写入：查到了，只记指针":"CNode 3 writes: found, pointer only","同一加密组内跨 CNode 去重":"Deduplication within one encryption group",
-"确认":"ACK","去重":"Dedupe","压缩":"Compress","按固定块边界填充":"Padded to fixed block boundaries","变长块紧密装入":"Variable-length chunks packed tightly","凑整浪费":"padding","先确认，之后再缩减":"ACK first, reduce afterwards",
-"硬盘":"Hard drive","闪存":"Flash","逻辑数据块分布在不同位置":"Chunks at different locations","已读回":"Read back","磁头来回寻道":"Head seeks back and forth","无机械寻道":"No mechanical seeks",
-"去重：指纹与指针、块大小、去重范围、共享 SCM 上的指纹表与去重后的读取":"Deduplication: fingerprints and pointers, block size, dedupe domains, a shared SCM table and reading deduplicated data"};
-var ENM={"指纹表":"Fingerprints","CNode 1 写入：表里没有，存下":"CNode 1: new, stored","CNode 3 写入：查到了，只记指针":"CNode 3: found, pointer","同一加密组内跨 CNode 去重":"Within one encryption group","逻辑数据块分布在不同位置":"Chunks at different locations","无机械寻道":"No mechanical seeks","磁头来回寻道":"Head seeks","先确认，之后再缩减":"ACK first, reduce later","查不到：再存一份":"Not found: stored again","压缩":"Compress"};
-var ARIA="去重：指纹与指针、块大小、去重范围、共享 SCM 上的指纹表与去重后的读取";
+var ARIA = "去重与相似性压缩：共享索引、数据迁移和参考字典";
+var EN = {
+ "去重与相似性压缩：共享索引、数据迁移和参考字典": "Deduplication and similarity reduction: shared indexes, migration and reference dictionaries",
+ "写入": "Writes", "算指纹": "Fingerprint", "指纹表": "Fingerprint table", "已存数据": "Stored data",
+ "只记指针": "Pointers only", "新指纹：存下": "New: stored", "见过：只记指针": "Seen: pointer only",
+ "实际存": "Stored", "块": "blocks", "示意，不代表实测数字": "Schematic, not measured",
+ "大块": "Large chunks", "小块": "Small chunks", "已存的版本": "Stored", "新版本": "New",
+ "NVMe-oF 网络": "NVMe-oF network", "SCM：指纹表": "SCM: fingerprint table", "QLC：数据": "QLC: data",
+ "CNode 1 写入：表里没有，存下": "CNode 1 writes: new entry, block stored",
+ "CNode 3 写入：查到了，只记指针": "CNode 3 writes: match, pointer only",
+ "同一加密组内跨 CNode 去重": "Deduplication within one encryption group",
+ "客户端": "Client", "确认": "ACK", "切块并去重": "Chunk and dedupe", "压缩": "Compress",
+ "按固定块边界填充": "Fixed block boundaries", "变长块紧密装入": "Variable-length chunks packed tightly",
+ "凑整浪费": "Padding", "先确认，之后再缩减": "ACK first, reduce later",
+ "参考块 A": "Reference chunk A", "新块 A′": "New chunk A′", "强指纹": "Strong fingerprint",
+ "相似指纹": "Similarity fingerprint", "不匹配": "No match", "找到候选 A": "Candidate A found",
+ "普通压缩": "Ordinary compression", "差异 + 引用": "Difference + reference",
+ "本例选参考字典": "Reference dictionary selected", "近期写入节省的空间": "Space saved on recent writes",
+ "较低": "Lower", "较高": "Higher", "采用相似性压缩": "Use similarity reduction",
+ "绕过相似性压缩": "Bypass similarity reduction"
+};
+var ENM = {
+ "指纹表": "Fingerprints", "切块并去重": "Chunk & dedup", "CNode 1 写入：表里没有，存下": "CNode 1: new, stored",
+ "CNode 3 写入：查到了，只记指针": "CNode 3: match, pointer",
+ "同一加密组内跨 CNode 去重": "Within one encryption group"
+};
 function makeScene(H){
 const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade}=H;
 const L_=()=>H.L(),E_=()=>H.E();
 const COL=['','ochre','violet']; // A、B、C 三种内容
 const SEQ1=[0,1,0,2,0,1];
 const SCENE={
- still:[9,5,6,7.5,7,6],
+ still:[9,5,7.5,7,4,4,4],
  layout(m){
   if(!m)return {mobile:false,W:960,H:480,pw:26,ph:22,dr:7,f:{lbl:19,sm:17,note:16},
    s1:{src:{x:40,y:150,w:130,h:180},fp:{x:300,y:197,w:150,h:86},tbl:{x:300,y:50,w:150,h:110},store:{x:640,y:140,w:280,h:90},ptr:{x:640,y:290,w:280,h:80},bus:560,cnt:P(40,420)},
    s2:{lanes:[130,330],cx:220,cw:40,gap:6,lx:40,out:{x:640},tbl:P(920,0)},
-   s3:{cli:{x:40,y:200,w:120,h:60},dev:[{x:330,y:40,w:300,h:160},{x:330,y:270,w:300,h:160}],bus:250},
    s4:{cn:[170,480,790],cnw:200,cnh:60,cny:40,fab:180,db:{x:150,y:230,w:660,h:180}},
-   s5:{cli:{x:40,y:70,w:120,h:56},scm:{x:220,y:70,w:130,h:56},dd:{x:410,y:70,w:120,h:56},cp:{x:590,y:70,w:200,h:56},q:{x:840,y:70,w:80,h:56},strips:[290,380],sx:280,sw:600},
-   s6:{pa:{x:40,y:60,w:420,h:330},pb:{x:500,y:60,w:420,h:330}},
+   s5:{cli:{x:40,y:70,w:120,h:56},scm:{x:220,y:70,w:130,h:56},dd:{x:397,y:70,w:155,h:56},cp:{x:590,y:70,w:200,h:56},q:{x:840,y:70,w:80,h:56},strips:[290,380],sx:280,sw:600},
    note:P(40,456)};
   return {mobile:true,W:480,H:600,pw:22,ph:18,dr:6,f:{lbl:18,sm:17,note:17},
    s1:{src:{x:16,y:60,w:120,h:160},fp:{x:180,y:97,w:120,h:86},tbl:{x:336,y:40,w:128,h:110},store:{x:16,y:300,w:448,h:76},ptr:{x:16,y:420,w:448,h:70},bus:250,cnt:P(16,520),vert:true},
    s2:{lanes:[120,350],cx:16,cw:40,gap:6,lx:16,out:{x:16},vert:true},
-   s3:{cli:{x:16,y:30,w:120,h:52},dev:[{x:16,y:130,w:448,h:170},{x:16,y:340,w:448,h:170}],bus:110,vert:true},
    s4:{cn:[88,240,392],cnw:136,cnh:56,cny:30,fab:150,db:{x:16,y:210,w:448,h:260}},
-   s5:{cli:{x:16,y:40,w:100,h:52},scm:{x:180,y:40,w:120,h:52},dd:{x:16,y:150,w:120,h:52},cp:{x:170,y:150,w:170,h:52},q:{x:380,y:150,w:84,h:52},strips:[330,450],sx:16,sw:448},
-   s6:{pa:{x:16,y:40,w:448,h:240},pb:{x:16,y:300,w:448,h:240}},
+   s5:{cli:{x:16,y:40,w:100,h:52},scm:{x:180,y:40,w:120,h:52},dd:{x:16,y:150,w:142,h:52},cp:{x:170,y:150,w:170,h:52},q:{x:380,y:150,w:84,h:52},strips:[330,450],sx:16,sw:448},
    note:P(16,576)};
  },
  build(L,E){
@@ -52,13 +58,13 @@ const SCENE={
    E.t1=[0,1,2].map(i=>el('rect',{x:s.tbl.x+16+i*40,y:s.tbl.y+50,width:28,height:28,rx:4,class:'pkt '+COL[i]},g));
    rect(s.store,'box',g,10);tx(s.store.x,s.store.y-18,'已存数据',f.sm,'ttl','start',g);
    rect(s.ptr,'box soft',g,10);tx(s.ptr.x,s.ptr.y-18,'只记指针',f.sm,'ttl','start',g);
-   const cy=C(s.fp).y,srcY=M?C(s.src).y:cy;
+   const cy=C(s.fp).y;
    if(!M){line([P(s.src.x+s.src.w,cy),P(s.fp.x,cy)],'',g);line([P(s.fp.x+s.fp.w,cy),P(s.bus,cy)],'',g);
      line([P(s.bus,C(s.store).y),P(s.bus,C(s.ptr).y)],'',g);line([P(s.bus,C(s.store).y),P(s.store.x,C(s.store).y)],'',g);line([P(s.bus,C(s.ptr).y),P(s.ptr.x,C(s.ptr).y)],'',g);
      line([P(C(s.fp).x,s.fp.y),P(C(s.fp).x,s.tbl.y+s.tbl.h)],'dash thin',g)}
    else{line([P(s.src.x+s.src.w,cy),P(s.fp.x,cy)],'',g);line([P(s.fp.x+s.fp.w,cy),P(s.tbl.x,cy)],'dash thin',g);
      line([P(C(s.fp).x,s.fp.y+s.fp.h),P(C(s.fp).x,s.store.y)],'',g);line([P(C(s.fp).x,s.bus),P(472,s.bus),P(472,C(s.ptr).y),P(s.ptr.x+s.ptr.w,C(s.ptr).y)],'',g)}
-   E.r1=M?tx(C(s.fp).x+12,s.fp.y+s.fp.h+22,'',f.sm,'st','start',g):tx(C(s.fp).x,s.fp.y+s.fp.h+24,'',f.sm,'st','middle',g);
+   E.r1=M?tx(L.W/2,s.fp.y+s.fp.h+37,'',f.sm,'st','middle',g):tx(C(s.fp).x,s.fp.y+s.fp.h+24,'',f.sm,'st','middle',g);
    E.c1=tx(s.cnt.x,s.cnt.y,'',f.lbl,'num ink-t','start',g);
    E.st1=[];for(let i=0;i<3;i++)E.st1.push(P(s.store.x+40+i*(M?60:70),C(s.store).y));
    E.pt1=[];for(let i=0;i<3;i++)E.pt1.push(P(s.ptr.x+40+i*(M?60:70),C(s.ptr).y));
@@ -69,35 +75,18 @@ const SCENE={
    [['大块',4],['小块',1]].forEach(([nm,gs],k)=>{const y=s.lanes[k],cw=M?32:s.cw,gp=s.gap,x0=M?s.cx+70:s.cx;
     tx(s.lx,y-(M?78:70),nm,f.lbl,'lbl b7','start',g);
     tx(s.lx,y-26,'已存的版本',f.sm,'ink3-t','start',g);tx(s.lx,y+22,'新版本',f.sm,'ink3-t','start',g);
-    if(M){/* 手机：标签在左，格子在右，靠 x0 */}
     const oldC=[],newC=[];
-    for(let i=0;i<8;i++){const x=x0+(M?40:120)+i*(cw+gp);oldC.push(el('rect',{x,y:y-38,width:cw,height:24,rx:3,class:'cel s'},g));newC.push(el('rect',{x,y:y+10,width:cw,height:24,rx:3,class:'cel '+(i===5?'r':'s')},g))}
+    for(let i=0;i<8;i++){const x=x0+(M?35:120)+i*(cw+gp);oldC.push(el('rect',{x,y:y-38,width:cw,height:24,rx:3,class:'cel s'},g));newC.push(el('rect',{x,y:y+10,width:cw,height:24,rx:3,class:'cel '+(i===5?'r':'s')},g))}
     /* 块边框 */
-    const bx=[];for(let j=0;j<8/gs;j++){const x=x0+(M?40:120)+j*gs*(cw+gp)-3,w=gs*(cw+gp)-gp+6;bx.push(el('rect',{x,y:y+6,width:w,height:32,rx:5,class:'box',fill:'none'},g))}
+    const bx=[];for(let j=0;j<8/gs;j++){const x=x0+(M?35:120)+j*gs*(cw+gp)-3,w=gs*(cw+gp)-gp+6;bx.push(el('rect',{x,y:y+6,width:w,height:32,rx:5,class:'box',fill:'none'},g))}
     bx.forEach(b=>b.style.fill='none');
     const ox=M?L.W-16:x0+(M?40:120)+8*(cw+gp)+40;
-    const res=tx(M?L.W-16:ox,M?y+66:y-26,'',f.sm,'st','end'===(M?'end':'start')?'end':'start',g);if(M)res.setAttribute('text-anchor','end');
+    const res=tx(M?L.W-16:ox,M?y+66:y-26,'',f.sm,'st',M?'end':'start',g);
     const tb=tx(M?L.W-16:ox,M?y+92:y+22,'',f.sm,'st ink2-t',M?'end':'start',g);
-    E.s2.push({gs,oldC,newC,bx,res,tb,y,x0:x0+(M?40:120),cw,gp})});
+    E.s2.push({gs,oldC,newC,bx,res,tb,y,x0:x0+(M?35:120),cw,gp})});
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
-  /* 第 3 步：两台设备各自一张表 */
-  {const s=L.s3,g=grp('3');E.s3=[];
-   rect(s.cli,'box',g);tx(C(s.cli).x,C(s.cli).y,'客户端',f.sm,'lbl','middle',g);
-   const cy=C(s.cli).y;
-   s.dev.forEach((d,k)=>{rect(d,'box',g,12);tx(d.x+14,d.y+22,k?'设备 2':'设备 1',f.sm,'lbl b7','start',g);
-    tx(d.x+d.w-14,d.y+22,k?'去重域 2':'去重域 1',f.sm,'ink3-t','end',g);
-    const tb={x:d.x+14,y:d.y+48,w:M?150:130,h:M?88:92};rect(tb,'box soft',g,8);tx(tb.x+10,tb.y+18,'内存里的表',f.sm,'ink2-t','start',g);
-    const tslot=P(tb.x+28,tb.y+60);const st={x:tb.x+tb.w+20,y:tb.y,w:d.x+d.w-14-(tb.x+tb.w+20),h:tb.h};rect(st,'box soft',g,8);tx(st.x+10,st.y+18,'存下',f.sm,'ink2-t','start',g);
-    const sslot=P(st.x+34,st.y+60);
-    let path;
-    if(!M){path=[P(s.cli.x+s.cli.w,cy),P(s.bus,cy),P(s.bus,C(d).y),P(d.x,C(d).y)]}else{const cb=P(C(s.cli).x,s.cli.y+s.cli.h);path=k?[cb,P(cb.x,s.bus),P(472,s.bus),P(472,C(d).y),P(d.x+d.w,C(d).y)]:[cb,P(cb.x,s.bus),P(360,s.bus),P(360,d.y)]}
-    E.s3.push({d,tslot,sslot,path,msg:tx(M?d.x+d.w-14:d.x+d.w+20,M?d.y+d.h-18:C(d).y,'',f.sm,'st',M?'end':'start',g),tr:null,sr:null})});
-   if(!M){line([P(s.cli.x+s.cli.w,cy),P(s.bus,cy)],'',g);line([P(s.bus,C(s.dev[0]).y),P(s.bus,C(s.dev[1]).y)],'',g);s.dev.forEach(d=>line([P(s.bus,C(d).y),P(d.x,C(d).y)],'',g))}
-   else{E.s3.forEach(o=>line(o.path,'',g))}
-   E.s3msg=tx(M?L.W-16:L.W-40,L.note.y,'同一块存了两份',f.sm,'st rose-t','end',g);
-   tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
-  /* 第 4 步：共享 SCM 上的一张表 */
-  {const s=L.s4,g=grp('4'),db=s.db;E.cn4=[];
+  /* 第 3 步：共享 SCM 上的一张表 */
+  {const s=L.s4,g=grp('3'),db=s.db;E.cn4=[];
    el('line',{x1:M?16:60,y1:s.fab,x2:M?464:900,y2:s.fab,class:'ln'},g);
    tx(M?16:60,s.fab+18,'NVMe-oF 网络',f.sm,'ink3-t','start',g);
    s.cn.forEach((x,i)=>{const r={x:x-s.cnw/2,y:s.cny,w:s.cnw,h:s.cnh};line([P(x,r.y+r.h),P(x,s.fab)],'',g);E.cn4.push(rect(r,'box',g,10));
@@ -113,9 +102,9 @@ const SCENE={
    E.realm=tx(M?L.W-16:L.W-40,L.note.y,'同一加密组内跨 CNode 去重',f.sm,'st sage-t','end',g);
    if(M)E.realm.setAttribute('y',L.note.y-58);
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
-  /* 第 5 步：确认之后再缩减；变长块紧密装入存 */
-  {const s=L.s5,g=grp('5');
-   const B=[['cli','客户端'],['scm','SCM'],['dd','去重'],['cp','压缩'],['q','QLC']];E.b5={};
+  /* 第 4 步：确认之后再缩减；变长块紧密装入存 */
+  {const s=L.s5,g=grp('4');
+   const B=[['cli','客户端'],['scm','SCM'],['dd','切块并去重'],['cp','压缩'],['q','QLC']];E.b5={};
    B.forEach(([k,nm])=>{const r=s[k];E.b5[k]=rect(r,k==='scm'?'box on':'box',g,10);tx(C(r).x,C(r).y,nm,f.sm,'lbl b7','middle',g)});
    const y1=C(s.cli).y;line([P(s.cli.x+s.cli.w,y1),P(s.scm.x,y1)],'',g);
    if(!M){line([P(s.scm.x+s.scm.w,y1),P(s.dd.x,y1)],'',g);line([P(s.dd.x+s.dd.w,y1),P(s.cp.x,y1)],'',g);line([P(s.cp.x+s.cp.w,y1),P(s.q.x,y1)],'',g)}
@@ -132,28 +121,87 @@ const SCENE={
       if(!k){const used=Math.ceil(len/cell)*cell;pad=el('rect',{x:x+len,y:y-14,width:0,height:28,rx:0,class:'fill rose',opacity:0.35},g);parts.push({r,len,pad,padw:used-len,x});x+=used}else{parts.push({r,len,x});x+=len}});
     const end=tx(Math.min(x+10,s.sx+s.sw-8),y+34,k?'':'凑整浪费',f.sm,'st rose-t','start',g);E.st5.push({parts,end})});
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
-  /* 第 6 步：硬盘与闪存读回散开的块 */
-  {const s=L.s6,g=grp('6');E.s6={};
-   [['a','硬盘'],['b','闪存']].forEach(([k,nm])=>{const r=s['p'+k];rect(r,'box soft',g,12);tx(r.x+14,r.y+22,nm,f.lbl,'lbl b7','start',g);
-    E.s6[k]={r,cnt:tx(r.x+r.w-14,r.y+22,'',f.sm,'num ink-t','end',g),note:tx(r.x+14,r.y+r.h-20,k==='a'?'磁头来回寻道':'无机械寻道',f.sm,'st '+(k==='a'?'rose-t':'sage-t'),'start',g)}});
-   /* 硬盘：盘片和磁头 */
-   const pa=s.pa,c=P(pa.x+(M?150:180),pa.y+pa.h/2+(M?4:0)),R=M?92:120;E.hd={c,R};
-   [1,0.75,0.5,0.25].forEach(k=>el('circle',{cx:c.x,cy:c.y,r:R*k,class:'ln thin'},g));
-   E.hdArm=el('line',{x1:c.x+R+60,y1:c.y+R,x2:c.x,y2:c.y,class:'ln lit thick'},g);
-   const ang=[0.3,2.4,4.1,1.2,3.3,5.4],rad=[0.9,0.4,0.75,0.3,0.6,0.85];
-   E.hdPts=ang.map((a,i)=>P(c.x+R*rad[i]*Math.cos(a),c.y+R*rad[i]*Math.sin(a)));
-   E.hdDots=E.hdPts.map((p,i)=>el('circle',{cx:p.x,cy:p.y,r:L.dr+1,class:'dot'},g));
-   /* 闪存：芯片格子 */
-   const pb=s.pb,cols=6,rows=4,cw=M?50:46,ch=M?28:38,x0=pb.x+(M?40:60),y0=pb.y+(M?52:80);E.fl=[];const pick=[3,8,13,17,20,10];
-   for(let i=0;i<cols*rows;i++){const r={x:x0+(i%cols)*(cw+12),y:y0+Math.floor(i/cols)*(ch+10),w:cw,h:ch};const e=rect(r,'cel',g,4);const j=pick.indexOf(i);if(j>=0)E.fl[j]=e}
-   E.fl.forEach(e=>e.setAttribute('class','cel s'));
-   tx(M?L.W-16:L.W/2,M?L.note.y-15:L.note.y,'逻辑数据块分布在不同位置',f.sm,'ink2-t',M?'end':'middle',g);
-   tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
+  {
+   const g = grp('5');
+   const x = M ? 28 : 135, w = M ? 424 : 690;
+   const rows = [['参考块 A', ''], ['新块 A′', 'r']];
+   const inputs = rows.map(([title, color], i) => {
+    const y = 48 + i * 94;
+    tx(x, y, title, f.lbl, 'lbl b7', 'start', g);
+    for (let j = 0; j < 8; j++) {
+     rect({x: x + j * (M ? 45 : 55), y: y + 21, w: M ? 40 : 48, h: 29},
+       'cel ' + (j === 4 && color ? color : 's'), g, 3);
+    }
+    return P(x + 4.5 * (M ? 45 : 55) - 3, y + 50);
+   });
+   const sy = M ? 289 : 263, sw = M ? w : (w - 32) / 2;
+   E.matches = [
+    {name: '强指纹', result: '不匹配', kind: 'rose-t'},
+    {name: '相似指纹', result: '找到候选 A', kind: 'sage-t'}
+   ].map((m, i) => {
+    const panel = {x: x + (M ? 0 : i * (sw + 32)), y: sy + (M ? i * 123 : 0), w: sw, h: 76};
+    const center = C(panel);
+    const source = inputs[1];
+    const bendX = M && i ? 465 : source.x;
+    const path = [source, P(source.x, sy - 28), P(bendX, sy - 28),
+      P(bendX, panel.y - 12), P(center.x, panel.y - 12), P(center.x, panel.y)];
+    line(path, 'thin', g);
+    rect(panel, 'box soft', g);
+    tx(center.x, panel.y + 21, m.name, f.lbl, 'lbl b7', 'middle', g);
+    return {...m, path, text: tx(center.x, panel.y + 53, m.result, f.sm, 'st ' + m.kind, 'middle', g)};
+   });
+   tx(L.note.x, L.note.y, '示意，不代表实测数字', f.note, 'ink3-t', 'start', g);
+  }
+  {
+   const g = grp('6'), x = M ? 28 : 140, y = M ? 76 : 65;
+   const size = M ? 35 : 49, gap = 5;
+   const series = (px, py, n, changed = -1, kind = 's') =>
+     Array.from({length: n}, (_, i) => rect({x: px + i * (size + gap), y: py, w: size, h: 28},
+       'cel ' + (i === changed ? 'r' : kind), g, 3));
+   tx(x, y - 20, '参考块 A', f.lbl, 'lbl b7', 'start', g);
+   series(x, y, 8);
+   tx(x, y + 58, '新块 A′', f.lbl, 'lbl b7', 'start', g);
+   series(x, y + 78, 8, 4);
+   const center = x + 4 * (size + gap) + size / 2;
+   const resultY = M ? 323 : 281;
+   const caption = M ? [x, resultY + 132] : [x + 420, resultY];
+   tx(x, resultY - 19, '普通压缩', f.lbl, 'lbl b7', 'start', g);
+   tx(caption[0], caption[1] - 19, '差异 + 引用', f.lbl, 'lbl b7', 'start', g);
+   const target = P(caption[0] + size / 2, caption[1] + 14);
+   const bendY = resultY - 55;
+   E.delta = {
+    path: [P(center, y + 106), P(center, bendY),
+      P(M ? 445 : 894, bendY), P(M ? 445 : 894, target.y), target],
+    ordinary: series(x, resultY, 5),
+    parts: [...series(caption[0], caption[1], 1, 0), el('path', {
+     d: `M${caption[0] + size + 8} ${caption[1] + 14} h35 m-8 -6 l8 6 -8 6`, class: 'ln ok'
+    }, g), tx(caption[0] + size + 57, caption[1] + 14, 'A', f.sm, 'st sage-t', 'middle', g)],
+    status: tx(caption[0], caption[1] + 55, '本例选参考字典', f.sm, 'st sage-t', 'start', g)
+   };
+   line(E.delta.path, 'thin dash', g);
+   tx(L.note.x, L.note.y, '示意，不代表实测数字', f.note, 'ink3-t', 'start', g);
+  }
+  {
+   const g = grp('7');
+   E.gains = ['采用相似性压缩', '绕过相似性压缩'].map((title, i) => {
+    const x = M ? 28 : 42 + i * 455;
+    const y = M ? 72 + i * 226 : 106;
+    const w = M ? 424 : 420, h = M ? 174 : 224;
+    const statusY = y + (M ? 133 : 169);
+    rect({x, y, w, h}, 'box soft', g);
+    tx(x + 20, y + 31, '近期写入节省的空间', f.lbl, 'lbl b7', 'start', g);
+    rect({x: x + 20, y: y + 61, w: w - 40, h: 16}, 'track', g, 4);
+    const bar = rect({x: x + 20, y: y + 61, w: 0, h: 16}, 'fill ' + (i ? 'rose' : 'sage'), g, 4);
+    tx(x + 20, y + 101, i ? '较低' : '较高', f.sm, 'ink2-t', 'start', g);
+    return {bar, w: w - 40, use: tx(x + 20, statusY, title, f.lbl, 'st ' + (i ? 'rose-t' : 'sage-t'), 'start', g)};
+   });
+   tx(L.note.x, L.note.y, '示意，不代表实测数字', f.note, 'ink3-t', 'start', g);
+  }
  },
  modes:[]
 };
 /* 第 1 步：6 块依次走过「算指纹」，查表后去「已存数据」或「只记指针」 */
-SCENE.modes[0]={enter(S){S.v.b=SEQ1.map(k=>pk(COL[k]));S.v.q=dot('',6)},
+SCENE.modes[0]={enter(S){S.v.b=SEQ1.map(k=>pk(COL[k]))},
  frame(t,S){const E=E_(),L=L_(),s=L.s1,M=L.mobile,per=10,u=t%per,fa=loopFade(u,per);const fp=C(s.fp);let seen=[0,0,0],stored=0,written=0,msg=null;
   E.t1.forEach(r=>r.style.opacity=0.12);
   SEQ1.forEach((k,i)=>{const b=S.v.b[i],ts=0.4+i*1.4,src=E.in1[i];const isNew=!seen[k];const fp=C(s.fp);
@@ -179,16 +227,8 @@ SCENE.modes[1]={frame(t){const E=E_(),per=7,u=t%per,fa=loopFade(u,per);
     if(on&&bad)again=o.gs});
    if(u>3.8){const en=window.SS_LANG==='en';settx(o.res,'','st rose-t');o.res.textContent=en?'Stored again: '+again+(again===1?' cell':' cells'):'要再存 '+again+' 格';o.res.style.opacity=fa;
      o.tb.textContent=en?'Fingerprint table: '+nb+' rows':'指纹表 '+nb+' 行';o.tb.style.opacity=fa}else{o.res.style.opacity=0;o.tb.style.opacity=0}})}};
-/* 第 3 步 */
-SCENE.modes[2]={enter(S){S.v.a=[pk(),pk()];S.v.tr=E_().s3.map(o=>{const r=el('rect',{x:o.tslot.x-13,y:o.tslot.y-11,width:26,height:22,rx:3,class:'pkt'},E_().pk);S.items.push(r);return r});
-  S.v.sr=E_().s3.map(o=>{const r=el('rect',{x:o.sslot.x-13,y:o.sslot.y-11,width:26,height:22,rx:3,class:'pkt'},E_().pk);S.items.push(r);return r})},
- frame(t,S){const E=E_(),per=8,u=t%per,fa=loopFade(u,per);
-  E.s3.forEach((o,k)=>{const ts=0.4+k*2.6;const r=run(S.v.a[k],o.path.concat([o.sslot]),u,ts,1.2,{post:0});if(r>=0&&r<=1)S.v.a[k].style.opacity=fa;
-   const done=u>ts+1.2;S.v.tr[k].style.opacity=done?fa:0;S.v.sr[k].style.opacity=done?fa:0;
-   settx(o.msg,k&&done?'查不到：再存一份':'','st rose-t');o.msg.style.opacity=fa});
-  E.s3msg.style.opacity=u>5.6?fa:0}};
-/* 第 4 步：CNode 1 写 A（表里没有，存下），CNode 3 写 A（查到，只记指针） */
-SCENE.modes[3]={enter(S){S.v.a=pk();S.v.b=pk();S.v.q=dot('ok',7)},
+/* 第 3 步：CNode 1 写 A（表里没有，存下），CNode 3 写 A（查到，只记指针） */
+SCENE.modes[2]={enter(S){S.v.a=pk();S.v.b=pk();S.v.q=dot('ok',7)},
  frame(t,S){const E=E_(),L=L_(),s=L.s4,h=E.h4,per=9,u=t%per,fa=loopFade(u,per);const ax=C(h.a).x,bx=h.bx,cy=s.cny+s.cnh/2,dx=s.cnw/2-(L.mobile?16:26);
   const p1=[P(s.cn[0],s.cny+s.cnh),P(s.cn[0],s.fab),P(ax,s.fab),P(ax,h.a.y+60)],p1b=[P(ax,h.a.y+60),P(ax,s.fab),P(bx,s.fab),P(bx,h.b.y+h.b.h*0.65)];
   E.cn4.forEach(c=>c.setAttribute('class','box'));
@@ -206,8 +246,8 @@ SCENE.modes[3]={enter(S){S.v.a=pk();S.v.b=pk();S.v.q=dot('ok',7)},
   if(u>ts+2.6)S.v.b.setAttribute('transform',`translate(${s.cn[2]+dx} ${cy}) scale(0.4)`);
   if(u<4)settx(E.m4,u>0.3?'CNode 1 写入：表里没有，存下':'','st slate-t');else settx(E.m4,u>ts+2.6?'CNode 3 写入：查到了，只记指针':'','st sage-t');E.m4.style.opacity=fa;
   E.realm.style.opacity=u>ts+2.8?fa:0}};
-/* 第 5 步 */
-SCENE.modes[4]={enter(S){S.v.p=pk();S.v.a=dot('ok',7)},
+/* 第 4 步 */
+SCENE.modes[3]={enter(S){S.v.p=pk();S.v.a=dot('ok',7)},
  frame(t,S){const E=E_(),L=L_(),s=L.s5,M=L.mobile,per=9.5,u=t%per,fa=loopFade(u,per);const y1=C(s.cli).y;
   const a=[P(s.cli.x+s.cli.w,y1),P(s.scm.x+20,y1)];
   let rest;if(!M)rest=[P(s.scm.x+s.scm.w,y1),C(s.dd),C(s.cp),P(s.q.x+20,y1)];else{const y2=C(s.dd).y;rest=[P(C(s.scm).x,s.scm.y+s.scm.h),P(C(s.scm).x,s.scm.y+s.scm.h+24),P(C(s.dd).x,s.scm.y+s.scm.h+24),C(s.dd),C(s.cp),P(s.q.x+20,y2)]}
@@ -217,15 +257,36 @@ SCENE.modes[4]={enter(S){S.v.p=pk();S.v.a=dot('ok',7)},
   settx(E.ack5,u>1.4?'确认':'','st sage-t');E.ack5.style.opacity=fa;
   E.b5.dd.setAttribute('class','box '+(u>2.4&&u<3.1?'on':''));E.b5.cp.setAttribute('class','box '+(u>3.1&&u<3.7?'on':''));
   E.st5.forEach((o,k)=>{o.parts.forEach((p,i)=>{const v=sm(ramp(u,4.4+i*0.5,4.8+i*0.5));p.r.setAttribute('width',(p.len*v).toFixed(1));if(p.pad){p.pad.setAttribute('width',(p.padw*ramp(u,4.8+i*0.5,5.0+i*0.5)).toFixed(1))}});o.end.style.opacity=ramp(u,5.8,6.1)*fa;o.parts.forEach(p=>{p.r.style.opacity=fa;if(p.pad)p.pad.style.opacity=fa*0.35})})}};
-/* 第 6 步：硬盘磁头逐个寻道，闪存一口气读回 */
-SCENE.modes[5]={frame(t){const E=E_(),per=9,u=t%per,fa=loopFade(u,per),c=E.hd.c,R=E.hd.R;
-  let nA=0;const seek=1.2;const idx=Math.min(5,Math.floor(Math.max(0,u-0.4)/seek));
-  E.hdDots.forEach((d,i)=>{const got=u>0.4+(i+1)*seek-0.2;if(got&&i<6)nA++;d.setAttribute('class','dot '+(got?'ok':''))});
-  nA=Math.min(6,nA);
-  const tgt=E.hdPts[idx],prev=E.hdPts[Math.max(0,idx-1)],k=sm(ramp(u-0.4-idx*seek,0,0.7));const p=P(prev.x+(tgt.x-prev.x)*k,prev.y+(tgt.y-prev.y)*k);
-  E.hdArm.setAttribute('x2',p.x.toFixed(1));E.hdArm.setAttribute('y2',p.y.toFixed(1));
-  let nB=0;E.fl.forEach((e,i)=>{const got=u>0.5+i*0.18;if(got)nB++;e.setAttribute('class','cel '+(got?'g':'s'))});
-  E.s6.a.cnt.textContent=H.T('已读回')+' '+nA+' / 6';E.s6.b.cnt.textContent=H.T('已读回')+' '+nB+' / 6';E.s6.a.cnt.style.opacity=fa;E.s6.b.cnt.style.opacity=fa}};
+SCENE.modes[4] = {
+ enter(S) { S.v.dots = [dot('rose'), dot('ok')]; },
+ frame(t, S) {
+  const u = t % 6;
+  E_().matches.forEach((match, i) => {
+   const delay = 0.6 + i * 1.15;
+   run(S.v.dots[i], match.path, u, delay, 0.8, {post: 0});
+   match.text.style.opacity = ramp(u, delay + 0.8, delay + 1) * loopFade(u, 6);
+  });
+ }
+};
+SCENE.modes[5] = {
+ enter(S) { S.v.cell = pk('rose'); },
+ frame(t, S) {
+  const u = t % 6, d = E_().delta, fade = loopFade(u, 6);
+  run(S.v.cell, d.path, u, 1.1, 1.45, {post: 0});
+  d.ordinary.forEach((cell, i) => cell.style.opacity = ramp(u, 0.6 + i * 0.2, 0.85 + i * 0.2) * fade);
+  [...d.parts, d.status].forEach(el => el.style.opacity = ramp(u, 2.55, 2.8) * fade);
+ }
+};
+SCENE.modes[6] = {
+ frame(t) {
+  const u = t % 7, fade = loopFade(u, 7);
+  E_().gains.forEach(({bar, w, use}, i) => {
+   bar.setAttribute('width', String(w * (i ? 0.22 : 0.77) * sm(ramp(u, 0.3, 1.8))));
+   bar.style.opacity = fade;
+   use.style.opacity = ramp(u, 1.8, 2.2) * fade;
+  });
+ }
+};
 return SCENE;
 }
 
@@ -235,11 +296,9 @@ function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-'+ID);host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class',ID+'-scene');svg.setAttribute('role','img');host.appendChild(svg);
-const btn=document.createElement('button');btn.className='ssa-tgl';btn.type='button';btn.hidden=true;host.appendChild(btn);
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const mq=matchMedia('(max-width: 640px)');
-const qs=new URLSearchParams(location.search);
-let L=null,E={},S={items:[],v:{}},step=0,T0=0,raf=0,paused=!!opts.paused,pausedAt=0,dead=false,tgl=false;
+let L=null,E={},S={items:[],v:{}},step=0,T0=0,raf=0,paused=!!opts.paused,pausedAt=0,dead=false;
 /* 文字：中文原样，英文取 EN；手机版放不下时取 ENM 的短写法 */
 function T(s){if(lang()!=='en')return s;if(L&&L.mobile&&ENM[s]!==undefined)return ENM[s];return EN[s]!==undefined?EN[s]:s}
 /* ---------- 画图小工具 ---------- */
@@ -269,48 +328,43 @@ function run(p,pts,t,t0,dur,opt){opt=opt||{};const u=(t-t0)/dur;
   if(u<=1){put(p,along(pts,sm(u)),1);return u}
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return 1.5}
 const loopFade=(u,per)=>u>per-0.45?clamp((per-u)/0.45,0,1):u<0.35?clamp(u/0.35,0,1):1;
-const H={el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
+const H={el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,E:()=>E,S:()=>S,L:()=>L};
 const SCENE=makeScene(H);
 /* ---------- 引擎 ---------- */
 function applyVis(){
   svg.setAttribute('data-step',step+1);
   svg.querySelectorAll('[data-show]').forEach(g=>g.classList.toggle('hid',!g.dataset.show.split(' ').includes(String(step+1))));
-  const TG=SCENE.toggle;btn.hidden=!(TG&&TG.step===step);
-  if(TG&&L.btn){btn.style.left=(L.btn.x/L.W*100)+'%';btn.style.top=(L.btn.y/L.H*100)+'%'}
 }
-function setBtn(){const TG=SCENE.toggle;if(!TG)return;btn.textContent='⇄ '+T(TG.label[tgl?1:0]);btn.setAttribute('aria-label',T(TG.aria)+T(TG.now[tgl?1:0]))}
 function newSim(){S.items.forEach(o=>o.remove());S={items:[],v:{}}}
 function loop(now){const t=Math.max(0,(now-T0)/1000);SCENE.modes[step].frame(t,S);raf=requestAnimationFrame(loop)}
-function go(){cancelAnimationFrame(raf);if(paused||dead||reduce)return;raf=requestAnimationFrame(loop)}
+function go(){cancelAnimationFrame(raf);if(paused||dead||reduced.matches)return;raf=requestAnimationFrame(loop)}
 function enter(i){
   step=i;cancelAnimationFrame(raf);newSim();
   SCENE.reset&&SCENE.reset(S);
   applyVis();
   const m=SCENE.modes[i];m.enter&&m.enter(S);
-  if(reduce){m.frame((SCENE.still||[])[i]||2,S);return}
+  if(reduced.matches){m.frame((SCENE.still||[])[i]||2,S);return}
   m.frame(0,S);T0=pausedAt=performance.now();go();
 }
-if(SCENE.toggle){const TG=SCENE.toggle;tgl=qs.get(TG.param)===TG.on;
-  btn.addEventListener('click',()=>{tgl=!tgl;setBtn();if(step===TG.step)enter(step)})}
 function build(){L=SCENE.layout(mq.matches);svg.innerHTML='';E={};svg.setAttribute('viewBox',`0 0 ${L.W} ${L.H}`);
   SCENE.build(L,E);E.pk=el('g',{class:'pklayer'});SCENE.over&&SCENE.over(L,E);
-  setBtn();svg.setAttribute('aria-label',T(ARIA));if(opts.onLayout)opts.onLayout(L.W/L.H,L.mobile)}
+  svg.setAttribute('aria-label',T(ARIA));if(opts.onLayout)opts.onLayout(L.W/L.H,L.mobile)}
 function rebuild(){build();enter(step)}
 mq.addEventListener('change',rebuild);
+reduced.addEventListener('change',rebuild);
 const onLang=()=>rebuild();document.addEventListener('ss-lang',onLang);
 build();enter(0);
 const ctrl={
   show(i){enter(Math.max(0,Math.min(SCENE.modes.length-1,i)))},
   pause(){if(paused)return;paused=true;cancelAnimationFrame(raf);pausedAt=performance.now()},
   resume(){if(!paused)return;paused=false;T0+=performance.now()-pausedAt;go()},
-  destroy(){dead=true;cancelAnimationFrame(raf);mq.removeEventListener('change',rebuild);document.removeEventListener('ss-lang',onLang);host.innerHTML='';host.classList.remove('ssa-'+ID)},
+  destroy(){dead=true;cancelAnimationFrame(raf);mq.removeEventListener('change',rebuild);reduced.removeEventListener('change',rebuild);document.removeEventListener('ss-lang',onLang);host.innerHTML='';host.classList.remove('ssa-'+ID);delete host.__anim},
   ratio(){return L.W/L.H},
-  step(){return step},
-  sim(){return {step,t:(performance.now()-T0)/1000,v:S.v,n:S.items.length,tgl}}
+  step(){return step}
 };
 host.__anim=ctrl;
 return ctrl;
 }
 window.SSAnim=window.SSAnim||{};
-window.SSAnim[ID]={steps:6,mount:mount};
+window.SSAnim[ID]={steps:7,mount:mount};
 })();

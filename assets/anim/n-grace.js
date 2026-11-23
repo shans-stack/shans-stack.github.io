@@ -43,16 +43,12 @@
       caption: ["GH200 · 芯片间共享地址空间","GH200 · Shared Address Space"]
     },
     {
-      title: ["Grace 与 Vera 的代际位置","Grace and Vera Across Generations"],
+      title: ["采用 Grace 的整柜系统","Rack-Scale Systems That Use Grace"],
       panels: [
-        [["GB200","GB200"],["Blackwell","Blackwell"],[163,85,236],[88,75,160],"primary"],
-        [["Grace CPU","Grace CPU"],["Neoverse V2","Neoverse V2"],[637,85,236],[272,75,160],"plain",false],
-        [["GB300","GB300"],["Blackwell Ultra","Blackwell Ultra"],[163,178,236],[88,186,160],"primary",false],
-        [["Grace CPU","Grace CPU"],["Neoverse V2","Neoverse V2"],[637,178,236],[272,186,160],"plain",false],
-        [["Vera Rubin","Vera Rubin"],["Rubin GPU","Rubin GPU"],[163,271,236],[88,297,160],"primary",false],
-        [["Vera CPU","Vera CPU"],["Olympus","Olympus"],[637,271,236],[272,297,160],"plain",false]
+        [["GB200 NVL72","GB200 NVL72"],["主机 CPU · Grace","Host CPU · Grace"],[237,179,248],[180,132,248],"plain"],
+        [["GB300 NVL72","GB300 NVL72"],["主机 CPU · Grace","Host CPU · Grace"],[563,179,248],[180,280,248],"plain"]
       ],
-      links: [[0,1,"data",0.2],[2,3,"data",1.15],[4,5,"data",2.1]]
+      links: []
     }
   ];
 

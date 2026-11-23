@@ -22,3 +22,6 @@
 @media(640px < width <=720px){
   body.topic-n-dgxc .mhost{aspect-ratio:var(--ar)}
 }
+@media(max-width:440px){
+  body.topic-n-dgxc .hd .wrap{flex-wrap:wrap;gap:0 8px}
+}

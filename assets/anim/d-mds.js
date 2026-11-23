@@ -53,6 +53,21 @@
     ]
   },
   {
+    "shape":"fan","note":["MDS 返回布局，供后续读取定位对象","The MDS Returns the Layout for Later Reads"],"title":["打开文件时取得布局","Retrieving the Layout at Open"],
+    "nodes": [
+      {"title":["客户端","Client"],"detail":["打开文件","Open File"],"tone":"neutral"},
+      {"title":"MDS","detail":["回送布局","Returns Layout"],"tone":"meta"},
+      {"title":"OSS","detail":["尚未读取","Read Pending"],"tone":"idle"}
+    ],
+    "edges": [
+      {"from":0,"to":1,"tone":"meta"}
+    ],
+    "moves": [
+      {"edge":0,"start":0.25,"end":1.3,"mark":"","reverse":false,"stop":1},
+      {"edge":0,"start":1.35,"end":2.2,"mark":"","reverse":true,"stop":1}
+    ]
+  },
+  {
     "shape":"fan","note":["打开走元数据路径，内容经 OSS 返回","Open Uses MDS and File Data Returns via OSS"],"title":["打开与读取走不同路径","Separate Paths for Open and Read"],
     "nodes": [
       {"title":["客户端","Client"],"detail":["打开后读取","Open, Then Read"],"tone":"neutral"},
@@ -67,22 +82,6 @@
       {"edge":0,"start":0.25,"end":1.3,"mark":"","reverse":false,"stop":1},
       {"edge":0,"start":1.35,"end":2.2,"mark":"","reverse":true,"stop":1},
       {"edge":1,"start":2.55,"end":3.45,"mark":"","reverse":true,"stop":1}
-    ]
-  },
-  {
-    "shape":"fan","note":["同一个文件系统，多套元数据目标卷","One File System with Multiple Metadata Targets"],"title":["多个 MDT 承载同一目录树","A Single Directory Tree Across Multiple MDTs"],
-    "nodes": [
-      {"title":["EXAScaler 客户端","EXAScaler Client"],"detail":["统一目录树","One Directory Tree"],"tone":"neutral"},
-      {"title":"MDS / MDT0","detail":["根目录 /","Root /"],"tone":"meta"},
-      {"title":"MDS / MDT1","detail":["子目录 /logs","Subdirectory /logs"],"tone":"meta"}
-    ],
-    "edges": [
-      {"from":0,"to":1,"tone":"meta"},
-      {"from":0,"to":2,"tone":"meta"}
-    ],
-    "moves": [
-      {"edge":0,"start":0.3,"end":1.65,"mark":"","reverse":false,"stop":1},
-      {"edge":1,"start":1.1,"end":2.45,"mark":"","reverse":false,"stop":1}
     ]
   }
   ];

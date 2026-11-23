@@ -14,11 +14,9 @@
     "下联并发使上联前的队列增长": "Concurrent downlink arrivals build a queue at the uplink",
     "共享上联": "Shared uplink",
     "上联队列": "Uplink queue",
-    "同轨道经过一台 Leaf，跨轨道经过 Spine": "Same-rail traffic uses one leaf and cross-rail traffic uses a spine",
-    "GPU A 网卡": "GPU A NIC",
-    "GPU B 网卡": "GPU B NIC",
-    "同轨道": "Same rail",
-    "跨轨道": "Cross-rail"
+    "按 GPU 位置划分轨道": "Rail Grouping by GPU Position",
+    "轨道 A": "Rail A",
+    "轨道 B": "Rail B"
   };
   const T = label => window.SS_LANG === 'en' ? (EN[label] ?? label) : label;
   const NS = 'http://www.w3.org/2000/svg';
@@ -32,7 +30,6 @@
     host.replaceChildren(svg);
     let index = 0, frame = 0, elapsed = 0, last = null;
     let tracks, wires, packets, labels, width, height;
-    let cycle;
 
     function draw(tag, attrs, parent = labels) {
       const element = document.createElementNS(NS, tag);
@@ -91,7 +88,7 @@
     function animate(now) {
       if (last !== null) elapsed += Math.max(0, Math.min(.05, (now - last) / 1000));
       last = now;
-      paint(elapsed % cycle);
+      paint(elapsed % 6);
       frame = requestAnimationFrame(animate);
     }
 
@@ -120,9 +117,7 @@
       labels = draw('g', {}, svg);
       const p = (x, y, smallX, smallY) => mobile ? [smallX, smallY] : [x, y];
       const caption = (label, y = 304, smallY = 452) => text(p(450, y, 180, smallY), label);
-      cycle = 6;
       SCENES[index][1]({p, mobile, reduced, box, link, block, text, send, stream, still, caption,
-        loop(seconds) { cycle = seconds; },
         queue(center, options) { return queue(center, options, tracks, block); }});
       text([width / 2, height - 22], '示意，不代表实测数字', 'note');
       elapsed = 0;
@@ -224,25 +219,15 @@
         stream(uplink, {at: 1.6, duration: 1.2}, 4, .94);
       }
     }],
-    ['同轨道经过一台 Leaf，跨轨道经过 Spine', ({p, box, link, text, send, still, reduced, loop}) => {
-      const a1 = p(105, 100, 82, 84), a2 = p(105, 259, 278, 84);
-      const b1 = p(795, 100, 82, 419), b2 = p(795, 259, 278, 419);
-      const l1 = p(450, 100, 82, 251), l2 = p(450, 259, 278, 251);
-      const spine = p(450, 179, 180, 251);
-      const same = link([a1, l1, b1], 'green');
-      link([a2, l2, b2]);
-      link([l1, spine, l2], 'rail'); link([l2, b2], 'rail');
-      const cross = link([a1, l1, spine, l2, b2], 'track');
-      box(a1, 'GPU A 网卡', 134); box(a2, 'GPU B 网卡', 134); box(b1, 'GPU A 网卡', 134); box(b2, 'GPU B 网卡', 134);
-      box(l1, 'Leaf A', 80, 'green'); box(l2, 'Leaf B', 80); box(spine, 'Spine', 76);
-      text(p(105, 44, 180, 35), '服务器 A'); text(p(795, 44, 180, 469), '服务器 B');
-      text(p(260, 67, 82, 166), '同轨道'); text(p(555, 209, 180, 295), '跨轨道');
-      if (reduced) { still(same, .29); still(cross, .74, 'rail'); }
-      else {
-        loop(7);
-        send(same, {duration: 3.2});
-        send(cross, {at: 2.1, duration: 3.8, tone: 'rail'});
-      }
+    ['按 GPU 位置划分轨道', ({p, box, text}) => {
+      text(p(376, 74, 115, 94), '服务器 A');
+      text(p(626, 74, 261, 94), '服务器 B');
+      text(p(173, 143, 180, 163), '轨道 A');
+      text(p(173, 237, 180, 319), '轨道 B');
+      box(p(376, 143, 115, 210), 'NIC A', 118);
+      box(p(626, 143, 261, 210), 'NIC A', 118);
+      box(p(376, 237, 115, 366), 'NIC B', 118);
+      box(p(626, 237, 261, 366), 'NIC B', 118);
     }]
   ];
 

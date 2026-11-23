@@ -1,4 +1,4 @@
-/* 宽条带纠删码：动画区样式。由 assets/anim/v-wec.js 使用，只作用于 .v-wec 容器之内。
+/* 宽条带与本地可解码纠删码：动画区样式。由 assets/anim/v-wec.js 使用，只作用于 .v-wec 容器之内。
    颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
 .v-wec{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
 .v-wec .v-wec-scene{display:block;width:100%;height:auto;font-family:"Schibsted Grotesk","Noto Sans SC",system-ui,sans-serif}
@@ -46,9 +46,12 @@
 .v-wec .drive.bad{stroke:var(--rose);stroke-width:3;opacity:1}
 .v-wec .num{font-weight:700;font-variant-numeric:tabular-nums}
 .v-wec .sep{stroke:var(--rule);stroke-width:1.5}
-.v-wec .v-wec-btn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
-.v-wec .v-wec-btn[hidden]{display:block;opacity:0;pointer-events:none}
-@media (max-width:640px){.v-wec .v-wec-btn{font-size:14px;padding:6px 12px}}
+.v-wec .cell{fill:var(--slate);stroke:var(--card);stroke-width:1;transition:stroke .25s}
+.v-wec .cell.p{fill:var(--ochre)}
+.v-wec .cell.bad{fill:var(--card);stroke:var(--rose);stroke-width:2.5}
+.v-wec .cell.hl{stroke:var(--ink);stroke-width:2.5}
+.v-wec .cell.ok{stroke:var(--sage);stroke-width:3.5}
+.v-wec .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:4 3}
 
 @media(max-width:640px){
   body.present .stage:has(#animPres.v-wec){padding:12px}
@@ -57,3 +60,5 @@
   .stage:has(#animPres.v-wec) h2{font-size:23px;line-height:1.2}
   .stage:has(#animPres.v-wec) .desc{font-size:16px;line-height:1.35}
 }
+.v-wec .cell.read-rs{stroke:var(--rose);stroke-width:2}
+.v-wec .cell.read-local{stroke:var(--sage);stroke-width:2.5}

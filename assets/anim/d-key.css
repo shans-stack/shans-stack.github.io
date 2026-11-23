@@ -11,7 +11,6 @@
 .d-key-scene [data-tone="object"] { --tone: var(--l4); }
 .d-key-scene [data-tone="file"] { --tone: var(--l3); }
 .d-key-scene [data-tone="cache"] { --tone: var(--l5); }
-.d-key-scene [data-tone="parity"] { --tone: var(--l2); }
 .d-key-scene [data-tone="engine"] { --tone: var(--l6); }
 .d-key-scene [data-tone="fault"] { --tone: var(--l1); }
 .d-key-scene [data-tone="idle"] { --tone: var(--rule2); }
@@ -24,6 +23,7 @@
 }
 .d-key-scene [data-role="routes"] [data-role="arrow"] { stroke: var(--ink3); }
 .d-key-scene [data-role="routes"] [data-tone="idle"] { stroke-dasharray: 4 5; }
+.d-key-scene [data-role="routes"] [data-tone="cache"] { stroke: var(--l5); }
 .d-key-scene [data-role="routes"] [data-tone="fault"],
 .d-key-scene [data-role="routes"] [data-role="stop"] { stroke: var(--l1); }
 .d-key-scene [data-role="markers"] rect { fill: var(--tone); stroke: var(--surface); stroke-width: 1.5; }

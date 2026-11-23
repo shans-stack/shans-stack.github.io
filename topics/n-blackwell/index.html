@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/n-blackwell.css?v=27f02ea9">
+<link rel="stylesheet" href="../../assets/anim/n-blackwell.css?v=d7c24655">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -81,12 +81,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/n-blackwell.js?v=47e0b442"></script>
+<script src="../../assets/anim/n-blackwell.js?v=ea1ab73c"></script>
 <script>
 window.SS_TOPIC_CFG={
   "anim": "n-blackwell",
@@ -169,20 +169,16 @@ window.SS_TOPIC_CFG={
     },
     {
       "t": [
-        "GB200 NVL72 的整柜组成",
-        "Inside the GB200 NVL72 Rack"
+        "Blackwell GPU 用于 GB200 NVL72",
+        "Blackwell GPUs in GB200 NVL72"
       ],
       "d": [
-        "GB200 NVL72 在液冷整柜中用第五代 NVLink 把 72 颗 Blackwell GPU 接入同一互联域。",
-        "GB200 NVL72 uses fifth-generation NVLink to connect 72 Blackwell GPUs in one domain within a liquid-cooled rack."
+        "GB200 NVL72 是采用 Blackwell GPU 的整柜系统。",
+        "GB200 NVL72 is a rack-scale system that uses Blackwell GPUs."
       ],
       "b": [
-        [
-          "<p>以 DGX GB200 为例，计算托盘装载含 Grace 和 Blackwell GPU 的计算板，独立的交换托盘经背部无源铜缆连接计算托盘。供电组件与液冷歧管分别负责供电和散热。NVLink 域为柜内 GPU 通信提供路径，跨柜通信另用集群网络。</p>"
-        ],
-        [
-          "<p>In DGX GB200, compute trays house boards with Grace CPUs and Blackwell GPUs. Separate switch trays connect to the compute trays through a passive copper backplane. Power components and liquid-cooling manifolds provide power and cooling. The NVLink domain carries GPU traffic within the rack, and a separate cluster network connects racks.</p>"
-        ]
+        [],
+        []
       ]
     }
   ]
@@ -206,6 +202,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

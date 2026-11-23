@@ -21,7 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/topo.css?v=81269071">
+<link rel="stylesheet" href="../../assets/anim/topo.css?v=eab71460">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -54,8 +54,8 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li data-en="IETF RFC 7938, Use of BGP for Routing in Large-Scale Data Centers">IETF RFC 7938，Use of BGP for Routing in Large-Scale Data Centers</li>
-      <li data-en="Cisco AI POD for Enterprise Training and Fine-Tuning Design Guide, Rail-optimized Design Options">Cisco AI POD for Enterprise Training and Fine-Tuning Design Guide，Rail-optimized Design Options</li>
+      <li data-en="&lt;a href=&quot;https://www.rfc-editor.org/rfc/rfc7938.html&quot;&gt;IETF RFC 7938 · Use of BGP for Routing in Large-Scale Data Centers&lt;/a&gt;"><a href="https://www.rfc-editor.org/rfc/rfc7938.html">IETF RFC 7938 · Use of BGP for Routing in Large-Scale Data Centers</a></li>
+      <li data-en="&lt;a href=&quot;https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/cisco_ai_pod_for_training_design.html&quot;&gt;Cisco AI POD for Enterprise Training and Fine-Tuning Design Guide · Rail-Optimized Design Options&lt;/a&gt;"><a href="https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/cisco_ai_pod_for_training_design.html">Cisco AI POD 设计指南 · 轨道优化接线</a></li>
     </ul></div>
   </div>
 </main>
@@ -77,12 +77,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/topo.js?v=81eae442"></script>
+<script src="../../assets/anim/topo.js?v=2c111a56"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "topo",
@@ -153,34 +153,45 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>超额订阅比是某层面向服务器方向的总链路容量与上行总链路容量之比。下联可同时送入的流量超过上联可同时送出的流量时，跨 Leaf 的数据会在上联出口排队。服务器之间留在同一台 Leaf 的流量使用本地转发路径。</p>"
+     "<p>超额订阅比是某层面向服务器方向的总链路容量与上行总链路容量之比。下联可同时送入的流量超过上联可同时送出的流量时，跨 Leaf 的数据会在上联出口排队。服务器之间留在同一台 Leaf 的流量使用本地转发路径，例如接在同一台 Leaf 的 GPU 轨道流量。</p>"
     ],
     [
-     "<p>The oversubscription ratio compares the aggregate capacity toward servers with the aggregate uplink capacity. When the downlinks can offer more traffic than the uplinks can carry, cross-leaf traffic can queue on the uplink egress. Traffic between servers on the same leaf uses the local switching path.</p>"
+     "<p>The oversubscription ratio compares the aggregate capacity toward servers with the aggregate uplink capacity. When the downlinks can offer more traffic than the uplinks can carry, cross-leaf traffic can queue on the uplink egress. Traffic between servers on the same leaf uses the local switching path, including GPU rail traffic confined to that leaf.</p>"
     ]
    ]
   },
   {
    "t": [
-    "轨道为同组 GPU 缩短路径",
-    "Rails Shorten Paths Within GPU Groups"
+    "按 GPU 位置划分轨道",
+    "Rail Grouping by GPU Position"
    ],
    "d": [
-    "当同一轨道的 GPU 对应网卡接入同一台 Leaf 时，组内通信可在这台 Leaf 完成。",
-    "When NICs for GPUs on the same rail share a leaf, their traffic can stay on that switch."
+    "轨道优化按 GPU 位置分组，将不同服务器上同一位置的 GPU 所对应的网卡划入同一轨道。",
+    "Rail optimization groups network adapters serving GPUs in corresponding positions across servers into the same rail."
    ],
    "b": [
-    [
-     "<p>轨道优化按服务器上的 GPU 或网卡位置组织网络接线。GPU 是图形处理器，集群也用它执行并行计算。例如，两台服务器中对应 GPU 的网卡可以接入同一台 Leaf，形成一组轨道。落在同一台 Leaf 的通信走本地转发路径。在图示的接法中，接在不同 Leaf 的轨道之间通过 Spine 互通。</p>"
-    ],
-    [
-     "<p>Rail optimization aligns network connections with GPU or adapter positions in each server. A graphics processing unit (GPU) is also used for parallel computing in clusters. For example, the adapters serving corresponding GPUs in two servers can connect to the same leaf to form a rail. Traffic within a leaf uses its local switching path. In the layout shown, rails on different leaves communicate through the spine.</p>"
-    ]
+    [],
+    []
    ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

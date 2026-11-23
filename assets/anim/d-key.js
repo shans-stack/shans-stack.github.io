@@ -19,10 +19,18 @@
     [
       [
         [["租户", "Tenant", "engine", "", ""]],
-        [["子租户 A", "Subtenant A", "object", "", ""], ["子租户 B", "Subtenant B", "file", "", ""]],
+        [["子租户 A", "Subtenant A", "object", "", ""], ["子租户 B", "Subtenant B", "file", "管理委派", "Delegated admin"]],
         [["数据集 A", "Dataset A", "object", "", ""], ["数据集 B", "Dataset B", "file", "", ""]]
       ],
       [["a0", "b0", "object"], ["a0", "b1", "file", 170], ["b0", "c0", "object", 600], ["b1", "c1", "file", 770]],
+    ],
+    [
+      [
+        [["租户 A 请求", "Request from A", "object", "", ""], ["租户 A 请求", "Request from A", "object", "", ""]],
+        [["获准", "Authorized", "cache", "", ""], ["拒绝", "Denied", "fault", "", ""]],
+        [["键空间 A", "Keyspace A", "object", "记录 K", "Record K"], ["键空间 B", "Keyspace B", "idle", "未访问", "No access"]]
+      ],
+      [["a0", "b0", "object"], ["a1", "b1", "fault"], ["b0", "c0", "cache", 580], ["b1", "c1", "idle"]],
     ],
     [
       [
@@ -37,10 +45,17 @@
         [["节点 A", "Node A", "object", "片段 A", "Fragment A"], ["节点 B", "Node B", "file", "片段 B", "Fragment B"], ["节点 C", "Node C", "idle", "未参与", "Idle"]],
         [["客户端", "Client", "engine", "", ""]]
       ],
-      [["a0", "b0", "object"], ["a1", "b0", "file", 240]],
+      [["a0", "b0", "object"], ["a1", "b0", "file"]],
+    ],
+    [
+      [
+        [["S3", "S3", "object", "对象", "Objects"], ["POSIX", "POSIX", "file", "文件", "Files"], ["KV Cache", "KV Cache", "object", "推理缓存", "Inference"]],
+        [["租户键空间", "Tenant keyspace", "engine", "", ""]],
+        [["租户数据", "Tenant data", "engine", "QoS 资源份额", "QoS resource shares"]]
+      ],
+      [["a0", "b0", "object"], ["a1", "b0", "file", 200], ["a2", "b0", "object", 400], ["b0", "c0", "object", 1050]],
     ],
   ];
-  const title = [["键为数据提供逻辑标识", "A Key Gives Data a Logical Identifier"], ["租户标识进入键", "The Tenant Identifier Is Part of the Key"], ["租户范围可以分层", "Tenant Scopes Can Be Hierarchical"], ["键的哈希用于片段定位", "Key Hashes Help Locate Fragments"], ["定位后并行读取", "Parallel Fetch After Lookup"]];
   const note = ['示意，不代表实测数字', 'Illustrative, no measured figures'];
   const duration = 2900;
   const travel = 520;
@@ -75,10 +90,10 @@
       outcome = null;
       svg.replaceChildren();
       svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      svg.setAttribute('aria-label', title[index][lang] + '. ' + note[lang]);
+      svg.setAttribute('aria-label', window.SS_TOPIC_CFG.steps[index].d[lang] + ' ' + note[lang]);
       packets = [];
 
-      text(20, 28, 'Infinia', 'figure-title');
+      text(20, 28, lang ? 'Keys and Tenant Scopes' : '数据键与租户范围', 'figure-title');
       text(20, height - 19, note[lang], 'note');
       element('line', {x1: 20, y1: 51, x2: width - 20, y2: 51, 'data-role': 'rule'});
       element('line', {x1: 20, y1: height - 40, x2: width - 20, y2: height - 40, 'data-role': 'rule'});
@@ -184,7 +199,7 @@
     document.addEventListener('ss-lang', build);
     build();
     start();
-    return {
+    const control = {
       show(i) {
         index = Math.max(0, Math.min(scenes.length - 1, i));
         elapsed = 0;
@@ -199,11 +214,14 @@
         reduced.removeEventListener('change', motionChanged);
         document.removeEventListener('ss-lang', build);
         svg.remove();
+        delete host.__anim;
       },
       ratio,
       step: () => index,
     };
+    host.__anim = control;
+    return control;
   }
 
-  (window.SSAnim ||= {})['d-key'] = {steps: 5, mount};
+  (window.SSAnim ||= {})['d-key'] = {steps: 7, mount};
 })();

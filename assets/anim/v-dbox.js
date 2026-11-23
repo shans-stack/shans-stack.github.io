@@ -1,4 +1,4 @@
-/* DBox：内部没有单点的全闪存储箱：6 步动画（SVG，按时间写死的时间线，不依赖动画库）。
+/* DBox：内部没有单点的全闪存储箱：5 步图解（SVG，按时间写死的时间线，不依赖动画库）。
    接口同 assets/anim/rdma.js：
      var a = SSAnim['v-dbox'].mount(容器元素, {paused:false, onLayout:function(宽高比, 是否手机版){}});
      a.show(i) 切到第 i 步（0 起）并从头播放；a.pause() / a.resume()；a.destroy()；a.ratio()；a.step()
@@ -7,9 +7,9 @@
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
    样式在 assets/anim/v-dbox.css，全部限定在 .ssa-v-dbox 容器之内。 */
 (function(){
-var EN={"NVMe-oF 网络": "NVMe-oF network", "PCIe 交换芯片": "PCIe switch", "PCIe 交换": "PCIe switch", "只转发": "Forward only", "归 DNode A": "Owned by DNode A", "归 DNode B": "Owned by DNode B", "改归 DNode A": "Moved to DNode A", "改归 DNode B": "Moved to DNode B", "改接中": "Remapping", "一条条带：每一片落在不同的盘上": "One stripe: every piece on a different drive", "少量 SCM 盘做写缓冲，大量 QLC 盘长期存数据": "A few SCM drives buffer writes; many QLC drives hold the data long term", "CNode 里计算，DNode 只转发": "CNodes compute; DNodes only forward", "两个 DNode 同时在线": "Both DNodes online", "DNode B 在线": "DNode B online", "DNode B 下线，通道改接到 DNode A": "DNode B offline; its lanes move to DNode A", "全部盘经 DNode A 照常读写": "Every drive still served through DNode A", "DNode 坏：盘一块不少": "A DNode fails: no drive is lost", "盘坏：只少这一块": "A drive fails: only that drive is lost", "CNode 切片、算校验（赭黄边），每片放一块盘": "The CNode slices the data and adds parity (ochre edge), one piece per drive", "八片落在八块不同的盘上": "Eight pieces on eight different drives", "坏一块盘：这条条带只少一片": "One drive fails: the stripe loses one piece", "VAST DBox：两个 DNode 经 PCIe 交换芯片各管一半盘，一个坏了另一个接管，一次故障最多带走一块盘": "VAST DBox: two DNodes each serve half the drives through a PCIe switch; if one fails the other takes over, and one fault takes out at most one drive"};
+var EN={"NVMe-oF 网络": "NVMe-oF network", "PCIe 交换芯片": "PCIe switch", "PCIe 交换": "PCIe switch", "只转发": "Forward only", "归 DNode A": "Owned by DNode A", "归 DNode B": "Owned by DNode B", "改归 DNode A": "Moved to DNode A", "改归 DNode B": "Moved to DNode B", "改接中": "Remapping", "一条条带：每一片落在不同的盘上": "One stripe: every piece on a different drive", "少量 SCM 盘做写缓冲，大量 QLC 盘长期存数据": "A few SCM drives buffer writes; many QLC drives hold the data long term", "CNode 里计算，DNode 只转发": "CNodes compute; DNodes only forward", "两个 DNode 同时在线": "Both DNodes online", "DNode B 在线": "DNode B online", "DNode B 下线，通道改接到 DNode A": "DNode B offline; its lanes move to DNode A", "全部盘经 DNode A 照常读写": "Every drive still served through DNode A", "DNode 坏：盘一块不少": "A DNode fails: no drive is lost", "盘坏：只少这一块": "A drive fails: only that drive is lost", "CNode 切片、算校验（赭黄边），每片放一块盘": "The CNode slices the data and adds parity (ochre edge), one piece per drive", "八片落在八块不同的盘上": "Eight pieces on eight different drives", "坏一块盘：这条条带只少一片": "One drive fails: the stripe loses one piece", "DBox：两个 DNode 经 PCIe 交换芯片接入盘，失效时切换访问路径": "DBox: two DNodes attach drives through a PCIe switch, with access path failover"};
 var ENM={"少量 SCM 盘做写缓冲，大量 QLC 盘长期存数据": "Few SCM drives buffer writes; QLC holds the data", "CNode 切片、算校验（赭黄边），每片放一块盘": "Slices + parity (ochre), one per drive"};
-var ARIA="VAST DBox：两个 DNode 经 PCIe 交换芯片各管一半盘，一个坏了另一个接管，一次故障最多带走一块盘";
+var ARIA="DBox：两个 DNode 经 PCIe 交换芯片接入盘，失效时切换访问路径";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
 function mount(host,opts){
@@ -48,28 +48,26 @@ function cls(o,c,on){o.el.classList.toggle(c,!!on)}
 /* DBox：两个 DNode、PCIe 交换芯片、一次故障最多带走一块盘 */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const SCENE={
- still:[1.8,1.8,2.6,5.0,2.2,6.0],
+ still:[1.8,1.8,2.6,5.0],
  layout(mobile){
   if(!mobile)return {W:960,H:494,mobile:false,f:{lbl:20,sm:17,cap:18},pw:24,ph:18,dr:7,sp:320,
    cn:{cxs:[240,480,720],w:150,h:50,y:16},netY:98,netX:[100,860],netLbl:{x:860,y:82,a:'end'},
    db:{x:100,y:124,w:760,h:324},ttl:{x:118,y:146},
    dn:{cxs:[285,565],w:160,h:52,y:160},
    sw:{x:140,y:250,w:570,h:40},swLbl:{x:722,y:270,a:'start',s:'PCIe 交换芯片'},
-   dr:{x0:150,w:46,gap:10,y:336,h:64},halfY:424,cap:{x:480,y:474},
-   ov:{cn:{cx:480,y:16,w:200,h:56},netY:110,boxes:[100,500],bw:360,by:150,bh:200,dnW:120,dnH:38,dnDy:24,barDy:92,drW:34,drGap:10,drDy:110,drH:62,lblY:406}};
+   dr:{x0:150,w:46,gap:10,y:336,h:64},halfY:424,cap:{x:480,y:474}};
   return {W:480,H:466,mobile:true,f:{lbl:18,sm:17,cap:17},pw:20,ph:15,dr:6,sp:210,
    cn:{cxs:[82,240,398],w:130,h:44,y:10},netY:80,netX:[8,472],netLbl:{x:161,y:67,a:'middle'},
    db:{x:8,y:100,w:464,h:296},ttl:{x:20,y:118},
    dn:{cxs:[135,345],w:130,h:46,y:132},
    sw:{x:26,y:220,w:428,h:36},swLbl:{x:240,y:200,a:'middle',s:'PCIe 交换'},
-   dr:{x0:33,w:36,gap:6,y:290,h:56},halfY:370,cap:{x:240,y:438},
-   ov:{cn:{cx:240,y:10,w:160,h:44},netY:80,boxes:[8,246],bw:226,by:104,bh:176,dnW:90,dnH:32,dnDy:26,barDy:70,drW:22,drGap:6,drDy:84,drH:52,lblY:304}};
+   dr:{x0:33,w:36,gap:6,y:290,h:56},halfY:370,cap:{x:240,y:438}};
  },
  build(){
   const f=L.f;
   const xm=(c,a,b,p)=>{const g=el('g',{},p);[[-1,-1,1,1],[-1,1,1,-1]].forEach(([q,r,s,t])=>el('line',{x1:c.x+q*b,y1:c.y+r*a,x2:c.x+s*b,y2:c.y+t*a,class:'xmark'},g));g.style.opacity=0;return g};
-  /* ---- 放大的一台 DBox（第 1–5 步） ---- */
-  const g=grp('1 2 3 4 5');
+  /* ---- 放大的一台 DBox（第 1–4 步） ---- */
+  const g=grp('1 2 3 4');
   E.cn=L.cn.cxs.map(x=>({x:x-L.cn.w/2,y:L.cn.y,w:L.cn.w,h:L.cn.h}));
   E.cn.forEach(r=>line(P(r.x+r.w/2,r.y+r.h),P(r.x+r.w/2,L.netY),'',g));
   line(P(L.netX[0],L.netY),P(L.netX[1],L.netY),'',g);
@@ -84,40 +82,21 @@ const SCENE={
   E.drop=E.drx.map(x=>line(P(x,sw.y+sw.h),P(x,D.y),'',g));
   E.drs=E.drx.map((x,k)=>el('rect',{x:x-D.w/2,y:D.y,width:D.w,height:D.h,rx:6,class:'disk'+(k%5===0?' scm':'')},g));
   E.dn.forEach((r,j)=>{const c=C(r);E.dnB.push(box(r,g,'box',10));E.dnT.push(tx(c.x,c.y,'DNode '+'AB'[j],f.lbl,'lbl','middle',g));E.dnSub.push(tx(c.x,c.y+12,'只转发',f.sm,'slate-t st','middle',grp('2',g)));E.dnX.push(xm(c,r.h*0.32,r.w*0.2,g))});
-  E.drX=xm(P(E.drx[7],D.y+D.h/2),D.h*0.3,D.w*0.34,g);
   /* 第 1 步盘的类型标签 */
   const g1=grp('1',g);[0,5].forEach(k=>tx(E.drx[k],L.halfY,'SCM',f.sm,'ochre-t st','middle',g1));
   [[1,4],[6,9]].forEach(([a,b])=>tx((E.drx[a]+E.drx[b])/2,L.halfY,'QLC',f.sm,'ink3-t st','middle',g1));
-  /* 第 3–5 步归属标签 */
-  const g3=grp('3 4 5',g);E.half=[0,1].map(j=>tx(L.dn.cxs[j],L.halfY,'',f.sm,'st','middle',g3));
-  /* ---- 全景：一台 CNode、两台 DBox（第 6 步） ---- */
-  const O=L.ov,go=grp('6');E.go=go;
-  const oc={x:O.cn.cx-O.cn.w/2,y:O.cn.y,w:O.cn.w,h:O.cn.h};E.ocn=oc;
-  line(P(O.cn.cx,oc.y+oc.h),P(O.cn.cx,O.netY),'',go);line(P(L.netX[0],O.netY),P(L.netX[1],O.netY),'',go);
-  box(oc,go);tx(O.cn.cx,oc.y+oc.h/2,'CNode',f.lbl,'lbl b7','middle',go);
-  E.oDn=[];E.oDr=[];E.oDrx=[];E.oBar=[];
-  O.boxes.forEach((bx,b)=>{const r={x:bx,y:O.by,w:O.bw,h:O.bh};box(r,go,'box soft',14);tx(r.x+(L.mobile?10:14),r.y+(L.mobile?15:20),'DBox',f.sm,'ttl','start',go);
-   const cx=r.x+r.w/2+(L.mobile?20:0),dn={x:cx-O.dnW/2,y:r.y+O.dnDy,w:O.dnW,h:O.dnH};E.oDn.push(dn);
-   line(P(cx,O.netY),P(cx,dn.y),'',go);const barY=r.y+O.barDy;line(P(cx,dn.y+dn.h),P(cx,barY),'',go);
-   const tot=8*O.drW+7*O.drGap,xs=[];for(let k=0;k<8;k++)xs.push(r.x+(r.w-tot)/2+O.drW/2+k*(O.drW+O.drGap));
-   line(P(xs[0],barY),P(xs[7],barY),'',go);
-   E.oDr.push(xs.map(x=>{line(P(x,barY),P(x,r.y+O.drDy),'',go);return el('rect',{x:x-O.drW/2,y:r.y+O.drDy,width:O.drW,height:O.drH,rx:5,class:'disk'},go)}));
-   E.oDrx.push(xs);E.oBar.push(barY);
-   box(dn,go,'box',8);tx(cx,dn.y+dn.h/2,'DNode',f.sm,'lbl','middle',go)});
-  tx(L.W/2,O.lblY,'一条条带：每一片落在不同的盘上',f.sm,'ink2-t','middle',go);
-  E.oX=xm(P(E.oDrx[1][3],O.by+O.drDy+O.drH/2),O.drH*0.3,O.drW*0.4,go);
+  /* 第 3–4 步归属标签 */
+  const g3=grp('3 4',g);E.half=[0,1].map(j=>tx(L.dn.cxs[j],L.halfY,'',f.sm,'st','middle',g3));
   E.cap=tx(L.cap.x,L.cap.y,'',f.cap,'st','middle');
   /* 路线 */
   E.route=(i,d,j)=>{const c=C(E.cn[i]),dn=E.dn[j],x=dn.x+dn.w/2,sy=sw.y+sw.h/2,dx=E.drx[d];
    return [c,P(c.x,E.cn[i].y+E.cn[i].h),P(c.x,L.netY),P(x,L.netY),P(x,dn.y),C(dn),P(x,sw.y),P(x,sy),P(dx,sy),P(dx,sw.y+sw.h),P(dx,D.y+D.h/2)]};
-  E.oRoute=(b,d)=>{const c=P(O.cn.cx,oc.y+oc.h/2),dn=E.oDn[b],x=dn.x+dn.w/2,dx=E.oDrx[b][d];
-   return [c,P(c.x,oc.y+oc.h),P(c.x,O.netY),P(x,O.netY),P(x,dn.y),C(dn),P(x,E.oBar[b]),P(dx,E.oBar[b]),P(dx,O.by+O.drDy+O.drH/2)]};
  },
  reset(){
   svg.querySelectorAll('.ln').forEach(l=>l.classList.remove('lit','ok','dead','lA','lB'));
   svg.querySelectorAll('.disk').forEach(d=>{d.classList.remove('w','lit','off','bad');d.style.opacity=''});
   svg.querySelectorAll('.box').forEach(d=>d.classList.remove('on','ok','dead','hot'));
-  E.dnX.forEach(x=>x.style.opacity=0);E.drX.style.opacity=0;E.oX.style.opacity=0;E.cap.textContent='';E.cap.style.opacity=1;E.pk.style.opacity=1;
+  E.dnX.forEach(x=>x.style.opacity=0);E.cap.textContent='';E.cap.style.opacity=1;E.pk.style.opacity=1;
   E.dnT.forEach((t,j)=>{t.setAttribute('y',C(E.dn[j]).y);t.style.opacity=1});E.half.forEach(h=>h.textContent='');
  },
  modes:[]
@@ -162,26 +141,6 @@ SCENE.modes[3]={enter(){S.v.cb=1;cap('DNode B 在线','slate-t');own(A3);half(['
   stream(u,0.45,n=>{const tt=n*0.45;if(n%2){if(tt<1.2)return [(n>>1)%3,5+((n>>1)*3)%5,1];if(tt>moved_t())return [(n>>1)%3,5+((n>>1)*3)%5,0];return null}
    return [((n>>1)+1)%3,((n>>1)*2)%5,0]},2.6)}};
 function moved_t(){return 2.4+0.3+4*0.2+0.2}
-/* 第 5 步：两种故障轮流 */
-SCENE.modes[4]={enter(){S.v.cb=1},
- frame(t){const per=9,u=t%per,ph=u<4.5?0:1,v=u-ph*4.5;
-  owner(0,ph===0);owner(1,false);
-  own(ph===0?A3.map(()=>1):A3);
-  half(ph===0?['改归 DNode B','violet-t']:['归 DNode A','slate-t'],['归 DNode B','violet-t']);
-  E.drX.style.opacity=ph===1?1:0;E.drop[7].classList.toggle('dead',ph===1);E.drs[7].classList.toggle('bad',ph===1);E.drs[7].style.opacity=ph===1?0.45:'';
-  cap(ph===0?'DNode 坏：盘一块不少':'盘坏：只少这一块',ph===0?'sage-t':'rose-t');
-  E.pk.style.opacity=v>4.1?Math.max(0,(4.5-v)/0.4):v<0.3?v/0.3:1;
-  stream(v,0.42,n=>{const i=n%3,d=ph===0?(n*3)%10:[0,5,1,6,2,8,3,9,4,5][n%10];if(ph===1&&d===7)return null;return [i,d,ph===0?1:(d<5?0:1)]},2.6)}};
-/* 第 6 步：条带按盘来铺 */
-const P6=[[0,0],[1,1],[0,2],[1,3],[0,4],[1,5],[0,6],[1,7]];
-SCENE.modes[5]={enter(){S.v.p=P6.map((q,j)=>pk(j>=6?'par':''))},
- frame(t){const per=9,u=t%per,bad=u>5.6,ff=u>8.4?Math.max(0,(per-u)/0.6):1;
-  P6.forEach(([b,d],j)=>{const r=E.oRoute(b,d),t0=0.3+j*0.45,dd=Math.min(dur(r),1.8);const o=S.v.p[j];
-   if(u<t0+dd)run(o,r,u,t0,dd,0);else put(o,r[r.length-1],(bad&&b===1&&d===3?0.3:1)*ff);
-   E.oDr[b][d].classList.toggle('lit',u>t0+dd&&!(bad&&b===1&&d===3))});
-  E.oX.style.opacity=bad?ff:0;E.oDr[1][3].classList.toggle('bad',bad);
-  cap(u<0.3+7*0.45+1.8?'CNode 切片、算校验（赭黄边），每片放一块盘':bad?'坏一块盘：这条条带只少一片':'八片落在八块不同的盘上',bad?'rose-t':'slate-t');
-  E.cap.style.opacity=ff}};
 /* ---------- 引擎 ---------- */
 function applyVis(){
   svg.setAttribute('data-step',step+1);
@@ -223,7 +182,7 @@ host.__anim=ctrl;
 return ctrl;
 }
 window.SSAnim=window.SSAnim||{};
-window.SSAnim['v-dbox']={steps:7,mount:mount, figures: {
+window.SSAnim['v-dbox']={steps:5,mount:mount, figures: {
  "ceres-v2": [
   [
    [

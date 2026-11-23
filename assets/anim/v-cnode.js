@@ -1,4 +1,4 @@
-/* CNode：跑全部存储逻辑、自己不存数据的计算节点：6 步动画（SVG，按时间写死的时间线，不依赖动画库）。
+/* CNode：跑全部存储逻辑、自己不存数据的计算节点：6 步图解（SVG，按时间写死的时间线，不依赖动画库）。
    接口同 assets/anim/rdma.js：
      var a = SSAnim['v-cnode'].mount(容器元素, {paused:false, onLayout:function(宽高比, 是否手机版){}});
      a.show(i) 切到第 i 步（0 起）并从头播放；a.pause() / a.resume()；a.destroy()；a.ratio()；a.step()
@@ -49,7 +49,7 @@ function cls(o,c,on){o.el.classList.toggle(c,!!on)}
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const tw=(s,fs)=>[...s].reduce((a,c)=>a+(c.charCodeAt(0)>0x2e80?fs:fs*0.58),0);
 const SCENE={
- still:[1.6,1.6,4.2,2.0,2.4,6.0],
+ still:[1.6,4.2,2.0,2.4,6.0],
  layout(mobile){
   if(!mobile)return {W:960,H:470,mobile:false,f:{lbl:19,sm:17,cap:18,cn:21,chip:17},pw:24,ph:18,dr:7,sp:300,
    cl:{x:20,w:140,h:56,cs:[120,240,360]},busX:204,
@@ -153,15 +153,8 @@ SCENE.modes[0]={enter(){cap('协议、纠删码、数据缩减都在 CNode 上�
    if(u<arr)run(S.v.b[k],r,u,t0,d,0);else if(u<arr+1.6)put(S.v.b[k],E.core(E.cn[k]),1);else put(S.v.b[k],E.core(E.cn[k]),Math.max(0,1-(u-arr-1.6)/0.3));
    E.chips[k].forEach((c,j)=>c.r.classList.toggle('on',u>=arr+j*0.45&&u<arr+1.6));
    E.cnB[k].classList.toggle('on',u>=arr&&u<arr+1.6)})}};
-/* 第 2 步：自己不存数据，读要去 DBox 取 */
-const T2=[[0,0,3],[1,1,4],[2,0,5],[0,1,2],[1,0,4],[2,1,3]];
-SCENE.modes[1]={enter(){cap('数据都在 DBox 的盘上','slate-t');chips([['启动盘'],['没有数据盘','txt']]);S.v.b=pk()},
- frame(t){const per=3.2,k=Math.floor(t/per),u=t-k*per,[i,b,d]=T2[k%T2.length];
-  const r=rev(cat(E.toCN(i,i),E.toDr(i,b,d))),p=run(S.v.b,r,u,0.2,Math.min(dur(r),2.5));
-  E.drs.forEach((a,bb)=>a.forEach((x,dd)=>x.classList.toggle('lit',bb===b&&dd===d&&u<0.9)));
-  E['clB'+i].classList.toggle('ok',p>1)}};
-/* 第 3 步：写入落到两块 SCM，才确认 */
-SCENE.modes[2]={enter(){cap('Classic 双镜像示例：数据与元数据持久化后确认','sage-t');chips([['写入持久化']]);S.v.b=pk();S.v.c=[pk(),pk()];S.v.a=[dot('ok'),dot('ok'),dot('ok')]},
+/* 第 2 步：写入落到两块 SCM，才确认 */
+SCENE.modes[1]={enter(){cap('Classic 双镜像示例：数据与元数据持久化后确认','sage-t');chips([['写入持久化']]);S.v.b=pk();S.v.c=[pk(),pk()];S.v.a=[dot('ok'),dot('ok'),dot('ok')]},
  frame(t){const r0=E.toCN(1,1),d0=dur(r0)*1.2,r=[E.toDr(1,0,0),E.toDr(1,1,1)],d1=Math.max(dur(r[0]),dur(r[1]))*1.2;
   const t1=0.2+d0+0.35,t2=t1+d1,t3=t2+0.5,t4=t3+d1*0.8,t5=t4+0.2,per=t5+d0+1.6,u=t%per;
   if(u<0.2+d0)run(S.v.b,r0,u,0.2,d0,0);else put(S.v.b,E.core(E.cn[1]),u<t1?1:Math.max(0,1-(u-t1)/0.25));
@@ -169,21 +162,21 @@ SCENE.modes[2]={enter(){cap('Classic 双镜像示例：数据与元数据持久�
   r.forEach((rr,j)=>run(S.v.a[j],rev(rr),u,t3,d1*0.8,0.2));
   run(S.v.a[2],rev(r0),u,t5,d0,0.3);
   E.cnB[1].classList.toggle('on',u>0.2+d0&&u<t5);E.clB1.classList.toggle('ok',u>t5+d0&&u<per-0.3)}};
-/* 第 4 步：不缓存，读两遍都去盘上取 */
-SCENE.modes[3]={enter(){chips([['不缓存']]);S.v.q=dot();S.v.b=pk()},
+/* 第 3 步：不缓存，读两遍都去盘上取 */
+SCENE.modes[2]={enter(){chips([['不缓存']]);S.v.q=dot();S.v.b=pk()},
  frame(t){const r=cat(E.toCN(0,0),E.toDr(0,0,3)),d=dur(r),ph=0.3+d+0.25+d+0.7,per=2*ph+0.5,u=t%per,n=u<ph?0:1,v=u-n*ph;
   cap(n?'第 2 次读：照样去盘上取':'第 1 次读',n?'rose-t':'slate-t');
   run(S.v.q,r,v,0.3,d,0.15);run(S.v.b,rev(r),v,0.3+d+0.25,d,0.3);
   E.drs[0][3].classList.toggle('lit',v>0.3+d&&v<0.3+d+0.6);E.clB0.classList.toggle('ok',v>0.3+2*d+0.25&&v<ph)}};
-/* 第 5 步：任何一台都能接任何请求 */
+/* 第 4 步：任何一台都能接任何请求 */
 const T5=[[0,2],[1,0],[2,1]];
-SCENE.modes[4]={enter(){cap('三台 CNode 读到同一个文件','sage-t');chips(null);S.v.b=T5.map(()=>pk());E.drs[1][3].classList.add('lit')},
+SCENE.modes[3]={enter(){cap('三台 CNode 读到同一个文件','sage-t');chips(null);S.v.b=T5.map(()=>pk());E.drs[1][3].classList.add('lit')},
  frame(t){const per=5.2,u=t%per;
   T5.forEach(([c,k],j)=>{const r=cat(E.toCN(c,k),E.toDr(k,1,3)),t0=0.1+j*0.9,p=run(S.v.b[j],r,u,t0,Math.min(dur(r),2.6));
    const o=S.v.b[j],R=E.cn[k];E.cnB[k].classList.toggle('on',o.a>0.5&&o.x>=R.x&&o.x<=R.x+R.w&&o.y>=R.y&&o.y<=R.y+R.h)});
   E.drs[1][3].classList.toggle('w',u>2.6&&u<per-0.4)}};
-/* 第 6 步：坏了一台，地址漂走 */
-SCENE.modes[5]={enter(){S.v.cs=chips(k=>[['地址 '+(k+1)]]);S.v.b=pk();S.v.state=dot('ok');
+/* 第 5 步：坏了一台，地址漂走 */
+SCENE.modes[4]={enter(){S.v.cs=chips(k=>[['地址 '+(k+1)]]);S.v.b=pk();S.v.state=dot('ok');
   const c=S.v.cs[1][0],g=el('g',{},E.tagG);el('rect',{x:-c.w/2,y:-c.h/2,width:c.w,height:c.h,rx:7,class:'chip tag'},g);tx(0,0,'地址 2',L.f.chip,'lbl','middle',g);S.v.tag=g;
   const c3=S.v.cs[2][0],src=P(c.x+c.w/2,c.y+c.h/2),dst=L.mobile?P(c3.x+c3.w/2,c3.y+c3.h+8+c3.h/2):P(c3.x+c3.w+8+c.w/2,c3.y+c3.h/2);
   S.v.tp=[src,C(E.cn[1]),E.inPt(E.cn[1]),E.busPt(E.cn[1]),E.busPt(E.cn[2]),E.inPt(E.cn[2]),C(E.cn[2]),dst]},
@@ -240,7 +233,7 @@ host.__anim=ctrl;
 return ctrl;
 }
 window.SSAnim=window.SSAnim||{};
-window.SSAnim['v-cnode']={steps:7,mount:mount, figures: {
+window.SSAnim['v-cnode']={steps:6,mount:mount, figures: {
  "gen6": [
   [
    [

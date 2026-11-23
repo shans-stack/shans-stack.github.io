@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DPDK Networking in NeuralMesh · Shan's Stack</title>
-<meta name="description" content="NeuralMesh uses DPDK to access NIC queues from user space for cluster data traffic.">
+<title>DPDK Networking in NeuralMesh: Dedicated and Shared Cores · Shan's Stack</title>
+<meta name="description" content="NeuralMesh uses DPDK for backend data networking. Clients can use dedicated-core polling, shared-core DPDK, or kernel UDP.">
 <!-- share:start -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Shan's Stack">
-<meta property="og:title" content="DPDK Networking in NeuralMesh · Shan's Stack">
-<meta property="og:description" content="NeuralMesh uses DPDK to access NIC queues from user space for cluster data traffic.">
+<meta property="og:title" content="DPDK Networking in NeuralMesh: Dedicated and Shared Cores · Shan's Stack">
+<meta property="og:description" content="NeuralMesh uses DPDK for backend data networking. Clients can use dedicated-core polling, shared-core DPDK, or kernel UDP.">
 <meta property="og:url" content="https://shans-stack.github.io/topics/w-dpdk/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DPDK Networking in NeuralMesh · Shan's Stack">
-<meta name="twitter:description" content="NeuralMesh uses DPDK to access NIC queues from user space for cluster data traffic.">
+<meta name="twitter:title" content="DPDK Networking in NeuralMesh: Dedicated and Shared Cores · Shan's Stack">
+<meta name="twitter:description" content="NeuralMesh uses DPDK for backend data networking. Clients can use dedicated-core polling, shared-core DPDK, or kernel UDP.">
 <!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/w-dpdk.css?v=0f2e1621">
+<link rel="stylesheet" href="../../assets/anim/w-dpdk.css?v=808f4d73">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -40,8 +40,8 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="DPDK Networking in NeuralMesh">NeuralMesh 的 DPDK 网络</h1>
-        <p class="meta"><span data-en="5 steps · NIC queues, polling, UDP">5 步 · 网卡队列、轮询、UDP</span><span id="intalks"></span></p></div>
+      <div><h1 data-en="DPDK Networking in NeuralMesh: Dedicated and Shared Cores">NeuralMesh 的 DPDK 网络：独占核与共享核</h1>
+        <p class="meta"><span data-en="7 steps · DPDK, CPU allocation, and client network modes">7 步 · DPDK、CPU 分配与客户端网络模式</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -56,6 +56,8 @@
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/networking-in-wekaio&quot;&gt;WEKA Documentation · Networking&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/networking-in-wekaio">WEKA 文档 · 网络</a></li>
       <li data-en="&lt;a href=&quot;https://doc.dpdk.org/guides/prog_guide/ethdev/ethdev.html&quot;&gt;DPDK Project Documentation · Poll Mode Driver&lt;/a&gt;"><a href="https://doc.dpdk.org/guides/prog_guide/ethdev/ethdev.html">DPDK 项目文档 · 轮询模式驱动</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/mounting-filesystems&quot;&gt;WEKA Documentation · Mount Filesystems&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/mounting-filesystems">WEKA 文档 · 挂载文件系统</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/best-practice-guides/best-practices-for-weka-stateless-client-and-kubernetes&quot;&gt;WEKA Documentation · Best Practices for Stateless Clients and Kubernetes&lt;/a&gt;"><a href="https://docs.weka.io/best-practice-guides/best-practices-for-weka-stateless-client-and-kubernetes">WEKA 文档 · Kubernetes 与无状态客户端最佳实践</a></li>
       <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -78,12 +80,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-dpdk.js?v=f833ad81"></script>
+<script src="../../assets/anim/w-dpdk.js?v=732295fa"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "w-dpdk",
@@ -112,6 +114,24 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
+    "CPU 时间的分配",
+    "Allocating CPU Time"
+   ],
+   "d": [
+    "独占核为 WEKA 客户端预留 CPU，使用共享核时客户端与其他任务共同接受操作系统调度。",
+    "Dedicated cores reserve CPU resources for the WEKA client, while shared cores let the operating system schedule the client alongside other tasks."
+   ],
+   "b": [
+    [
+     "<p>独占指某个核心分配给特定工作。共享指多个任务可在同一组核心上轮流执行。是否独占影响客户端何时可获得处理网络 I/O 所需的 CPU 时间。</p>"
+    ],
+    [
+     "<p>A dedicated core is assigned to a specific workload. A shared set of cores can run different tasks at different times. The allocation affects when the client can get CPU time to handle network I/O.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
     "轮询接收队列",
     "Polling the Receive Queue"
    ],
@@ -121,10 +141,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>轮询是处理线程主动查看队列的方式。DPDK 的轮询模式驱动可在一次调用中取出一批就绪的包，分摊函数调用和设备交互的开销。图中的成组移动表示批量处理。</p>"
+     "<p>轮询是处理线程主动检查队列，即使暂时没有新包也继续检查。性能优先模式为轮询线程预留核心，因此应用在其他核心运行。驱动可一次取出一批就绪包，分摊函数调用与设备交互开销。</p>"
     ],
     [
-     "<p>Polling means that a processing thread checks the queue itself. A DPDK poll mode driver can collect a batch of ready packets in a single call, amortizing function calls and device interaction. The packets moving together in the figure represent a batch.</p>"
+     "<p>Polling means a thread repeatedly checks the queue, including when no new packets are waiting. Performance-optimized mode reserves cores for polling, leaving other cores for applications. The driver can collect a batch of ready packets to amortize function calls and device interaction.</p>"
     ]
    ]
   },
@@ -148,37 +168,57 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "DPDK 与 UDP 的关系",
-    "How DPDK and UDP Fit Together"
+    "共享核上的 DPDK",
+    "DPDK on Shared Cores"
    ],
    "d": [
-    "WEKA 的 DPDK 路径可以承载基于 UDP 的 WEKA 协议，客户端的内核 UDP 模式则经 Linux 网络栈收发。",
-    "The WEKA DPDK path can carry WEKA’s protocol over UDP, while client kernel UDP mode sends and receives through the Linux stack."
+    "支持接收中断的网卡驱动可让无状态客户端在共享核上运行 DPDK。",
+    "Stateless clients can use DPDK on shared cores with a NIC driver that supports receive interrupts."
    ],
    "b": [
     [
-     "<p>UDP 描述数据包使用的传输协议。DPDK 描述软件访问网卡的方式。图中两条线路分别表示用户态直达网卡的路径和经 Linux 内核的客户端路径，两条线路均可承载 UDP。</p>"
+     "<p>数据包到达时，网卡通过接收中断通知客户端处理队列。客户端可把 CPU 时间让给其他工作。无状态客户端可在挂载时使用 <code>dedicated_mode=none</code> 选择非独占 DPDK，前提是网卡驱动支持该模式。</p>"
     ],
     [
-     "<p>UDP is a transport protocol carried in packets. DPDK describes a way for software to access the NIC. The two paths show user-space NIC access and client networking through the Linux kernel. Both can carry UDP.</p>"
+     "<p>A receive interrupt tells the client to service the queue when a packet arrives. The client can share CPU time with other work. On a stateless mount, <code>dedicated_mode=none</code> selects non-dedicated DPDK if the NIC driver supports it.</p>"
     ]
    ]
   },
   {
    "t": [
-    "后端数据网络与客户端选项",
-    "Backend Data and Client Options"
+    "共享核上的内核 UDP",
+    "Kernel UDP on Shared Cores"
    ],
    "d": [
-    "后端的数据网络使用 DPDK，应用服务器上的 WEKA 客户端可按驱动能力和 CPU 需求选择支持的模式。",
-    "Backend data networking uses DPDK, and WEKA clients on application servers can use supported modes based on driver capabilities and CPU needs."
+    "客户端可用共享 CPU 运行内核 UDP，后端数据网络继续使用 DPDK。",
+    "Clients can run kernel UDP on shared CPUs, while the backend data network continues to use DPDK."
    ],
    "b": [
     [
-     "<p>支持接收中断的网卡驱动可让无状态客户端在共享核上运行 DPDK。接收中断在网卡有包到达时通知处理线程。客户端也可走内核 UDP 路径，集群后端的数据网络仍使用 DPDK。</p>"
+     "<p>UDP 是数据包使用的传输协议。DPDK 是用户态软件访问网卡的方式，WEKA 的 DPDK 路径也可承载基于 UDP 的 WEKA 协议。</p>",
+     "<p>客户端挂载时可用 <code>net=udp</code> 将收发交给 Linux 网络栈，并继续访问同一个文件系统。客户端可按网卡驱动能力和 CPU 分配需求选择受支持的模式。</p>"
     ],
     [
-     "<p>A NIC driver with the required receive-interrupt support lets a stateless client run DPDK without dedicating a core. A receive interrupt signals when packets arrive. A client can also use kernel UDP while the backend data network continues to use DPDK.</p>"
+     "<p>UDP is a transport protocol. DPDK defines how user-space software accesses the NIC. WEKA’s DPDK path can carry the WEKA protocol over UDP.</p>",
+     "<p>A client can mount with <code>net=udp</code> to handle packet I/O through the Linux networking stack and continue accessing the same filesystem. The supported mode depends on the NIC driver and the client’s CPU allocation needs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Kubernetes 中的预留",
+    "CPU Reservation in Kubernetes"
+   ],
+   "d": [
+    "对于节点上的无状态客户端，WEKA 建议用 kubelet 的静态 CPU 管理策略预留客户端和系统所需的核心。",
+    "For node-level stateless clients, WEKA recommends using the kubelet static CPU management policy to reserve cores for the client and operating system."
+   ],
+   "b": [
+    [
+     "<p><code>reservedSystemCPUs</code> 标出预留的 CPU，帮助 Kubernetes 正确核算可供 Pod 使用的资源。在开启超线程的主机上，WEKA 指南也纳入同一物理核心上的同胞线程。严格 CPU 预留可把所有 Pod 的工作限制在其余核心。</p>"
+    ],
+    [
+     "<p>The <code>reservedSystemCPUs</code> setting identifies reserved CPUs and helps Kubernetes account for the capacity available to pods. On hyperthreaded hosts, WEKA’s guidance also includes sibling threads on the same physical core. Strict CPU reservation keeps all pod workloads on the remaining cores.</p>"
     ]
    ]
   }
@@ -189,7 +229,7 @@ window.SS_TOPIC_CFG={
 document.addEventListener('ss-lang', ({detail}) => {
   const controls = document.querySelector('.nav .langs');
   const english = detail === 'en';
-  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const labels = english ? ['SC', 'TC', 'EN'] : ['简', '繁', 'EN'];
   const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
   controls.setAttribute('aria-label', english ? 'Language' : '语言');
   controls.querySelectorAll('button').forEach((button, i) => {
@@ -200,6 +240,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

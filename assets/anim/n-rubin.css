@@ -6,16 +6,11 @@
 .n-rubin-figure .n-rubin-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
 .n-rubin-figure .n-rubin-quiet{stroke-dasharray:4 3}
 .n-rubin-figure .n-rubin-boundary{fill:none;stroke:var(--rule2);stroke-dasharray:5 4}
-.n-rubin-figure .n-rubin-wire,.n-rubin-figure .n-rubin-callout{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-rubin-figure .n-rubin-wire{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .n-rubin-figure .n-rubin-directed{stroke:var(--l4)}
 .n-rubin-figure .n-rubin-secondary-wire{stroke-dasharray:3 4}
-.n-rubin-figure .n-rubin-callout{stroke:var(--rule2);stroke-width:1.1}
 .n-rubin-figure .n-rubin-packet{fill:var(--l4);stroke:var(--surface)}
 .n-rubin-figure .n-rubin-origin{fill:var(--bg);stroke:var(--l4);stroke-width:1.5}
-.n-rubin-figure .n-rubin-tray{fill:var(--rule);stroke:var(--rule2);stroke-width:.8}
-.n-rubin-figure .n-rubin-utility{fill:var(--blk)}
-.n-rubin-figure .n-rubin-coolant{fill:none;stroke:var(--l6);stroke-width:2}
-.n-rubin-figure .n-rubin-switch-tray{fill:color-mix(in srgb,var(--l4) 23%,var(--bg));stroke:var(--l4)}
 .n-rubin-figure .n-rubin-active{fill:color-mix(in srgb,var(--l4) 19%,var(--bg));stroke:var(--l4);stroke-width:1.9}
 @media(max-width:640px){
   .n-rubin-figure svg{font-size:16px}
@@ -27,4 +22,7 @@
 }
 @media(640px < width <=720px){
   body.topic-n-rubin .mhost{aspect-ratio:var(--ar)}
+}
+@media(max-width:440px){
+  body.topic-n-rubin .hd .wrap{flex-wrap:wrap;gap:0 8px}
 }

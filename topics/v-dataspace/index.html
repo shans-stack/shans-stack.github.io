@@ -4,24 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DataSpace: A Global Namespace Across Sites · Shan's Stack</title>
-<meta name="description" content="Connects VAST clusters across sites and clouds into one global namespace.">
+<meta name="description" content="Sites access shared directories through local paths, fetch data on demand, and use leases to coordinate caching and writes.">
 <!-- share:start -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Shan's Stack">
 <meta property="og:title" content="DataSpace: A Global Namespace Across Sites · Shan's Stack">
-<meta property="og:description" content="Connects VAST clusters across sites and clouds into one global namespace.">
+<meta property="og:description" content="Sites access shared directories through local paths, fetch data on demand, and use leases to coordinate caching and writes.">
 <meta property="og:url" content="https://shans-stack.github.io/topics/v-dataspace/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DataSpace: A Global Namespace Across Sites · Shan's Stack">
-<meta name="twitter:description" content="Connects VAST clusters across sites and clouds into one global namespace.">
+<meta name="twitter:description" content="Sites access shared directories through local paths, fetch data on demand, and use leases to coordinate caching and writes.">
 <!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/v-dataspace.css?v=8f8da1fc">
+<link rel="stylesheet" href="../../assets/anim/v-dataspace.css?v=452ac074">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -40,8 +40,8 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="DataSpace: A Global Namespace Across Sites">DataSpace：跨站点全局命名空间</h1>
-        <p class="meta"><span data-en="6 steps · Global Access, caching, cross-site replication">6 步 · 全局访问、缓存、跨站点复制</span><span id="intalks"></span></p></div>
+      <div><h1 data-en="DataSpace: A Global Namespace Across Sites">DataSpace：跨站点的全局命名空间</h1>
+        <p class="meta"><span data-en="7 steps · Global Access, caching, cross-site replication">7 步 · 全局访问、缓存、跨站点复制</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -59,6 +59,7 @@
       <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/global-namespace-overview-tg&quot;&gt;Global Namespace Overview&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/global-namespace-overview-tg">全局命名空间</a></li>
       <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-4/docs/configuring-global-access&quot;&gt;Configuring Global Access&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-4/docs/configuring-global-access">配置全局访问</a></li>
       <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/overview-of-vast-replication-tg&quot;&gt;Overview of VAST Replication&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/overview-of-vast-replication-tg">复制与恢复点</a></li>
+      <li data-en="&lt;a href=&quot;https://www.vastdata.com/whitepaper&quot;&gt;VAST AI OS White Paper&lt;/a&gt;"><a href="https://www.vastdata.com/whitepaper">VAST AI OS 白皮书</a></li>
       <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -81,12 +82,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-dataspace.js?v=372768b9"></script>
+<script src="../../assets/anim/v-dataspace.js?v=8f1c5c59"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-dataspace",
@@ -94,21 +95,21 @@ window.SS_TOPIC_CFG={
  "steps": [
   {
    "t": [
-    "跨集群的全局命名空间",
-    "A Global Namespace Across Clusters"
+    "远程客户端经广域网访问集群",
+    "Remote Clients Reach a Cluster over the WAN"
    ],
    "d": [
-    "DataSpace 连接站点和云上的 VAST 集群，让应用通过本地集群访问共享目录。",
-    "DataSpace connects VAST clusters across sites and clouds so applications can reach shared directories through their local cluster."
+    "客户端直接访问远程集群时，请求和响应都要经过站点间网络。",
+    "When a client accesses a distant cluster directly, the request and response both cross the inter-site network."
    ],
    "b": [
     [
-     "<p>VAST DataSpace 是 VAST AI OS 的跨集群数据服务。它提供 Global Access（全局访问），将各集群中选定的目录组成联邦式全局命名空间。命名空间定义数据可通过哪些路径访问；联邦式表示各参与集群保留自己的本地目录，并在其中发布共享目录的入口。</p>",
-     "<p>DataSpace 也包括复制和跨集群克隆。Global Access 提供对活动目录的跨站点访问，是这里采用的数据访问方式。</p>"
+     "<p>单集群的命名空间定义数据可通过哪些路径访问。客户端直接访问远端集群时，每次请求都需要跨广域网（WAN）往返。</p>",
+     "<p>VAST AI OS 的 DataSpace 提供跨集群数据服务。它的 Global Access（全局访问）把选定的活动目录接入联邦式全局命名空间。参与集群保留本地目录，并在其中发布共享路径。</p>"
     ],
     [
-     "<p>VAST DataSpace is the cross-cluster data service in the VAST AI OS. Its Global Access feature connects selected directories into a federated global namespace. A namespace defines the paths used to access data. In a federation, participating clusters retain their local directory trees and expose shared folders within them.</p>",
-     "<p>DataSpace also includes replication and cross-cluster cloning. Global Access is the feature used here to reach live directories across sites.</p>"
+     "<p>A single-cluster namespace defines the paths used to access its data. When a client connects directly to a remote cluster, each request requires a round trip over the wide-area network (WAN).</p>",
+     "<p>DataSpace is the cross-cluster data service in VAST AI OS. Its Global Access feature exposes selected live directories through a federated global namespace. Each participating cluster keeps its local directory tree and exposes shared paths within it.</p>"
     ]
    ]
   },
@@ -124,11 +125,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>在 VAST 管理系统（VMS）中，受保护路径（Protected Path）是应用快照、复制或全局访问等策略的目录配置。启用全局访问时，VMS 将源集群上的现有路径与目标集群上新建的路径关联。目标路径称为卫星路径（Satellite Path）。</p>",
-     "<p>例如，站点 A 的 <code>/research</code> 可通过站点 B 的 <code>/shared</code> 访问。配置完成后，目标路径随即可以接受读写请求，数据按访问需要跨站点传输。客户端使用目标集群发布的视图作为入口，支持的协议与权限配置取决于视图和全局访问的支持范围。</p>"
+     "<p>例如，站点 A 的 <code>/research</code> 可通过站点 B 的 <code>/shared</code> 访问。配置完成后，目标路径随即可以接受读写请求，数据按访问需要跨站点传输。客户端使用目标集群发布的视图作为入口，支持的协议与权限配置取决于视图和全局访问的支持范围。源集群维护该共享目录的完整内容。</p>"
     ],
     [
      "<p>In VAST Management System (VMS), a protected path identifies a directory to which settings for snapshots, replication, or global access can apply. With Global Access, VMS pairs an existing path on the origin cluster with a newly created path on a destination cluster. The destination path is called a satellite path.</p>",
-     "<p>For example, site B can expose site A’s <code>/research</code> as <code>/shared</code>. The destination path can accept requests when configured, and data crosses sites as needed. Clients connect through a view exposed on the destination cluster. Available protocols and permission settings depend on both the view and Global Access support.</p>"
+     "<p>For example, site B can expose site A’s <code>/research</code> as <code>/shared</code>. The destination path can accept requests when configured, and data crosses sites as needed. Clients connect through a view exposed on the destination cluster. Available protocols and permission settings depend on both the view and Global Access support. The origin maintains the complete shared directory.</p>"
     ]
    ]
   },
@@ -154,6 +155,26 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
+    "定期同步会留下版本不一致的窗口",
+    "Periodic Sync Can Leave Versions Out of Step"
+   ],
+   "d": [
+    "采用周期同步的模型中，站点可以在同步前看到不同版本，版本冲突需要另行解决。",
+    "In a periodic-sync model, sites can see different versions before the next sync, and version conflicts need a resolution rule."
+   ],
+   "b": [
+    [
+     "<p>在采用周期同步的模型中，如果两站在同一个同步周期内修改同一文件，下一次同步前可以读到不同版本。以较晚写入为准、把另一版保留在历史记录，是一种冲突处理策略。</p>",
+     "<p>这个窗口取决于同步周期。Global Access 的读写租约用于协调活动数据的访问。</p>"
+    ],
+    [
+     "<p>Under periodic synchronization, two sites can read different versions if they edit the same file between syncs. One conflict policy makes the later write current and retains the other version in history.</p>",
+     "<p>The sync interval determines this window. Global Access uses read and write leases to coordinate access to live data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
     "读租约与缓存刷新",
     "Read Leases and Cache Refresh"
    ],
@@ -164,29 +185,31 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>读租约是源集群允许卫星在一段时间内直接使用缓存数据的授权。数据被反复访问时，卫星可以请求或续租。有效租约内的读取由卫星响应，数据无需再次跨站点传输。</p>",
-     "<p>当租约到期或源端内容发生变化时，卫星会使旧缓存失效。下一次读取需要重新向源端取数。</p>"
+     "<p>当租约到期或源端内容发生变化时，卫星会使旧缓存失效。下一次读取需要重新向源端取数。全局访问由源站协调租约，同一元素同一时刻仅由一个集群持有写租约。发放写租约时，相关读租约会被收回。</p>"
     ],
     [
      "<p>A read lease is permission from the origin for a satellite to use cached data for a period of time. When the data is accessed repeatedly, the satellite can request or renew a lease. While the lease is valid, the satellite can serve the data locally without another intersite transfer.</p>",
-     "<p>The satellite invalidates its cached data when the lease expires or the content at the origin changes. The next read fetches the data from the origin again.</p>"
+     "<p>The satellite invalidates its cached data when the lease expires or the content at the origin changes. The next read fetches the data from the origin again. The origin coordinates leases. Only one cluster can hold the write lease for a given element at a time. Granting it revokes the related read leases.</p>"
     ]
    ]
   },
   {
    "t": [
-    "卫星写入转发到源端",
+    "卫星写入转发到源站",
     "Forwarding Satellite Writes to the Origin"
    ],
    "d": [
-    "在文档所述 Global Access 路径中，卫星把客户端的写入请求转发给源集群。",
-    "On the documented Global Access path, the satellite forwards client writes to the origin cluster."
+    "在 VAST AI OS 5.4 的 Global Access 路径中，卫星将写入转发到源站，收到源站确认后再确认客户端。",
+    "On the VAST AI OS 5.4 Global Access path, the satellite forwards writes to the origin and waits for its acknowledgment before replying to the client."
    ],
    "b": [
     [
-     "<p>客户端从卫星路径发起写入。卫星负责接收并转发请求，由源集群更新原路径的数据。如果另一个卫星此前缓存了这段数据，源端变更后，该卫星后续读取会按缓存失效规则重新取数。</p>"
+     "<p>这是绕写缓存路径：源站提交写入，卫星后续读取时可以回源并缓存。此前缓存该数据的其他卫星按租约失效规则刷新数据。</p>",
+     "<p>白皮书还描述了可转移的写租约。卫星取得写租约后，可以先在本地缓存提交并确认，再异步回写源站。</p>"
     ],
     [
-     "<p>A client issues a write against a satellite path. The satellite receives and forwards the request, and the origin updates the data on the source path. If another satellite cached that data earlier, subsequent reads there follow the cache invalidation and refetch rules after the origin changes.</p>"
+     "<p>This is the write-around path. The origin commits the write, and a satellite can fetch and cache the data on a subsequent read. Other satellites that cached the data refresh it according to the lease invalidation rules.</p>",
+     "<p>The white paper also describes portable write leases. A satellite holding the write lease can commit to its local cache and acknowledge the write before sending it back to the origin asynchronously.</p>"
     ]
    ]
   },
@@ -202,11 +225,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>Global Access 的卫星缓存包含访问过或预取的数据。灾难恢复可另行配置异步复制，按保护策略把源路径的时间点快照增量传到远端。目标站点的恢复点取决于最近一次完成传输的快照。</p>",
-     "<p>在满足配置条件时，Global Access 和异步复制可用在同一源路径上。两项能力分别服务于日常访问和故障恢复。</p>"
+     "<p>在满足配置条件时，Global Access 和异步复制可用在同一源路径上。两项能力分别服务于日常访问和故障恢复。DataSpace 也包含跨集群克隆。</p>"
     ],
     [
      "<p>A Global Access satellite cache contains data that was read or prefetched. Disaster recovery can use a separate asynchronous replication policy to send snapshot changes from the source path to a remote cluster. The recovery point at the destination depends on the most recently transferred snapshot.</p>",
-     "<p>Global Access and asynchronous replication can share a source path when the configuration requirements are met. The two capabilities serve day-to-day access and recovery respectively.</p>"
+     "<p>Global Access and asynchronous replication can share a source path when the configuration requirements are met. The two capabilities serve day-to-day access and recovery respectively. DataSpace also includes cross-cluster cloning.</p>"
     ]
    ]
   }
@@ -228,6 +251,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

@@ -7,6 +7,7 @@
 .w-s2o-key .w-s2o-card{stroke:var(--l6);stroke-width:2}
 .w-s2o-muted .w-s2o-card{stroke-dasharray:5 5}
 .w-s2o-scene .w-s2o-good{fill:var(--ink);font-weight:700}
+.w-s2o-scene .w-s2o-paused{fill:var(--l1);font-weight:700}
 .w-s2o-scene .w-s2o-deleted{fill:var(--l1);font-weight:700}
 .w-s2o-scene .w-s2o-out{fill:var(--ink3);text-decoration:line-through}
 .w-s2o-path{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
@@ -20,4 +21,6 @@
 .w-s2o-packet.w-s2o-meta{fill:var(--l3)}
 @media(max-width:640px){
   .w-s2o-scene .w-s2o-title,.w-s2o-scene .w-s2o-note{font-size:16px}
+  .topic-w-s2o.present .stage{padding:12px 16px}
+  .topic-w-s2o .stage .desc{font-size:17px;line-height:1.5}
 }

@@ -1,167 +1,239 @@
-/* QLC 闪存：6 步动画（SVG，按时间写死的时间线，不依赖动画库）。QLC 每个单元存 4 个比特：档位、擦写寿命、写入慢、寿命随写入大小变化、规格书口径，以及软件怎样让它用得久。
-   接口同 assets/anim/rdma.js：
-     var a = SSAnim['v-qlc'].mount(容器元素, {paused:false, onLayout:function(宽高比, 是否手机版){}});
-     a.show(i) 切到第 i 步（0 起）并从头播放；a.pause() / a.resume()；a.destroy()；a.ratio()；a.step()
-   动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
-   宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
-   画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-qlc.css，全部限定在 .ssa-v-qlc 容器之内。 */
+/* NAND cell states and flash-aligned writes, from page programming to cluster wear levelling. */
 (function(){
 var ID='v-qlc';
-var EN={"SLC · 2 档 · 1 比特":"SLC · 2 levels · 1 bit","QLC · 16 档 · 4 比特":"QLC · 16 levels · 4 bits","约 3 V":"~3 V","约 0 V":"~0 V","读出":"Reads","读对":"Correct","读错":"Misread","擦除":"Erase","电子漏出":"Electrons leak","早期 SLC 约 10 万次擦写":"Early SLC: ~100,000 cycles","约为早期 SLC 的百分之一":"~1/100 of early SLC","示意，不代表实测数字":"Schematic, not measured",
-"客户端":"Client","直接写 QLC":"Straight to QLC","先写 SCM，之后迁往 QLC":"SCM first, QLC later","QLC 盘":"QLC drive","写入中":"writing","已确认":"ACKs","后台迁移":"background",
-"一页（以 128 KB 为例）":"One page (128 KB here)","4 KB 写入也用掉整页":"A 4 KB write uses the whole page","4 KB 随机":"4 KB random","128 KB 顺序":"128 KB sequential","整盘耐久度（相对值）":"Relative drive endurance","依据：VAST 白皮书第 56–57 页":"Source: VAST white paper, pp. 56–57",
-"JEDEC 测试负载":"JEDEC test workload","约 77% 的写入 ≤ 4 KB":"~77% of writes ≤ 4 KB","整页对齐写入":"Page-aligned writes","标称耐久度对应测试负载":"Rated endurance belongs to the test workload","实际磨损随写入负载变化":"Actual wear depends on the write workload",
-"写入":"Writes","SCM 吸收短期更新":"SCM buffers transient updates","整页大块":"Full pages","在集群内分散磨损":"Distribute wear across the cluster","QLC 盘磨损（示意）":"QLC drive wear (schematic)",
-"QLC 闪存：电压档位、擦写寿命、写入路径与写入大小":"QLC flash: voltage levels, erase endurance, write path and write size"};
-var ENM={"先写 SCM，之后迁往 QLC":"SCM first, QLC later","SCM 吸收短期更新":"SCM buffers transient updates","在集群内分散磨损":"Wear spread across SSDs","4 KB 写入也用掉整页":"4 KB uses a whole page"};
-var ARIA="QLC 闪存：电压档位、擦写寿命、写入路径与写入大小";
+var EN={
+"阈值电压档位":"Threshold-voltage states","2 档":"2 states","4 档":"4 states","8 档":"8 states","16 档":"16 states",
+"1 比特":"1 bit","2 比特":"2 bits","3 比特":"3 bits","4 比特":"4 bits",
+"档位越密，编程越慢，擦写耐久度越低":"Closer states slow programming and reduce endurance",
+"SCM 写缓冲":"SCM write buffer","持久化后确认":"ACK after protection",
+"页搬移是额外写入":"Page copies add writes","失效块保留至整段回收":"Invalid blocks await reclaim","CNode 迁出有效块":"CNode moves live blocks","迁移目标":"Destination","空闲低于下限":"Free space below threshold","迁出有效数据并回收":"Moving live data","回收后空闲恢复":"Free space restored","擦除块 1":"Erase block 1","擦除块 2":"Erase block 2","擦除块 3":"Erase block 3","页：最小写入单位":"Page: smallest write unit","擦除块：最小擦除单位":"Smallest erase unit","写入空页":"Writing empty pages","改写：写到新的空页，旧页作废":"Overwrite: new page, old page stale","整块擦除":"Whole block erased","有效页":"Valid","作废页":"Stale","空页":"Empty","示意，不代表实测数字":"Schematic, not measured",
+"把有效页搬到新块":"Copying valid pages to a new block","擦掉旧块":"Erasing old blocks","盘内多搬":"Moved inside drive","页":"pages",
+"1 MB 写入覆盖多个整页":"1 MB write spans full pages","SSD":"SSD","芯片":"Chip","多颗芯片同时写":"Chips written in parallel","长短不一的块紧挨着装":"Chunks packed tightly",
+"每盘 1 GB 条带段":"1 GB strip per drive","由 1 MB 写入组成":"Built from 1 MB writes","对齐一组擦除块":"Aligned with erase blocks","回收时释放整段":"Release the entire strip","整段对齐，减少盘内搬移":"Less internal copying","写入":"Writing",
+"按写入顺序":"In write order","按预期寿命分组":"By expected life","临时文件":"Temporary","长期数据":"Long-lived","临时文件删除":"Temporary files deleted","回收时要搬的块":"Chunks to move when reclaiming","整条为空，直接回收":"Empty stripe, reclaimed directly",
+"新条带":"New stripe","每块盘的磨损":"Wear per drive","新加入的盘":"New drive","空闲空间":"Free space","下限":"Low-water","低于下限才回收":"Reclaim only below the mark","条带放置考虑空间和耐久度":"Placement uses space and endurance",
+"从 SLC 到 QLC：页与擦除块、盘内回收、1 MB 写入、1 GB 条带、按寿命分组与集群磨损均衡":"From SLC to QLC: pages and erase blocks, garbage collection, 1 MB writes, 1 GB strips, life-based grouping and system-wide wear levelling"};
+var ENM={"档位越密，编程越慢，擦写耐久度越低":"Closer states slow writes and lower endurance",
+"持久化后确认":"Durable ACK","每盘 1 GB 条带段":"1 GB strip per SSD","条带放置考虑空间和耐久度":"Placement uses space and wear","页：最小写入单位":"Page: write unit","改写：写到新的空页，旧页作废":"Overwrite: new page, old one stale","擦除块：最小擦除单位":"Block: erase unit","1 MB 写入覆盖多个整页":"1 MB spans full pages","长短不一的块紧挨着装":"Chunks packed tightly","对齐一组擦除块":"Erase-block aligned","整条为空，直接回收":"Empty: reclaimed","低于下限才回收":"Reclaim below the mark"};
+var ARIA="从 SLC 到 QLC：页与擦除块、盘内回收、1 MB 写入、1 GB 条带、按寿命分组与集群磨损均衡";
 function makeScene(H){
 const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade}=H;
 const L_=()=>H.L(),E_=()=>H.E();
+/* 3 个擦除块 × 8 页的网格 */
+function grid(g,o){const rows=[];for(let r=0;r<3;r++){const row=[];for(let c=0;c<8;c++){const x=o.x+c*(o.pw+o.gx),y=o.y+r*(o.ph+o.gy);row.push({e:rect({x,y,w:o.pw,h:o.ph},'cel',g,4),x,y,c:P(x+o.pw/2,y+o.ph/2)})}
+  rows.push({row,fr:rect({x:o.x-5,y:o.y+r*(o.ph+o.gy)-5,w:8*(o.pw+o.gx)-o.gx+10,h:o.ph+10},'box soft',g,6)})}
+  rows.forEach(r=>{r.fr.parentNode.insertBefore(r.fr,r.row[0].e);r.fr.style.fill='none'});return rows}
+function setp(p,c){p.e.setAttribute('class','cel'+(c?' '+c:''))}
 const SCENE={
- still:[2,4.5,8,6,5,8],
+ still:[4.5,6.6,7.2,6.3,7.4,7.5,13.3],
  layout(m){
-  if(!m)return {mobile:false,W:960,H:480,pw:16,ph:16,dr:6,f:{lbl:19,sm:17,note:16},
-   lad:{xs:[240,600],y:66,w:170,h:320,vx:24,top:46},
-   s3:{lanes:[140,340],cli:{x:40,w:120,h:56},scm:{x:340,w:150,h:56},q:{x:660,w:200,h:64},cnt:28},
-   s4:{page:{x:300,y:74,w:340,h:46},lab:P(40,97),rows:[244,362],lx:40,bx:250,bw:515,valOut:true},
-   s5:{a:{x:40,y:60,w:420,h:200},b:{x:500,y:60,w:420,h:200},bars:[322,396],bx:40,bw:700},
-   s6:{src:{x:40,y:210,w:110,h:56},scm:{x:240,y:200,w:200,h:76},dr:{x0:560,y0:90,cols:4,dw:82,dh:120,gx:16,gy:44}},
+  if(!m)return {mobile:false,W:960,H:480,pw:22,ph:22,dr:6,f:{lbl:19,sm:17,note:16},
+   g1:{x:200,y:90,pw:56,ph:50,gx:8,gy:40,lab:true},msg:P(456,372),
+   s3:{scm:{x:40,y:110,w:440,h:180},sub:{x:60,y:190,w:380,h:44},ssd:{x:560,y:60,w:360,h:330}},
+   s4:{ssd:{x:300,y:40,w:260,h:380},strip:{x:360,y:80,w:120,h:320},br:600},
+   s5:{lanes:[120,320],x0:320,cw:19,gx:4,sg:22,lx:40},
+   s6:{src:{x:40,y:190,w:110,h:56},bus:200,x0:240,dw:58,gx:16,y0:110,dh:200,gauge:{x:240,y:400,w:520}},
    note:P(40,456)};
-  return {mobile:true,W:480,H:560,pw:14,ph:14,dr:5,f:{lbl:18,sm:17,note:17},
-   lad:{xs:[140,350],y:70,w:120,h:320,vx:18,top:40,bottom:true},
-   s3:{lanes:[110,350],cli:{x:12,w:92,h:52},scm:{x:150,w:110,h:52},q:{x:300,w:168,h:60},cnt:24},
-   s4:{page:{x:16,y:84,w:448,h:44},lab:P(16,56),rows:[272,411],lx:16,bx:16,bw:410,valOut:false,stack:true},
-   s5:{a:{x:16,y:40,w:448,h:150},b:{x:16,y:236,w:448,h:110},bars:[410,478],bx:16,bw:448},
-   s6:{src:{x:12,y:72,w:92,h:52},scm:{x:150,y:60,w:200,h:76},dr:{x0:20,y0:280,cols:8,dw:48,dh:160,gx:8,gy:44}},
+  return {mobile:true,W:480,H:560,pw:18,ph:18,dr:5,f:{lbl:18,sm:17,note:17},
+   g1:{x:44,y:110,pw:42,ph:44,gx:9,gy:56,lab:false},msg:P(240,440),
+   s3:{scm:{x:16,y:40,w:448,h:150},sub:{x:40,y:112,w:400,h:40},ssd:{x:16,y:240,w:448,h:240}},
+   s4:{ssd:{x:100,y:30,w:200,h:400},strip:{x:140,y:70,w:100,h:340},br:280},
+   s5:{lanes:[110,330],x0:16,cw:14,gx:3,sg:10,lx:16,stack:true},
+   s6:{src:{x:16,y:40,w:110,h:52},bus:130,x0:24,dw:40,gx:8,y0:170,dh:200,gauge:{x:16,y:470,w:448}},
    note:P(16,536)};
  },
  build(L,E){
   const f=L.f,M=L.mobile;
-  /* 第 1、2 步：两个单元的电压刻度 */
-  {const g=grp('1 2'),d=L.lad;E.lad=[];
-   [[2,'SLC · 2 档 · 1 比特'],[16,'QLC · 16 档 · 4 比特']].forEach(([n,lab],k)=>{const x=d.xs[k]-d.w/2,bh=d.h/n;
-    tx(d.xs[k],d.y-(M?22:22),lab,f.lbl,'lbl b7','middle',g);
-    const fr=rect({x,y:d.y,w:d.w,h:d.h},'box',g,6);
-    for(let i=1;i<n;i++)el('line',{x1:x,y1:d.y+i*bh,x2:x+d.w,y2:d.y+i*bh,class:'sep'},g);
-    const fill=el('rect',{x:x+3,y:d.y+d.h,width:d.w-6,height:0,class:'fill',opacity:0.35},g);
-    const lvl=el('line',{x1:x,y1:d.y+d.h,x2:x+d.w,y2:d.y+d.h,class:'ln lit thick'},g);
-    const vx=M?d.xs[k]:x+d.w+d.vx,vy=M?d.y+d.h+26:d.y+d.h/2;
-    const val=tx(vx,vy,'',f.lbl,'num ink-t',M?'middle':'start',g);
-    const st=tx(vx,M?vy+26:vy+30,'',f.sm,'st',M?'middle':'start',g);
-    E.lad.push({x,n,bh,fr,fill,lvl,val,st,k})});
-   const x0=d.xs[0]-d.w/2;tx(x0-10,d.y+8,'约 3 V',f.sm,'ink3-t','end',g);tx(x0-10,d.y+d.h-8,'约 0 V',f.sm,'ink3-t','end',g);
-   const g2=grp('2');E.endur=[tx(d.xs[0],M?d.y+d.h+82:d.y+d.h+30,'早期 SLC 约 10 万次擦写',f.sm,'ink2-t','middle',g2),tx(d.xs[1],M?d.y+d.h+82:d.y+d.h+30,'约为早期 SLC 的百分之一',f.sm,'rose-t st','middle',g2)];
+  {
+   const g = grp('1');
+   const w = M ? 90 : 148, h = M ? 250 : 216, y = M ? 131 : 100;
+   const levels = ['2 档', '4 档', '8 档', '16 档'];
+   const bits = ['1 比特', '2 比特', '3 比特', '4 比特'];
+   tx(L.W / 2, M ? 34 : 24, '阈值电压档位', f.lbl, 'ttl', 'middle', g);
+   E.levels = ['SLC', 'MLC', 'TLC', 'QLC'].map((name, i) => {
+    const cx = (i * 2 + 1) * L.W / 8, x = cx - w / 2, n = 2 ** (i + 1);
+    tx(cx, y - 28, name, f.lbl, 'lbl b7', 'middle', g);
+    rect({x, y, w, h}, 'box', g, 5);
+    const rows = Array.from({length: n}, (_, j) => {
+     const top = y + j * h / n;
+     if (j) line([P(x, top), P(x + w, top)], 'thin', g);
+     return rect({x: x + 3, y: top + 3, w: w - 6, h: h / n - 6}, 'fill', g, 1);
+    });
+    tx(cx, y + h + 24, levels[i], f.sm, 'lbl', 'middle', g);
+    tx(cx, y + h + 50, bits[i], f.sm, 'lbl', 'middle', g);
+    return rows;
+   });
+   tx(L.W / 2, M ? 478 : 412, '档位越密，编程越慢，擦写耐久度越低', f.sm, 'st rose-t', 'middle', g);
+   tx(L.note.x, L.note.y, '示意，不代表实测数字', f.note, 'ink3-t', 'start', g);
+  }
+  /* 第 2、3 步：擦除块与页 */
+  {const g=grp('2 3'),o=L.g1;E.g=grid(g,o);
+   E.g.forEach((r,i)=>{const y=o.y+i*(o.ph+o.gy);if(o.lab)tx(o.x-20,y+o.ph/2,'擦除块 '+(i+1),f.sm,'ink2-t','end',g);else tx(o.x-5,y-18,'擦除块 '+(i+1),f.sm,'ink2-t','start',g)});
+   const lg=grp('2');const p0=E.g[0].row[0];
+   if(!M){el('path',{d:`M${p0.x} ${p0.y-12} V${p0.y-20} H${p0.x+o.pw} V${p0.y-12}`,class:'ln thin'},lg);tx(p0.x,p0.y-38,'页：最小写入单位',f.sm,'slate-t st','start',lg);
+     const rx=o.x+8*(o.pw+o.gx)+8,ry=o.y+o.ph+o.gy-5;el('path',{d:`M${rx} ${ry} H${rx+10} V${ry+o.ph+10} H${rx}`,class:'ln thin'},lg);tx(rx+20,ry+o.ph/2+5,'擦除块：最小擦除单位',f.sm,'rose-t st','start',lg)}
+   else{tx(o.x-5,o.y-56,'页：最小写入单位',f.sm,'slate-t st','start',lg);tx(L.W-16,o.y-56,'擦除块：最小擦除单位',f.sm,'rose-t st','end',lg)}
+   E.msg=tx(L.msg.x,L.msg.y,'',f.sm,'st','middle',g);
+   /* 图例 */
+   const lgd=grp('2 3'),ly=M?L.msg.y+40:L.note.y,lx0=M?L.note.x:L.W-40;
+   if(!M){let x=lx0;[['空页',''],['作废页','x'],['有效页','s']].forEach(([n,c])=>{const t=tx(x,ly,n,f.sm,'ink2-t','end',lgd);const w=H.estW(H.T(n),f.sm);el('rect',{x:x-w-26,y:ly-9,width:18,height:18,rx:3,class:'cel'+(c?' '+c:'')},lgd);x-=w+50})}
+   if(M) ['有效页','作废页','空页'].forEach((name,i)=>{
+    const x = 18 + i * 154, y = L.note.y - 29;
+    rect({x,y:y-8,w:17,h:17},'cel '+['s','x',''][i],lgd,3);
+    tx(x+25,y,name,f.sm,'ink2-t','start',lgd);
+   });
+   const move = grp('3');
+   E.copyGuide = el('path',{class:'ln dash thin'},move);
+   E.c2=tx(L.W/2,L.msg.y+30,'',f.sm,'num ink-t','middle',move);
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
-  /* 第 3 步：两条写路径 */
-  {const s=L.s3,g=grp('3');E.s3=[];
-   s.lanes.forEach((y,k)=>{const cli={x:s.cli.x,y:y-s.cli.h/2,w:s.cli.w,h:s.cli.h},q={x:s.q.x,y:y-s.q.h/2,w:s.q.w,h:s.q.h};
-    const ly=y-s.q.h/2-26;
-    tx(s.cli.x,ly,k?'先写 SCM，之后迁往 QLC':'直接写 QLC',f.lbl,'lbl b7','start',g);
-    let scm=null;
-    if(k){scm={x:s.scm.x,y:y-s.scm.h/2,w:s.scm.w,h:s.scm.h};line([P(cli.x+cli.w,y),P(scm.x,y)],'',g);line([P(scm.x+scm.w,y),P(q.x,y)],'dash',g)}
-    else line([P(cli.x+cli.w,y),P(q.x,y)],'',g);
-    const cb=rect(cli,'box',g);tx(C(cli).x,y,'客户端',f.sm,'lbl','middle',g);
-    let sb=null;if(scm){sb=rect(scm,'box',g);tx(C(scm).x,y,'SCM',f.sm,'lbl b7','middle',g)}
-    const qb=rect(q,'box',g,10);tx(C(q).x,y-(M?10:12),'QLC 盘',f.sm,'lbl b7','middle',g);const qs=tx(C(q).x,y+(M?14:16),'',f.sm,'st rose-t','middle',g);
-    const cn=tx(cli.x,cli.y+cli.h+s.cnt,'',f.sm,'st','start',g);
-    E.s3.push({y,cli,q,scm,cb,qb,sb,qs,cn,bg:k?tx(C(q).x,q.y+q.h+s.cnt,'',f.sm,'ink3-t','middle',g):null})});
+  /* 第 4 步：迁移时组织 1 MB 写入，并行写多个芯片 */
+  {const s=L.s3,g=grp('4');rect(s.scm,'box on',g,12);tx(s.scm.x+14,s.scm.y+22,'SCM 写缓冲',f.sm,'lbl b7','start',g);
+   E.ack3=tx(s.scm.x+s.scm.w-14,s.scm.y+22,'持久化后确认',f.sm,'st sage-t','end',g);
+   const sb=s.sub;
+   tx(sb.x,sb.y-13,'长短不一的块紧挨着装',f.sm,'ink2-t','start',g);E.sub=rect(sb,'box',g,4);E.sub.style.fill='none';for(let i=1;i<4;i++)el('line',{x1:sb.x+i*sb.w/4,y1:sb.y,x2:sb.x+i*sb.w/4,y2:sb.y+sb.h,class:'sep'},g);
+   tx(sb.x,sb.y+sb.h+22,'1 MB 写入覆盖多个整页',f.sm,'ink2-t','start',g);
+   const W=[0.14,0.22,0.1,0.18,0.12,0.24];let x=sb.x;E.ch3=W.map((w,i)=>{const r={x,w:w*sb.w};x+=w*sb.w;return {r,e:el('rect',{x:r.x+1,y:sb.y+4,width:0,height:sb.h-8,rx:2,class:'fill '+['','violet','ochre','sage','','violet'][i]},g)}});
+   rect(s.ssd,'box',g,14);tx(s.ssd.x+14,s.ssd.y+22,'SSD',f.sm,'lbl b7','start',g);
+   E.chip=[];const cw=M?92:140,ch=M?66:100;const cx0=M?s.ssd.x+20:s.ssd.x+30,cy0=M?s.ssd.y+130:s.ssd.y+70;
+   for(let i=0;i<4;i++){const r={x:M?cx0+i*(cw+14):cx0+(i%2)*(cw+20),y:M?cy0:cy0+Math.floor(i/2)*(ch+30),w:cw,h:ch};
+    rect(r,'box soft',g,8);tx(r.x+8,r.y+14,H.T('芯片')+' '+(i+1),f.sm,'ink3-t','start',g);const pg={x:r.x+12,y:r.y+r.h-38,w:r.w-24,h:26};E.chip.push({r,pg:rect(pg,'cel',g,3),c:P(pg.x+pg.w/2,pg.y+pg.h/2)})}
+   const hub=M?P(L.W/2,s.ssd.y+70):P(s.ssd.x+s.ssd.w/2,s.ssd.y+s.ssd.h-30);E.hub=hub;
+   if(!M){line([P(sb.x+sb.w,C(sb).y),P(s.ssd.x+10,C(sb).y),P(s.ssd.x+10,hub.y),P(hub.x,hub.y)],'',g);
+     E.chip.forEach(o=>line([hub,P(o.c.x,hub.y),P(o.c.x,o.r.y+o.r.h)],'thin',g));}
+   else{const lx=sb.x+sb.w-30;line([P(lx,sb.y+sb.h),P(lx,hub.y)],'',g);line([P(E.chip[0].c.x,hub.y),P(Math.max(E.chip[3].c.x,sb.x+sb.w-30),hub.y)],'',g);E.chip.forEach(o=>line([P(o.c.x,hub.y),P(o.c.x,o.r.y)],'thin',g))}
+   E.par3=tx(M?L.W-16:s.ssd.x+s.ssd.w-14,M?s.ssd.y+s.ssd.h+26:s.ssd.y+22,'多颗芯片同时写',f.sm,'st sage-t','end',g);
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
-  /* 第 4 步：小写入用掉整页 + 寿命柱 */
-  {const s=L.s4,g=grp('4');
-   tx(s.lab.x,s.lab.y,'一页（以 128 KB 为例）',f.sm,'ink2-t','start',g);
-   E.page=rect(s.page,'cel',g,4);E.pageFill=el('rect',{x:s.page.x,y:s.page.y,width:0,height:s.page.h,rx:4,class:'fill ink3',opacity:0.35},g);
-   E.pageMsg=tx(M?s.page.x:s.page.x+s.page.w+16,M?s.page.y+s.page.h+22:s.page.y+s.page.h/2,'4 KB 写入也用掉整页',f.sm,'st rose-t','start',g);
-   const rows=[['4 KB 随机',1],['128 KB 顺序',20]];
-   E.bars=rows.map(([lab,v],i)=>{const y=s.rows[i];
-    if(s.stack){tx(s.lx,y-26,lab,f.sm,'lbl','start',g)}else tx(s.lx,y,lab,f.sm,'lbl','start',g);
-    const w=s.bw*v/20*0.83;const b=el('rect',{x:s.bx,y:y-14,width:0,height:28,rx:4,class:'fill'+(i===1?' sage':'')},g);
-    const t=tx(s.bx+w+10,y,i===1?'≈20×':'',f.sm,'num ink-t','start',g);return {b,t,w}});
-   tx(M?L.note.x:s.bx,M?L.note.y-28:s.rows[0]-38,'整盘耐久度（相对值）',f.sm,'ink3-t','start',g);
-   tx(L.note.x,L.note.y,'依据：VAST 白皮书第 56–57 页',f.note,'ink3-t','start',g);}
-  /* 第 5 步：JEDEC 负载与大块写入 */
-  {const s=L.s5,g=grp('5');
-   [s.a,s.b].forEach((r,k)=>{rect(r,'box soft',g,12);tx(r.x+14,r.y+22,k?'整页对齐写入':'JEDEC 测试负载',f.sm,'ttl','start',g)});
-   tx(s.a.x+s.a.w-14,s.a.y+22,'约 77% 的写入 ≤ 4 KB',f.sm,'st ochre-t','end',g);
-   E.s5a=[];const n=M?18:20;for(let i=0;i<n;i++){const big=i%5===4||(i===n-1),cols=M?9:10;const w=big?(M?34:30):(M?14:16),h=big?22:16;
-    const x=s.a.x+20+(i%cols)*(M?47:40),y=s.a.y+(M?62:70)+Math.floor(i/cols)*(M?44:56);E.s5a.push(el('rect',{x,y,width:w,height:h,rx:3,class:'pkt '+(big?'':'ochre')},g))}
-   E.s5b=[];for(let i=0;i<(M?4:5);i++){const w=M?84:64;E.s5b.push(el('rect',{x:s.b.x+20+i*(w+14),y:s.b.y+(M?48:80),width:w,height:M?40:48,rx:4,class:'pkt sage'},g))}
-   tx(s.bx,s.bars[0],'标称耐久度对应测试负载',f.lbl,'ttl','start',g);
-   tx(s.bx,s.bars[1],'实际磨损随写入负载变化',f.lbl,'lbl','start',g);
+  /* 第 5 步：1 GB 条带 */
+  {const s=L.s4,g=grp('5'),st=s.strip;rect(s.ssd,'box',g,14);tx(s.ssd.x+14,s.ssd.y+22,'每盘 1 GB 条带段',f.sm,'lbl b7','start',g);
+   E.lay=[];const n=8,lh=st.h/n;for(let i=0;i<n;i++){const y=st.y+st.h-(i+1)*lh;E.lay.push(rect({x:st.x,y:y+2,w:st.w,h:lh-4},'cel',g,3))}
+   tx(st.x+st.w/2,st.y+st.h+12,'由 1 MB 写入组成',f.sm,'ink3-t','middle',g);
+   E.eb=[];for(let k=0;k<2;k++){const y=st.y+k*st.h/2;E.eb.push(el('path',{d:`M${s.br} ${y+4} H${s.br+12} V${y+st.h/2-4} H${s.br}`,class:'ln thin'},g))}
+   tx(M?s.br+18:680,st.y+st.h/2,'对齐一组擦除块',f.sm,'st rose-t','start',g);
+   const target=M?{x:12,y:444,w:152,h:44}:{x:690,y:92,w:210,h:58};
+   E.copy4=[1,5].map((i,k)=>{
+    const y=st.y+st.h-(i+0.5)*lh, q=P(C(target).x+(k?25:-25),target.y+target.h-12);
+    const route=M?[P(st.x,y),P(86,y),P(86,target.y),P(q.x,target.y),q]:
+      [P(st.x+st.w,y),P(660,y),P(660,q.y),q];
+    line(route,'thin',g);return route;
+   });
+   rect(target,'box',g,8);tx(C(target).x,target.y+13,'迁移目标',f.sm,'lbl','middle',g);
+   E.m4=tx(M?L.W/2:C(s.ssd).x,s.ssd.y+s.ssd.h+(M?72:28),'',f.sm,'st','middle',g);
+   E.c4=tx(M?L.W/2:790,M?s.ssd.y+s.ssd.h+97:C(s.ssd).y+100,'',f.lbl,'num ink-t','middle',g);
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
-  /* 第 6 步：SCM 吸收零碎更新，大块写到磨损最低的盘 */
-  {const s=L.s6,g=grp('6'),d=s.dr;
-   rect(s.src,'box',g);tx(C(s.src).x,C(s.src).y,'写入',f.sm,'lbl','middle',g);
-   E.scm6=rect(s.scm,'box on',g,12);
-   tx(s.scm.x,s.scm.y-18,'SCM',f.sm,'lbl b7','start',g);
-   tx(C(s.scm).x,s.scm.y+s.scm.h+22,'SCM 吸收短期更新',f.sm,'ochre-t st','middle',g);
-   const sy=C(s.src).y;line([P(s.src.x+s.src.w,sy),P(s.scm.x,sy)],'',g);
-   E.dr6=[];const bus=M?d.y0-26:d.x0-40;
-   tx(d.x0,d.y0-(M?54:46),'QLC 盘磨损（示意）',f.sm,'ttl','start',g);
-   for(let i=0;i<8;i++){const r={x:d.x0+(i%d.cols)*(d.dw+d.gx),y:d.y0+Math.floor(i/d.cols)*(d.dh+d.gy),w:d.dw,h:d.dh};
-    rect(r,'box',g,8);const tr=el('rect',{x:r.x+r.w/2-9,y:r.y+12,width:18,height:r.h-24,rx:4,class:'track'},g);
-    const fl=el('rect',{x:r.x+r.w/2-9,y:r.y+r.h-12,width:18,height:0,rx:4,class:'fill sage'},g);
-    const rb=r.y-d.gy/2,cx=r.x+r.w/2;let path;
-    if(!M){const ex=s.scm.x+s.scm.w,ey=C(s.scm).y;path=[P(ex,ey),P(bus,ey),P(bus,rb),P(cx,rb),P(cx,r.y)]}
-    else{const ex=C(s.scm).x,ey=s.scm.y+s.scm.h;path=[P(ex,ey),P(ex,bus),P(cx,bus),P(cx,r.y)]}
-    E.dr6.push({r,fl,path,top:r.y+12,hh:r.h-24,rb,cx})}
-   if(!M){const ey=C(s.scm).y,rbs=[...new Set(E.dr6.map(o=>o.rb))];line([P(s.scm.x+s.scm.w,ey),P(bus,ey)],'',g);line([P(bus,Math.min(ey,rbs[0])),P(bus,Math.max(ey,...rbs))],'',g);
-     rbs.forEach(y=>line([P(bus,y),P(Math.max(...E.dr6.filter(o=>o.rb===y).map(o=>o.cx)),y)],'',g));E.dr6.forEach(o=>line([P(o.cx,o.rb),P(o.cx,o.r.y)],'thin',g))}
-   else{const ex=C(s.scm).x;line([P(ex,s.scm.y+s.scm.h),P(ex,bus)],'',g);line([P(E.dr6[0].cx,bus),P(E.dr6[7].cx,bus)],'',g);E.dr6.forEach(o=>line([P(o.cx,bus),P(o.cx,o.r.y)],'thin',g))}
-   tx(M?L.W-16:L.W-40,M?L.note.y-28:L.note.y,'在集群内分散磨损',f.sm,'st sage-t','end',g);
-   tx(L.note.x,M?L.note.y:L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
+  /* 第 6 步：按写入顺序 vs 按寿命 */
+  {const s=L.s5,g=grp('6');E.s5=[];
+   const seqA=[];for(let i=0;i<24;i++)seqA.push(i%3===1?'o':'s');// 8 个临时（赭黄）、16 个长期
+   const seqB=[];for(let i=0;i<24;i++)seqB.push(i<8?'o':'s');
+   [['按写入顺序',seqA],['按预期寿命分组',seqB]].forEach(([nm,seq],k)=>{const y=s.lanes[k];
+    tx(s.lx,s.stack?y-60:y,nm,f.lbl,'lbl b7','start',g);
+    const cells=[],fr=[];for(let st=0;st<3;st++){const x0=s.x0+st*(8*(s.cw+s.gx)+s.sg);fr.push(rect({x:x0-4,y:y-20,w:8*(s.cw+s.gx)-s.gx+8,h:40},'box soft',g,6));
+     for(let c=0;c<8;c++)cells.push(el('rect',{x:x0+c*(s.cw+s.gx),y:y-14,width:s.cw,height:28,rx:3,class:'cel'},g))}
+    fr.forEach(r=>r.style.fill='none');
+    const cn=tx(s.stack?L.W-16:s.x0+3*(8*(s.cw+s.gx)+s.sg)-s.sg,y+44,'',f.sm,'st','end',g);
+    E.s5.push({seq,cells,fr,cn,y})});
+   const lg=grp('6');[['临时文件','o'],['长期数据','s']].forEach(([n,c],i)=>{const x=(M?16:40)+i*(M?130:150),y=M?L.note.y-34:L.note.y-34;el('rect',{x,y:y-9,width:18,height:18,rx:3,class:'cel '+c},lg);tx(x+26,y,n,f.sm,'ink2-t','start',lg)});
+   E.m5=tx(M?L.W-16:L.W-40,L.note.y,'',f.sm,'st','end',g);
+   tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
+  /* 第 7 步：全系统磨损均衡 */
+  {const s=L.s6,g=grp('7');rect(s.src,'box',g);tx(C(s.src).x,C(s.src).y,'新条带',f.sm,'lbl b7','middle',g);
+   tx(M?112:s.x0,s.y0-(M?40:34),'每块盘的磨损',f.sm,'ttl','start',g);
+   E.d6=[];const busY=s.y0-(M?14:14);
+   for(let i=0;i<9;i++){const r={x:s.x0+i*(s.dw+s.gx),y:s.y0,w:s.dw,h:s.dh};const gg=el('g',{},g);rect(r,'box',gg,8);el('rect',{x:r.x+r.w/2-8,y:r.y+12,width:16,height:r.h-24,rx:4,class:'track'},gg);
+    const fl=el('rect',{x:r.x+r.w/2-8,y:r.y+r.h-12,width:16,height:0,rx:4,class:'fill'},gg);
+    const path=!M?[P(s.src.x+s.src.w,C(s.src).y),P(s.bus,C(s.src).y),P(s.bus,busY),P(r.x+r.w/2,busY),P(r.x+r.w/2,r.y)]:[P(C(s.src).x,s.src.y+s.src.h),P(C(s.src).x,busY),P(r.x+r.w/2,busY),P(r.x+r.w/2,r.y)];
+    E.d6.push({r,gg,fl,path,top:r.y+12,hh:r.h-24})}
+   const lastX=E.d6[8].r.x+s.dw/2;
+   if(!M){line([P(s.src.x+s.src.w,C(s.src).y),P(s.bus,C(s.src).y),P(s.bus,busY),P(lastX,busY)],'',g)}else line([P(C(s.src).x,s.src.y+s.src.h),P(C(s.src).x,busY),P(lastX,busY)],'',g);
+   E.d6.forEach((o,i)=>{const dl=line([P(o.r.x+o.r.w/2,busY),P(o.r.x+o.r.w/2,o.r.y)],'thin',g);if(i===8)o.dl=dl});
+   E.new6=tx(E.d6[8].r.x+s.dw,s.y0+s.dh+24,'新加入的盘',f.sm,'st sage-t','end',g);
+   const ga=s.gauge;tx(ga.x,ga.y-24,'空闲空间',f.sm,'ink2-t','start',g);el('rect',{x:ga.x,y:ga.y-9,width:ga.w,height:18,rx:4,class:'track'},g);
+   E.gf=el('rect',{x:ga.x,y:ga.y-9,width:ga.w,height:18,rx:4,class:'fill sage'},g);
+   const lw=ga.x+ga.w*0.25;el('line',{x1:lw,y1:ga.y-16,x2:lw,y2:ga.y+16,class:'ln hot'},g);tx(lw+6,ga.y-24,'下限',f.sm,'rose-t','start',g);
+   E.gm=tx(ga.x+ga.w,ga.y-24,'',f.sm,'st','end',g);
+   E.pick=tx(M?L.W-16:C(s.src).x,M?s.src.y+s.src.h/2:s.src.y+s.src.h+24,'条带放置考虑空间和耐久度',f.sm,'st slate-t',M?'end':'middle',g);
+   if(!M){E.pick.setAttribute('x',s.src.x);E.pick.setAttribute('text-anchor','start')}
+   tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
  },
  modes:[]
 };
-/* 电压刻度：level 为档号（0 起，从下往上），h 为水位高度 */
-function setLevel(o,yv,cls){const d=L_().lad;const top=clamp(yv,d.y,d.y+d.h);o.fill.setAttribute('y',top.toFixed(1));o.fill.setAttribute('height',(d.y+d.h-top).toFixed(1));o.lvl.setAttribute('y1',top.toFixed(1));o.lvl.setAttribute('y2',top.toFixed(1));if(cls)o.lvl.setAttribute('class','ln thick '+cls)}
-const bandY=(o,k)=>{const d=L_().lad;return d.y+d.h-(k+0.5)*o.bh};
-const bits=(o,k)=>o.n===2?(k?'0':'1'):k.toString(2).padStart(4,'0');
-const SEQ=[[1,11],[0,4],[1,14],[0,7],[1,2],[0,9]];
-SCENE.modes[0]={frame(t){const E=E_(),per=1.8,i=Math.floor(t/per),u=t-i*per,a=SEQ[i%SEQ.length],p=SEQ[(i+SEQ.length-1)%SEQ.length];
-  E.lad.forEach((o,k)=>{const y0=i?bandY(o,p[k]):bandY(o,0),y1=bandY(o,a[k]),v=sm(ramp(u,0.1,0.7));setLevel(o,y0+(y1-y0)*v,'lit');
-   settx(o.val,(u>0.7?'读出 ':'')+(u>0.7?bits(o,a[k]):''),'num ink-t');if(u>0.7)o.val.textContent=H.T('读出')+' '+bits(o,a[k]);settx(o.st,'')})}};
-SCENE.modes[1]={frame(t){const E=E_(),per=6,u=t%per,d=L_().lad,drop=d.h/16*1.15;
-  E.lad.forEach(o=>{const k=o.n===2?1:9,yb=bandY(o,k);
-   o.fr.setAttribute('class','box '+(u<0.6?'hot':''));
-   if(u<0.6){setLevel(o,d.y+d.h,'hot');settx(o.val,'擦除','st rose-t');settx(o.st,'');return}
-   const prog=sm(ramp(u,0.6,1.3)),leak=sm(ramp(u,1.8,4.2));const y=d.y+d.h+(yb-d.y-d.h)*prog+drop*leak;
-   setLevel(o,y,leak>0?(o.n===2?'ok':'hot'):'lit');
-   const now=Math.floor((d.y+d.h-y)/o.bh);
-   if(u<1.8){o.val.textContent=H.T('读出')+' '+bits(o,k);o.val.setAttribute('class','num ink-t');settx(o.st,'')}
-   else if(u<4.2)settx(o.st,'电子漏出','st ink3-t'),o.val.textContent=H.T('读出')+' '+bits(o,clamp(now,0,o.n-1));
-   else{o.val.textContent=H.T('读出')+' '+bits(o,clamp(now,0,o.n-1));settx(o.st,now===k?'读对':'读错','st '+(now===k?'sage-t':'rose-t'))}})}};
-/* 第 3 步：同步写，客户端等回话才发下一块 */
-SCENE.modes[2]={enter(S){S.v.p=[pk(),pk()];S.v.a=[dot('ok'),dot('ok')];S.v.m=[];for(let i=0;i<12;i++)S.v.m.push(pk())},
- frame(t,S){const E=E_(),per=12,u=t%per,fa=loopFade(u,per);
-  E.s3.forEach((o,k)=>{const cyc=k?1.4:3.2,i=Math.floor(u/cyc),w=u-i*cyc,cx=o.cli.x+o.cli.w,tgt=k?o.scm:o.q;
-   const to=[P(cx,o.y),P(tgt.x,o.y)],back=[P(tgt.x,o.y),P(cx,o.y)];const tr=0.5,dw=k?0.15:1.9;const done=u>0.3?Math.floor((u-0)/cyc)+(w>tr+dw+tr?1:0):0;
-   if(w<tr)run(S.v.p[k],to,w,0,tr);else if(w<tr+dw){put(S.v.p[k],P(tgt.x+(k?20:24),o.y),fa)}else hide(S.v.p[k]);
-   if(w>tr+dw&&w<tr+dw+tr){run(S.v.a[k],back,w,tr+dw,tr)}else hide(S.v.a[k]);
-   (k?o.sb:o.qb).setAttribute('class','box '+(w>tr&&w<tr+dw?(k?'on':'hot'):''));
-   if(!k)settx(o.qs,w>tr&&w<tr+dw?'写入中':'','st rose-t');
-   settx(o.cn,H.T('已确认')+' '+done,'st '+(k?'sage-t':'rose-t'));o.cn.textContent=H.T('已确认')+' '+done;o.cn.style.opacity=fa;
-   if(k){/* 回话之后，块再在后台迁往 QLC */
-    for(let j=0;j<S.v.m.length;j++){const t0=j*cyc+tr+dw+tr+0.1,m=S.v.m[j];const pth=[P(o.scm.x+o.scm.w,o.y),P(o.q.x,o.y)];const r=run(m,pth,u,t0,1.2,{post:0});if(r>=0&&r<=1)m.style.opacity=fa}
-    settx(o.bg,'后台迁移','ink3-t')}})}};
-/* 第 4 步 */
-SCENE.modes[3]={enter(S){S.v.b=pk('rose',10,L_().s4.page.h-8,2)},
- frame(t,S){const E=E_(),s=L_().s4,pg=s.page,cy=pg.y+pg.h/2;
-  const r=run(S.v.b,[P(pg.x-60,cy),P(pg.x+10,cy)],t,0.2,0.6,{post:1});if(t<0.2)hide(S.v.b);else if(t<0.4)S.v.b.style.opacity=ramp(t,0.2,0.4);
-  E.pageFill.setAttribute('width',(pg.w*sm(ramp(t,0.9,1.4))).toFixed(1));E.pageMsg.style.opacity=ramp(t,1.3,1.7);
-  E.bars.forEach((o,i)=>{const v=sm(ramp(t,1.8+i*0.7,2.6+i*0.7));o.b.setAttribute('width',(o.w*v).toFixed(1));o.t.setAttribute('x',(s.bx+o.w*v+10).toFixed(1));o.t.style.opacity=ramp(t,2.4+i*0.7,2.7+i*0.7)})}};
-/* 第 5 步 */
-SCENE.modes[4]={frame(t){const E=E_();E.s5a.forEach((r,i)=>r.style.opacity=ramp(t,0.1+i*0.06,0.3+i*0.06));E.s5b.forEach((r,i)=>r.style.opacity=ramp(t,1.4+i*0.15,1.6+i*0.15));}};
-/* 第 6 步：每 0.45 秒来一个零碎更新进 SCM；整页写入在盘间分散 */
-SCENE.modes[5]={enter(S){S.v.u=[];for(let i=0;i<24;i++)S.v.u.push(dot('ochre',L_().dr));S.v.b=[];for(let i=0;i<16;i++)S.v.b.push(pk('',L_().mobile?24:26,L_().mobile?18:20))},
- frame(t,S){const E=E_(),L=L_(),s=L.s6,per=12.5,u=t%per,fa=loopFade(u,per),sy=C(s.src).y;
-  S.v.u.forEach((d,i)=>{const ts=0.2+i*0.45,inn=P(s.scm.x+20+(i%6)*((s.scm.w-40)/5),C(s.scm).y+((i>>1)%2?10:-10));
-   const r=run(d,[P(s.src.x+s.src.w,sy),P(s.scm.x,sy),inn],u,ts,0.8,{post:1});if(r>1)d.style.opacity=fa*(1-ramp(u,ts+0.8,ts+1.6));else if(r>=0)d.style.opacity=fa});
-  const wear=[0,0,0,0,0,0,0,0];
-  S.v.b.forEach((b,j)=>{const ts=1.4+j*0.62;const k=j%E.dr6.length;
-   const o=E.dr6[k];const r=run(b,o.path,u,ts,0.9,{post:0});if(r>1)wear[k]+=1;else if(r>=0)b.style.opacity=fa});
-  E.dr6.forEach((o,i)=>{const h=o.hh*Math.min(1,wear[i]*0.42)*fa;o.fl.setAttribute('y',(o.top+o.hh-h).toFixed(1));o.fl.setAttribute('height',h.toFixed(1))})}};
+SCENE.modes[0] = {
+ frame(t) {
+  const u = t % 6;
+  E_().levels.forEach((rows, i) => {
+   const selected = Math.min(rows.length - 1, Math.floor(u * rows.length / 4));
+   rows.forEach((row, j) => row.style.opacity = (j === selected ? 0.88 : 0.12) * loopFade(u - i * 0.1, 6));
+  });
+ }
+};
+const rowsOf=()=>E_().g;
+function clearGrid(){rowsOf().forEach(r=>{r.fr.setAttribute('class','box soft');r.fr.style.fill='none';r.row.forEach(p=>setp(p,''))})}
+/* 第 2 步：写空页 → 改写（新页、旧页作废）→ 擦除块 2 整块擦掉 */
+SCENE.modes[1]={frame(t){const per=9,u=t%per,R=rowsOf();clearGrid();
+  for(let c=0;c<8;c++)setp(R[1].row[c],'x');
+  for(let c=0;c<6;c++)if(u>0.3+c*0.35)setp(R[0].row[c],'s');
+  if(u>3.0){setp(R[0].row[6],'s');setp(R[0].row[2],'x')}
+  if(u>3.8){setp(R[0].row[7],'s');setp(R[0].row[4],'x')}
+  const er=u>5.2&&u<6.0;if(er)R[1].fr.setAttribute('class','box hot');R[1].fr.style.fill='none';
+  if(u>5.6)R[1].row.forEach(p=>setp(p,''));
+  const E=E_();if(u<2.6)settx(E.msg,'写入空页','st slate-t');else if(u<5)settx(E.msg,'改写：写到新的空页，旧页作废','st ink2-t');else settx(E.msg,'整块擦除','st rose-t');E.msg.style.opacity=loopFade(u,per)}};
+/* 第 3 步：块 1、2 混着有效页和作废页；有效页复制成分身搬到块 3，旧块整块擦除 */
+const V2=[[0,1],[0,3],[0,6],[1,0],[1,4],[1,5],[1,7]];
+SCENE.modes[2]={enter(S){S.v.c=V2.map(()=>pk('cp',L_().g1.pw-10,L_().g1.ph-10))},
+ frame(t,S){const E=E_(),L=L_(),o=L.g1,per=10,u=t%per,fa=loopFade(u,per),R=rowsOf();clearGrid();
+  const stale=(r,c)=>!V2.some(v=>v[0]===r&&v[1]===c);
+  for(let r=0;r<2;r++)for(let c=0;c<8;c++)setp(R[r].row[c],stale(r,c)?'x':'s');
+  let moved=0;const guides=[];const rx=o.x+8*(o.pw+o.gx)+(L.mobile?-2:14);
+  V2.forEach(([r,c],i)=>{const src=R[r].row[c],dst=R[2].row[i],ts=0.8+i*0.55;const gy=src.y+o.ph+o.gy/2,gy3=dst.y-o.gy/2;
+   const path=[src.c,P(src.c.x,gy),P(rx,gy),P(rx,gy3),P(dst.c.x,gy3),dst.c];
+   const q=run(S.v.c[i],path,u,ts,0.9,{post:0});if(q>=0&&q<=1){S.v.c[i].style.opacity=fa;guides.push('M'+path.map(p=>p.x+' '+p.y).join(' L'))}if(q>1){moved++;setp(dst,'s')}});
+  E.copyGuide.setAttribute('d',guides.join(' '));
+  const er=u>5.3&&u<6.1;[0,1].forEach(r=>{if(er){R[r].fr.setAttribute('class','box hot');R[r].fr.style.fill='none'}if(u>5.7)R[r].row.forEach(p=>setp(p,''))});
+  if(u<5.2)settx(E.msg,'把有效页搬到新块','st slate-t');else settx(E.msg,'擦掉旧块','st rose-t');E.msg.style.opacity=fa;
+  E.c2.textContent=H.T('盘内多搬')+' '+moved+' '+H.T('页')+(u>6.3?' · '+H.T('页搬移是额外写入'):'');E.c2.style.opacity=fa}};
+/* 第 4 步：块紧挨着装满 1 MB，然后由 SSD 并行写入多颗芯片 */
+SCENE.modes[3]={enter(S){S.v.p=[0,1,2,3].map(()=>pk('',L_().mobile?60:80,L_().mobile?16:18))},
+ frame(t,S){const E=E_(),L=L_(),s=L.s3,sb=s.sub,M=L.mobile,per=8,u=t%per,fa=loopFade(u,per);
+  E.ack3.style.opacity=ramp(u,0.25,0.6)*fa;
+  E.ch3.forEach((c,i)=>{const v=sm(ramp(u,0.9+i*0.3,1.2+i*0.3));c.e.setAttribute('width',Math.max(0,(c.r.w-2)*v).toFixed(1));c.e.style.opacity=fa*(1-0.5*ramp(u,3.2,3.5))});
+  E.sub.setAttribute('class','box '+(u>2.5&&u<3.4?'ok':''));E.sub.style.fill='none';
+  S.v.p.forEach((p,i)=>{const o=E.chip[i];const path=!M?[P(sb.x+sb.w,C(sb).y),P(s.ssd.x+10,C(sb).y),P(s.ssd.x+10,E.hub.y),E.hub,P(o.c.x,E.hub.y),P(o.c.x,o.r.y+o.r.h),o.c]:[P(sb.x+sb.w-30,sb.y+sb.h),P(sb.x+sb.w-30,E.hub.y),P(o.c.x,E.hub.y),o.c];
+   const q=run(p,path,u,3.4,1.6,{post:0});if(q>=0&&q<=1)p.style.opacity=fa;o.pg.setAttribute('class','cel'+(q>1?' s':''));});
+  E.par3.style.opacity=u>5.0?fa:0}};
+/* 第 5 步：1 MB 一层层叠满 1 GB；回收时整条一起删 */
+SCENE.modes[4]={enter(S){S.v.c=[pk('cp'),pk('cp')]},
+ frame(t,S){const E=E_(),per=9,u=t%per,fa=loopFade(u,per);
+  E.lay.forEach((r,i)=>{
+   const on=u>0.3+i*0.4&&u<6.8, invalid=u>3.55&&i!==1&&i!==5;
+   r.setAttribute('class','cel'+(on?(invalid?' o':' s'):''));
+  });
+  E.copy4.forEach((p,i)=>{
+   const arrived=run(S.v.c[i],p,u,4.25+i*0.4,1.15,{post:1});
+   if(arrived>1)S.v.c[i].style.opacity=fa;
+  });
+  E.eb.forEach(p=>p.setAttribute('class','ln '+(u>=6.8?'hot thick':'thin')));
+  const label=u<3.55?'写入':u<4.25?'失效块保留至整段回收':u<6.8?'CNode 迁出有效块':'回收时释放整段';
+  settx(E.m4,label,u<6.8?'st slate-t':'st rose-t');E.m4.style.opacity=fa;
+  E.c4.textContent=!L_().mobile&&u>6.8?H.T('整段对齐，减少盘内搬移'):'';E.c4.style.opacity=fa}};
+/* 第 6 步：写满三条 → 临时文件删除 → 回收：上路要搬、下路整条为空 */
+SCENE.modes[5]={frame(t){const E=E_(),per=10,u=t%per,fa=loopFade(u,per);const del=u>4.0;
+  E.s5.forEach((o,k)=>{o.cells.forEach((c,i)=>{const w=u>0.2+i*0.13;const kind=o.seq[i];c.setAttribute('class','cel'+(w&&!(del&&kind==='o')?' '+kind:''));c.style.opacity=fa});
+   const gc=u>5.4;o.fr.forEach((f,j)=>{let cls='box soft';if(gc){if(k===0)cls='box hot';else if(j===0)cls='box ok'}f.setAttribute('class',cls);f.style.fill='none'});
+   const n=k===0?Math.round(16*sm(ramp(u,5.6,7))):0;o.cn.textContent=gc?H.T('回收时要搬的块')+' '+n:'';o.cn.setAttribute('class','st '+(k?'sage-t':'rose-t'));o.cn.style.opacity=fa});
+  if(u>4&&u<5.4)settx(E.m5,'临时文件删除','st ochre-t');else if(u>=5.4)settx(E.m5,'整条为空，直接回收','st sage-t');else settx(E.m5,'');E.m5.style.opacity=fa}};
+/* 第 7 步：示意优先使用磨损较少且空间较多的盘；新盘加入后先多分到条带；空闲空间低于下限才回收 */
+SCENE.modes[6]={enter(S){S.v.p=[];for(let i=0;i<22;i++)S.v.p.push(pk('',L_().mobile?16:20,L_().mobile?14:16))},
+ frame(t,S){const E=E_(),L=L_(),per=14,u=t%per,fa=loopFade(u,per);
+  const wear=[3.2,2.8,3.1,2.9,3.0,3.3,2.7,3.0,0];
+  const used=[3,2,3,1,4,3,1,2,0];
+  const newOn=u>3.5;E.d6[8].gg.style.opacity=newOn?fa*ramp(u,3.5,4):0;if(E.d6[8].dl)E.d6[8].dl.style.opacity=newOn?fa:0;E.new6.style.opacity=newOn?fa:0;
+  let free=1;S.v.p.forEach((p,j)=>{const ts=0.6+j*0.55;let k=-1;for(let q=0;q<9;q++){if(q===8&&ts<4.2)continue;if(k<0||wear[q]+used[q]<wear[k]+used[k])k=q}
+   const o=E.d6[k];const r=run(p,o.path,u,ts,0.7,{post:0});if(r>=0&&r<=1)p.style.opacity=fa;if(r>1){wear[k]+=0.5;used[k]+=1;free-=0.045}});
+  /* 空闲空间：降到下限就回收一次 */
+  const reclaimed=12.45;
+  const fr=free+0.45*ramp(u,reclaimed,13.35);
+  E.gf.setAttribute('width',(L.s6.gauge.w*clamp(fr,0,1)).toFixed(1));E.gf.setAttribute('class','fill '+(fr<0.35?'ochre':'sage'));
+  settx(E.gm,u<11.3?(free<0.25?'空闲低于下限':''):u<reclaimed?'迁出有效数据并回收':'回收后空闲恢复',u<reclaimed?'st rose-t':'st sage-t');E.gm.style.opacity=fa;
+  E.d6.forEach((o,i)=>{const h=o.hh*Math.min(1,wear[i]/8)*fa;o.fl.setAttribute('y',(o.top+o.hh-h).toFixed(1));o.fl.setAttribute('height',h.toFixed(1))})}};
 return SCENE;
 }
 
@@ -171,11 +243,9 @@ function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-'+ID);host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class',ID+'-scene');svg.setAttribute('role','img');host.appendChild(svg);
-const btn=document.createElement('button');btn.className='ssa-tgl';btn.type='button';btn.hidden=true;host.appendChild(btn);
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const mq=matchMedia('(max-width: 640px)');
-const qs=new URLSearchParams(location.search);
-let L=null,E={},S={items:[],v:{}},step=0,T0=0,raf=0,paused=!!opts.paused,pausedAt=0,dead=false,tgl=false;
+let L=null,E={},S={items:[],v:{}},step=0,T0=0,raf=0,paused=!!opts.paused,pausedAt=0,dead=false;
 /* 文字：中文原样，英文取 EN；手机版放不下时取 ENM 的短写法 */
 function T(s){if(lang()!=='en')return s;if(L&&L.mobile&&ENM[s]!==undefined)return ENM[s];return EN[s]!==undefined?EN[s]:s}
 /* ---------- 画图小工具 ---------- */
@@ -205,48 +275,44 @@ function run(p,pts,t,t0,dur,opt){opt=opt||{};const u=(t-t0)/dur;
   if(u<=1){put(p,along(pts,sm(u)),1);return u}
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return 1.5}
 const loopFade=(u,per)=>u>per-0.45?clamp((per-u)/0.45,0,1):u<0.35?clamp(u/0.35,0,1):1;
-const H={el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
+function estW(s,fs){let w=0;for(const ch of s)w+=/[\u2e80-\uffff]/.test(ch)?fs:fs*0.56;return w}
+const H={estW,el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,E:()=>E,S:()=>S,L:()=>L};
 const SCENE=makeScene(H);
 /* ---------- 引擎 ---------- */
 function applyVis(){
   svg.setAttribute('data-step',step+1);
   svg.querySelectorAll('[data-show]').forEach(g=>g.classList.toggle('hid',!g.dataset.show.split(' ').includes(String(step+1))));
-  const TG=SCENE.toggle;btn.hidden=!(TG&&TG.step===step);
-  if(TG&&L.btn){btn.style.left=(L.btn.x/L.W*100)+'%';btn.style.top=(L.btn.y/L.H*100)+'%'}
 }
-function setBtn(){const TG=SCENE.toggle;if(!TG)return;btn.textContent='⇄ '+T(TG.label[tgl?1:0]);btn.setAttribute('aria-label',T(TG.aria)+T(TG.now[tgl?1:0]))}
 function newSim(){S.items.forEach(o=>o.remove());S={items:[],v:{}}}
 function loop(now){const t=Math.max(0,(now-T0)/1000);SCENE.modes[step].frame(t,S);raf=requestAnimationFrame(loop)}
-function go(){cancelAnimationFrame(raf);if(paused||dead||reduce)return;raf=requestAnimationFrame(loop)}
+function go(){cancelAnimationFrame(raf);if(paused||dead||reduced.matches)return;raf=requestAnimationFrame(loop)}
 function enter(i){
   step=i;cancelAnimationFrame(raf);newSim();
   SCENE.reset&&SCENE.reset(S);
   applyVis();
   const m=SCENE.modes[i];m.enter&&m.enter(S);
-  if(reduce){m.frame((SCENE.still||[])[i]||2,S);return}
+  if(reduced.matches){m.frame((SCENE.still||[])[i]||2,S);return}
   m.frame(0,S);T0=pausedAt=performance.now();go();
 }
-if(SCENE.toggle){const TG=SCENE.toggle;tgl=qs.get(TG.param)===TG.on;
-  btn.addEventListener('click',()=>{tgl=!tgl;setBtn();if(step===TG.step)enter(step)})}
 function build(){L=SCENE.layout(mq.matches);svg.innerHTML='';E={};svg.setAttribute('viewBox',`0 0 ${L.W} ${L.H}`);
   SCENE.build(L,E);E.pk=el('g',{class:'pklayer'});SCENE.over&&SCENE.over(L,E);
-  setBtn();svg.setAttribute('aria-label',T(ARIA));if(opts.onLayout)opts.onLayout(L.W/L.H,L.mobile)}
+  svg.setAttribute('aria-label',T(ARIA));if(opts.onLayout)opts.onLayout(L.W/L.H,L.mobile)}
 function rebuild(){build();enter(step)}
 mq.addEventListener('change',rebuild);
+reduced.addEventListener('change',rebuild);
 const onLang=()=>rebuild();document.addEventListener('ss-lang',onLang);
 build();enter(0);
 const ctrl={
   show(i){enter(Math.max(0,Math.min(SCENE.modes.length-1,i)))},
   pause(){if(paused)return;paused=true;cancelAnimationFrame(raf);pausedAt=performance.now()},
   resume(){if(!paused)return;paused=false;T0+=performance.now()-pausedAt;go()},
-  destroy(){dead=true;cancelAnimationFrame(raf);mq.removeEventListener('change',rebuild);document.removeEventListener('ss-lang',onLang);host.innerHTML='';host.classList.remove('ssa-'+ID)},
+  destroy(){dead=true;cancelAnimationFrame(raf);mq.removeEventListener('change',rebuild);reduced.removeEventListener('change',rebuild);document.removeEventListener('ss-lang',onLang);host.innerHTML='';host.classList.remove('ssa-'+ID);delete host.__anim},
   ratio(){return L.W/L.H},
-  step(){return step},
-  sim(){return {step,t:(performance.now()-T0)/1000,v:S.v,n:S.items.length,tgl}}
+  step(){return step}
 };
 host.__anim=ctrl;
 return ctrl;
 }
 window.SSAnim=window.SSAnim||{};
-window.SSAnim[ID]={steps:6,mount:mount};
+window.SSAnim[ID]={steps:7,mount:mount};
 })();

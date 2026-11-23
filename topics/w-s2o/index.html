@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WEKA Snap-to-Object · Shan's Stack</title>
-<meta name="description" content="Snap-to-Object preserves a complete, recoverable snapshot in object storage and can reuse data already in the target bucket.">
+<title>WEKA Snap-to-Object for Cloud Pause and Restart · Shan's Stack</title>
+<meta name="description" content="Snap-to-Object retains a recoverable snapshot in an object bucket so a filesystem can be recreated by locator after cloud instances stop.">
 <!-- share:start -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Shan's Stack">
-<meta property="og:title" content="WEKA Snap-to-Object · Shan's Stack">
-<meta property="og:description" content="Snap-to-Object preserves a complete, recoverable snapshot in object storage and can reuse data already in the target bucket.">
+<meta property="og:title" content="WEKA Snap-to-Object for Cloud Pause and Restart · Shan's Stack">
+<meta property="og:description" content="Snap-to-Object retains a recoverable snapshot in an object bucket so a filesystem can be recreated by locator after cloud instances stop.">
 <meta property="og:url" content="https://shans-stack.github.io/topics/w-s2o/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="WEKA Snap-to-Object · Shan's Stack">
-<meta name="twitter:description" content="Snap-to-Object preserves a complete, recoverable snapshot in object storage and can reuse data already in the target bucket.">
+<meta name="twitter:title" content="WEKA Snap-to-Object for Cloud Pause and Restart · Shan's Stack">
+<meta name="twitter:description" content="Snap-to-Object retains a recoverable snapshot in an object bucket so a filesystem can be recreated by locator after cloud instances stop.">
 <!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/w-s2o.css?v=462f4c5c">
+<link rel="stylesheet" href="../../assets/anim/w-s2o.css?v=66b5ff81">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -40,8 +40,8 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="WEKA Snap-to-Object">WEKA Snap-to-Object</h1>
-        <p class="meta"><span data-en="5 steps · Object Storage, Backup, Disaster Recovery">5 步 · 对象存储、备份、容灾</span><span id="intalks"></span></p></div>
+      <div><h1 data-en="WEKA Snap-to-Object for Cloud Pause and Restart">WEKA Snap-to-Object 与云上暂停恢复</h1>
+        <p class="meta"><span data-en="6 steps · Object storage, locators, and cloud recovery">6 步 · 对象存储、定位符与云上恢复</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -58,6 +58,8 @@
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj-1&quot;&gt;WEKA Docs · Manage Snap-to-Object (CLI)&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj-1">WEKA 文档 · 管理 Snap-to-Object（CLI）</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj&quot;&gt;WEKA Docs · Manage Snap-to-Object (GUI)&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj">WEKA 文档 · 管理 Snap-to-Object（GUI）</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/data-storage&quot;&gt;WEKA Docs · Data Lifecycle&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/data-storage">WEKA 文档 · 数据生命周期</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/5.0/weka-filesystems-and-object-stores/snap-to-obj#cloud-pause-restart&quot;&gt;WEKA · Cloud Pause and Restart (Snap-to-Object)&lt;/a&gt;"><a href="https://docs.weka.io/5.0/weka-filesystems-and-object-stores/snap-to-obj#cloud-pause-restart">WEKA · 云上暂停与恢复（Snap-to-Object）</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/getting-started-with-weka/weka-rest-api-and-equivalent-cli-commands#snapshots&quot;&gt;WEKA REST API and CLI · Snapshot Upload&lt;/a&gt;"><a href="https://docs.weka.io/getting-started-with-weka/weka-rest-api-and-equivalent-cli-commands#snapshots">WEKA REST API 和 CLI · 快照上传</a></li>
       <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -80,12 +82,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-s2o.js?v=b476508a"></script>
+<script src="../../assets/anim/w-s2o.js?v=32d276d5"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "w-s2o",
@@ -115,6 +117,11 @@ window.SS_TOPIC_CFG={
       t: ["区分快照备份与日常分层", "Snapshot Backup and Routine Tiering"],
       d: ["Snap-to-Object 保存指定恢复点，日常分层管理活动文件的数据放置。", "Snap-to-Object preserves a selected recovery point. Routine tiering manages where live file data resides."],
       b: [["\u003cp>分层按策略在 SSD 与对象存储间管理数据，文件仍可通过同一命名空间访问。Snap-to-Object 则以选定的只读快照为单位保存可恢复状态。两种机制可以使用同一对象存储。\u003c/p>"], ["\u003cp>Tiering manages data placement across SSDs and object storage according to policy. The files remain accessible through the same namespace. Snap-to-Object preserves the recoverable state of a selected read-only snapshot. Both mechanisms can use the same object store.\u003c/p>"]]
+    },
+    {
+      t: ["用途：云上暂停与恢复", "Use Case: Cloud Pause and Restart"],
+      d: ["上传完成后可以停止云实例，对象桶保留恢复点，供后续重建文件系统。", "After the upload completes, the cloud instances can stop while the object bucket retains a recovery point for recreating the filesystem."],
+      b: [["<p>快照按文件系统保存。需要保留的每个文件系统都有自己的恢复点。上传完成后，原实例可停止提供文件访问，桶中的对象和访问权限仍是恢复的前提。</p>", "<p>相同或更高版本的现有或新建集群按定位符重建文件系统。目标部署提供实例、网络与集群资源，应用接回目标集群后访问所选时间点的文件。该点之后的修改需要更晚的已上传快照。</p>"],["<p>Snapshots are scoped to a filesystem, and each filesystem that must be retained needs its own recovery point. Once the upload is complete, the original instances can stop serving files. Recovery depends on retaining the objects and access to the bucket.</p>", "<p>An existing or new cluster at the same or a later version recreates the filesystem by locator. The destination supplies the instances, networking, and cluster resources. Applications reconnect to the destination and access files from the selected point in time. Any later changes require a later uploaded snapshot.</p>"]]
     }
   ]
 };
@@ -123,7 +130,7 @@ window.SS_TOPIC_CFG={
 document.addEventListener('ss-lang', ({detail}) => {
   const controls = document.querySelector('.nav .langs');
   const english = detail === 'en';
-  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const labels = english ? ['SC', 'TC', 'EN'] : ['简', '繁', 'EN'];
   const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
   controls.setAttribute('aria-label', english ? 'Language' : '语言');
   controls.querySelectorAll('button').forEach((button, i) => {
@@ -134,6 +141,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

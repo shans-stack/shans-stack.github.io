@@ -109,7 +109,6 @@
     }
 
     const cloud = ['DGX Cloud', 'DGX Cloud'];
-    const dsx = ['DSX OS', 'DSX OS'];
     const training = ['训练作业', 'Training Run'];
 
     const scenes = [
@@ -151,13 +150,10 @@
         highlight(box([...d, 156, 50], [['验证结果', 'Validated Design']]), 2.65);
       },
       m => {
-        const [a, b, c] = m ? [[180, 100], [180, 201], [180, 305]]
-          : [[139, 156], [390, 156], [641, 156]];
-        route(m ? [[180, 130], [180, 171]] : [[231, 156], [298, 156]], .4);
-        route(m ? [[180, 231], [180, 275]] : [[482, 156], [549, 156]], 2);
-        highlight(box([...a, 184, 60], [['验证过的流程', 'Validated Practices']]), .1);
-        highlight(box([...b, 184, 60], [dsx, ['开放模块', 'Open Modules']], 'accent'), 1.2);
-        highlight(box([...c, 184, 60], [['合作伙伴', 'Partner AI Factory']]), 2.8);
+        const [a, b] = m ? [[180, 116], [180, 270]] : [[211, 156], [569, 156]];
+        route(m ? [[180, 146], [180, 240]] : [[335, 156], [445, 156]], .65, 1.1);
+        highlight(box([...a, 248, 60], [['已验证的方案', 'Validated Design']]), .15);
+        highlight(box([...b, 248, 60], [['参考实现', 'Reference Implementation']]), 1.7);
       },
       m => {
         const lanes = [

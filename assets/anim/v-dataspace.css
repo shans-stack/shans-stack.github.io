@@ -16,3 +16,14 @@
 }
 .v-dataspace-scene .v-dataspace-stale{fill:var(--surface);stroke:var(--l1);stroke-width:2;stroke-dasharray:2 2}
 @media (641px <= width <= 720px){.topic-v-dataspace .mhost{aspect-ratio:var(--ar)}}
+
+.v-dataspace-scene .v-dataspace-wan{stroke:var(--l1);stroke-dasharray:4 5}
+.v-dataspace-scene .v-dataspace-lag,.v-dataspace-scene .v-dataspace-lag-tile{fill:var(--l1)}
+.v-dataspace-scene .v-dataspace-ready,.v-dataspace-scene .v-dataspace-ready-tile{fill:var(--l5)}
+@media (max-width:640px){
+  body.present:has(.v-dataspace-scene) .stage{padding:12px}
+  .stage:has(.v-dataspace-scene) .figbox{margin-block:6px}
+  .stage:has(.v-dataspace-scene) .cap{display:block;margin-top:6px}
+  .stage:has(.v-dataspace-scene) h2{font-size:23px;line-height:1.2}
+  .stage:has(.v-dataspace-scene) .desc{font-size:16px;line-height:1.35}
+}

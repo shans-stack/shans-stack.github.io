@@ -5,7 +5,7 @@
 .w-dpdk-panel-label{font-weight:500}
 .w-dpdk-note{fill:var(--ink3)}
 .w-dpdk-box{fill:var(--surface);stroke:var(--rule2);stroke-width:1.25}
-.w-dpdk-panel{fill:color-mix(in srgb,var(--l4) 5%,var(--surface));stroke:var(--rule);stroke-width:1.2}
+.w-dpdk-panel{fill:color-mix(in srgb,var(--rule) 28%,var(--surface));stroke:var(--rule);stroke-width:1.2}
 .w-dpdk-node[data-tone=active] .w-dpdk-box{fill:color-mix(in srgb,var(--l5) 13%,var(--surface));stroke:var(--l5)}
 .w-dpdk-node[data-tone=kernel] .w-dpdk-box{fill:color-mix(in srgb,var(--l4) 12%,var(--surface));stroke:var(--l4)}
 .w-dpdk-node[data-tone=off] .w-dpdk-box{fill:var(--bg);stroke-dasharray:4 4}

@@ -7,16 +7,11 @@
 .n-blackwell-figure .n-blackwell-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
 .n-blackwell-figure .n-blackwell-quiet{stroke-dasharray:4 3}
 .n-blackwell-figure .n-blackwell-boundary{fill:none;stroke:var(--rule2);stroke-dasharray:5 4}
-.n-blackwell-figure .n-blackwell-wire,.n-blackwell-figure .n-blackwell-callout{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-blackwell-figure .n-blackwell-wire{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .n-blackwell-figure .n-blackwell-directed{stroke:var(--l4)}
 .n-blackwell-figure .n-blackwell-secondary-wire{stroke-dasharray:3 4}
-.n-blackwell-figure .n-blackwell-callout{stroke:var(--rule2);stroke-width:1.1}
 .n-blackwell-figure .n-blackwell-packet{fill:var(--l4);stroke:var(--surface)}
 .n-blackwell-figure .n-blackwell-origin{fill:var(--bg);stroke:var(--l4);stroke-width:1.5}
-.n-blackwell-figure .n-blackwell-tray{fill:var(--rule);stroke:var(--rule2);stroke-width:.8}
-.n-blackwell-figure .n-blackwell-utility{fill:var(--blk)}
-.n-blackwell-figure .n-blackwell-coolant{fill:none;stroke:var(--l6);stroke-width:2}
-.n-blackwell-figure .n-blackwell-switch-tray{fill:color-mix(in srgb,var(--l4) 23%,var(--bg));stroke:var(--l4)}
 .n-blackwell-figure .n-blackwell-active{fill:color-mix(in srgb,var(--l4) 19%,var(--bg));stroke:var(--l4);stroke-width:1.9}
 @media(max-width:640px){
   .n-blackwell-figure svg{font-size:16px}
@@ -28,4 +23,7 @@
 }
 @media(640px < width <=720px){
   body.topic-n-blackwell .mhost{aspect-ratio:var(--ar)}
+}
+@media(max-width:440px){
+  body.topic-n-blackwell .hd .wrap{flex-wrap:wrap;gap:0 8px}
 }

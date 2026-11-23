@@ -41,7 +41,7 @@
     <div class="crumb" id="crumb"></div>
     <div class="tt">
       <div><h1 data-en="CNode: The Stateless Node That Runs All the Storage Logic">CNode：跑全部存储逻辑、自己不存数据的计算节点</h1>
-        <p class="meta"><span data-en="7 steps · protocols, SCM, virtual IP">7 步 · 协议、SCM、虚拟 IP</span><span id="intalks"></span></p></div>
+        <p class="meta"><span data-en="6 steps · protocols, SCM, virtual IP">6 步 · 协议、SCM、虚拟 IP</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -86,12 +86,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-cnode.js?v=c3045799"></script>
+<script src="../../assets/anim/v-cnode.js?v=b65cf042"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-cnode",
@@ -113,35 +113,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>CNode 是 VAST 集群里跑存储软件的服务器。传统存储控制器干的活，在 VAST 里全部放在 CNode 上：各种访问协议（NFS、SMB、S3、块等，都是 VAST 自己实现的，不是套开源网关）、纠删码（把数据切块并算出校验块，坏几块盘也能恢复）、数据缩减（压缩、去重、相似性缩减）。</p>",
-     "<p>CNode 以容器方式运行。VAST 没有单独的元数据服务器，元数据放在共享的 SCM 盘上，由 CNode 直接去读。</p>"
+     "<p>CNode 以容器方式运行。VAST 没有单独的元数据服务器，元数据放在共享的 SCM 盘上，由 CNode 直接去读。独立部署的 CNode 只带启动盘，数据盘位于 DBox，见 <a href=\"../v-dase/\">DASE</a>。</p>"
     ],
     [
      "<p>A CNode is the server that runs the storage software in a VAST cluster. Everything a traditional storage controller does runs on CNodes in VAST: the access protocols (NFS, SMB, S3, block and others, all implemented by VAST rather than wrapped around open-source gateways), erasure coding (splitting data into pieces and computing parity pieces so data survives several failed drives) and data reduction (compression, deduplication and similarity-based reduction).</p>",
-     "<p>CNodes run as containers. VAST has no separate metadata server. Metadata sits on shared SCM drives, and CNodes read it directly.</p>"
-    ]
-   ]
-  },
-  {
-   "t": [
-    "CNode 的无状态计算角色",
-    "The Stateless Compute Role of a CNode"
-   ],
-   "d": [
-    "CNode 除了启动盘没有别的盘，读数据要经 NVMe-oF 到 DBox 里去取。",
-    "Apart from a boot drive a CNode has no drives; to read data it fetches it from a DBox over NVMe-oF."
-   ],
-   "s": [
-    "不存数据",
-    "No data"
-   ],
-   "b": [
-    [
-     "<p>CNode 只带一块启动盘，不装数据盘。全部数据和元数据都放在 DBox 里的盘上。客户端读一个文件时，CNode 经 NVMe-oF 网络（把 NVMe 盘挂到网络上，让别的服务器像用本地盘一样访问）从 DBox 的盘里取数据，再交给客户端。</p>",
-     "<p>所以 CNode 坏了可以直接换一台，不需要先把数据搬走或者重建。这和 DASE 那一站讲的「盘由所有节点共用」是同一件事的两面。</p>"
-    ],
-    [
-     "<p>A CNode carries only a boot drive and no data drives. All data and metadata sit on the drives in DBoxes. When a client reads a file, the CNode fetches the data from DBox drives over the NVMe-oF network (which puts NVMe drives on the network so other servers can use them like local drives) and hands it to the client.</p>",
-     "<p>So a failed CNode can simply be replaced, with no data to move or rebuild first. This is the other side of the shared drives described at the DASE stop.</p>"
+     "<p>CNodes run as containers. VAST has no separate metadata server. Metadata sits on shared SCM drives, and CNodes read it directly. A standalone CNode carries only a boot drive, with data drives in DBoxes. See <a href=\"../v-dase/\">DASE</a>.</p>"
     ]
    ]
   },
@@ -367,6 +343,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

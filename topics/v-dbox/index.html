@@ -21,7 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/v-dbox.css?v=4bd0d0e1">
+<link rel="stylesheet" href="../../assets/anim/v-dbox.css?v=f545bfd2">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -41,7 +41,7 @@
     <div class="crumb" id="crumb"></div>
     <div class="tt">
       <div><h1 data-en="DBox: An All-Flash Enclosure with No Single Point of Failure">DBox：内部没有单点的全闪存储箱</h1>
-        <p class="meta"><span data-en="7 steps · DNode, SCM, QLC, PCIe">7 步 · DNode、SCM、QLC、PCIe</span><span id="intalks"></span></p></div>
+        <p class="meta"><span data-en="5 steps · DNode, SCM, QLC, PCIe">5 步 · DNode、SCM、QLC、PCIe</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -82,12 +82,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-dbox.js?v=572c714a"></script>
+<script src="../../assets/anim/v-dbox.js?v=0717c3d6"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-dbox",
@@ -179,59 +179,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>某个 DNode 下线时，PCIe 交换芯片把它的通道重新映射给还活着的那个 DNode，于是全部盘都由一个 DNode 接着服务，切换过程中原子写的一致性保持不变（一次写要么全写进去，要么全没写）。</p>",
-     "<p>一个控制器坏了，不会丢掉一半盘。这正是 DBox 和「一台服务器挂一组盘」的区别：服务器坏了，它下面的盘就访问不到了。</p>"
+     "<p>一个控制器坏了，不会丢掉一半盘。这正是 DBox 和「一台服务器挂一组盘」的区别：服务器坏了，它下面的盘就访问不到了。机箱内路径切换与条带的故障域是两层机制，相关布局见<a href=\"../v-classic/\">Classic 与 DBox-HA</a>和<a href=\"../v-wec/\">宽条带与本地可解码纠删码</a>。</p>"
     ],
     [
      "<p>When a DNode goes offline, the PCIe switch remaps its lanes to the surviving DNode, so one DNode carries on serving every drive. Atomic write consistency holds throughout the switchover (a write is either fully written or not written at all).</p>",
-     "<p>A failed controller does not mean losing half the drives. That is the difference between a DBox and a server with its own set of drives: when that server fails, the drives under it become unreachable.</p>"
-    ]
-   ]
-  },
-  {
-   "t": [
-    "DBox 机箱组件故障域",
-    "DBox Component Failure Domains"
-   ],
-   "d": [
-    "冗余 DNode 路径在单个控制器失效时保持对 SSD 的访问。",
-    "Redundant DNode paths preserve SSD access after a single controller failure."
-   ],
-   "s": [
-    "一次故障一块盘",
-    "One fault, one drive"
-   ],
-   "b": [
-    [
-     "<p>DBox 的冗余 DNode 和供电路径用于保持对机箱内 SSD 的访问。</p>",
-     "<p>Classic 布局以 SSD 为故障域。需要在整台 DBox 离线时维持数据访问的配置使用 DBox-HA 布局。</p>"
-    ],
-    [
-     "<p>Redundant DNodes and power paths maintain access to the SSDs inside a DBox.</p>",
-     "<p>The Classic layout treats SSDs as failure domains. Configurations requiring data access after an entire DBox goes offline use the DBox-HA layout.</p>"
-    ]
-   ]
-  },
-  {
-   "t": [
-    "按 SSD 分布纠删码条带",
-    "Erasure-Code Striping Across SSDs"
-   ],
-   "d": [
-    "Classic 布局支持将同一条带的块分布到集群中的不同 SSD。",
-    "The Classic layout can distribute blocks of a stripe across SSDs in the cluster."
-   ],
-   "s": [
-    "SSD 条带",
-    "SSD Striping"
-   ],
-   "b": [
-    [
-     "<p>纠删码将数据块与校验块分布到多个设备。每个故障域可容纳的块数取决于所需的故障容忍能力。</p>",
-     "<p>冗余路径允许 Classic 布局以 SSD 为故障域。对于固定的校验块数，更宽的条带具有更低的校验占比。</p>"
-    ],
-    [
-     "<p>Erasure coding distributes data and parity blocks across devices. The number of blocks allowed per failure domain depends on the required protection level.</p>",
-     "<p>Redundant paths let the Classic layout use SSDs as failure domains. For a fixed number of parity blocks, wider stripes have a lower parity fraction.</p>"
+     "<p>A failed controller does not mean losing half the drives. That is the difference between a DBox and a server with its own set of drives: when that server fails, the drives under it become unreachable. Path failover inside an enclosure and stripe failure domains are separate mechanisms. See <a href=\"../v-classic/\">Classic and DBox-HA</a> and <a href=\"../v-wec/\">Wide Stripes and Locally Decodable Codes</a> for the layouts.</p>"
     ]
    ]
   },
@@ -344,6 +296,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

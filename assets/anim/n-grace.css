@@ -29,3 +29,6 @@
 @media(prefers-reduced-motion:reduce){
   .n-grace-figure .n-grace-packet{display:none}
 }
+@media(max-width:440px){
+  body.topic-n-grace .hd .wrap{flex-wrap:wrap;gap:0 8px}
+}

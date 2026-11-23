@@ -54,7 +54,7 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf&quot;&gt;WEKA · NeuralMesh Architecture White Paper, Pages 8–11 and 20&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf">WEKA · NeuralMesh 架构白皮书，第 8 至 11、20 页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf&quot;&gt;WEKA · NeuralMesh Architecture White Paper, Pages 8–12 and 20&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf">WEKA · NeuralMesh 架构白皮书，第 8 至 12、20 页</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/networking-in-wekaio&quot;&gt;WEKA Documentation · Networking&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/networking-in-wekaio">WEKA 文档 · 网络</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/about&quot;&gt;WEKA Documentation · Introduction to NeuralMesh&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/about">WEKA 文档 · NeuralMesh 简介</a></li>
       <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
@@ -79,12 +79,12 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-user.js?v=f856cd95"></script>
+<script src="../../assets/anim/w-user.js?v=5206d16c"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "w-user",
@@ -131,37 +131,37 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "DPDK 接管网络收发",
-    "Network I/O Through DPDK"
+    "计算服务确定数据布局",
+    "Compute Services Resolve the Data Layout"
    ],
    "d": [
-    "使用 DPDK 时，前端经用户态网络库访问网卡队列，绕过常规 Linux 网络协议栈。",
-    "With DPDK, the frontend uses a user-space library to access NIC queues and bypass the regular Linux network stack."
+    "用户态计算服务处理元数据与布局，并把读取工作交给相关盘服务。",
+    "User-space Compute services handle metadata and placement and direct reads to the relevant Drive services."
    ],
    "b": [
     [
-     "<p>DPDK 是一套数据包处理库和驱动。网卡队列组织网络发送和接收工作，用户态服务可通过 DPDK 直接处理队列。在客户端的内核 UDP 模式下，网络收发仍走 Linux 网络栈。</p>"
+     "<p>前端可经 DPDK 与后端通信。计算服务根据文件布局确定读取涉及的盘服务，并能向多个盘服务发出读取工作。</p>"
     ],
     [
-     "<p>DPDK is a set of libraries and drivers for packet processing. NIC queues organize transmit and receive work, and a user-space service can access them through DPDK. In client kernel UDP mode, network I/O still goes through the Linux stack.</p>"
+     "<p>The frontend can communicate with the backend over DPDK. Compute services use the file layout to identify the Drive services involved in a read and can issue reads to multiple Drive services.</p>"
     ]
    ]
   },
   {
    "t": [
-    "计算服务与盘服务",
-    "Compute and Drive Services"
+    "盘服务访问本地 NVMe SSD",
+    "Drive Services Access Local NVMe SSDs"
    ],
    "d": [
-    "后端计算服务处理文件系统元数据与布局，盘服务负责访问物理 NVMe SSD。",
-    "Backend Compute services handle file system metadata and placement, while Drive services access physical NVMe SSDs."
+    "盘服务在用户态管理发往相应 NVMe SSD 的 I/O。",
+    "Drive services run in user space and manage I/O to their respective NVMe SSDs."
    ],
    "b": [
     [
-     "<p>计算和盘服务也在用户空间运行。计算服务可向多个盘服务发出读取工作。盘服务管理相应 SSD 的 I/O，NVMe 是这些 SSD 使用的存储接口。</p>"
+     "<p>NVMe 是这些 SSD 使用的存储接口。收到计算服务请求后，各盘服务管理其对应 SSD 的读取，形成从文件布局到物理设备的路径。</p>"
     ],
     [
-     "<p>Compute and Drive services also run in user space. Compute services can issue reads to multiple Drive services. Each Drive service manages I/O to its SSDs, which use the NVMe storage interface.</p>"
+     "<p>NVMe is the storage interface used by these SSDs. After receiving requests from Compute services, each Drive service handles reads to its SSDs, connecting the file layout to the physical devices.</p>"
     ]
    ]
   },
@@ -190,7 +190,7 @@ window.SS_TOPIC_CFG={
 document.addEventListener('ss-lang', ({detail}) => {
   const controls = document.querySelector('.nav .langs');
   const english = detail === 'en';
-  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const labels = english ? ['SC', 'TC', 'EN'] : ['简', '繁', 'EN'];
   const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
   controls.setAttribute('aria-label', english ? 'Language' : '语言');
   controls.querySelectorAll('button').forEach((button, i) => {
@@ -201,6 +201,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>

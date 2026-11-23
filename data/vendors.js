@@ -14,7 +14,7 @@ SS.vendors = [
             see:['v-dase','v-cnode','v-dbox']},
     ec:{zh:['VAST 把故障域缩到单块盘，条带可以铺满整套系统的盘，校验占的空间很少。再加上本地可解码纠删码，坏一块盘时只要读剩余数据的一小部分就能补回来。'],
         en:['VAST shrinks the failure domain to a single drive, so a stripe can span the drives of the whole system and parity takes very little space. With locally decodable codes, a failed drive is rebuilt by reading only a small part of the remaining data.'],
-        see:['v-wec','v-ldc']},
+        see:['v-wec']},
     gds:{zh:['VAST 支持经 NFS over RDMA 的 GPUDirect Storage，数据从 DBox 经网卡直接进 GPU 显存。配合多路径，一个挂载点可以同时用上多块网卡和多台 CNode。'],
          en:['VAST supports GPUDirect Storage over NFS over RDMA, so data moves from the DBoxes through the network card straight into GPU memory. With multipath, one mount can use several network cards and several CNodes at once.'],
          see:['v-nfsrdma','v-mpath']},

@@ -7,16 +7,11 @@
 .n-bwu-figure .n-bwu-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
 .n-bwu-figure .n-bwu-quiet{stroke-dasharray:4 3}
 .n-bwu-figure .n-bwu-boundary{fill:none;stroke:var(--rule2);stroke-dasharray:5 4}
-.n-bwu-figure .n-bwu-wire,.n-bwu-figure .n-bwu-callout{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-bwu-figure .n-bwu-wire{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .n-bwu-figure .n-bwu-directed{stroke:var(--l4)}
 .n-bwu-figure .n-bwu-secondary-wire{stroke-dasharray:3 4}
-.n-bwu-figure .n-bwu-callout{stroke:var(--rule2);stroke-width:1.1}
 .n-bwu-figure .n-bwu-packet{fill:var(--l4);stroke:var(--surface)}
 .n-bwu-figure .n-bwu-origin{fill:var(--bg);stroke:var(--l4);stroke-width:1.5}
-.n-bwu-figure .n-bwu-tray{fill:var(--rule);stroke:var(--rule2);stroke-width:.8}
-.n-bwu-figure .n-bwu-utility{fill:var(--blk)}
-.n-bwu-figure .n-bwu-coolant{fill:none;stroke:var(--l6);stroke-width:2}
-.n-bwu-figure .n-bwu-switch-tray{fill:color-mix(in srgb,var(--l4) 23%,var(--bg));stroke:var(--l4)}
 .n-bwu-figure .n-bwu-active{fill:color-mix(in srgb,var(--l4) 19%,var(--bg));stroke:var(--l4);stroke-width:1.9}
 @media(max-width:640px){
   .n-bwu-figure svg{font-size:16px}
@@ -28,4 +23,7 @@
 }
 @media(640px < width <=720px){
   body.topic-n-bwu .mhost{aspect-ratio:var(--ar)}
+}
+@media(max-width:440px){
+  body.topic-n-bwu .hd .wrap{flex-wrap:wrap;gap:0 8px}
 }

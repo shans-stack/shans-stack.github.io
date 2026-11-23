@@ -19,8 +19,17 @@
     ], [[0, 1, "复制单个文件|Copy one file", "file", 0.4, 0]]],
     ["只读历史视图和可写工作分支|Read-only history and writable working branch", "pair", [
       ["只读快照|Read-only snapshot", ["历史状态 · A、B|Saved state · A, B"], "plain", 0],
-      ["可写分支|Writable branch", [["初始 · A、B|Initial · A, B", "plain", 0, 2.55, 0], ["写入后 · A、B′|After write · A, B′", "good", 2.55, 9, 0]], "key", 1.45]
+      ["可写克隆|Writable clone", [["初始 · A、B|Initial · A, B", "plain", 0, 2.55, 0], ["写入后 · A、B′|After write · A, B′", "good", 2.55, 9, 0], ["独立访问点|Own access point", "plain", 0, 9, 1]], "key", 1.45]
     ], [[0, 1, "派生|Duplicate", "signal", 0.4, 0]]],
+    ["克隆保持可写，另建快照保存 B′|The clone stays writable and a new snapshot preserves B′", "pair", [
+      ["可写克隆|Writable clone", ["当前状态 · A、B′|Current state · A, B′", "仍可写入|Still writable"], "plain", 0],
+      ["新只读快照|New read-only snapshot", ["保留 · A、B′|Preserved · A, B′"], "key", 1.45]
+    ], [[0, 1, "捕获|Capture", "signal", 0.4, 0]]],
+    ["另建的只读快照可以上传，可写克隆保留在文件系统|Upload the new read-only snapshot while the writable clone stays in the filesystem", "join", [
+      ["只读快照|Snapshot", ["时间点 · A、B′|Saved · A, B′"], "plain", 0],
+      ["可写克隆|Writable clone", ["不参与上传|Excluded"], "muted", 0],
+      ["对象存储|Object store", [["等待上传|Awaiting upload", "plain", 0, 1.45, 0], ["已保存 · A、B′|Stored · A, B′", "good", 1.45, 9, 0]], "key", 0]
+    ], [[0, 2, "上传|Upload", "file", 0.4, 0], [1, 2, "", "idle", 0.4, 0]]],
     ["在 I/O 暂停时恢复目标文件系统|Restore the target while its I/O is paused", "join", [
       ["只读快照|Snapshot", ["数据和元数据|Data + metadata"], "plain", 0],
       ["应用 I/O|Application I/O", ["暂停|Paused"], "muted", 0],
@@ -184,5 +193,5 @@
   }
 
   window.SSAnim = window.SSAnim || {};
-  window.SSAnim[id] = {steps: 5, mount};
+  window.SSAnim[id] = {steps: 7, mount};
 })();

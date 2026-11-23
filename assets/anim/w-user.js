@@ -20,12 +20,11 @@
     link('driver','front',{delay:1200,duration:925});
   },
   ({node, link}) => {
-    node('front',[120,115],[190,78],['前端','Frontend']);
-    node('dpdk',[438,115],[190,207],['用户态 DPDK','User-space DPDK'],{tone:'active',wide:true});
-    node('nic',[754,115],[190,336],['网卡队列','NIC queue']);
-    node('kernel',[440,270],[190,444],['常规 Linux 网络栈','Linux networking'],{tone:'off',wide:true});
-    link('front','dpdk',{duration:960});
-    link('dpdk','nic',{delay:960,duration:960});
+    node('compute',[155,184],[190,114],['计算服务','Compute'],{sub:['布局与元数据','Metadata & layout'],wide:true});
+    node('a',[710,105],[100,365],['盘服务 A','Drive A']);
+    node('b',[710,263],[280,365],['盘服务 B','Drive B']);
+    link('compute','a',{port:-12});
+    link('compute','b',{port:12});
   },
   ({node, link}) => {
     node('compute',[135,184],[190,70],['计算服务','Compute'],{sub:['布局与元数据','Metadata & layout'],wide:true});
@@ -236,7 +235,7 @@
     run();
     document.fonts.ready.then(() => { if (!destroyed) rebuild(); });
 
-    return {
+    const control = {
       show,
       pause() { paused = true; cancelAnimationFrame(frame); },
       resume() { paused = false; run(); },
@@ -247,10 +246,13 @@
         reduce.removeEventListener('change', motionChanged);
         document.removeEventListener('ss-lang', rebuild);
         svg.remove();
+        delete host.__anim;
       },
       ratio,
       step: () => step,
     };
+    host.__anim = control;
+    return control;
   }
 
   window.SSAnim = window.SSAnim || {};

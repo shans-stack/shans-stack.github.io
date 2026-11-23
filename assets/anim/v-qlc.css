@@ -5,10 +5,6 @@
 .ssa-v-qlc .v-qlc-scene text{dominant-baseline:central}
 .ssa-v-qlc .v-qlc-scene .vis{transition:opacity .4s}
 .ssa-v-qlc .v-qlc-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
-.ssa-v-qlc .ssa-tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
-.ssa-v-qlc .ssa-tgl[hidden]{display:block;opacity:0;pointer-events:none}
-.ssa-v-qlc .ssa-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
-@media (max-width:640px){.ssa-v-qlc .ssa-tgl{font-size:14px;padding:6px 12px}}
 .ssa-v-qlc .box{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .3s,fill .3s}
 .ssa-v-qlc .box.soft{stroke:var(--rule)}
 .ssa-v-qlc .box.dash{stroke-dasharray:6 5}
@@ -76,4 +72,8 @@
   .stage:has(.ssa-v-qlc) h2{font-size:24px}
   .stage:has(.ssa-v-qlc) .desc{font-size:17px}
   .stage .figbox:has(.ssa-v-qlc){margin-block:8px}
+}
+
+@media (width > 640px) and (width <= 720px) {
+  body:has(main[data-station="v-qlc"]) .mhost { aspect-ratio: var(--ar); }
 }

@@ -129,55 +129,6 @@
       caption(endNote);
     }
 
-    function rack(name, groups, note, {secondCompute = false, baseboard} = {}) {
-      const m = mobile();
-      const [x, y, w, h] = m ? [20, 68, 99, 234] : [102, 65, 167, 210];
-      const [callX, callY, pitch] = m ? [151, 89, 64] : [361, 87, 57];
-      rect(x, y, w, h, 'panel rack');
-      const rear = x + w - 12;
-      const left = x + 10;
-      const inner = rear - left - 7;
-      const yOf = i => y + 12 + i * (h - 24) / 12;
-      const trayHeight = (h - 24) / 12 - 4;
-      for (let i = 0; i < 12; i++) {
-        const isSwitch = i >= 5 && i <= 7;
-        if (i === 11 && !secondCompute) {
-          rect(left, yOf(i), inner, trayHeight, 'tray utility');
-          continue;
-        }
-        const tray = rect(left, yOf(i), inner, trayHeight, isSwitch ? 'tray switch-tray' : 'tray');
-        if (i === 2 || i === 6 || i === 9) emphasize(tray, i === 2 ? .35 : i === 6 ? 1.1 : 1.9);
-      }
-
-      const top = yOf(2) + trayHeight / 2, mid = yOf(6) + trayHeight / 2;
-      const bottom = yOf(9) + trayHeight / 2;
-      const edge = left + inner;
-      if (!secondCompute) path([[left - 4, top], [left - 4, yOf(11) + trayHeight / 2]], 'coolant');
-      const route = [[edge, top], [rear, top], [rear, mid], [edge, mid]];
-      const onward = [[edge, mid], [rear, mid], [rear, bottom], [edge, bottom]];
-      transfer(route, .45, {duration: .95});
-      transfer(onward, 1.45, {duration: .95});
-      groups.forEach(([label, sub], i) => {
-        const lineY = callY + i * pitch;
-        const anchorY = [top, mid, secondCompute ? bottom : yOf(11) + trayHeight / 2][i];
-        const elbow = x + w + 8 + i * 5;
-        path([[x + w, anchorY], [elbow, anchorY], [elbow, lineY], [callX - 8, lineY]], 'callout');
-        text(callX, lineY, label, 'label start');
-        text(callX, lineY + 22, sub, 'small start');
-      });
-      text(x + w / 2, m ? y - 14 : y + h + 15, name, 'small');
-      if (baseboard) {
-        const bx = m ? 34 : callX, by = m ? 326 : 262;
-        rect(bx, by - 7, 29, 14, 'panel');
-        for (let i = 0; i < 3; i++) rect(bx + 4 + i * 8, by - 2.5, 5, 5, 'tray');
-        text(bx + 38, by, baseboard, 'small start');
-      }
-      if (note) {
-        if (m) text(180, 326, note, 'small');
-        else text(callX, 262, note, 'small start');
-      }
-    }
-
     function draw() {
       const [width, height] = sizes[Number(mobile())];
       scene.replaceChildren();
@@ -235,11 +186,8 @@
       ], {note: ['第三代 Transformer Engine','Third-Gen Transformer Engine']}),
       () => switched('NVLink 6 Switch', ['GPU B · 专家','GPU B · Expert'], ['GPU C', ['未被选中','Not Selected']],
         ['同一 NVLink 域','One NVLink Domain']),
-      () => rack('Vera Rubin', [
-        [['计算托盘','Compute Trays'],['Vera + Rubin','Vera + Rubin']],
-        [['NVLink 6 交换托盘','NVLink 6 Switch Trays'],['72 GPU 同域','72 GPUs in One Domain']],
-        [['液冷与供电','Cooling and Power'],['整柜部件','Rack Infrastructure']]
-      ], ['2026-11-17 确认批量出货','Volume Shipments Confirmed Nov 17, 2026'])
+      () => box(mobile() ? 180 : 390, mobile() ? 181 : 157, 260, 68,
+        ['Vera Rubin NVL72', 'Rubin GPU'])
     ];
 
     text(22, 28, product, 'heading start', headingLayer);

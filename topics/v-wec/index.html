@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wide-stripe Erasure Coding · Shan's Stack</title>
-<meta name="description" content="With the failure domain shrunk to a single drive, stripes can span the whole cluster, so parity takes very little space.">
+<title>VAST Erasure Coding: Wide Stripes and Locally Decodable Codes · Shan's Stack</title>
+<meta name="description" content="Wide stripes reduce the parity fraction, and locally decodable codes reduce the reads needed to rebuild one missing block.">
 <!-- share:start -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Shan's Stack">
-<meta property="og:title" content="Wide-stripe Erasure Coding · Shan's Stack">
-<meta property="og:description" content="With the failure domain shrunk to a single drive, stripes can span the whole cluster, so parity takes very little space.">
+<meta property="og:title" content="VAST Erasure Coding: Wide Stripes and Locally Decodable Codes · Shan's Stack">
+<meta property="og:description" content="Wide stripes reduce the parity fraction, and locally decodable codes reduce the reads needed to rebuild one missing block.">
 <meta property="og:url" content="https://shans-stack.github.io/topics/v-wec/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Wide-stripe Erasure Coding · Shan's Stack">
-<meta name="twitter:description" content="With the failure domain shrunk to a single drive, stripes can span the whole cluster, so parity takes very little space.">
+<meta name="twitter:title" content="VAST Erasure Coding: Wide Stripes and Locally Decodable Codes · Shan's Stack">
+<meta name="twitter:description" content="Wide stripes reduce the parity fraction, and locally decodable codes reduce the reads needed to rebuild one missing block.">
 <!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/v-wec.css?v=9f1c8f77">
+<link rel="stylesheet" href="../../assets/anim/v-wec.css?v=5521c7c8">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -32,7 +32,11 @@
   <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
   <nav class="nav" aria-label="主导航" data-en-label="Main">
     <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
-    <button class="lang" type="button" data-lang-toggle>EN</button>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language" data-noconv>
+      <button type="button" data-lang-set="zh" data-en="SC" aria-label="简体中文" data-en-label="Simplified Chinese" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" data-en="TC" aria-label="繁體中文" data-en-label="Traditional Chinese" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" aria-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
   </nav>
 </div></header>
 
@@ -40,7 +44,7 @@
   <div class="top">
     <div class="crumb" id="crumb"></div>
     <div class="tt">
-      <div><h1 data-en="Wide-Stripe Erasure Coding">宽条带纠删码</h1>
+      <div><h1 data-en="VAST Erasure Coding: Wide Stripes and Locally Decodable Codes">VAST 纠删码：宽条带与本地可解码纠删码</h1>
         <p class="meta"><span data-en="6 steps · VAST, erasure coding, DBox, stripes">6 步 · VAST、纠删码、DBox、条带</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
@@ -54,10 +58,11 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li data-en="&lt;a href=&quot;https://www.vastdata.com/whitepaper&quot;&gt;VAST AI OS White Paper: Data Protection and Locally Decodable Codes&lt;/a&gt;"><a href="https://www.vastdata.com/whitepaper">VAST AI OS 白皮书：数据保护及本地可解码纠删码</a></li>
+      <li data-en="&lt;a href=&quot;https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=65&quot;&gt;VAST AI OS White Paper: Data Protection and Locally Decodable Codes&lt;/a&gt;"><a href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=65">VAST AI OS 白皮书：数据保护及本地可解码纠删码</a></li>
       <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs/understanding-vast-capacity&quot;&gt;VAST: Understanding VAST Capacity&lt;/a&gt;"><a href="https://docs.vastdata.com/docs/understanding-vast-capacity">VAST 容量文档：Classic 配置的条带示例</a></li>
       <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-4/docs/en/dbox-high-availability&quot;&gt;VAST 5.4: DBox High Availability&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-4/docs/en/dbox-high-availability">VAST 5.4 管理指南：DBox 高可用</a></li>
-      <li data-en="Animations are schematic. Drive and piece counts are not a real configuration.">动画为示意，图中盘数与块数不代表实际配置。</li>
+      <li data-en="&lt;a href=&quot;https://www.usenix.org/legacy/event/fast09/tech/full_papers/plank/plank.pdf&quot;&gt;USENIX FAST: Reed–Solomon Erasure Coding (Section 2)&lt;/a&gt;"><a href="https://www.usenix.org/legacy/event/fast09/tech/full_papers/plank/plank.pdf">USENIX FAST：Reed–Solomon 纠删码（第 2 节）</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
 </main>
@@ -79,16 +84,16 @@
 </div></footer>
 
 <script src="../../data/lines.js?v=ea549bad"></script>
-<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/stations.js?v=bd950853"></script>
 <script src="../../data/maps.js?v=3919b7c0"></script>
-<script src="../../data/talks.js?v=1f9fd966"></script>
-<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/talks.js?v=de2cda57"></script>
+<script src="../../data/vendors.js?v=ed1fff55"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-wec.js?v=09abc387"></script>
+<script src="../../assets/anim/v-wec.js?v=cf518f71"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-wec",
- "ar": [960/476,480/716],
+ "ar": [960/476,480/610],
  "steps": [
   {
    "t": [
@@ -99,90 +104,32 @@ window.SS_TOPIC_CFG={
     "条带由数据块和校验块组成，剩余块可用于恢复丢失的块。",
     "A stripe contains data and parity blocks. Surviving blocks can be used to recover missing blocks."
    ],
-   "s": [
-    "数据块与校验块",
-    "Data and Parity"
-   ],
    "b": [
     [
-     "<p>纠删码将数据划分成数据块，并计算用于恢复的校验块。这些块共同组成一个条带，可分布到不同 SSD。恢复能力由编码及块的放置方式决定。</p>",
-     "<p>在校验块数相同时，较宽的条带包含更多数据块，因此校验占条带容量的比例较低。</p>"
+     "<p>纠删码把数据划分成数据块，并计算用于恢复的校验块。两者共同组成一个条带，可分布到不同设备。恢复能力由编码及块的放置方式决定。</p>"
     ],
     [
-     "<p>Erasure coding splits data into blocks and computes parity blocks for recovery. Together the blocks form a stripe and can be distributed across SSDs. Recovery capability depends on the code and block placement.</p>",
-     "<p>For a fixed number of parity blocks, a wider stripe contains more data blocks and has a lower parity fraction.</p>"
+     "<p>Erasure coding splits data into blocks and calculates parity blocks for recovery. Together they form a stripe that can span multiple devices. Recovery capability depends on the code and block placement.</p>"
     ]
    ]
   },
   {
    "t": [
-    "共享无架构中的服务器故障域",
-    "Server Failure Domains in Shared-Nothing Storage"
+    "从服务器故障域到单块 SSD",
+    "From Server to SSD Failure Domains"
    ],
    "d": [
-    "当 SSD 只能通过所属服务器访问时，服务器失效可使该条带的多个块同时不可用。",
-    "When SSDs are accessible only through their owning server, a server failure can make several stripe blocks unavailable at once."
-   ],
-   "s": [
-    "服务器故障域",
-    "Server Failure Domain"
+    "服务器失效可能使多个本地盘同时不可访问。采用高可用 DBox 的 DASE Classic 可将单块 SSD 作为故障域。",
+    "A server failure can make several local drives inaccessible at once. DASE Classic with highly available DBoxes can treat each SSD as a failure domain."
    ],
    "b": [
     [
-     "<p>在共享无架构中，各存储节点管理其本地驱动器。节点失效时，系统可能同时失去该节点内多个驱动器的访问路径。</p>",
-     "<p>若条带在同一节点放置多个块，该节点失效会造成多个块同时不可用。条带跨节点的分布取决于要容忍的故障范围和校验布局。</p>"
+     "<p>故障域是一项故障可同时影响的设备范围。在共享无架构中，若同一条带在一台服务器上有多个块，该服务器失效时这些块会一起离线。</p>",
+     "<p>在采用高可用 DBox 的 DASE Classic 中，冗余访问路径将条带的故障域缩小到单块 SSD。整箱离线对应的布局见<a href=\"../v-classic/\">Classic 与 DBox-HA</a>。</p>"
     ],
     [
-     "<p>In a shared-nothing architecture, each storage node manages its local drives. A node failure can remove access to multiple drives in that node at once.</p>",
-     "<p>If a stripe places multiple blocks on one node, a node failure makes those blocks unavailable together. Placement across nodes depends on the intended failure tolerance and the parity layout.</p>"
-    ]
-   ]
-  },
-  {
-   "t": [
-    "冗余 DNode 与 SSD 故障域",
-    "Redundant DNodes and SSD Failure Domains"
-   ],
-   "d": [
-    "DBox 的冗余访问路径使 Classic 布局可将单个 SSD 作为故障域。",
-    "Redundant DBox access paths allow the Classic layout to treat an individual SSD as a failure domain."
-   ],
-   "s": [
-    "SSD 故障域",
-    "SSD Failure Domain"
-   ],
-   "b": [
-    [
-     "<p>VAST 白皮书描述的高可用 DBox 使用冗余 DNode 与供电路径。DNode 发生故障时，冗余路径可保持对 SSD 的访问。</p>",
-     "<p>VAST Classic 因此按单个 SSD 布置条带。整台 DBox 丧失访问属于另一故障域，由 DBox-HA 布局处理。</p>"
-    ],
-    [
-     "<p>The highly available DBox described in the VAST white paper uses redundant DNodes and power paths. Redundant paths maintain access to SSDs after a DNode failure.</p>",
-     "<p>VAST Classic therefore places stripes across individual SSDs. Loss of access to an entire DBox is a separate failure domain addressed by the DBox-HA layout.</p>"
-    ]
-   ]
-  },
-  {
-   "t": [
-    "Classic 条带跨 SSD 分布",
-    "Classic Stripes Span SSDs"
-   ],
-   "d": [
-    "VAST 容量文档中的满配 Classic DBox 示例，最宽条带为 146 个数据块加 4 个校验块（截至 2026-11-23）。",
-    "In the VAST capacity guide’s fully populated Classic DBox examples, the widest stripe has 146 data and 4 parity blocks (as of 2026-11-23)."
-   ],
-   "s": [
-    "跨 SSD 条带",
-    "Striping Across SSDs"
-   ],
-   "b": [
-    [
-     "<p>Classic 条带可将块分布到多个 DBox 的 SSD，同一 DBox 可以承载同一条带的多个块。VAST 白皮书给出的 146+4 Classic 条带布局可容忍最多 4 块 SSD 同时离线（截至 2026-11-23）。</p>",
-     "<p>VAST 容量文档的满配 DBox 示例为 1 台 36+4、2 台 80+4、3 台 124+4、4 台及以上 146+4（截至 2026-11-23）。</p>"
-    ],
-    [
-     "<p>A Classic stripe can place blocks on SSDs across multiple DBoxes and place more than one block in the same DBox. The VAST white paper describes a 146+4 Classic layout that tolerates up to 4 concurrent SSD outages (as of 2026-11-23).</p>",
-     "<p>The capacity guide’s fully populated DBox examples are 36+4 with 1 DBox, 80+4 with 2, 124+4 with 3, and 146+4 with at least 4 (as of 2026-11-23).</p>"
+     "<p>A failure domain is the set of devices that can be affected by a single fault. In shared-nothing storage, if a server holds several blocks from a stripe, those blocks become inaccessible together when that server fails.</p>",
+     "<p>Redundant access paths in DASE Classic with highly available DBoxes narrow the stripe’s failure domain to an individual SSD. See <a href=\"../v-classic/\">Classic and DBox-HA</a> for enclosure-level protection.</p>"
     ]
    ]
   },
@@ -195,48 +142,80 @@ window.SS_TOPIC_CFG={
     "VAST 白皮书的三个布局示例中，8+2 的校验占 20%，14+2 占 12.5%，146+4 占约 2.7%（截至 2026-11-23）。",
     "The VAST white paper’s layout examples allocate 20% to parity in 8+2, 12.5% in 14+2, and about 2.7% in 146+4 (as of 2026-11-23)."
    ],
-   "s": [
-    "校验占比",
-    "Parity Fraction"
-   ],
    "b": [
     [
-     "<p>校验占比等于校验块数除以条带总块数。约 2.7% 对应白皮书中的 146+4 Classic 示例（截至 2026-11-23）。</p>",
-     "<p>DBox-HA 可在整台 DBox 不可用时继续提供数据访问。VAST 5.4 管理指南限制初始条带在每台 DBox 上放置最多 2 块，条带宽度还受系统上限约束。该指南的 8 台 DBox 示例启用 DBox-HA 后最多使用 16 块，其中 4 块用于校验，校验占比为 25%（截至 2026-11-23）。</p>"
+     "<p>校验占比为校验块数除以条带总块数。校验块数相同时，数据块越多，校验占比越低。白皮书中的 146+4 Classic 示例可容忍最多 4 块 SSD 同时离线（截至 2026-11-23）。</p>",
+     "<p>VAST 容量指南给出的满配 Classic 示例为 1 台 DBox 36+4、2 台 80+4、3 台 124+4、4 台及以上 146+4。整箱容错会限制每台 DBox 的条带块数。VAST 5.4 文档的 8 台 DBox 示例初始条带最多 16 块，其中 4 块为校验，占 25%（截至 2026-11-23）。</p>"
     ],
     [
-     "<p>The parity fraction is the number of parity blocks divided by the total number of blocks in a stripe. About 2.7% refers to the 146+4 Classic example in the white paper (as of 2026-11-23).</p>",
-     "<p>DBox-HA can preserve data access when an entire DBox is unavailable. The VAST 5.4 guide limits initial stripe placement to 2 blocks per DBox, subject to the system stripe-width limit. In its 8-DBox example with DBox-HA enabled, up to 16 blocks participate, 4 of them parity, for a 25% parity fraction (as of 2026-11-23).</p>"
+     "<p>The parity fraction is the number of parity blocks divided by the total number of blocks. For a fixed parity count, more data blocks lower the fraction. The white paper’s 146+4 Classic example tolerates up to four concurrent SSD outages (as of 2026-11-23).</p>",
+     "<p>The capacity guide’s fully populated Classic examples are 36+4 with one DBox, 80+4 with two, 124+4 with three, and 146+4 with at least four. Enclosure-level protection limits the blocks placed on each DBox. In the VAST 5.4 guide’s eight-DBox example, an initial stripe contains up to 16 blocks, with four parity blocks making up 25% (as of 2026-11-23).</p>"
     ]
    ]
   },
   {
    "t": [
-    "宽条带的重建读取与局部解码",
-    "Wide-Stripe Rebuild Reads and Local Decoding"
+    "传统 Reed–Solomon 的重建读取",
+    "Conventional Reed–Solomon Rebuild Reads"
    ],
    "d": [
     "在 VAST 白皮书的 146+4 Reed–Solomon 示例中，恢复一个丢失的数据块需读取 146 个存活块（截至 2026-11-23）。",
     "In VAST’s 146+4 Reed–Solomon example, recovering one missing data block requires reading 146 surviving blocks (as of 2026-11-23)."
    ],
-   "s": [
-    "重建读取",
-    "Rebuild Reads"
+   "b": [
+    [
+     "<p>重建用存活块算出缺失块，再将结果写回存储。以传统 Reed–Solomon 的 146+4 为例，恢复一个数据块需要读取剩余的 145 个数据块和一个校验块。8+2 的同类操作需要读取 8 块（同一解码规则，截至 2026-11-23）。</p>",
+     "<p>整盘失效后，需要对有有效块丢失的条带重复这一过程。总读取量取决于需要恢复的有效数据量。</p>"
+    ],
+    [
+     "<p>A rebuild decodes missing blocks from surviving blocks and writes the results back to storage. In the conventional 146+4 Reed–Solomon example, recovering one data block reads the other 145 data blocks and one parity block. The corresponding operation for 8+2 reads eight blocks (the same decoding rule, as of 2026-11-23).</p>",
+     "<p>After a drive fails, the system repeats this operation for stripes with lost live blocks. Total reads depend on the amount of live data to recover.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "本地可解码纠删码读取约四分之一",
+    "Locally Decodable Codes Read About One Quarter"
+   ],
+   "d": [
+    "在白皮书的 146+4 示例中，单块重建的读取量由 146 块降到 38 块（截至 2026-11-23）。",
+    "In the white paper’s 146+4 example, local decoding reduces the reads for a single missing block from 146 blocks to 38 (as of 2026-11-23)."
    ],
    "b": [
     [
-     "<p>在 VAST 白皮书的假设配置中，使用传统 Reed–Solomon 恢复一个丢失的数据块时，重建读取其余数据块和一个校验块，共读取 146 个块（截至 2026-11-23）。</p>",
-     "<p>读取量随参与解码的块数增加。VAST 使用本地可解码纠删码以减少单块重建所需的读取量。</p>"
+     "<p>VAST 用不同的数据块组合生成校验。局部解码利用这些校验关系，以三份校验替代约四分之三的数据读取，只读取其余所需的存活块。图中高亮的块示意读取范围。</p>",
+     "<p>减少的是单块重建的读取量。该 146+4 Classic 示例仍保留四份校验，可容忍最多四块 SSD 同时离线。</p>"
     ],
     [
-     "<p>In the hypothetical design in the VAST white paper, conventional Reed–Solomon recovery reads the other data blocks and one parity block to reconstruct a missing data block, for 146 blocks in all (as of 2026-11-23).</p>",
-     "<p>Rebuild reads increase with the number of blocks involved in decoding. VAST uses locally decodable codes to reduce the reads needed to reconstruct a single block.</p>"
+     "<p>VAST computes parity over different combinations of data blocks. Local decoding uses three parity blocks to avoid reading about three quarters of the data, then reads the surviving blocks it still needs. The highlighted blocks illustrate the read set.</p>",
+     "<p>This reduces read volume for a single-block rebuild. The 146+4 Classic example retains its four parity blocks and can tolerate up to four concurrent SSD outages.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "向可用 SSD 分散写回重建块",
+    "Distributing Rebuilt Blocks Across Available SSDs"
+   ],
+   "d": [
+    "重建块写入多块可用 SSD 的空闲空间，系统使用分布式容量，无需专用热备盘。",
+    "Rebuilt blocks go to free space across eligible SSDs, using distributed capacity without a dedicated hot spare."
+   ],
+   "b": [
+    [
+     "<p>数据与校验分散放置，选盘考虑可用空间和磨损。对单块 SSD 失效，集群只重建有效数据，优先把重建块写入未参与对应条带的存活 SSD。</p>",
+     "<p>空闲容量足够时，重建可在更换故障盘前完成。若多次故障后没有未参与受损条带的 SSD 可供写入，系统可用更窄的条带重新分布数据，条件是仍有足够空闲空间。</p>"
+    ],
+    [
+     "<p>Data and parity are distributed across drives, with placement taking free space and wear into account. For a single SSD failure, the cluster rebuilds live data into free space on surviving drives outside each affected stripe.</p>",
+     "<p>With sufficient free capacity, a rebuild can finish before the failed drive is replaced. If repeated failures leave no available SSDs outside the damaged stripes, the system can redistribute data into narrower stripes, provided enough free space remains.</p>"
     ]
    ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=fba883cb"></script>
+<script src="../../assets/topic.js?v=c628a714"></script>
 </body>
 </html>
