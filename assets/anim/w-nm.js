@@ -17,18 +17,21 @@
     link('compute','drive',{delay:760,duration:760});
     link('drive','ssd',{delay:1520,duration:760});
   },
-  ({node, link}) => {
+  ({node, link, text}) => {
     node('front', [120,190], [190,70], ['前端服务','Frontend'], {sub:['一次读请求','One read request']});
-    node('ca', [440,105], [100,215], ['计算服务 A','Compute A'], {sub:['文件范围 A','File range A']});
-    node('cb', [440,275], [280,215], ['计算服务 B','Compute B'], {sub:['文件范围 B','File range B']});
-    node('da', [745,105], [100,393], ['盘服务 A','Drive A'], {tone:'active'});
-    node('db', [745,275], [280,393], ['盘服务 B','Drive B'], {tone:'active'});
-    for (const [compute, drive, port] of [
-      ['ca','da',-13], ['cb','db',13],
+    node('ca', [440,136], [100,215], ['计算服务 A','Compute A'], {sub:['文件范围 A','File range A']});
+    node('cb', [440,244], [280,215], ['计算服务 B','Compute B'], {sub:['文件范围 B','File range B']});
+    node('da', [745,62], [100,393], ['盘服务 A','Drive A'], {tone:'active'});
+    node('db', [745,318], [280,393], ['盘服务 B','Drive B'], {tone:'active'});
+    for (const [compute, drive, port, x, side] of [
+      ['ca','da',-13,13,'left'], ['cb','db',13,367,'right'],
     ]) {
-      link('front',compute,{port,duration:850,bounce:true,backAt:2420});
-      link(compute,drive,{delay:850,duration:760,bounce:true,backAt:1660});
+      link('front',compute,{port,duration:850,tone:'signal'});
+      link(compute,drive,{delay:850,duration:760,tone:'signal'});
+      link(drive,'front',{port,delay:1700,duration:1400,via:[265,x],
+        mobileSides:[side,side],mobilePath:[[x,393+port],[x,70+port]]});
     }
+    text([470,362],[190,454],['盘侧结果返回前端（简化）','Drive to frontend (simplified)']);
   },
   ({node, link, text}) => {
     node('lost', [130,100], [100,85], ['故障域 A','Domain A'], {sub:['数据块不可用','Chunk unavailable'], tone:'off'});
@@ -133,7 +136,7 @@
 
       function link(from, to, options = {}) {
         const {tone = 'data', delay = 0, count = 1, duration = 1350, repeat,
-          offset = 0, port = 0, quiet, bounce, backAt, open, via, mobilePath, mobileSides} = options;
+          offset = 0, port = 0, quiet, open, via, mobilePath, mobileSides} = options;
         const a = nodes[from], b = nodes[to];
         const dx = b.x-a.x;
         const dy = b.y-a.y;
@@ -160,18 +163,12 @@
           }, 'track');
         }
         arrow(q,path.getPointAtLength(length-10));
-        if (bounce) arrow(p,path.getPointAtLength(10));
-
-        function makePoints(direction, at) {
-          for (let i = 0; i < count; i++) {
-            const packet = add(packets, 'rect', {
-              x:-5,y:-4,width:10,height:8,rx:2,'data-tone':tone,
-            }, 'packet');
-            flows.push({path,length,packet,start:at+i*100,duration,repeat,direction,open,pos:i});
-          }
+        for (let i = 0; i < count; i++) {
+          const packet = add(packets, 'rect', {
+            x:-5,y:-4,width:10,height:8,rx:2,'data-tone':tone,
+          }, 'packet');
+          flows.push({path,length,packet,start:delay+i*100,duration,repeat,open,pos:i});
         }
-        makePoints(1,delay);
-        if (bounce) makePoints(-1,backAt);
       }
 
       scenes[step]({node, link, panel, text(desk, phone, pair) {
@@ -186,14 +183,14 @@
 
     function render(t) {
       for (const flow of flows) {
-        const {packet,path,length,start,duration,repeat,direction,open,pos} = flow;
+        const {packet,path,length,start,duration,repeat,open,pos} = flow;
         const local = t-start;
         const progress = (repeat && local >= 0 ? local % repeat : local) / duration;
         const fraction = reduce.matches ? 0.82 - pos*0.14 : progress;
         const visible = reduce.matches || (fraction >= 0 && fraction <= 1);
         packet.style.visibility = visible ? 'visible' : 'hidden';
         if (!visible) continue;
-        const at = path.getPointAtLength((direction === 1 ? fraction : 1-fraction)*length);
+        const at = path.getPointAtLength(fraction*length);
         packet.setAttribute('transform', `translate(${at.x} ${at.y})`);
         packet.style.opacity = reduce.matches ? 1 :
           Math.min(1, fraction*12, (1-fraction)*(open ? 8 : 13));

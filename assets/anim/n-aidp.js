@@ -137,9 +137,17 @@
       m => pipeline(m, [[storage, ['源文件', 'Source Files']],
         [['数据平台', 'AI Data Platform'], ['准备与检索', 'Prepare & Retrieve']],
         [['AI 应用', 'AI Application'], ['检索上下文', 'Retrieved Context']]]),
-      m => pipeline(m, [[storage], [['Spectrum-X', 'Spectrum-X'], ['以太网', 'Ethernet']],
-        [['BlueField DPU', 'BlueField DPU'], ['数据访问', 'Data Access']],
-        [['计算 GPU', 'Compute GPU'], ['数据处理', 'Data Processing']]]),
+      m => {
+        const roles = [
+          [storage, ['保存源数据', 'Stores Source Data']],
+          [['Spectrum-X', 'Spectrum-X'], ['传输数据', 'Carries Traffic']],
+          [['BlueField DPU', 'BlueField DPU'], ['加速存储访问', 'Accelerates Access']],
+          [['GPU', 'GPU'], ['数据准备与检索', 'Prepares & Retrieves']],
+        ];
+        const centers = m ? [[90,127],[270,127],[90,243],[270,243]]
+          : [[230,105],[550,105],[230,211],[550,211]];
+        roles.forEach((role, i) => box([...centers[i], m ? 156 : 250, m ? 76 : 74], role));
+      },
       m => pipeline(m, [[['原始文件', 'Source Files']], [['内容提取', 'Extraction']],
         [['向量嵌入', 'Embeddings']], [index]]),
       m => {

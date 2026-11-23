@@ -25,4 +25,8 @@
 .an-dr-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.4; }
 @media (max-width: 640px) {
   .an-dr, .an-dr-note { font-size: 14px; }
+  body.topic-dr.present .stage { padding: 12px; }
+  body.topic-dr .stage .cap { display: block; margin-top: 10px; }
+  body.topic-dr .stage h2 { font-size: 24px; }
+  body.topic-dr .stage .desc { font-size: 17px; line-height: 1.5; }
 }

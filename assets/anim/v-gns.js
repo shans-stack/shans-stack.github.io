@@ -11,7 +11,7 @@ var ID='v-gns';
 var EN={"已缓存":"Cached","申请读租约":"Request read lease","源站集群":"Origin cluster","一套集群":"One cluster","卫星站 1":"Satellite 1","卫星站 2":"Satellite 2","客户端":"Client","本地客户端":"Local client","远处客户端":"Remote client","广域网":"WAN","已读完":"Reads done","示意，不代表实测数字":"Schematic, not measured",
 "保存全量":"Full copy","呈现全局文件夹，按需取数":"Global folder, fetched on demand","没缓存：去源站取":"Not cached: fetch from origin","缓存命中，本地返回":"Cache hit, served locally","本地命中":"Local hits","读租约 有效":"Read lease valid",
 "中心副本":"Central copy","站点 A":"Site A","站点 B":"Site B","同步时刻":"Sync","A 改了这个文件":"A edits the file","B 也改了这个文件":"B edits it too","B 成为当前版本":"B becomes the current version","A 留作历史版本":"A stays in version history",
-"读租约":"Read lease","写租约":"Write lease","已收回":"Revoked","源站处理写请求":"Origin handles the write request","源站收回卫星站的读租约":"Origin revokes satellite read leases","卫星站 2 再读：先核对，再交数据":"Satellite 2 reads again: check first, then serve",
+"读租约":"Read lease","写租约":"Write lease","已收回":"Revoked","已校验":"Verified","源站处理写请求":"Origin handles the write request","源站收回卫星站的读租约":"Origin revokes satellite read leases","卫星站 2 再读：先核对，再交数据":"Satellite 2 reads again: check first, then serve",
 "转发到源站":"Forward to origin","源站确认后再确认客户端":"ACK only after the origin confirms",
 "全局命名空间：源站与卫星站、读缓存、定期同步的问题、读写租约与写入转发":"Global namespace: origin and satellites, read caching, the periodic-sync problem, read and write leases, and write forwarding"};
 var ENM={"呈现全局文件夹，按需取数":"Global folder, fetched on demand","源站收回卫星站的读租约":"Origin revokes read leases","卫星站 2 再读：先核对，再交数据":"Satellite 2: check, then serve","源站处理写请求":"Origin handles the write","没缓存：去源站取":"Miss: fetch from origin","缓存命中，本地返回":"Hit: served locally"};
@@ -139,7 +139,7 @@ SCENE.modes[4]={enter(S){S.v.r=dot('',7);S.v.g=dot('rose',7);S.v.x=dot('rose',7)
   const chk=H.rev(wanTo('S2')).concat([C(L.O)]);
   const r4=run(S.v.v,chk,u,5.6,1.4,{post:0});if(r4>=0&&r4<=1)S.v.v.style.opacity=fa;
   if(u>=7.1){const r5=run(S.v.v,H.rev(chk),u,7.1,1.4,{post:0});if(r5>=0&&r5<=1)S.v.v.style.opacity=fa;}
-  if(u>8.5){cells(E.S2,3,'s');settx(E.S2.tag,'读租约','st sage-t')}
+  if(u>8.5){cells(E.S2,3,'s');settx(E.S2.tag,'已校验','st sage-t')}
   const to2=H.rev(L.cl.S2);const r6=run(S.v.d,[C(L.S2)].concat(L.cl.S2),u,8.6,0.7,{post:0});if(r6>=0&&r6<=1)S.v.d.style.opacity=fa;
   let m='';let c='';if(u>0.5&&u<1.9){m='源站处理写请求';c='slate-t'}else if(u>=1.9&&u<5.4){m='源站收回卫星站的读租约';c='rose-t'}else if(u>=5.4){m='卫星站 2 再读：先核对，再交数据';c='violet-t'}
   settx(E.m2,m,'st '+c);E.m2.style.opacity=fa}};

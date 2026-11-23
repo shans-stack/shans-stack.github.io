@@ -6,7 +6,7 @@ const PREFIX = 'an-dr';
 const EN = {
   "示意，不代表实测数字": "Schematic, not measured",
   "压缩缩短表示，去重共享相同数据": "Compression shortens representations and deduplication shares identical data",
-  "编码保存值与次数，解码还原每个字节": "Encoding stores a value and count, and decoding restores the bytes",
+  "游程编码保存值与次数，解码还原每个字节": "Run-length encoding stores a value and count, and decoding restores the bytes",
   "两个文件的引用指向同一个 A 块": "References from two files point to one copy of chunk A",
   "索引命中复用旧块，未命中新块压缩后落盘": "Hits reuse existing chunks and new chunks are compressed before storage",
   "数据重复性改变实际写入量": "Repetition changes the amount of data written",
@@ -17,6 +17,7 @@ const EN = {
   "合并相同数据": "Share identical data",
   "原始字节": "Original bytes",
   "值与重复次数": "Value + count",
+  "以游程编码为例": "Run-length encoding as an example",
   "解码结果": "Decoded bytes",
   "编码": "Encode",
   "解码": "Decode",
@@ -41,7 +42,7 @@ function T(label) { return window.SS_LANG === 'en' ? EN[label] ?? label : label;
 
 const titles = [
   "压缩缩短表示，去重共享相同数据",
-  "编码保存值与次数，解码还原每个字节",
+  "游程编码保存值与次数，解码还原每个字节",
   "两个文件的引用指向同一个 A 块",
   "索引命中复用旧块，未命中新块压缩后落盘",
   "数据重复性改变实际写入量"
@@ -66,6 +67,7 @@ const scenes = [
     send(link(coded,result),1590,2540);
     at([[300,157],[218,147]],"编码",'secondary');
     at([[600,157],[218,301]],"解码",'secondary');
+    at([[450,274],[180,444]],"以游程编码为例",'secondary');
     return 4300;
   },
   ({box, link, send}) => {

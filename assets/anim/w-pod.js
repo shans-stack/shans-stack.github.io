@@ -105,19 +105,14 @@
       const top = mobile ? 24 : 31;
       const bottom = mobile ? 316 : 301;
       const nodeTop = mobile ? 97 : 96;
-      const bus = mobile ? 164 : 154;
       const bayTop = mobile ? 219 : 204;
       box(x, top, width() - 2*x, bottom - top, 'frame');
       text(x + 17, top + 22, max ? 'Prime Max' : 'Nitro', {anchor: 'start', style: 'heading'});
-      text(width() - x - 17, top + 22, '2U', {anchor: 'end', style: 'detail'});
       text(center, nodeTop - 15, max ? T('两个存储节点', 'Two Storage Nodes') : T('四个存储节点', 'Four Storage Nodes'));
-      const nodes = serverNodes(center, nodeTop, max ? 2 : 4, mobile ? 56 : 76);
-      for (const node of nodes) transfer(`M${center} ${bayTop} V${bus} H${node} V${nodeTop+22}`);
-      text(center + 15, bus + 18, 'PCIe Gen 6', {anchor: 'start', style: 'detail'});
+      serverNodes(center, nodeTop, max ? 2 : 4, mobile ? 56 : 76);
+      text(center, mobile ? 169 : 161, T('PCIe Gen 6 线缆连接', 'Cabled PCIe Gen 6'), {style: 'detail'});
       driveBays(center, bayTop, max ? 5 : 4);
-      text(center, bayTop + (max ? 68 : 60),
-        max ? T('70 个盘位 · QLC／TLC 选项', '70 Slots · QLC / TLC Options')
-          : T('56 个盘位 · 全 TLC', '56 Slots · All TLC'));
+      text(center, bayTop + (max ? 68 : 60), max ? T('70 个盘位', '70 Slots') : T('56 个盘位', '56 Slots'));
     }
 
     function placement(mobile) {

@@ -10,11 +10,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/dr.css?v=effe64f8">
+<link rel="stylesheet" href="../../assets/anim/dr.css?v=1814fada">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
-<body>
+<body class="topic-dr">
 <script src="../../assets/symbols.js?v=01f317a9"></script>
 
 <header class="hd"><div class="wrap">
@@ -70,7 +70,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/dr.js?v=bf3e2635"></script>
+<script src="../../assets/anim/dr.js?v=36169da7"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "dr",
@@ -105,10 +105,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>无损压缩要求解码结果逐字节等于输入。以 DEFLATE 为例，编码可以用长度和距离引用先前出现的字节序列，并使用 Huffman 编码表示字面值与相关符号。</p>"
+     "<p>无损压缩要求解码结果逐字节等于输入。图示采用游程编码，用值和连续重复次数表示一串相同字节。DEFLATE 采用另一种机制：用长度和距离引用先前出现的字节序列，并使用 Huffman 编码表示字面值与相关符号。</p>"
     ],
     [
-     "<p>Lossless decompression reproduces the input byte for byte. In DEFLATE, a length-and-distance pair can reference a previous byte sequence. Huffman codes represent literals and the symbols used for those references.</p>"
+     "<p>Lossless decompression reproduces the input byte for byte. The diagram uses run-length encoding, which represents consecutive identical bytes with a value and a count. DEFLATE uses a different mechanism: a length-and-distance pair references a previous byte sequence, and Huffman codes represent literals and the symbols used for those references.</p>"
     ]
    ]
   },

@@ -4,7 +4,7 @@
   const id = 'b-imax';
   const scenes = [
     ({ flow }) => flow(
-      [['配置变更', 'Configuration|update'], ['公开运行', 'Public run'], ['结果图点', 'Dashboard point']],
+      [['配置变更', 'Config update'], ['公开运行', 'Public run'], ['结果图点', 'Dashboard point']],
       { end: ['运行与配置版本关联', 'Each run retains its configuration'] }
     ),
     ({ flow }) => flow(
@@ -30,7 +30,9 @@
       }
       const prefix = dot(mobile ? x : 180, mobile ? 60 : 158, 'active');
       reveal(prefix, 0);
-      text(x, mobile ? 316 : 290, ['分支保留已有的共享前缀', 'The branch retains the shared prefix'], 'muted', 'middle');
+      text(x, mobile ? 316 : 290, ['示例：子会话沿用部分前缀', mobile
+        ? 'Example: the sub-session|reuses part of the prefix'
+        : 'Example: the sub-session reuses part of the prefix'], 'muted', 'middle');
     },
     ({ graph }) => graph({
       axes: [['交互速度（Token/s/用户）', 'Interactivity (tok/s/user)'], ['输出吞吐（Token/s/芯片）', 'Output throughput (tok/s/chip)']],

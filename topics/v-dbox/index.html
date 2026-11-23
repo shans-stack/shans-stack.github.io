@@ -112,8 +112,8 @@ window.SS_TOPIC_CFG={
     "DNodes Provide Network Storage Access"
    ],
    "d": [
-    "DNode 只把盘接到网络上；纠删码、数据缩减这些计算都在 CNode 上做。",
-    "DNodes only connect the drives to the network; computation such as erasure coding and data reduction happens on CNodes."
+    "DNode 为 SSD 提供 NVMe-oF 接入，CNode 执行纠删码和数据缩减等存储计算。",
+    "DNodes provide NVMe-oF access to SSDs. CNodes perform storage computation such as erasure coding and data reduction."
    ],
    "s": [
     "DNode 只转发",
@@ -121,12 +121,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>DBox 里有两个 DNode。外形上像传统双控阵列的两个控制器，但 DNode 不是控制器：它不跑文件系统、不算纠删码，只负责把 SSD 暴露到 NVMe-oF 网络上。</p>",
-     "<p>因为 DNode 不做存储逻辑，加再多功能，它的 CPU 也不会成为瓶颈，新功能都在 CNode 上实现。有的 DBox 型号用 NVIDIA BlueField DPU 当 DNode，箱子更小、更省电。</p>"
+     "<p>DNode 在 NVMe-oF 网络和 DBox 内的 SSD 之间转发请求。CNode 运行文件系统，执行纠删码和数据缩减。</p>"
     ],
     [
-     "<p>A DBox has two DNodes. They look like the two controllers of a traditional dual-controller array, but a DNode is not a controller: it runs no file system and computes no erasure coding; it only exposes the SSDs to the NVMe-oF network.</p>",
-     "<p>Because DNodes do no storage logic, adding features never makes their CPUs a bottleneck; new features are built on CNodes. Some DBox models use NVIDIA BlueField DPUs as DNodes, making the enclosure smaller and more power-efficient.</p>"
+     "<p>DNodes route requests between the NVMe-oF network and the SSDs in the DBox. CNodes run the file system and perform erasure coding and data reduction.</p>"
     ]
    ]
   },

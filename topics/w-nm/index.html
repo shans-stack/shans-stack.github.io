@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-nm.js?v=3d8c95b3"></script>
+<script src="../../assets/anim/w-nm.js?v=27aeabfe"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "w-nm",
@@ -129,10 +129,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>文件范围由文件中的偏移和长度表示。对于跨多个范围的一次读请求，示意图中的两个范围由不同计算服务处理，所需数据可从不同盘服务并行读取。</p>"
+     "<p>文件范围由文件中的偏移和长度表示。一次读请求跨多个范围时，多个计算服务可协调相应的盘服务并行读取。图中以简化路径表示盘侧结果返回前端。</p>"
     ],
     [
-     "<p>A file range is identified by an offset and length. In the illustrated read, separate Compute services handle two ranges of the same request, allowing the corresponding Drive services to read in parallel.</p>"
+     "<p>A file range is identified by an offset and length. When one request spans multiple ranges, separate Compute services can coordinate parallel reads by the corresponding Drive services. The diagram simplifies the return path from the Drive services to the frontend.</p>"
     ]
    ]
   },

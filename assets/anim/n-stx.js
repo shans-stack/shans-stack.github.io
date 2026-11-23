@@ -26,20 +26,20 @@
     },
     {
       nodes: [
-        ["外部网络|External Network", [100, 152, 155], [176, 66, 222], "", ""],
-        ["ConnectX-9~网络接入|ConnectX-9~Network Interface", [278, 152, 148], [265, 198, 139], "accent", ""],
-        ["Vera CPU~可编程处理|Vera CPU~Programmable CPU", [469, 152, 163], [87, 198, 149], "accent", ""],
-        ["存储介质|Storage Media", [660, 152, 154], [176, 332, 222], "", ""]
+        ["外部网络|External Network", [91, 118, 150], [176, 54, 222], "", ""],
+        ["存储处理|Storage Processing", [380, 118, 192], [176, 147, 210], "accent", ""],
+        ["ConnectX-9~网络接入|ConnectX-9~Network Interface", [285, 201, 160], [90, 224, 146], "", ""],
+        ["Vera CPU~可编程计算|Vera CPU~Programmable Compute", [475, 201, 185], [261, 224, 152], "", ""],
+        ["存储介质|Storage Media", [669, 118, 150], [176, 328, 222], "", ""]
       ],
       edges: [
-        [0, 1, "rl", "bt", "arrow", null],
-        [1, 2, "rl", "lr", "ref", null],
-        [2, 3, "rl", "bt", "arrow", null]
+        [0, 1, "rl", "bt", "data", 0.3],
+        [1, 4, "rl", "bt", "data", 1.1]
       ],
       frames: [
-        ["BlueField-4 STX", [193, 76, 372, 153], [10, 122, 332, 147]]
+        ["BlueField-4 STX", [191, 52, 378, 191], [10, 97, 332, 181]]
       ],
-      pulse: [[1, 0.25], [2, 1.65]],
+      pulse: [[1, 0.85]],
       legend: []
     },
     {
