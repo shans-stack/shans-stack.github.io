@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hot Nodes：GPU 节点本地读缓存 · Shan's Stack</title>
-<meta name="description" content="分 5 步说明Hot Nodes：GPU 节点本地读缓存。Hot Nodes 将共享存储中的训练输入复制到 GPU 节点本地 NVMe，后续命中从本地读取。">
+<title>Hot Nodes: Local Read Caching on GPU Nodes · Shan's Stack</title>
+<meta name="description" content="Hot Nodes copies training inputs from shared storage to local NVMe on a GPU node and serves subsequent cache hits locally. Explained in 5 steps.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="Hot Nodes: Local Read Caching on GPU Nodes · Shan's Stack">
+<meta property="og:description" content="Hot Nodes copies training inputs from shared storage to local NVMe on a GPU node and serves subsequent cache hits locally. Explained in 5 steps.">
+<meta property="og:url" content="https://shans-stack.github.io/topics/d-hotnodes/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hot Nodes: Local Read Caching on GPU Nodes · Shan's Stack">
+<meta name="twitter:description" content="Hot Nodes copies training inputs from shared storage to local NVMe on a GPU node and serves subsequent cache hits locally. Explained in 5 steps.">
+<!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

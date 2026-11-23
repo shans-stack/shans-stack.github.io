@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>注意力如何加权汇总上下文 · Shan's Stack</title>
-<meta name="description" content="分 6 步说明注意力如何生成相关性权重、汇总上下文并复用历史键值。">
+<title>How Attention Combines Context · Shan's Stack</title>
+<meta name="description" content="Each token looks back at every earlier token and takes in what is relevant; the stored results of that work are the KV cache. Explained in 6 steps.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="How Attention Combines Context · Shan's Stack">
+<meta property="og:description" content="Each token looks back at every earlier token and takes in what is relevant; the stored results of that work are the KV cache. Explained in 6 steps.">
+<meta property="og:url" content="https://shans-stack.github.io/topics/attn/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How Attention Combines Context · Shan's Stack">
+<meta name="twitter:description" content="Each token looks back at every earlier token and takes in what is relevant; the stored results of that work are the KV cache. Explained in 6 steps.">
+<!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

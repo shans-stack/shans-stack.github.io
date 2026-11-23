@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GPUDirect RDMA：显存与网卡的数据路径 · Shan's Stack</title>
-<meta name="description" content="分 5 步说明GPUDirect RDMA：显存与网卡的数据路径。支持 GPUDirect RDMA 的网卡可直接读写 GPU 显存，跨节点传输的数据无需在主机内存中转。">
+<title>GPUDirect RDMA: The Data Path Between GPU Memory and the NIC · Shan's Stack</title>
+<meta name="description" content="GPU memory and the RDMA network card talk directly over PCIe, so traffic between servers skips the CPU and system memory. Explained in 5 steps.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="GPUDirect RDMA: The Data Path Between GPU Memory and the NIC · Shan's Stack">
+<meta property="og:description" content="GPU memory and the RDMA network card talk directly over PCIe, so traffic between servers skips the CPU and system memory. Explained in 5 steps.">
+<meta property="og:url" content="https://shans-stack.github.io/topics/gdr/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GPUDirect RDMA: The Data Path Between GPU Memory and the NIC · Shan's Stack">
+<meta name="twitter:description" content="GPU memory and the RDMA network card talk directly over PCIe, so traffic between servers skips the CPU and system memory. Explained in 5 steps.">
+<!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

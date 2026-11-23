@@ -104,23 +104,27 @@
   /* 维基式站内链接：正文里出现别的已上线站的名字，自动链过去，每一步只链第一次；
      同名站先取当前专题图上的，再取总图上的，仍分不清就不链。鼠标悬停弹出那一站的标题和一句话说明。 */
   function wikify(scope){
-    var cand={};
-    Object.keys(SS.stations).forEach(function(k){var s=SS.stations[k];if(s.st!=='live'||k===id)return;
-      var ns=[];[s.zh,s.en].concat(s.kw||[]).forEach(function(n){n=String(n);ns.push(n.replace(/\n/g,''),n.replace(/\n/g,' '))});
+    var cand=Object.create(null);
+    // 不带厂商名的同名或通用标题只在该专题使用。
+    var localNames=new Set(['v-catalog','v-vec','v-nfs','v-smb','v-s3','v-block','v-mt','v-mgmt','v-repl','v-snap','v-ncp','v-dedup','d-mds','d-oss','d-insight','d-horizon','w-nfssmb','w-s3','w-snap','w-ncp','n-ncp','v-kvp','d-kvp']);
+    Object.keys(SS.stations).forEach(function(k){var s=SS.stations[k];if(s.st!=='live')return;
+      var ns=[],labels=localNames.has(k)&&!SS.inMap(k,MAP)?[]:[s.zh,s.en];
+      labels.concat(s.kw||[]).forEach(function(n){if((k==='v-repl'&&n==='复制')||(k==='v-mgmt'&&n==='Management'))return;
+        ns.push(n.replace(/\n/g,''),n.replace(/\n/g,' '))});
       ns.forEach(function(n){n=n.trim();if(n.length<2)return;cand[n]=cand[n]||[];if(cand[n].indexOf(k)<0)cand[n].push(k)})});
     function pick(ids){if(ids.length===1)return ids[0];var m=ids.filter(function(x){return SS.inMap(x,MAP)});if(m.length===1)return m[0];
       var h=ids.filter(function(x){return SS.inMap(x,HOME)});return h.length===1?h[0]:null}
     function esc(t){return t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
-    var names=Object.keys(cand).sort(function(a,b){return b.length-a.length});
     var al=/[A-Za-z0-9]/,ascii=/^[\x00-\x7f]+$/;
-    if(names.length)mark(new RegExp(names.map(esc).join('|'),'g'),function(n){return pick(cand[n])},'wl','a,code,b',function(x){return SS.url(SS.stations[x].page)});
+    function pattern(n){return ascii.test(n)?'(?<![A-Za-z0-9])'+esc(n)+'(?![A-Za-z0-9])':esc(n)}
     var aliases=Object.create(null);
     Object.keys(SS.terms||{}).forEach(function(x){var t=SS.terms[x];
       [t.zh,t.en].concat(t.alias||[]).forEach(function(n){aliases[n.toLowerCase()]=x})});
-    names=Object.keys(aliases).sort(function(a,b){return b.length-a.length});
-    if(names.length)mark(new RegExp(names.map(function(n){
-      return ascii.test(n)?'(?<![A-Za-z0-9])'+esc(n)+'(?![A-Za-z0-9])':esc(n)
-    }).join('|'),'gi'),function(n){return aliases[n.toLowerCase()]},'wt','a,code',SS.termHref);
+    var names=Object.keys(aliases).sort(function(a,b){return b.length-a.length});
+    var glossary=names.length?new RegExp(names.map(pattern).join('|'),'gi'):null;
+    names=Object.keys(cand).sort(function(a,b){return b.length-a.length});
+    if(names.length)mark(new RegExp(names.map(pattern).join('|'),'g'),function(n){var x=pick(cand[n]);return x===id?null:x},'wl','a,code,b',function(x){return SS.url(SS.stations[x].page)});
+    if(glossary)mark(glossary,function(n){return aliases[n.toLowerCase()]},'wt','a,code',SS.termHref);
     function mark(re,lookup,cls,skip,href){
       var termPass=cls==='wt';
       (scope?[scope]:art.querySelectorAll('.sec')).forEach(function(sec){
@@ -128,14 +132,17 @@
         sec.querySelectorAll('.lead,.bd p,.bd li,.cmp td').forEach(function(el){
           var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),nodes=[],full=el.textContent,offset=0;
           while(w.nextNode())nodes.push(w.currentNode);
+          // 短站名不能从更具体的术语中截出一段，例如「对象存储目标」。
+          var terms=[];
+          if(!termPass&&glossary){glossary.lastIndex=0;terms=Array.from(full.matchAll(glossary))}
           nodes.forEach(function(tn){
             var t=tn.nodeValue,m,last=0,frag=null,start=offset;offset+=t.length;
             if(tn.parentNode.closest(skip))return;
-            var text=termPass?full:t,pos=termPass?start:0;
             re.lastIndex=0;
             while((m=re.exec(t))){
               var term=m[0],b=m.index,e=b+term.length;
-              if(ascii.test(term)&&(al.test(text.charAt(pos+b-1))||al.test(text.charAt(pos+e))))continue;
+              if(ascii.test(term)&&(al.test(full.charAt(start+b-1))||al.test(full.charAt(start+e))))continue;
+              if(terms.some(function(hit){return hit[0].length>term.length&&hit.index<=start+b&&hit.index+hit[0].length>=start+e}))continue;
               var x=lookup(term);if(!x||used.has(x))continue;used.add(x);
               frag=frag||document.createDocumentFragment();frag.appendChild(document.createTextNode(t.slice(last,b)));
               var a=document.createElement('a');a.className=cls;a.href=href(x);a.setAttribute('data-'+cls,x);a.textContent=term;

@@ -1,9 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VAST KV Cache 方案 · Shan's Stack</title>
+<title>VAST KV Cache Solution · Shan's Stack</title>
+<meta name="description" content="How vLLM, SGLang, and Dynamo save KV cache on DataStore and load it back into GPU memory. Explained in 5 steps.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="VAST KV Cache Solution · Shan's Stack">
+<meta property="og:description" content="How vLLM, SGLang, and Dynamo save KV cache on DataStore and load it back into GPU memory. Explained in 5 steps.">
+<meta property="og:url" content="https://shans-stack.github.io/topics/v-kvp/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VAST KV Cache Solution · Shan's Stack">
+<meta name="twitter:description" content="How vLLM, SGLang, and Dynamo save KV cache on DataStore and load it back into GPU memory. Explained in 5 steps.">
+<!-- share:end -->
 <meta name="description" content="分 5 步说明 VAST DataStore 上的 KV Cache 文件路径，以及 vLLM、SGLang 和 NVIDIA Dynamo 如何读写缓存。" data-en-content="Five steps on how vLLM, SGLang, and NVIDIA Dynamo save and reload KV cache files on VAST DataStore.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

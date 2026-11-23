@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>分簇 RAID · Shan's Stack</title>
-<meta name="description" content="分 6 步说明分簇 RAID：数据、校验和备用空间打散到池里所有盘上，坏一块盘时很多盘一起重建，而不是全压在一块热备盘上。">
+<title>Declustered RAID: Many Drives Rebuild Together When One Fails · Shan's Stack</title>
+<meta name="description" content="Data, parity and spare space are spread over every drive in the pool, so many drives rebuild together when one fails. Explained in 6 steps.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="Declustered RAID: Many Drives Rebuild Together When One Fails · Shan's Stack">
+<meta property="og:description" content="Data, parity and spare space are spread over every drive in the pool, so many drives rebuild together when one fails. Explained in 6 steps.">
+<meta property="og:url" content="https://shans-stack.github.io/topics/d-dcr/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Declustered RAID: Many Drives Rebuild Together When One Fails · Shan's Stack">
+<meta name="twitter:description" content="Data, parity and spare space are spread over every drive in the pool, so many drives rebuild together when one fails. Explained in 6 steps.">
+<!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

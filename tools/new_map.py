@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """生成专题图页面 maps/<id>/index.html。页面本身只带地图 id，内容全部来自 data/。
-用法：python3 tools/new_map.py vast VAST     （第二个参数是页面标题里的名字）
+用法：python3 tools/new_map.py vast VAST     （第二个参数是英文地图名；生成后跑 tools/meta_en.py 补英文简介与分享标签）
 已存在的页面会被覆盖：它不含手写内容，模板改了以后重跑即可。"""
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))

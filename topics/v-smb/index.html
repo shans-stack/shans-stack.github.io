@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SMB：共享会话状态与持续可用共享 · Shan's Stack</title>
-<meta name="description" content="VAST SMB 的共享与认证、共享 SCM 中的句柄和租约、持续可用共享的故障恢复，以及 SMB 多通道。">
+<title>SMB: Shared Session State and Continuously Available Shares · Shan's Stack</title>
+<meta name="description" content="SMB state lives in shared SCM; continuously available shares let SMB 3.0 clients reconnect and recover persistent handles. Explained in 6 steps.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="SMB: Shared Session State and Continuously Available Shares · Shan's Stack">
+<meta property="og:description" content="SMB state lives in shared SCM; continuously available shares let SMB 3.0 clients reconnect and recover persistent handles. Explained in 6 steps.">
+<meta property="og:url" content="https://shans-stack.github.io/topics/v-smb/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SMB: Shared Session State and Continuously Available Shares · Shan's Stack">
+<meta name="twitter:description" content="SMB state lives in shared SCM; continuously available shares let SMB 3.0 clients reconnect and recover persistent handles. Explained in 6 steps.">
+<!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

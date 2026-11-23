@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>跨集群复制与故障切换 · Shan’s Stack</title>
-<meta name="description" content="跨集群复制与故障切换。受保护路径与复制对端。按快照传输增量。复制间隔与恢复点滞后。一对多与多对一复制。计划内与计划外故障切换。同步复制的写入确认">
+<title>Cross-cluster Replication and Failover · Shan's Stack</title>
+<meta name="description" content="Async replication sends the changes between snapshots; sync replication acknowledges a write only after both peers persist it. Explained in 6 steps.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="Cross-cluster Replication and Failover · Shan's Stack">
+<meta property="og:description" content="Async replication sends the changes between snapshots; sync replication acknowledges a write only after both peers persist it. Explained in 6 steps.">
+<meta property="og:url" content="https://shans-stack.github.io/topics/v-repl/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cross-cluster Replication and Failover · Shan's Stack">
+<meta name="twitter:description" content="Async replication sends the changes between snapshots; sync replication acknowledges a write only after both peers persist it. Explained in 6 steps.">
+<!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

@@ -1,9 +1,21 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>术语表 · Shan's Stack</title>
+<title>Glossary · Shan's Stack</title>
+<meta name="description" content="Plain-language definitions of the AI infrastructure terms used across Shan's Stack.">
+<!-- share:start -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shan's Stack">
+<meta property="og:title" content="Glossary · Shan's Stack">
+<meta property="og:description" content="Plain-language definitions of the AI infrastructure terms used across Shan's Stack.">
+<meta property="og:url" content="https://shans-stack.github.io/glossary/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Glossary · Shan's Stack">
+<meta name="twitter:description" content="Plain-language definitions of the AI infrastructure terms used across Shan's Stack.">
+<!-- share:end -->
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -50,9 +62,9 @@
     groups.get(letter).push(entry);
   });
   /* 领域：厂商专有词按 tag；通用词按「详见」那一站所在的总图线；厂商站上的通用词归到它最接近的领域 */
-  var DOMS=[['all','全部','All'],['a','AI 应用','AI Apps'],['m','模型','Model'],['d','数据','Data'],['c','计算','Compute'],['n','网络','Network'],['s','存储','Storage'],['vast','VAST','VAST'],['ddn','DDN','DDN']];
-  var VLINE={'v-aios':'d','d-ai':'a','d-inf':'d'};
-  function domOf(t){if(t.tag==='vast'||t.tag==='ddn')return t.tag;var s=t.see&&SS.stations[t.see];if(!s)return 's';
+  var DOMS=[['all','全部','All'],['a','AI 应用','AI Apps'],['m','模型','Model'],['d','数据','Data'],['c','计算','Compute'],['n','网络','Network'],['s','存储','Storage'],['vast','VAST','VAST'],['ddn','DDN','DDN'],['weka','WEKA','WEKA'],['nvidia','NVIDIA','NVIDIA']];
+  var VLINE={'v-aios':'d','d-ai':'a','d-inf':'d','b-ai':'a','b-inf':'a','b-data':'d','b-gpu':'c','f-tok':'a','f-orch':'a','f-eng':'m','f-kv':'m','f-cp':'c','f-infra':'c','f-ai':'a','f-gov':'a'};
+  function domOf(t){if(t.tag!=='generic'&&DOMS.some(function(d){return d[0]===t.tag}))return t.tag;var s=t.see&&SS.stations[t.see];if(!s)return 's';
     var h=s.lines.filter(function(l){return 'amdcns'.indexOf(l)>-1&&l.length===1});if(h.length)return h[0];
     for(var i=0;i<s.lines.length;i++)if(VLINE[s.lines[i]])return VLINE[s.lines[i]];return 's'}
   var dom='all',doms=document.getElementById('term-doms'),letters=document.getElementById('term-letters');
@@ -77,7 +89,7 @@
   function jump(){
     var target=document.getElementById(location.hash.slice(1));
     if(!target||!target.classList.contains('glossary-term'))return;
-    if(target.hidden){input.value='';filter()}
+    if(target.hidden){input.value='';if(dom!=='all'&&domOf(SS.terms[target.id])!==dom){dom='all';drawDoms()}input.dispatchEvent(new Event('input'))}
     target.scrollIntoView();
   }
   input.addEventListener('input',filter);
