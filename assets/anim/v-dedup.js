@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-dedup.css，全部限定在 .ssa-v-dedup 容器之内。
-   VAST 字标引用 assets/brand/vast-wordmark-black.svg 与 vast-wordmark-white.svg 原件（浅色、深色各一）。 */
+   样式在 assets/anim/v-dedup.css，全部限定在 .ssa-v-dedup 容器之内。 */
 (function(){
 var ID='v-dedup';
 var EN={"写入":"Writes","算指纹":"Fingerprint","指纹表":"Fingerprint table","已存数据":"Stored data","只记指针":"Pointers only","新指纹：存下":"New: stored","见过：只记指针":"Seen: pointer only","写入":"Writes","实际存":"Stored","块":"blocks","示意，不代表实测数字":"Schematic, not measured",
@@ -19,7 +18,7 @@ var EN={"写入":"Writes","算指纹":"Fingerprint","指纹表":"Fingerprint tab
 var ENM={"指纹表":"Fingerprints","CNode 1 写入：表里没有，存下":"CNode 1: new, stored","CNode 3 写入：查到了，只记指针":"CNode 3: found, pointer","整套系统一个缩减范围":"One realm for the system","逻辑数据块分布在不同位置":"Chunks at different locations","无机械寻道":"No mechanical seeks","磁头来回寻道":"Head seeks","先确认，之后再缩减":"ACK first, reduce later","查不到：再存一份":"Not found: stored again","压缩":"Compress"};
 var ARIA="去重：指纹与指针、块大小、去重范围、共享 SCM 上的指纹表与去重后的读取";
 function makeScene(H){
-const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade,vlabel,vmark}=H;
+const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade}=H;
 const L_=()=>H.L(),E_=()=>H.E();
 const COL=['','ochre','violet']; // A、B、C 三种内容
 const SEQ1=[0,1,0,2,0,1];
@@ -102,7 +101,7 @@ const SCENE={
    el('line',{x1:M?16:60,y1:s.fab,x2:M?464:900,y2:s.fab,class:'ln'},g);
    tx(M?16:60,s.fab+18,'NVMe-oF 网络',f.sm,'ink3-t','start',g);
    s.cn.forEach((x,i)=>{const r={x:x-s.cnw/2,y:s.cny,w:s.cnw,h:s.cnh};line([P(x,r.y+r.h),P(x,s.fab)],'',g);E.cn4.push(rect(r,'box',g,10));
-    if(i===0)vlabel(r.x+(M?10:20),C(r).y,'CNode 1',f.sm,'lbl b7',g,M?11:13);else tx(C(r).x,C(r).y,'CNode '+(i+1),f.sm,'lbl b7','middle',g)});
+    tx(C(r).x,C(r).y,'CNode '+(i+1),f.sm,'lbl b7','middle',g)});
    rect(db,'box soft',g,14);tx(db.x+14,db.y+22,'DBox',f.sm,'ttl','start',g);
    const half=M?{a:{x:db.x+14,y:db.y+44,w:300,h:96},b:{x:db.x+14,y:db.y+154,w:db.w-28,h:90}}:{a:{x:db.x+20,y:db.y+44,w:300,h:116},b:{x:db.x+340,y:db.y+44,w:300,h:116}};
    E.tbl4=rect(half.a,'box on',g,10);tx(half.a.x+12,half.a.y+20,'SCM：指纹表',f.sm,'lbl b7','start',g);
@@ -232,7 +231,6 @@ return SCENE;
 
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-'+ID);host.innerHTML='';
@@ -271,17 +269,7 @@ function run(p,pts,t,t0,dur,opt){opt=opt||{};const u=(t-t0)/dur;
   if(u<=1){put(p,along(pts,sm(u)),1);return u}
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return 1.5}
 const loopFade=(u,per)=>u>per-0.45?clamp((per-u)/0.45,0,1):u<0.35?clamp(u/0.35,0,1):1;
-/* VAST 字标：引用 assets/brand 原件，浅色用黑字版、深色用白字版（CSS 切换）。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;
-  const g=el('g',{class:'vwm'},p);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-black.svg'),class:'vwm-l','aria-label':'VAST'},g);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-white.svg'),class:'vwm-d','aria-hidden':'true'},g);
-  return g}
-/* 部件名 + VAST 字标排成一行：名字右端在 x（anchor end），字标紧跟其后；返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h,anchor){const t=tx(x,y,s,fs,cls,anchor||'start',p);let w=0;try{w=t.getComputedTextLength()}catch(e){}
-  if(!w)w=estW(T(s),fs);const a=anchor||'start';const x1=a==='start'?x+w:a==='middle'?x+w/2:x;const m=vmark(x1+Math.round(fs*0.4),y,h||Math.round(fs*0.72),p,'start');return {t,m}}
-function estW(s,fs){let w=0;for(const ch of s)w+=/[\u2e80-\uffff]/.test(ch)?fs:fs*0.56;return w}
-const H={estW,el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,vmark,vlabel,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
+const H={el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
 const SCENE=makeScene(H);
 /* ---------- 引擎 ---------- */
 function applyVis(){

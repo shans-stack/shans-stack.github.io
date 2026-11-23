@@ -1,0 +1,37 @@
+.n-hgx-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:18px}
+.n-hgx-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-hgx-figure .n-hgx-start{text-anchor:start}
+.n-hgx-figure .n-hgx-heading{font-size:21px;font-weight:650}
+.n-hgx-figure .n-hgx-secondary,.n-hgx-figure .n-hgx-note{fill:var(--ink2);font-size:17px}
+.n-hgx-figure .n-hgx-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-hgx-figure .n-hgx-boundary{fill:none;stroke-dasharray:6 5}
+.n-hgx-figure .n-hgx-accent,.n-hgx-figure .n-hgx-active{stroke:var(--l4);stroke-width:2}
+.n-hgx-figure .n-hgx-active{fill:color-mix(in srgb,var(--l4) 13%,var(--bg))}
+.n-hgx-figure .n-hgx-link{fill:none;stroke:var(--ink3);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.n-hgx-figure .n-hgx-link.n-hgx-electrical{stroke:var(--l2)}
+.n-hgx-figure .n-hgx-link.n-hgx-optical{stroke:var(--l5)}
+.n-hgx-figure .n-hgx-link.n-hgx-network{stroke:var(--l4)}
+.n-hgx-figure .n-hgx-link.n-hgx-dashed{stroke-dasharray:5 5}
+.n-hgx-figure .n-hgx-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.5}
+.n-hgx-figure .n-hgx-packet.n-hgx-electrical{fill:var(--l2)}
+.n-hgx-figure .n-hgx-packet.n-hgx-optical{fill:var(--l5)}
+@media(max-width:640px){
+  .n-hgx-figure svg{font-size:15px}
+  .n-hgx-figure .n-hgx-heading{font-size:17px}
+  .n-hgx-figure .n-hgx-secondary,.n-hgx-figure .n-hgx-note{font-size:14px}
+}
+.n-hgx-figure .n-hgx-link.n-hgx-active{stroke-width:4}
+@media(max-width:640px){
+  body.topic-n-hgx.present .stage{padding:12px;row-gap:12px}
+  body.topic-n-hgx.present .stage .figbox{margin:0}
+  body.topic-n-hgx.present .stage .cap{display:block;margin:0}
+  body.topic-n-hgx.present .stage h2{font-size:24px}
+  body.topic-n-hgx.present .stage .desc{font-size:17px;line-height:1.5}
+  body.topic-n-hgx.present .stage .ctl{margin:0}
+}
+@media(640px < width <=720px){
+  body.topic-n-hgx .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-hgx-figure .n-hgx-packet{display:none}
+}

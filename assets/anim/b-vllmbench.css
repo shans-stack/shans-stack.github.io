@@ -1,0 +1,41 @@
+.b-vllmbench-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  --diagram-rule: var(--ink3);
+  --diagram-accent: var(--lc, var(--l4));
+}
+
+.b-vllmbench-diagram text {
+  fill: var(--ink);
+  font: 500 21px var(--f);
+  dominant-baseline: central;
+}
+
+.b-vllmbench-diagram .b-vllmbench-note,
+.b-vllmbench-diagram .b-vllmbench-muted { fill: var(--ink2); font-size: 17px; }
+.b-vllmbench-diagram .b-vllmbench-rule { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; }
+.b-vllmbench-diagram .b-vllmbench-guide { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.b-vllmbench-diagram .b-vllmbench-node { fill: var(--surface); stroke: var(--diagram-rule); stroke-width: 1.4; }
+.b-vllmbench-diagram .b-vllmbench-active { fill: var(--diagram-accent); }
+.b-vllmbench-diagram .b-vllmbench-pass { fill: var(--l5); }
+.b-vllmbench-diagram .b-vllmbench-warn { fill: var(--l1); }
+.b-vllmbench-diagram .b-vllmbench-quiet { fill: var(--blk); }
+.b-vllmbench-diagram .b-vllmbench-active-line,
+.b-vllmbench-diagram .b-vllmbench-pass-line,
+.b-vllmbench-diagram .b-vllmbench-warn-line,
+.b-vllmbench-diagram .b-vllmbench-quiet-line { fill: none; stroke-width: 3; stroke-linecap: round; }
+.b-vllmbench-diagram .b-vllmbench-active-line { stroke: var(--diagram-accent); }
+.b-vllmbench-diagram .b-vllmbench-pass-line { stroke: var(--l5); }
+.b-vllmbench-diagram .b-vllmbench-warn-line { stroke: var(--l1); }
+.b-vllmbench-diagram .b-vllmbench-quiet-line { stroke: var(--blk); }
+
+body.topic-b-vllmbench .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-vllmbench .mhost { aspect-ratio: var(--arm); }
+  .b-vllmbench-diagram text { font-size: 16px; }
+  .b-vllmbench-diagram .b-vllmbench-note,
+  .b-vllmbench-diagram .b-vllmbench-muted { font-size: 16px; }
+}

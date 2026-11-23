@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EBox：CNode 和 DNode 共置的标准服务器 · Shan's Stack</title>
-<meta name="description" content="VAST EBox 的容器组成、共享盘访问、整机故障保护与滚动升级。" data-en-content="VAST EBox containers, shared SSD access, server-level resiliency and rolling upgrades.">
+<meta name="description" content="分 7 步说明 VAST EBox 的容器架构、共享盘、故障保护、滚动升级和两代硬件配置。" data-en-content="Seven steps on EBox containers, shared drives, failure protection, rolling upgrades, and two hardware generations.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
-<link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
-<link rel="stylesheet" href="../../assets/anim/v-ebox.css?v=d9f47dff">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/v-ebox.css?v=5f9ea14c">
 <script>window.SS_ROOT='../../';</script>
-<link rel="stylesheet" href="../../assets/topic.css?v=db87ea93">
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
 <body>
 <script src="../../assets/symbols.js?v=01f317a9"></script>
@@ -20,7 +20,7 @@
 <header class="hd"><div class="wrap">
   <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
   <nav class="nav" aria-label="主导航" data-en-label="Main">
-    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
     <div class="langs" role="group" aria-label="语言" data-en-label="Language" data-noconv>
       <button type="button" data-lang-set="zh" data-en="SC" aria-label="简体中文" data-en-label="Simplified Chinese" onclick="ssSetLang('zh')">简</button>
       <button type="button" data-lang-set="tw" data-en="TC" aria-label="繁體中文" data-en-label="Traditional Chinese" onclick="ssSetLang('tw')">繁</button>
@@ -34,7 +34,7 @@
     <div class="crumb" id="crumb"></div>
     <div class="tt">
       <div><h1 data-en="EBox: CNode and DNode in One Standard Server">EBox：CNode 和 DNode 共置的标准服务器</h1>
-        <p class="meta"><span data-en="6 steps · CNode, DNode, metadata triplication, rolling upgrade">6 步 · CNode、DNode、元数据三副本、滚动升级</span><span id="intalks"></span></p></div>
+        <p class="meta"><span data-en="7 steps · CNode, DNode, metadata triplication, rolling upgrade">7 步 · CNode、DNode、元数据三副本、滚动升级</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -47,9 +47,18 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): Variations on DASE (EBox), Write Buffer Erasure Coding, upgrade and delivery chapters.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：Variations on DASE（EBox）、Write Buffer Erasure Coding、升级与交付形态章节。</li>
-      <li data-en="VAST Data documentation (docs.vastdata.com, version 5.5, as of November 2026): VAST Cluster Concepts and Terminology; Adding CBoxes, DBoxes, or EBoxes to a Cluster; Software Installation Guide.">VAST Data 官方文档（docs.vastdata.com，5.5 版，截至 2026-11）：VAST Cluster Concepts and Terminology、Adding CBoxes, DBoxes, or EBoxes to a Cluster、Software Installation Guide。</li>
-      <li data-en="Animations are schematic. The box count and stripe width shown are not real configurations, and no measured numbers are shown.">动画为示意，画面中的台数和条带宽度不代表实际配置，也不代表实测数字。</li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf&quot;&gt;VAST AI Operating System White Paper&lt;/a&gt;"><a class="gen-source" href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf">VAST AI Operating System 白皮书</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/docs-5-5/docs/adding-cboxes-dboxes-or-eboxes-to-a-cluster&quot;&gt;VAST Cluster Installation and Expansion&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/docs-5-5/docs/adding-cboxes-dboxes-or-eboxes-to-a-cluster">VAST 集群安装与扩容文档</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/ebox-gen-2&quot;&gt;VAST EBox Generation 2 Specification&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/ebox-gen-2">VAST EBox Generation 2 规格</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/generation-1&quot;&gt;VAST EBox Generation 1 Specification&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/generation-1">VAST EBox Generation 1 规格</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/ebox-generation-2&quot;&gt;VAST Gen 2 OEM Directory&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/ebox-generation-2">VAST Gen 2 OEM 目录</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/ebox-generation-1&quot;&gt;VAST Gen 1 OEM Directory&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/ebox-generation-1">VAST Gen 1 OEM 目录</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.supermicro.com/flyer/f_SMCI_VAST_EBox.pdf&quot;&gt;Supermicro Gen 2 Specification&lt;/a&gt;"><a class="gen-source" href="https://www.supermicro.com/flyer/f_SMCI_VAST_EBox.pdf">Supermicro Gen 2 规格</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/smc-gen1-ebox-1u12drive&quot;&gt;Supermicro Gen 1 Qualified Configuration&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/smc-gen1-ebox-1u12drive">Supermicro Gen 1 验证配置</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html&quot;&gt;Cisco UCS EBox Datasheet&lt;/a&gt;"><a class="gen-source" href="https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html">Cisco UCS EBox 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/lenovo-gen2-ebox-1u10drive&quot;&gt;Lenovo Gen 2 Qualified Configuration&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/lenovo-gen2-ebox-1u10drive">Lenovo Gen 2 验证配置</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/lenovo-gen1-ebox-1u10-drive&quot;&gt;Lenovo Gen 1 Qualified Configuration&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/lenovo-gen1-ebox-1u10-drive">Lenovo Gen 1 验证配置</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
 </main>
@@ -70,13 +79,13 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=592fc31f"></script>
-<script src="../../data/stations.js?v=78aee762"></script>
-<script src="../../data/maps.js?v=13800c68"></script>
-<script src="../../data/talks.js?v=9c02c723"></script>
-<script src="../../data/vendors.js?v=a0e9392a"></script>
-<script src="../../assets/core.js?v=67905bc1"></script>
-<script src="../../assets/anim/v-ebox.js?v=a1e01111"></script>
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/v-ebox.js?v=ed195bf8"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-ebox",
@@ -203,11 +212,75 @@ window.SS_TOPIC_CFG={
      "<p>When the EBox operating system must reboot, the cluster moves the CNode’s workload in advance and notifies the cluster leader that the SSDs will go offline. During reboot, the cluster migrates data in narrower erasure-code stripes and reconstructs reads as needed. <a href=\"https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf#page=135\">VAST white paper, pp. 135–136</a></p>"
     ]
    ]
+  },
+  {
+   "t": [
+    "硬件配置",
+    "Hardware Configurations"
+   ],
+   "d": [
+    "Gen 2 改用 AMD Turin 与 DDR5-6400，并在 1U 之外列出 2U 配置。",
+    "Gen 2 moves to AMD Turin and DDR5-6400 and adds 2U configurations alongside 1U."
+   ],
+   "b": [
+    [
+     "<p>VAST 的 1U 规格为 EPYC 9555P、384 GB DDR5-6400 ECC 和 10 或 12 个 U.2 盘位。2U 规格为 EPYC 9655P、768 GB 和 16 或 20 个盘位。规格列有 SCM（用作持久写缓冲的高耐久介质）与 QLC/TLC SSD 的组合，1U 和 2U 都列有全 TLC 布局，2U 全 TLC 还列出 E3.S 选项。NCP 参考验证包括 1U 机型的两块单口 400G ConnectX-7 配置。指南另列两块双口 200G ConnectX-7 用于拆分网络，规格页将这项与 NCP 验证配置分列。</p>",
+     "<p>Supermicro AS-1116CS-TN 是 1U 12 盘位实例，Cisco UCS C225 M8N 与 Lenovo ThinkSystem SR635 V3 是 1U 10 盘位实例。VAST 的 Gen 2 目录也列有 HPE、Gigabyte、Aivres、ASUS 和 xFusion 配置。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-gen-2\">VAST EBox Generation 2 规格</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-generation-2\">VAST Gen 2 OEM 目录</a>、<a class=\"gen-source\" href=\"https://www.supermicro.com/flyer/f_SMCI_VAST_EBox.pdf\">Supermicro Gen 2 规格</a>、<a class=\"gen-source\" href=\"https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html\">Cisco UCS EBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/lenovo-gen2-ebox-1u10drive\">Lenovo Gen 2 验证配置</a>。</p>"
+    ],
+    [
+     "<p>VAST lists EPYC 9555P, 384 GB of DDR5-6400 ECC, and 10 or 12 U.2 bays for 1U, and EPYC 9655P, 768 GB, and 16 or 20 bays for 2U. Layouts combine storage-class memory (SCM), high-endurance media for persistent write buffering, with QLC or TLC SSDs. The 1U and 2U formats also list all-TLC layouts, with an E3.S option listed for 2U all-TLC. NCP reference validation includes a 1U configuration with two single-port 400G ConnectX-7 adapters. The guide also lists two dual-port 200G ConnectX-7 adapters for split networks separately from the NCP-validated configuration.</p>",
+     "<p>The Supermicro AS-1116CS-TN is a 1U 12-bay example. The Cisco UCS C225 M8N and Lenovo ThinkSystem SR635 V3 are 1U 10-bay examples. VAST’s Gen 2 directory also lists HPE, Gigabyte, Aivres, ASUS, and xFusion configurations. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-gen-2\">VAST EBox Generation 2 Specification</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-generation-2\">VAST Gen 2 OEM Directory</a>, <a class=\"gen-source\" href=\"https://www.supermicro.com/flyer/f_SMCI_VAST_EBox.pdf\">Supermicro Gen 2 Specification</a>, <a class=\"gen-source\" href=\"https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html\">Cisco UCS EBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/lenovo-gen2-ebox-1u10drive\">Lenovo Gen 2 Qualified Configuration</a>.</p>"
+    ]
+   ],
+   "tabs": [
+    {
+     "key": "gen2",
+     "t": [
+      "Gen 2",
+      "Gen 2"
+     ],
+     "d": [
+      "Gen 2 改用 AMD Turin 与 DDR5-6400，并在 1U 之外列出 2U 配置。",
+      "Gen 2 moves to AMD Turin and DDR5-6400 and adds 2U configurations alongside 1U."
+     ],
+     "b": [
+      [
+       "<p>VAST 的 1U 规格为 EPYC 9555P、384 GB DDR5-6400 ECC 和 10 或 12 个 U.2 盘位。2U 规格为 EPYC 9655P、768 GB 和 16 或 20 个盘位。规格列有 SCM（用作持久写缓冲的高耐久介质）与 QLC/TLC SSD 的组合，1U 和 2U 都列有全 TLC 布局，2U 全 TLC 还列出 E3.S 选项。NCP 参考验证包括 1U 机型的两块单口 400G ConnectX-7 配置。指南另列两块双口 200G ConnectX-7 用于拆分网络，规格页将这项与 NCP 验证配置分列。</p>",
+       "<p>Supermicro AS-1116CS-TN 是 1U 12 盘位实例，Cisco UCS C225 M8N 与 Lenovo ThinkSystem SR635 V3 是 1U 10 盘位实例。VAST 的 Gen 2 目录也列有 HPE、Gigabyte、Aivres、ASUS 和 xFusion 配置。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-gen-2\">VAST EBox Generation 2 规格</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-generation-2\">VAST Gen 2 OEM 目录</a>、<a class=\"gen-source\" href=\"https://www.supermicro.com/flyer/f_SMCI_VAST_EBox.pdf\">Supermicro Gen 2 规格</a>、<a class=\"gen-source\" href=\"https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html\">Cisco UCS EBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/lenovo-gen2-ebox-1u10drive\">Lenovo Gen 2 验证配置</a>。</p>"
+      ],
+      [
+       "<p>VAST lists EPYC 9555P, 384 GB of DDR5-6400 ECC, and 10 or 12 U.2 bays for 1U, and EPYC 9655P, 768 GB, and 16 or 20 bays for 2U. Layouts combine storage-class memory (SCM), high-endurance media for persistent write buffering, with QLC or TLC SSDs. The 1U and 2U formats also list all-TLC layouts, with an E3.S option listed for 2U all-TLC. NCP reference validation includes a 1U configuration with two single-port 400G ConnectX-7 adapters. The guide also lists two dual-port 200G ConnectX-7 adapters for split networks separately from the NCP-validated configuration.</p>",
+       "<p>The Supermicro AS-1116CS-TN is a 1U 12-bay example. The Cisco UCS C225 M8N and Lenovo ThinkSystem SR635 V3 are 1U 10-bay examples. VAST’s Gen 2 directory also lists HPE, Gigabyte, Aivres, ASUS, and xFusion configurations. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-gen-2\">VAST EBox Generation 2 Specification</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-generation-2\">VAST Gen 2 OEM Directory</a>, <a class=\"gen-source\" href=\"https://www.supermicro.com/flyer/f_SMCI_VAST_EBox.pdf\">Supermicro Gen 2 Specification</a>, <a class=\"gen-source\" href=\"https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html\">Cisco UCS EBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/lenovo-gen2-ebox-1u10drive\">Lenovo Gen 2 Qualified Configuration</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "gen1",
+     "t": [
+      "Gen 1",
+      "Gen 1"
+     ],
+     "d": [
+      "Gen 1 的参考配置采用 AMD Genoa、DDR5-4800 和 1U 10 或 12 盘位机箱。",
+      "The Gen 1 reference uses AMD Genoa, DDR5-4800, and a 1U chassis with 10 or 12 bays."
+     ],
+     "b": [
+      [
+       "<p>VAST 的 Gen 1 规格为 EPYC 9454P、384 GB DDR5-4800 ECC 和 10 或 12 个 U.2 盘位。混合介质布局包括 2 块 SCM 加 8 块 QLC 或 TLC SSD，或 3 块 SCM 加 7 或 9 块 QLC 或 TLC SSD。规格另外列出全 TLC 布局。网络可选两块双口 ConnectX-7，或一块或两块 BlueField-3 B3220L。</p>",
+       "<p>VAST 列出的实例包括 Supermicro 1U 12 盘位，以及 Cisco、Dell、HPE、Lenovo 和 xFusion 的 1U 10 盘位配置。与 Gen 2 的 1U 参考配置相比，两代仍有 384 GB 和相同的盘位规格，处理器、内存速率和网卡选项不同。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/generation-1\">VAST EBox Generation 1 规格</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-generation-1\">VAST Gen 1 OEM 目录</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen1-ebox-1u12drive\">Supermicro Gen 1 验证配置</a>、<a class=\"gen-source\" href=\"https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html\">Cisco UCS EBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/lenovo-gen1-ebox-1u10-drive\">Lenovo Gen 1 验证配置</a>。</p>"
+      ],
+      [
+       "<p>VAST’s Gen 1 guideline specifies EPYC 9454P, 384 GB of DDR5-4800 ECC, and 10 or 12 U.2 bays. Mixed layouts include two SCM drives plus eight QLC or TLC SSDs, or three SCM drives plus seven or nine QLC or TLC SSDs. The guideline also lists all-TLC layouts. Network options include two dual-port ConnectX-7 adapters or one or two BlueField-3 B3220L cards.</p>",
+       "<p>VAST lists a Supermicro 1U 12-bay example and 1U 10-bay options from Cisco, Dell, HPE, Lenovo, and xFusion. The reference 1U layouts share the 384 GB capacity and bay counts across the two generations. Processor platform, memory speed, and adapter options change. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/generation-1\">VAST EBox Generation 1 Specification</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/ebox-generation-1\">VAST Gen 1 OEM Directory</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen1-ebox-1u12drive\">Supermicro Gen 1 Qualified Configuration</a>, <a class=\"gen-source\" href=\"https://www.cisco.com/c/en/us/solutions/collateral/artificial-intelligence/vast-data-ucs-ds.html\">Cisco UCS EBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/lenovo-gen1-ebox-1u10-drive\">Lenovo Gen 1 Qualified Configuration</a>.</p>"
+      ]
+     ]
+    }
+   ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=81c36bc2"></script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
 <script>
 document.addEventListener('ss-lang', function () {
   document.title = document.querySelector('h1').textContent + " · Shan's Stack";

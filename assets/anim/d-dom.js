@@ -16,7 +16,6 @@ var EN={"客户端":"Client","元数据服务器（MDS）":"Metadata server (MDS
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function F(zh,en){return lang()==='en'?en:zh}
-var LOGO={ddn:'assets/brand/ddn-logo-primary-color.svg',nv:'assets/brand/nvidia-logo-horz-trim.svg'};
 function mount(host,opts){
 opts=opts||{};
 /* ---------- 公共小工具：画布、数据块、沿线移动 ---------- */
@@ -65,18 +64,6 @@ function run(id,pts,t0,dur,t,o){if(t<t0)return -1;if(t>t0+dur)return 2;put(id,at
 function setCls(e,c){if(e&&e.getAttribute('class')!==c)e.setAttribute('class',c)}
 function setTxt(e,s){s=T(s);if(e&&e.textContent!==s)e.textContent=s}
 
-/* 在 SVG 里放一个官方 logo（站内 assets/brand 的原件）：h 是高度，宽按原件比例；返回 {g,w,h} */
-function brandLogo(key,x,y,h,p){const A={ddn:280/93,nv:2090/414}[key],w=h*A,px=h*0.22,py=h*0.16;
-  const g=document.createElementNS(NS,'g');(p||svg).appendChild(g);
-  const bk=document.createElementNS(NS,'rect');
-  for(const [k,v] of Object.entries({x:x-px,y:y-py,width:w+2*px,height:h+2*py,rx:2,class:'lgbk'}))bk.setAttribute(k,v);g.appendChild(bk);
-  const im=document.createElementNS(NS,'image');
-  for(const [k,v] of Object.entries({x,y,width:w,height:h,href:(window.SS_ROOT||'')+LOGO[key]}))im.setAttribute(k,v);
-  im.setAttribute('aria-label',key==='ddn'?'DDN':'NVIDIA');g.appendChild(im);return {g,w,h,bk,im,x}}
-/* logo 紧跟标题：英文标题更长时往右让，中文版位置不变 */
-function follow(lg,t,gap){if(!lg||!t)return;let end;try{end=+t.getAttribute('x')+t.getComputedTextLength()}catch(e){return}
-  const dx=Math.max(0,end+gap-lg.x);lg.g.setAttribute('transform',dx?`translate(${dx.toFixed(1)} 0)`:'')}
-function placeLogos(){if(!L.m)follow(E.lgO,E.mT,14);follow(E.lgR,E.rT,10)}
 /* ================= DoM：版式 ================= */
 function layout(m){
   let o;
@@ -110,8 +97,6 @@ function layout(m){
   o.ox=j=>C(o.oss[j]).x;
   o.sp=(j,c)=>P(o.ox(j)+(c||0)*26,o.oss[j].y+34);
   o.fp=k=>P(o.fl.x+30+k*44,o.fl.y+o.fl.h-30);   // MDT 闪存里的格子
-  // DDN logo：元数据服务器框标题行右侧（MDT 闪存框左边）；第 5 步放在 DoM 那条标题后
-  o.lgh=m?16:18;o.lgO=m?{x:32,y:182}:{x:600,y:49};o.lgR=m?{x:298,y:328}:{x:332,y:235};
   o.race=m?raceM():raceD();
   return o;
 }
@@ -131,9 +116,8 @@ function build(){
   const gM=dimOn(grp('1 2 3 4 6',net),'');
   L.wM.forEach(s=>wires(s,'meta',gM));
   E.mds=rect(L.mds,'blk',gM);
-  E.mT=tx(L.mLab.x,L.mLab.y,'元数据服务器（MDS）',f.lbl,'lblb',L.mLab.a||'start',gM);
+  tx(L.mLab.x,L.mLab.y,'元数据服务器（MDS）',f.lbl,'lblb',L.mLab.a||'start',gM);
   tx(L.mSub.x,L.mSub.y,'文件名 · 属性 · 布局',f.note,'ink2-t',L.mSub.a||'start',gM);
-  E.lgO=brandLogo('ddn',L.lgO.x,L.lgO.y,L.lgh,gM);
   E.fl=rect(L.fl,'blk',gM,10);E.fl.style.strokeDasharray='6 4';
   tx(L.fl.x+14,L.fl.y+22,'MDT 闪存',f.note,'violet-t','start',gM);
   const gO=dimOn(grp('1 2 3 4 6',net),'3 4');
@@ -149,9 +133,8 @@ function build(){
   tx(L.lab6b.x,L.lab6b.y,'后面：照常条带化到数据服务器',f.sm,'slate-t st',L.lab6b.a,g6);
   // 第 5 步：两条通道
   const R=L.race,g=grp('5');
-  E.lgR=brandLogo('ddn',L.lgR.x,L.lgR.y,L.lgh,g);   // 两条都是 EXAScaler 的布局，logo 只放一次
   E.rc=R.L.map((ln,k)=>{
-    const tt=tx(ln.t.x,ln.t.y,k?'DoM：只问元数据服务器一次':'普通布局：先问元数据，再找数据服务器',f.lane,'lblb','start',g);if(k)E.rT=tt;
+    tx(ln.t.x,ln.t.y,k?'DoM：只问元数据服务器一次':'普通布局：先问元数据，再找数据服务器',f.lane,'lblb','start',g);
     const cy=C(ln.cl).y,my=C(ln.md).y,oy=C(ln.os).y,ce=ln.cl.x+ln.cl.w;
     wires([P(ce,cy),P(ln.fx,cy)],'',g);wires([P(ln.fx,my),P(ln.fx,oy)],'',g);
     wires([P(ln.fx,my),P(ln.md.x,my)],'meta',g);
@@ -166,7 +149,6 @@ function build(){
   });
   el('line',{x1:R.sep.x1,y1:R.sep.y,x2:R.sep.x2,y2:R.sep.y,class:'sep'},g);
   tx(R.note.x,R.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);
-  placeLogos();
 }
 function reset(){if(!E.mds)return;setCls(E.mds,'blk');setCls(E.cl,'blk');E.oss.forEach(b=>setCls(b,'blk'));setTxt(E.c1,'');setTxt(E.c2,'');setTxt(E.skip,'')}
 
@@ -265,7 +247,6 @@ function rebuild(){setup();enter(step)}
 mq.addEventListener('change',rebuild);
 const onLang=()=>rebuild();document.addEventListener('ss-lang',onLang);
 setup();
-if(document.fonts&&document.fonts.status!=='loaded')document.fonts.ready.then(()=>{if(!dead)placeLogos()});
 const ctrl={
   show(i){enter(Math.max(0,Math.min(NSTEP-1,i)))},
   pause(){paused=true;cancelAnimationFrame(raf)},

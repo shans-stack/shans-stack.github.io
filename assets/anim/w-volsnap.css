@@ -1,0 +1,23 @@
+.w-volsnap-scene{display:block;width:100%;height:auto;overflow:hidden;font:500 16px var(--f)}
+.w-volsnap-scene text{fill:var(--ink);dominant-baseline:central}
+.w-volsnap-scene .w-volsnap-title{font-size:18px;font-weight:700}
+.w-volsnap-scene .w-volsnap-row{fill:var(--ink2)}
+.w-volsnap-scene .w-volsnap-note{fill:var(--ink3);font-size:15px}
+.w-volsnap-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.2}
+.w-volsnap-key .w-volsnap-card{stroke:var(--l6);stroke-width:2}
+.w-volsnap-muted .w-volsnap-card{stroke-dasharray:5 5}
+.w-volsnap-scene .w-volsnap-good{fill:var(--ink);font-weight:700}
+.w-volsnap-scene .w-volsnap-deleted{fill:var(--l1);font-weight:700}
+.w-volsnap-scene .w-volsnap-out{fill:var(--ink3);text-decoration:line-through}
+.w-volsnap-path{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
+.w-volsnap-path.w-volsnap-idle{stroke:var(--rule2);stroke-dasharray:5 5}
+.w-volsnap-path.w-volsnap-file{stroke:var(--l6)}
+.w-volsnap-path.w-volsnap-meta{stroke:var(--l3)}
+.w-volsnap-scene .w-volsnap-link{fill:var(--ink2);paint-order:stroke;stroke:var(--diagram-bg,var(--surface));stroke-width:5;stroke-linejoin:round}
+.present .w-volsnap-scene{--diagram-bg:var(--bg)}
+.w-volsnap-packet{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.w-volsnap-packet.w-volsnap-file{fill:var(--l6)}
+.w-volsnap-packet.w-volsnap-meta{fill:var(--l3)}
+@media(max-width:640px){
+  .w-volsnap-scene .w-volsnap-title,.w-volsnap-scene .w-volsnap-note{font-size:16px}
+}

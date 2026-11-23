@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLPerf Inference：场景、质量与性能 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 MLPerf Inference 的负载生成、准确率校验、场景约束和成绩口径。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-mlpi.css?v=878fc26e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-mlpi">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-mlpi">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="MLPerf Inference: Scenarios, Quality, and Performance">MLPerf Inference：场景、质量与性能</h1>
+        <p class="meta"><span data-en="6 steps · inference, LoadGen, scenarios">6 步 · 推理、LoadGen、场景</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/benchmarks/inference-datacenter/&quot;&gt;MLPerf Inference Datacenter Benchmark&lt;/a&gt;"><a href="https://mlcommons.org/benchmarks/inference-datacenter/">数据中心推理基准</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/inference_policies/blob/master/inference_rules.adoc&quot;&gt;MLPerf Inference Rules&lt;/a&gt;"><a href="https://github.com/mlcommons/inference_policies/blob/master/inference_rules.adoc">推理基准规则</a></li>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/2026/09/mlperf-inference-v6-1-results/&quot;&gt;Inference v6.1 Release Announcement&lt;/a&gt;"><a href="https://mlcommons.org/2026/09/mlperf-inference-v6-1-results/">Inference v6.1 发布公告</a></li>
+      <li data-en="&lt;a href=&quot;https://results.mlcommons.org/&quot;&gt;MLCommons Benchmark Results Catalog&lt;/a&gt;"><a href="https://results.mlcommons.org/">公开版本与发布日期</a></li>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/2026/11/mlperf-endpoints-how-to-submit/&quot;&gt;MLCommons Endpoints v1.0 Overview&lt;/a&gt;"><a href="https://mlcommons.org/2026/11/mlperf-endpoints-how-to-submit/">Endpoints v1.0 说明</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-mlpi.js?v=4c8b14f8"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-mlpi",
+ "ar": [
+  2.2222222222222223,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "已训练模型的系统基准",
+    "Benchmarking a Trained Model"
+   ],
+   "d": [
+    "MLPerf Inference 衡量系统运行指定模型处理请求的速度，并按工作负载校验质量。",
+    "MLPerf Inference measures how quickly a system serves a defined model and verifies quality for the workload."
+   ],
+   "b": [
+    [
+     "<p>被测系统包括完成推理所用的硬件和软件。工作负载规定模型、数据和适用场景，因此成绩对应整套被测配置。</p>",
+     "<p>截至 2026-11-23，MLPerf Inference 最新公开轮次是 v6.1，于 2026-09-16 发布。MLCommons 另行发布了面向实时 API 端点的 MLPerf Endpoints v1.0，结果目录标注的发布日期为 2026-11-19。两者各有提交规则和结果口径。</p>"
+    ],
+    [
+     "<p>The system under test comprises the hardware and software used to perform inference. Each workload defines its model, data, and applicable scenarios, so the score applies to the complete tested configuration.</p>",
+     "<p>As of November 23, 2026, the latest public MLPerf Inference round is v6.1, released September 16, 2026. MLCommons separately published MLPerf Endpoints v1.0 for live API endpoints, dated November 19, 2026 in the results catalog. Each suite has its own submission rules and metrics.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "性能测试与质量校验",
+    "Performance and Quality Runs"
+   ],
+   "d": [
+    "基准框架分别收集性能时序和准确率所需的预测结果。",
+    "The harness collects performance timings and the predictions needed for accuracy evaluation."
+   ],
+   "b": [
+    [
+     "<p>LoadGen 是 MLCommons 提供的负载生成器，按场景发送查询并记录完成时间。准确率运行保存规定样本的预测以供评分，性能运行用规定的查询模式取数。v6.1 还支持面向 API 的客户端与服务端测试框架，具体运行方式随工作负载而异。</p>"
+    ],
+    [
+     "<p>LoadGen is the MLCommons load generator. It issues queries according to the scenario and records their completion times. An accuracy run saves predictions for scoring, while a performance run uses the specified query pattern to collect timings. Version 6.1 also supports an API-centric client/server harness, with execution details depending on the workload.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Offline：集中提交样本",
+    "Offline: Submitting Samples Together"
+   ],
+   "d": [
+    "在 LoadGen 的 Offline 场景中，样本一起提交，成绩是测得的处理吞吐。",
+    "In LoadGen's Offline scenario, samples are submitted together and the score is measured throughput."
+   ],
+   "b": [
+    [
+     "<p>Offline 模拟已有一批待处理输入的情况。系统可按实现组织处理，规则不设置该场景的逐请求时延门槛。批量处理的吞吐适用于这类负载边界。</p>"
+    ],
+    [
+     "<p>Offline represents a backlog of inputs ready to process. The system can schedule the work according to its implementation. The rules set no per-request latency threshold for this scenario. The measured throughput describes bulk processing under that test boundary.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Server 与 Interactive：到达与时限",
+    "Server and Interactive: Arrivals and Limits"
+   ],
+   "d": [
+    "覆盖的负载以随机到达施压，得分受任务定义的时延门槛约束。",
+    "Applicable workloads use randomized arrivals, and the score is constrained by workload-specific latency targets."
+   ],
+   "b": [
+    [
+     "<p>在 LoadGen 的 Server 与 Interactive 场景中，查询按泊松过程到达，即给定平均速率但每次到达间隔随机。成绩对应符合规范时延条件的最高受支持目标到达率。生成任务可按首 Token 时延和后续生成速度规定不同约束。</p>"
+    ],
+    [
+     "<p>In LoadGen's Server and Interactive scenarios, queries arrive according to a Poisson process: a specified average rate with randomized intervals. The score is the highest supported target arrival rate that meets the relevant latency constraints. Generative workloads can impose separate constraints on time to first token and subsequent generation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "场景决定指标和单位",
+    "Scenarios Determine Metrics and Units"
+   ],
+   "d": [
+    "离线吞吐、在线受约束吞吐与串行时延回答不同的问题。",
+    "Offline throughput, constrained online throughput, and serial latency answer different questions."
+   ],
+   "b": [
+    [
+     "<p>某些任务还提供 Single Stream 场景。上一条查询完成后才发送下一条，结果用规范规定的时延统计值表示。各场景结果的单位随工作负载和指标变化，例如样本每秒、Token 每秒或毫秒。</p>"
+    ],
+    [
+     "<p>Some workloads also offer Single Stream. The next query is issued after the previous one completes, and the result is the latency statistic specified by the rules. Units vary by workload and metric, including samples per second, tokens per second, or milliseconds.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "对齐条件后再比较",
+    "Comparing Equivalent Conditions"
+   ],
+   "d": [
+    "同一轮次、模型、质量档、场景和组别提供可比的结果口径。",
+    "Match release, model, quality target, scenario, and division to establish a comparable result."
+   ],
+   "b": [
+    [
+     "<p>同一模型可能有不同质量档或多种场景。结果还带有系统规模和软件配置，系统总吞吐与按设备归一的吞吐适用于不同问题。用 Offline 峰值预测在线交互承载量，会遗漏请求到达模式与时延门槛。</p>"
+    ],
+    [
+     "<p>A model can have multiple quality targets or scenarios. Results also disclose system scale and software configuration. Total system throughput and throughput normalized by device answer different questions. Using peak Offline throughput to predict interactive capacity overlooks the arrival pattern and latency constraints.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

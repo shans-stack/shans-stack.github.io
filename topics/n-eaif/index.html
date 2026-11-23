@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Enterprise AI Factory 参考设计 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps explain how the NVIDIA Enterprise AI Factory reference design takes enterprise AI workloads into production." content="分 5 步说明 NVIDIA Enterprise AI Factory 参考设计如何定义需求、组织核心层、选择实现并核对运维责任。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-eaif.css?v=ebadb951">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-eaif">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-eaif">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Enterprise AI Factory Reference Design">NVIDIA Enterprise AI Factory 参考设计</h1>
+        <p class="meta"><span data-en="5 steps · Reference Design, Platform Services, Operations">5 步 · 参考设计、平台服务、运营</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/ai-factory/start-here/overview&quot;&gt;NVIDIA Enterprise AI Factory · Overview and Implementation Workflow&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/ai-factory/start-here/overview">NVIDIA Enterprise AI Factory · 概览与实施路线</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/ai-factory/start-here/interactive-architecture&quot;&gt;NVIDIA Enterprise AI Factory · Core Architecture&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/ai-factory/start-here/interactive-architecture">NVIDIA Enterprise AI Factory · 核心架构图</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/ai-factory/core-reference-design/enterprise-hardware-ra-foundation&quot;&gt;NVIDIA Enterprise AI Factory · Hardware Reference Architecture Foundation&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/ai-factory/core-reference-design/enterprise-hardware-ra-foundation">NVIDIA Enterprise AI Factory · 硬件参考架构基础</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/ai-factory/core-reference-design/platform-services&quot;&gt;NVIDIA Enterprise AI Factory · Platform Services&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/ai-factory/core-reference-design/platform-services">NVIDIA Enterprise AI Factory · 平台服务</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/ai-factory/core-reference-design/operations&quot;&gt;NVIDIA Enterprise AI Factory · Operations&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/ai-factory/core-reference-design/operations">NVIDIA Enterprise AI Factory · 运维</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-eaif.js?v=4ae0cf89"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-eaif",
+ "ar": [
+  2.2857142857142856,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "从工作负载定义服务",
+    "Defining the Service from the Workload"
+   ],
+   "d": [
+    "参考设计从工作负载、服务目标与约束出发，把 AI 应用的需求转成实施条件。",
+    "The reference design turns AI workload demand, service objectives, and constraints into implementation requirements."
+   ],
+   "b": [
+    [
+     "<p>工作负载是在平台上运行的应用或作业，例如推理服务、智能体应用和模型开发。各类工作负载带来不同的数据访问、质量、可用性与部署要求。参考设计先记录这些需求和信任边界，即身份与权限适用的范围，再据此设计平台。</p>"
+    ],
+    [
+     "<p>A workload is an application or job on the platform, such as inference, an agent application, or model development. These workloads have different data access, quality, availability, and deployment requirements. The design starts by documenting those requirements and trust boundaries, where identity and authorization rules apply.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "五层核心与横向控制",
+    "Five Core Layers and Cross-Stack Controls"
+   ],
+   "d": [
+    "核心设计把工作负载、AI 平台、平台服务、云原生平台与硬件基础分层，并用治理、数据保护和运维贯穿各层。",
+    "The core separates workload demand, the AI platform, platform services, the cloud-native platform, and hardware, with governance, data protection, and operations across all five."
+   ],
+   "b": [
+    [
+     "<p>AI 平台负责模型开发、评估和服务。平台服务承担网关、身份、数据连接和可观测性等共享职责。云原生平台提供 Kubernetes、加速器支持与运行隔离，底层硬件参考架构覆盖计算、网络、存储与设施。横向控制明确各层共用的策略和运行责任。</p>"
+    ],
+    [
+     "<p>The AI platform handles model development, evaluation, and serving. Platform services provide shared capabilities such as gateways, identity, data integration, and observability. The cloud-native platform supplies Kubernetes, accelerator enablement, and runtime isolation. The hardware reference architecture covers compute, networking, storage, and facilities. Cross-stack controls define shared policies and operating responsibilities.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按需叠加行业与能力要求",
+    "Applying Industry and Capability Requirements"
+   ],
+   "d": [
+    "行业配置档增加特定行业的约束，能力参考设计为推理服务等特定能力补充实施模式。",
+    "An industry profile adds sector-specific constraints, and a capability reference design adds an implementation pattern for a capability such as inference serving."
+   ],
+   "b": [
+    [
+     "<p>核心架构定义共用层和接口。行业配置档记录某类部署新增的要求、变更与例外。能力设计则扩展指定层，例如 Inference Hub 为受治理的模型推理服务提供参考。扩展范围由工作负载触发，仍通过核心架构的职责和接口进行衔接。</p>"
+    ],
+    [
+     "<p>The core defines the shared layers and interfaces. Industry profiles record additional requirements, changes, and exceptions for a sector. Capability designs extend specific layers. For example, Inference Hub provides a pattern for governed inference serving. Workload needs determine which extensions apply, and those extensions use the responsibilities and interfaces of the core.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "选择硬件与软件实施路径",
+    "Choosing Hardware and an Implementation Path"
+   ],
+   "d": [
+    "先按需求选择候选硬件参考架构，再从已发布实例或方案目录确定实现方式。",
+    "The workflow identifies a candidate hardware reference architecture, then uses a published example or the solution catalog to shape the implementation."
+   ],
+   "b": [
+    [
+     "<p>硬件参考架构约束部署的计算、网络、存储和设施组合，服务器配置由供应商的支持范围限定。软件可从适用的参考实例起步，也可从目录中选择组件后组合。目录用于发现候选方案，完整实现的版本、接口与支持范围仍需逐项确认。</p>"
+    ],
+    [
+     "<p>The hardware reference architecture defines the compute, networking, storage, and facilities envelope. Server configurations depend on vendor support. Software can start from a suitable reference example or be assembled from catalog candidates. The catalog helps identify options. The complete design still needs release-specific interface and support checks.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "核对支持与运维责任",
+    "Confirming Support and Operational Ownership"
+   ],
+   "d": [
+    "设计确认同时核对产品兼容性与支持范围，并为上线后的监控、升级和恢复分配责任。",
+    "Design confirmation covers product compatibility and support, and assigns owners for monitoring, upgrades, and recovery after deployment."
+   ],
+   "b": [
+    [
+     "<p>实施记录将具体版本、产品支持、身份和数据边界与责任人放在同一份决策记录中。可观测性提供指标、日志和追踪数据，运维团队据此处理问题，执行变更和恢复。上线后继续维护运行、回滚、备份和恢复的责任划分。</p>"
+    ],
+    [
+     "<p>A decision record ties specific versions and support terms to identity and data boundaries and their owners. Observability provides metrics, logs, and traces for incident handling, changes, and recovery. Operational ownership for rollback, backup, and recovery carries forward into production.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -27,7 +27,3 @@
 .an-d-hotpools .pkt.v{fill:var(--violet)}.an-d-hotpools .pkt.o{fill:var(--ochre)}.an-d-hotpools .pkt.s{fill:var(--sage)}.an-d-hotpools .pkt.r{fill:var(--rose)}
 .an-d-hotpools .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:5 4}
 .an-d-hotpools .tick{stroke:var(--ink3);stroke-width:2}
-/* 部件上的厂商 logo：深色模式垫浅灰底，logo 不改色 */
-.an-d-hotpools .lgbk{fill:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .an-d-hotpools .lgbk{fill:#DADCDF}}
-:root[data-theme=dark] .an-d-hotpools .lgbk{fill:#DADCDF}

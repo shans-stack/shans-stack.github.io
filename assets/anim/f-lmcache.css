@@ -1,0 +1,20 @@
+.f-lmcache-anim svg { display: block; width: 100%; overflow: hidden; font-family: var(--f); }
+.f-lmcache-anim text { dominant-baseline: central; fill: var(--ink); font-size: 19px; }
+.f-lmcache-anim .name { font-weight: 700; font-size: 23px; }
+.f-lmcache-anim .detail { fill: var(--ink2); font-size: 18px; }
+.f-lmcache-anim .node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.f-lmcache-anim .node.active { fill: color-mix(in srgb, var(--l5) 10%, var(--surface)); stroke: var(--l5); }
+.f-lmcache-anim .node.waiting { stroke: var(--l1); }
+.f-lmcache-anim .route { fill: none; stroke: var(--l4); stroke-width: 1.8; stroke-linejoin: round; }
+.f-lmcache-anim .route.link { stroke: var(--rule2); }
+.f-lmcache-anim .route.copy, .f-lmcache-anim .route.batch { stroke: var(--l5); }
+.f-lmcache-anim .route.evict { stroke: var(--l1); }
+.f-lmcache-anim .route.ref, .f-lmcache-anim .route.ref-map, .f-lmcache-anim .route.evict { stroke-dasharray: 5 4; }
+.f-lmcache-anim .route.arrow { stroke-dasharray: none; }
+.f-lmcache-anim .chip { fill: var(--l4); stroke: var(--surface); stroke-width: 1; }
+.f-lmcache-anim .chip.copy, .f-lmcache-anim .chip.batch { fill: var(--l5); }
+@media (max-width: 640px) {
+  .f-lmcache-anim text { font-size: 15px; }
+  .f-lmcache-anim .name { font-size: 17px; }
+  .f-lmcache-anim .detail { font-size: 14px; }
+}

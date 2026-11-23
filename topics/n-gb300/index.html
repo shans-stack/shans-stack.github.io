@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA GB300 NVL72：Blackwell Ultra 的整柜互联 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps cover GB300 NVL72 compute trays, fifth-generation NVLink, inter-rack networking, and the changes from GB200." content="分 5 步说明GB300 NVL72 的计算托盘、第五代 NVLink、柜间网络，以及相对 GB200 的演进。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-gb300.css?v=92b0a704">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-gb300">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-gb300">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA GB300 NVL72: Rack-Scale Interconnect for Blackwell Ultra">NVIDIA GB300 NVL72：Blackwell Ultra 的整柜互联</h1>
+        <p class="meta"><span data-en="5 steps · Blackwell Ultra, Grace, NVLink">5 步 · Blackwell Ultra、Grace、NVLink</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;NVIDIA GB300 NVL72 Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">NVIDIA GB300 NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/enterprise-reference-architectures/nvl72-ai-factory/latest/components.html&quot;&gt;NVIDIA NVL72 AI Factory System Hardware and Components&lt;/a&gt;"><a href="https://docs.nvidia.com/enterprise-reference-architectures/nvl72-ai-factory/latest/components.html">NVIDIA NVL72 AI Factory 系统组件</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb200-nvl72/&quot;&gt;NVIDIA GB200 NVL72 Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">NVIDIA GB200 NVL72 产品页</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-gb300.js?v=0fc63122"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-gb300",
+  "ar": [
+    2.549019607843137,
+    0.935064935064935
+  ],
+  "steps": [
+    {
+      "t": [
+        "Blackwell Ultra 的整柜系统",
+        "A Full-Rack System for Blackwell Ultra"
+      ],
+      "d": [
+        "将 72 颗 Blackwell Ultra GPU 与 36 颗 Grace CPU 集成在一柜，由第五代 NVLink 将 GPU 连成一个域。",
+        "The rack combines 72 Blackwell Ultra GPUs with 36 Grace CPUs and connects the GPUs in a single domain over fifth-generation NVLink."
+      ],
+      "b": [
+        [
+          "<p>GB300 NVL72 是液冷整柜系统。计算托盘承载 GPU 与 CPU，交换托盘把各计算托盘里的 GPU 连接起来。NVLink 是 NVIDIA 的高速互联技术。一个 NVLink 域中的 GPU 可以在该互联网络内交换数据。</p>"
+        ],
+        [
+          "<p>GB300 NVL72 is a liquid-cooled rack-scale system. Compute trays house GPUs and CPUs, and switch trays connect the GPUs across compute trays. NVLink is NVIDIA’s high-speed interconnect. GPUs in one NVLink domain can exchange data within that fabric.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "计算托盘中的 CPU、GPU 与 I/O",
+        "CPU, GPU, and I/O Inside a Compute Tray"
+      ],
+      "d": [
+        "每个计算托盘装有两颗 Grace CPU 和四颗 Blackwell Ultra GPU，并提供网络与本地存储接口。",
+        "Each compute tray contains two Grace CPUs and four Blackwell Ultra GPUs, along with network and local storage interfaces."
+      ],
+      "b": [
+        [
+          "<p>NVIDIA 的参考配置在一个机柜中安装 18 个计算托盘。托盘内的 NVLink-C2C 是芯片之间的互联，连接 Grace CPU 和 GPU。ConnectX-8 提供计算网络接口，BlueField-3 可处理存储网络流量。这些接口和柜内 GPU 互联承担不同的通信任务。</p>"
+        ],
+        [
+          "<p>NVIDIA’s reference configuration has 18 compute trays in one rack. Inside a tray, NVLink-C2C is a chip-to-chip interconnect linking Grace CPUs and GPUs. ConnectX-8 provides compute-network interfaces, and BlueField-3 can handle storage-network traffic. These interfaces serve different communication paths from the GPU fabric inside the rack.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "第五代 NVLink 连通机柜",
+        "Fifth-Generation NVLink Connects the Rack"
+      ],
+      "d": [
+        "计算托盘在机柜后部接入九个交换托盘，所有 GPU 处于同一个 NVLink 域。",
+        "Compute trays connect through the rear of the rack to nine switch trays, placing all GPUs in one NVLink domain."
+      ],
+      "b": [
+        [
+          "<p>计算托盘的 GPU 通过铜质背板接到第五代 NVLink 交换芯片。交换结构让同一机柜内不同托盘的 GPU 可直接做点对点通信。对模型训练或推理而言，单个机柜内可以分布式放置模型计算，并经 NVLink 交换所需数据。</p>"
+        ],
+        [
+          "<p>GPUs in the compute trays connect to fifth-generation NVLink switch chips over a copper backplane. The fabric lets GPUs on different trays in one rack communicate peer to peer. Training or inference can distribute model computation within the rack and exchange data over NVLink.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "柜内互联与柜间网络",
+        "In-Rack Interconnect and Inter-Rack Networking"
+      ],
+      "d": [
+        "柜内通信走 NVLink，跨柜计算流量经 ConnectX-8 接入 InfiniBand 或以太网。",
+        "NVLink carries in-rack communication. ConnectX-8 adapters connect inter-rack compute traffic to InfiniBand or Ethernet."
+      ],
+      "b": [
+        [
+          "<p>纵向扩展（scale-up）在一个互联域内组织多个 GPU，横向扩展（scale-out）用网络连接多个系统。GB300 NVL72 在柜内使用 NVLink，跨柜可用 Quantum-X800 InfiniBand 或 Spectrum-X 以太网。应用可利用这两层路径组织机柜内和机柜间的数据交换。</p>"
+        ],
+        [
+          "<p>Scale-up organizes multiple GPUs within one interconnect domain. Scale-out connects systems over a network. GB300 NVL72 uses NVLink inside the rack and can use Quantum-X800 InfiniBand or Spectrum-X Ethernet between racks. Applications can use these two layers to organize communication within and between racks.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 GB200 到 GB300",
+        "From GB200 to GB300"
+      ],
+      "d": [
+        "GB300 保留 Grace CPU、72 GPU 域和第五代 NVLink，将 GPU 更新为 Blackwell Ultra。",
+        "GB300 retains Grace CPUs, the 72-GPU domain, and fifth-generation NVLink, and moves to Blackwell Ultra GPUs."
+      ],
+      "b": [
+        [
+          "<p>GB200 NVL72 使用 Blackwell GPU。GB300 NVL72 使用 Blackwell Ultra，在 GPU 上增加了高带宽内存（HBM）容量并增强注意力计算。HBM 是 GPU 附近的堆叠内存，注意力运算为不同输入位置分配权重。这些变化服务于需要较长上下文和较多推理计算的模型。</p>"
+        ],
+        [
+          "<p>GB200 NVL72 uses Blackwell GPUs. GB300 NVL72 uses Blackwell Ultra GPUs with more high-bandwidth memory (HBM) and enhanced attention computation. HBM is stacked memory close to the GPU. Attention weights different input positions. The changes support workloads that use longer contexts or do more computation during inference.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

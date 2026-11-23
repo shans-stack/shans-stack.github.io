@@ -5,8 +5,7 @@
    步骤状态归页面管，动画只保留第 6 步画面里的「加一台数据服务器」按钮。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步快进到预设时刻定格。
    数据块由精灵池逐帧绘制，位置一律由路线折线插值，只落在画出来的线上或方块里。
-   文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/d-exa.css。
-   第 2–7 步：EXAScaler 一体机部件旁放 DDN 官方 logo（assets/brand/ddn-logo-primary-color.svg）。 */
+   文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/d-exa.css。 */
 (function(){
 var EN={"服务器 ": "Server ", "客户端": "Client", "示意，不代表实测数字": "Schematic, not measured", "计算节点": "Compute nodes", "节点 ": "Node ", "一台文件服务器": "One file server", "门口一次只放一块": "Serves one block at a time", "排队": "Queue", "元数据服务器（MDS）": "Metadata server (MDS)", "目录 · 文件名 · 布局": "Directories · names · layouts", "文件 A 的布局": "Layout of file A", "这一步不参与": "Not involved here", "数据服务器（OSS）": "Data servers (OSS)", "总容量 = 各台容量之和": "Total capacity = sum of all servers", "文件 A 原地不动，新文件 B 用上了第 5 台": "File A stays put; new file B uses server 5", "文件 A 写在 4 台上；新文件 B 也分到 4 台": "File A is on 4 servers; new file B also uses 4", "只有一台": "One server", "四台一起": "Four servers", "服务器": "Server", "已送达": "Delivered", "EXAScaler 加的功能": "What EXAScaler adds", "开源 Lustre（前面几步讲的就是它）": "Open-source Lustre (the previous steps)", "存储硬件：预装、调好，上架就能用": "Storage hardware: preinstalled, tuned, ready to rack", "存储硬件：预装、调好": "Hardware: preinstalled", "DNE3 元数据扩展": "DNE3 metadata", "DoM 小文件": "DoM small files", "PFL 渐进布局": "PFL layouts", "Hot Pools 冷热分层": "Hot Pools tiering", "多租户隔离": "Multi-tenancy", "NFS / SMB 网关": "NFS / SMB gateway", "S3 数据服务": "S3 data service", "Insight 监控": "Insight monitoring", "＋ 加一台数据服务器": "+ Add a data server", "− 回到 4 台": "− Back to 4 servers", "计算节点、元数据服务器和数据服务器之间的数据怎么走": "How data moves between compute nodes, the metadata server and the data servers"};
 /* 画面里的切换按钮：第几步（0 起）有按钮，两种状态各写什么 */
@@ -14,7 +13,6 @@ var TG={"5": ["＋ 加一台数据服务器", "− 回到 4 台"]};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function Z(zh,en){return lang()==='en'?en:zh}
-function asset(p){return window.SS&&SS.url?SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 /* ---------- 公共小工具：画布、数据块、沿线移动 ---------- */
@@ -64,16 +62,8 @@ function clearPool(){for(const s of POOL.values())s.g.remove();POOL.clear();SEEN
 function run(id,pts,t0,dur,t,o){if(t<t0)return -1;if(t>t0+dur)return 2;put(id,atU(pts,(t-t0)/dur),o);return (t-t0)/dur}
 function setCls(e,c){if(e&&e.getAttribute('class')!==c)e.setAttribute('class',c)}
 function setTxt(e,s){s=T(s);if(e&&e.textContent!==s)e.textContent=s}
-/* 在 SVG 里放一个 DDN 官方 logo（assets/brand/ddn-logo-primary-color.svg）：h 是高度，宽按原件比例；深色模式垫浅灰底 */
-function brandLogo(key,x,y,h,p){const A=280/93,w=h*A,px=h*0.22,py=h*0.16;
-  const g=el('g',{},p);
-  el('rect',{x:x-px,y:y-py,width:w+2*px,height:h+2*py,rx:2,class:'lgbk'},g);
-  el('image',{x,y,width:w,height:h,href:asset('assets/brand/ddn-logo-primary-color.svg'),'aria-label':'DDN'},g);
-  return {g,x,w,h}}
 /* 框里放不下的字（多是英文）：按可用宽度压一点字距，不出框 */
 function fit(t,max){try{t.removeAttribute('textLength');t.removeAttribute('lengthAdjust');const w=t.getComputedTextLength();if(w>max){t.setAttribute('textLength',max.toFixed(1));t.setAttribute('lengthAdjust','spacingAndGlyphs')}}catch(e){}}
-/* logo 紧跟某行字：字变长（英文）时把 logo 往右推，不压字 */
-function after(lg,t,gap){try{const need=(+t.getAttribute('x'))+t.getComputedTextLength()+gap;lg.g.setAttribute('transform',need>lg.x?`translate(${(need-lg.x).toFixed(1)} 0)`:'')}catch(e){}}
 
 const ARIA='计算节点、元数据服务器和数据服务器之间的数据怎么走';
 /* ================= EXAScaler：版式 ================= */
@@ -101,7 +91,6 @@ function layout(m){
     o.skip={x:C(o.mds).x+120,y:o.mds.y+o.mds.h+20,a:'middle'};
     o.qlab={x:o.srv.x-24,y:sY-24,a:'end'};
     o.cap={y:362,h:14};o.capT={x:420,y:394};o.note6={x:420,y:422};o.btn={x:700,y:454};
-    o.lgO={x:628,y:153,h:18};o.lgR={x:134,y:213,h:18};
     o.race=raceD();o.stack=stackD();
   }else{
     /* 手机：小字统一 17（400 宽下约 12.5px） */
@@ -125,7 +114,6 @@ function layout(m){
     o.skip={x:436,y:298,a:'end'};
     o.qlab={x:o.srvX+16,y:o.srv.y-40,a:'start'};
     o.cap={y:508,h:14};o.capT={x:16,y:544};o.note6={x:16,y:572};o.btn={x:240,y:628};
-    o.lgO={x:214,y:308,h:16};o.lgR={x:112,y:282,h:16};
     o.race=raceM();o.stack=stackM();
   }
   return o;
@@ -142,10 +130,10 @@ const ADD=['DNE3 元数据扩展','DoM 小文件','PFL 渐进布局','Hot Pools 
 const BASE=['客户端','MGS','MDS','OSS','LNet'];
 function stackD(){return {top:{x:24,y:18,w:912,h:200,t:{x:44,y:44}},add:ADD.map((s,k)=>({x:44+(k%4)*222,y:70+Math.floor(k/4)*68,w:206,h:52})),
   mid:{x:24,y:234,w:912,h:124,t:{x:44,y:260}},base:BASE.map((s,k)=>({x:44+k*178,y:284,w:160,h:52})),
-  hw:{x:24,y:376,w:912,h:60},hwT:'存储硬件：预装、调好，上架就能用',lg:{x:48,h:22},tx:140,bay:{x0:662,n:10,w:16,gap:10,h:36}}}
+  hw:{x:24,y:376,w:912,h:60},hwT:'存储硬件：预装、调好，上架就能用',bay:{x0:662,n:10,w:16,gap:10,h:36}}}
 function stackM(){return {top:{x:16,y:16,w:448,h:300,t:{x:32,y:42}},add:ADD.map((s,k)=>({x:32+(k%2)*212,y:68+Math.floor(k/2)*58,w:204,h:48})),
   mid:{x:16,y:334,w:448,h:182,t:{x:32,y:360}},base:BASE.map((s,k)=>({x:32+(k%3)*140,y:386+Math.floor(k/3)*58,w:132,h:48})),
-  hw:{x:16,y:536,w:448,h:64},hwT:'存储硬件：预装、调好',lg:{x:32,h:18},tx:102,bay:{x0:333,n:6,w:12,gap:9,h:36}}}
+  hw:{x:16,y:536,w:448,h:64},hwT:'存储硬件：预装、调好',bay:{x0:333,n:6,w:12,gap:9,h:36}}}
 
 /* ================= 画面 ================= */
 function build(){
@@ -173,11 +161,9 @@ function build(){
   E.cells=[0,1,2,3].map(j=>{const r=el('rect',{x:k.cx+j*k.dx,y:k.cy-k.ch/2,width:k.cw,height:k.ch,rx:4,class:'cell'},gM);
     tx(k.cx+j*k.dx+k.cw/2,k.cy+1,String(j+1),f.note,'celll',null,gM);return r});
   E.skip=tx(L.skip.x,L.skip.y,'这一步不参与',f.sm,'sage-t st',L.skip.a,grp('4',net));
-  // 第 2–6 步：元数据 + 数据服务器就是 EXAScaler 一体机，DDN logo 放在「数据服务器（OSS）」标题后，各步同一位置（不随变暗）
-  E.lgO=brandLogo('ddn',L.lgO.x,L.lgO.y,L.lgO.h,grp('2 3 4 6',net));
   // 数据服务器
   const gO=dimOn(grp('2 3 4 6',net),'3');
-  E.ossT=tx(L.ossT.x,L.ossT.y,'数据服务器（OSS）',f.ttl,'ttl','start',gO);
+  tx(L.ossT.x,L.ossT.y,'数据服务器（OSS）',f.ttl,'ttl','start',gO);
   L.wire.trunk.forEach(s=>wires(s,'data',gO));
   E.oss=L.oss.slice(0,4).map((r,j)=>{wires([P(C(r).x,L.trunkY),P(C(r).x,r.y)],'data',gO);const b=rect(r,'blk',gO);
     tx(C(r).x,r.y+r.h-20,T('服务器 ')+(j+1),f.note,'lbl','middle',gO);return b});
@@ -194,8 +180,7 @@ function build(){
   // 第 5 步：两条通道
   const R=L.race,g=grp('5');
   tx(R.title[0].x,R.title[0].y,'只有一台',f.lane,'lblb','start',g);
-  E.raceT=tx(R.title[1].x,R.title[1].y,'四台一起',f.lane,'lblb','start',g);
-  E.lgR=brandLogo('ddn',L.lgR.x,L.lgR.y,L.lgR.h,g);   // 「四台一起」那条是 EXAScaler；「只有一台」是对照，不加
+  tx(R.title[1].x,R.title[1].y,'四台一起',f.lane,'lblb','start',g);
   // 服务器名放在框里偏左：数据块从框右端出发，不压字
   E.fits=[];const ep=(r,s,right)=>{rect(r,'ep',g,10);if(right)tx(r.x+r.w-12,C(r).y,s,f.note,'lbl','end',g);else E.fits.push([tx(r.x+(r.w-L.pw)/2,C(r).y,s,f.note,'lbl','middle',g),r.w-L.pw-6])};
   wires([P(R.top.src.x+R.top.src.w,C(R.top.src).y),P(R.top.dst.x,C(R.top.src).y)],'data',g);
@@ -212,12 +197,10 @@ function build(){
   rect(S.mid,'frame',g7,18);tx(S.mid.t.x,S.mid.t.y,'开源 Lustre（前面几步讲的就是它）',f.ttl,'ttl','start',g7);
   S.base.forEach((r,k)=>{rect(r,'chip',g7,10);tx(C(r).x,C(r).y,BASE[k],f.chip,'lbl','middle',g7)});
   rect(S.hw,'chip hw',g7,12);
-  /* DDN 一体机：官方 logo + 机箱正面的一排盘位 */
-  {const cy=C(S.hw).y,b=S.bay;brandLogo('ddn',S.lg.x,cy-S.lg.h/2,S.lg.h,g7);
-   tx(S.tx,cy,S.hwT,f.chip,'lblb','start',g7);
+  {const cy=C(S.hw).y,b=S.bay;
+   tx(S.top.t.x,cy,S.hwT,f.chip,'lblb','start',g7);
    for(let i=0;i<b.n;i++)el('rect',{x:b.x0+i*(b.w+b.gap),y:cy-b.h/2,width:b.w,height:b.h,rx:2,class:'bay'},g7)}
 }
-function fixLogos(){after(E.lgO,E.ossT,14);after(E.lgR,E.raceT,14)}
 
 /* ================= 每一步 ================= */
 function modes(){
@@ -307,7 +290,7 @@ function loop(now){const dt=Math.max(0,Math.min(0.05,(now-last)/1000||0));last=n
 function go(){cancelAnimationFrame(raf);if(paused||dead||reduce)return;last=performance.now();raf=requestAnimationFrame(loop)}
 function enter(i){
   step=i;cancelAnimationFrame(raf);clearPool();T0=0;TT=0;tog=false;
-  applyVis();reset();fixLogos();(E.fits||[]).forEach(a=>fit(a[0],a[1]));
+  applyVis();reset();(E.fits||[]).forEach(a=>fit(a[0],a[1]));
   const m=MODES[i];m.enter&&m.enter();
   if(reduce){const lim=m.still==null?3:m.still;for(let t=0;t<lim;t+=1/30)frame(1/30);return}
   frame(0);go();

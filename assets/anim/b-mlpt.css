@@ -1,0 +1,41 @@
+.b-mlpt-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  --diagram-rule: var(--ink3);
+  --diagram-accent: var(--lc, var(--l4));
+}
+
+.b-mlpt-diagram text {
+  fill: var(--ink);
+  font: 500 21px var(--f);
+  dominant-baseline: central;
+}
+
+.b-mlpt-diagram .b-mlpt-note,
+.b-mlpt-diagram .b-mlpt-muted { fill: var(--ink2); font-size: 17px; }
+.b-mlpt-diagram .b-mlpt-rule { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; }
+.b-mlpt-diagram .b-mlpt-guide { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.b-mlpt-diagram .b-mlpt-node { fill: var(--surface); stroke: var(--diagram-rule); stroke-width: 1.4; }
+.b-mlpt-diagram .b-mlpt-active { fill: var(--diagram-accent); }
+.b-mlpt-diagram .b-mlpt-pass { fill: var(--l5); }
+.b-mlpt-diagram .b-mlpt-warn { fill: var(--l1); }
+.b-mlpt-diagram .b-mlpt-quiet { fill: var(--blk); }
+.b-mlpt-diagram .b-mlpt-active-line,
+.b-mlpt-diagram .b-mlpt-pass-line,
+.b-mlpt-diagram .b-mlpt-warn-line,
+.b-mlpt-diagram .b-mlpt-quiet-line { fill: none; stroke-width: 3; stroke-linecap: round; }
+.b-mlpt-diagram .b-mlpt-active-line { stroke: var(--diagram-accent); }
+.b-mlpt-diagram .b-mlpt-pass-line { stroke: var(--l5); }
+.b-mlpt-diagram .b-mlpt-warn-line { stroke: var(--l1); }
+.b-mlpt-diagram .b-mlpt-quiet-line { stroke: var(--blk); }
+
+body.topic-b-mlpt .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-mlpt .mhost { aspect-ratio: var(--arm); }
+  .b-mlpt-diagram text { font-size: 16px; }
+  .b-mlpt-diagram .b-mlpt-note,
+  .b-mlpt-diagram .b-mlpt-muted { font-size: 16px; }
+}

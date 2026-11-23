@@ -9,13 +9,8 @@
 var EN={"新写入": "New write", "切块": "Chunk", "算指纹": "Fingerprint", "压缩": "Compress", "已存数据": "Stored data", "指纹表": "Fingerprint table", "示意：一格代表一段字节": "Schematic: each cell is a run of bytes", "最近省下的空间": "Recent space saved", "示意，不代表实测数字": "Schematic, not measured", "内存里的表 1": "RAM table 1", "内存里的表 2": "RAM table 2", "SCM 上的共享表": "Shared SCM table", "内存表 2": "RAM table 2", "SCM 共享表": "Shared SCM table", "示意": "Schematic", "强指纹：没找到": "Strong: no match", "强指纹：找到": "Strong: match", "差一格，也要整块再存": "Differs: stored in full", "一样的块：只记一个指针": "Same block: pointer only", "相似指纹：找到 A": "Similar: match A", "这块就是 A": "This one is A", "示意：B 是一块全新的数据": "Schematic: B is brand-new data", "示意：A′ 和 A 只差一格": "Schematic: A′ differs from A by one cell", "用 A 的字典压": "Using A's dictionary", "A′ 只多存一小段差异": "A′ adds only a small delta", "相似指纹：没找到": "Similar: no match", "ZSTD 单独压缩": "ZSTD on its own", "B 压短一些后存下": "B stored a bit smaller", "整套系统一个缩减域": "One realm for the whole system", "去重域 1": "Dedupe domain 1", "去重域 2": "Dedupe domain 2", "找到：CNode 1 存过": "Found: stored by CNode 1", "没找到": "Not found", "CNode 2 的写入只记一个指针": "CNode 2's write: pointer only", "相似性压缩：": "Similarity: ", "开": "on", "关": "off", "收益低，自动关掉": "Low gain, switched off", "换成共享 SCM 上的表": "Switch to the shared SCM table", "换成全新块": "Switch to a new block", "换成各自内存里的表": "Switch to per-node RAM tables", "换成相似块": "Switch to a similar block", "相似性压缩：找到只差几个字节的块，用同一本字典只存差异": "Similarity reduction: find blocks that differ by a few bytes and store only the difference with a shared dictionary"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
-/* VAST 字标（官方黑白两版同一路径，颜色由 CSS 按深浅色切换），全页只放一份 */
-function sprite(){if(document.getElementById('ss-vast-wm'))return;
-  var d=document.createElement('div');d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;width:0;height:0;overflow:hidden';
-  d.innerHTML='<svg width="0" height="0" focusable="false"><symbol id="ss-vast-wm" viewBox="0 0 66 14"><path d="m11.918.916-.783-.375a.919.919 0 0 0-1.23.444l-.22.414L6.235 8.77 2.788 1.4l-.22-.414a.917.917 0 0 0-1.23-.444L.556.916c-.466.219-.69.804-.474 1.273l.195.383 4.689 10.024a1.383 1.383 0 0 0 1.248.797h.042a1.385 1.385 0 0 0 1.248-.797l4.689-10.024.195-.383c.217-.469-.007-1.054-.47-1.273ZM19.311 12.926l.784.375a.918.918 0 0 0 1.23-.444l.22-.414 3.451-7.371 3.448 7.371.22.414a.918.918 0 0 0 1.23.444l.785-.375c.462-.221.687-.804.469-1.271l-.195-.383-4.689-10.024a1.384 1.384 0 0 0-1.248-.797h-.041a1.386 1.386 0 0 0-1.25.797l-4.688 10.024-.195.383c-.219.467.006 1.05.47 1.27ZM47.275 3.212a.918.918 0 0 0 .966-.882l.03-.868c.02-.512-.393-.982-.908-1.006L46.887.45h-5.413c-.03 0-.059 0-.092.004-1.433.095-3.565 1.126-3.565 3.572 0 2.487 2.104 3.599 3.236 3.846l2.823.677c.041.009.082.017.124.023.15.022.896.176.896 1.014 0 .504-.253.801-.754.885h-5.318l-.362.005a.918.918 0 0 0-.966.883l-.03.868c-.02.512.393.982.908 1.006l.45.005h5.413c.043 0 .086 0 .128-.005 1.327-.123 3.301-1.196 3.301-3.647 0-2.539-2.051-3.547-3.195-3.742l-2.787-.668-.039-.008c-.042-.01-1.058-.235-1.058-1.142 0-.606.578-.769.953-.81h5.347l.388-.004ZM66 1.365a.916.916 0 0 0-.938-.914H55.5a.919.919 0 0 0-.938.914v.878c0 .513.427.968.942.976H58.897v9.086a.914.914 0 0 0 .56.864.919.919 0 0 0 .355.073h.879c.512 0 .968-.426.976-.94V3.217H65.06c.515-.007.943-.463.942-.975l-.003-.878Z"/></symbol></svg>';
-  document.body.appendChild(d)}
 function mount(host,opts){
-opts=opts||{};sprite();
+opts=opts||{};
 /* ---------- 通用小引擎：每一步的画面都是「本轮时间 t」的函数 ---------- */
 const NS='http://www.w3.org/2000/svg';
 host.classList.add('v-sim');host.innerHTML='';
@@ -48,10 +43,6 @@ function travel(p,pts,t,t0,v,opt){opt=opt||{};const dur=plen(pts)/v,u=(t-t0)/dur
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return t0+dur}
 const loopFade=(t,per)=>t>per-0.4?clamp((per-t)/0.4,0,1):t<0.35?clamp(t/0.35,0,1):1;
 const H={el,tx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,put,travel,loopFade,alt:()=>tgl};
-/* 厂商 logo：VAST 字标放在部件角上。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;return el('use',{href:'#ss-vast-wm',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm brand-part'},p)}
-/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
-function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.63*s.length;const w=h*66/14,gap=Math.round(fs*0.4),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
 /* 相似性压缩：新写入 → 切块 → 算指纹 → 压缩 → 已存数据；指纹表在「算指纹」旁，取参考块的线从存储绕回「压缩」 */
 
 function makeScene(){
@@ -95,7 +86,7 @@ build(){
   rect(L.src,'blk',g,10);tx(L.src.x+L.src.w/2,L.src.y+L.src.h/2,T('新写入'),f.lbl,'lbl b7','middle',g);
   E.st=L.st.map((s,k)=>{const R=rect(s,'blk',g,10);const nm=[T('切块'),T('算指纹'),T('压缩')][k];
     tx(s.cx+L.stLab.dx,s.cy+L.stLab.dy,nm,f.lbl,'lbl b7',L.stLab.a,g);return R});
-  E.store=rect(L.store,'blk',g,12);/* VAST 字标：存数据的地方是 VAST 集群，紧跟「已存数据」 */vpair(L.storeLab.x,L.storeLab.y,T('已存数据'),f.lbl,'lbl b7',g,L.mobile?12:13,(lang()==='en'?f.lbl*5.6:f.lbl*4));
+  E.store=rect(L.store,'blk',g,12);tx(L.storeLab.x,L.storeLab.y,T('已存数据'),f.lbl,'lbl b7','middle',g);
   E.sNote=tx(L.storeNote.x,L.storeNote.y,'',f.sm,'st','middle',g);
   /* 指纹表 */
   const gt=grp('1 3 4');line(L.look,'base',gt);
@@ -147,7 +138,6 @@ realm(g){
     R.dom=[P(150,R.store.y+52),P(300,R.store.y+160)];E.r.wr[3]=R.dom[1];
   }
   E.r.store=rect(R.store,'blk',g,12);
-  /* 第 5 步存储框没有标题：字标放在框外左上角（铭牌） */vmark(R.store.x+2,R.store.y-11,L.mobile?12:11,g,'start');
   E.r.div=line(R.mob?[P(R.store.x+12,R.store.y+105),P(R.store.x+R.store.w-12,R.store.y+105)]:[P(R.store.x+12,R.store.y+R.store.h/2),P(R.store.x+R.store.w-12,R.store.y+R.store.h/2)],'base thin dash',g);
   const sx=R.store.x+16;
   E.r.d1=tx(sx,R.mob?R.store.y+22:R.store.y+24,'',f.sm,'st ink3-t','start',g);E.r.d2=tx(sx,R.mob?R.store.y+128:R.store.y+R.store.h/2+24,'',f.sm,'st ink3-t','start',g);

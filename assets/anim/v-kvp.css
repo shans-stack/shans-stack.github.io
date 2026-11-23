@@ -1,0 +1,20 @@
+.v-kvp-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--surface);
+  border-radius: 4px;
+  font: 500 20px var(--f);
+}
+.v-kvp-scene text {fill: var(--ink); text-anchor: middle}
+.v-kvp-scene .label {font-size: 20px; font-weight: 700}
+.v-kvp-scene .detail, .v-kvp-scene .note {fill: var(--ink2); font-size: 18px}
+.v-kvp-scene .phase {font-weight: 700}
+.v-kvp-scene .node {fill: var(--bg); stroke: var(--rule2)}
+.v-kvp-scene .slot {fill: var(--surface); stroke: var(--rule2); stroke-dasharray: 3 3}
+.v-kvp-scene .track, .v-kvp-scene .arrow {fill: none; stroke: var(--ink3); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round}
+.v-kvp-scene .block {stroke: var(--ink2); stroke-width: 1.2}
+.v-kvp-scene .original, .v-kvp-scene .saved {fill: var(--rule2)}
+.v-kvp-scene .packet {fill: var(--ink2)}
+.v-kvp-scene .fresh {fill: var(--l1); stroke: var(--ink3)}
+body:has([data-station="v-kvp"]) .stage .figbox {margin-block: 0}

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Omniverse：OpenUSD 场景、仿真与合成数据 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA Omniverse 提供基于 OpenUSD 构建工业数字孪生、物理仿真和合成数据应用的开发组件。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-omni.css?v=12df078e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-omni">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-omni">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Omniverse: OpenUSD Scenes, Simulation, and Synthetic Data">NVIDIA Omniverse：OpenUSD 场景、仿真与合成数据</h1>
+        <p class="meta"><span data-en="5 steps · OpenUSD, Kit, PhysX, Replicator">5 步 · OpenUSD、Kit、PhysX、Replicator</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.omniverse.nvidia.com/dev-overview/latest/platform-overview.html&quot;&gt;NVIDIA Omniverse Platform and Kit Overview&lt;/a&gt;"><a href="https://docs.omniverse.nvidia.com/dev-overview/latest/platform-overview.html">NVIDIA Omniverse 平台与 Kit</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.omniverse.nvidia.com/usd/latest/learn-openusd/terms/stage.html&quot;&gt;NVIDIA Learn OpenUSD: Stage&lt;/a&gt;"><a href="https://docs.omniverse.nvidia.com/usd/latest/learn-openusd/terms/stage.html">NVIDIA OpenUSD Stage 说明</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.omniverse.nvidia.com/usd/code-docs/usd-exchange-sdk/latest/docs/authoring-usd.html&quot;&gt;NVIDIA OpenUSD Authoring and Layers&lt;/a&gt;"><a href="https://docs.omniverse.nvidia.com/usd/code-docs/usd-exchange-sdk/latest/docs/authoring-usd.html">NVIDIA OpenUSD 层和资产编写</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/index.html&quot;&gt;NVIDIA Omniverse Physics Developer Guide&lt;/a&gt;"><a href="https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/index.html">NVIDIA Omniverse 物理开发指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/dev_guide/simulation_config.html&quot;&gt;NVIDIA Omniverse Physics Simulation Setup&lt;/a&gt;"><a href="https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/dev_guide/simulation_config.html">NVIDIA Omniverse 物理仿真配置</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator.html&quot;&gt;NVIDIA Omniverse Replicator Components&lt;/a&gt;"><a href="https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator.html">NVIDIA Omniverse Replicator 组件</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-omni.js?v=5d5cba6f"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-omni",
+ "ar": [
+  2.875,
+  1.0096153846153846
+ ],
+ "steps": [
+  {
+   "t": [
+    "以 OpenUSD 表达场景",
+    "Describing a Scene with OpenUSD"
+   ],
+   "d": [
+    "Omniverse 应用以 OpenUSD 表达三维场景中的对象、属性和关系。",
+    "Omniverse applications use OpenUSD to describe objects, properties, and relationships in a 3D scene."
+   ],
+   "b": [
+    [
+     "<p>Omniverse 提供开发组件，用于构建工业数字孪生和物理 AI 应用。OpenUSD 是描述和组合三维场景的技术。场景中的设备、地面或摄像机可表示为 prim，即场景树中的元素。Stage 是应用查看和操作组合后场景的入口。</p>"
+    ],
+    [
+     "<p>Omniverse provides development components for industrial digital twins and physical AI applications. OpenUSD is a technology for describing and composing 3D scenes. Equipment, a floor, or a camera can be represented as prims, which are elements in a scene hierarchy. A stage is the application’s view of the composed scene.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "把资产与编辑组合为同一场景",
+    "Composing Assets and Edits into One Scene"
+   ],
+   "d": [
+    "Stage 可组合多个 USD 文件，让不同的描述共同决定应用所见的场景。",
+    "A stage can compose multiple USD files so that separate contributions determine what the application sees."
+   ],
+   "b": [
+    [
+     "<p>层（layer）是保存一组 USD 描述的数据单元。几何资产和针对它的位置编辑可以分别保存在不同层，由 Stage 按组合规则解析。例如，设备的资产层保留模型定义，场景层引用该资产并另行指定它在场景中的位置。</p>"
+    ],
+    [
+     "<p>A layer is a unit that stores a set of USD descriptions. Geometry and edits to its position can live in different layers, which the stage resolves using composition rules. For example, an equipment asset layer can retain the model definition while a scene layer references that asset and specifies its placement.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用 Kit 组装应用能力",
+    "Assembling Application Capabilities with Kit"
+   ],
+   "d": [
+    "Omniverse Kit 为应用提供连接 OpenUSD、渲染和物理组件的框架。",
+    "Omniverse Kit provides a framework that connects OpenUSD, rendering, and physics components to an application."
+   ],
+   "b": [
+    [
+     "<p>Kit SDK 是用 Python 或 C++ 构建 OpenUSD 应用与服务的开发框架。扩展是向 Kit 应用添加能力的软件模块。面向仿真的应用可以用同一个 Stage 作为场景入口，让渲染组件生成画面，让物理组件使用场景定义推进状态。</p>"
+    ],
+    [
+     "<p>The Kit SDK is a framework for building OpenUSD applications and services with Python or C++. An extension is a software module that adds capabilities to a Kit application. A simulation application can use the same stage as its scene entry point, with a rendering component producing images and a physics component advancing scene state.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "让物理仿真推进场景状态",
+    "Advancing Scene State with Physics"
+   ],
+   "d": [
+    "PhysX 根据场景中的物理设置计算对象运动，例如受重力作用的箱体与地面的碰撞。",
+    "PhysX computes object motion from the scene’s physics settings, such as a crate falling under gravity and colliding with the floor."
+   ],
+   "b": [
+    [
+     "<p>物理仿真需要额外描述质量、碰撞形状等属性。Omniverse 的 PhysX 扩展读取这些场景定义，按仿真时间步推进刚体状态。刚体是仿真中形状保持固定的物体。渲染组件可显示更新后的对象位置。</p>"
+    ],
+    [
+     "<p>Physics simulation needs additional properties such as mass and collision shapes. The Omniverse PhysX extension reads these definitions and advances rigid bodies in simulation time steps. A rigid body keeps its shape during simulation. A renderer can display the resulting object positions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "输出图像与对应标注",
+    "Producing Images and Matching Annotations"
+   ],
+   "d": [
+    "Replicator 可改变场景条件，并从同一次采样输出图像和标注。",
+    "Replicator can vary scene conditions and produce images and annotations from the same sample."
+   ],
+   "b": [
+    [
+     "<p>合成数据是通过仿真生成的数据。Omniverse Replicator 可改变灯光、材质或相机位置，再通过标注组件生成目标边界框或深度等数据。写出组件将渲染图像和相应标注保存为可供训练使用的数据。</p>"
+    ],
+    [
+     "<p>Synthetic data is data generated through simulation. Omniverse Replicator can vary lighting, materials, or camera positions. Annotators can then produce data such as bounding boxes or depth. Writers save the rendered images alongside their matching annotations for use in training.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  document.querySelector('meta[name=description]').content = english
+    ? "5 steps. NVIDIA Omniverse provides OpenUSD-based components for building industrial digital twins, physical simulation, and synthetic data applications."
+    : "分 5 步说明 NVIDIA Omniverse 提供基于 OpenUSD 构建工业数字孪生、物理仿真和合成数据应用的开发组件。";
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

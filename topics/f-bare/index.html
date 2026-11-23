@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>裸金属上线 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明裸金属上线。发现服务器、安装操作系统并配置网络，把物理节点交给集群或租户使用。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-bare.css?v=0172a22e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-bare">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Bare-Metal Bring-Up">裸金属上线</h1>
+        <p class="meta"><span data-en="5 steps · GPU Infrastructure">5 步 · GPU 基础设施</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/base-command-manager/product-manuals/admin/provisioning&quot;&gt;NVIDIA Base Command Manager · Node Provisioning&lt;/a&gt;"><a href="https://docs.nvidia.com/base-command-manager/product-manuals/admin/provisioning">NVIDIA Base Command Manager · 节点部署</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/mission-control/docs/systems-administration-guide/2.2.0/overview.html&quot;&gt;NVIDIA Mission Control · Administration Architecture and Node Configuration&lt;/a&gt;"><a href="https://docs.nvidia.com/mission-control/docs/systems-administration-guide/2.2.0/overview.html">NVIDIA Mission Control · 管理架构与节点配置</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/mission-control/docs/systems-administration-guide/latest/autonomous-hardware-recovery.html&quot;&gt;NVIDIA Mission Control · Autonomous Hardware Recovery&lt;/a&gt;"><a href="https://docs.nvidia.com/mission-control/docs/systems-administration-guide/latest/autonomous-hardware-recovery.html">NVIDIA Mission Control · 硬件故障恢复</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/solutions/rafay-powered-bare-metal-gpus-as-a-service-bmaas&quot;&gt;Rafay · GPU Bare Metal as a Service&lt;/a&gt;"><a href="https://rafay.co/solutions/rafay-powered-bare-metal-gpus-as-a-service-bmaas">Rafay · GPU 裸金属服务</a></li>
+      <li data-en="Illustrative, not measured.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-bare.js?v=c902fd39"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-bare",
+  "ar": [880/300,350/410],
+  "steps": [
+    {"t": ["发现物理节点", "Discover the Server"], "d": ["发现服务器、安装操作系统并配置网络，把物理节点交给集群或租户使用。", "Discovers servers, installs the operating system and configures networking, then hands physical nodes to clusters or tenants."], "b": [["<p>裸金属节点是一台可直接交付的物理服务器。上线从建立资产记录开始：把服务器身份、机位和管理网卡对应起来，再确认带外管理可达。基板管理控制器（BMC）独立于主机操作系统，在操作系统尚未安装时也能提供电源控制和远程控制台。</p>"], ["<p>A bare-metal node is a physical server that can be handed over directly. Bring-up starts by recording its identity, rack position, and management interface, then confirming out-of-band access. The baseboard management controller (BMC) operates independently of the host OS and can provide power control and a remote console before installation.</p>"]]},
+    {"t": ["启动并安装系统镜像", "Boot and Install the OS Image"], "d": ["服务器从部署网络启动，取得与节点角色匹配的系统镜像。", "The server boots from the provisioning network and receives an OS image matched to its role."], "b": [["<p>PXE 是一种网络启动机制。节点先取得引导程序并进入安装环境，再获取包含操作系统及所需软件的镜像。NVIDIA Mission Control 使用 NVIDIA Base Command Manager 完成这类节点装机和镜像管理。</p>"], ["<p>PXE is a network boot mechanism. The node first retrieves a bootloader and enters the installer, then receives an image containing the OS and required software. NVIDIA Mission Control uses NVIDIA Base Command Manager for this kind of node provisioning and image management.</p>"]]},
+    {"t": ["配置网络与节点角色", "Configure Networks and Node Roles"], "d": ["节点按角色配置接口、地址和运行组件，才能接入预定的集群或租户网络。", "The node receives role-specific interfaces, addresses, and runtime components for its intended cluster or tenant network."], "b": [["<p>装机网络负责交付镜像。节点运行时还可能使用独立的管理、业务或 GPU 互联网络。部署系统按节点角色应用相应配置，使计算节点接入工作负载所需的网络和服务。</p>"], ["<p>The provisioning network delivers the image. During operation, a node may also use separate management, workload, or GPU fabric networks. The provisioning system applies role-specific settings so the compute node can reach the networks and services its workloads need.</p>"]]},
+    {"t": ["验证后交付", "Validate Before Handoff"], "d": ["通过 GPU 和网络健康检查的节点加入可用资源池，未通过的节点保留为待处理。", "Nodes that pass GPU and network health checks enter the available pool, while failed nodes stay out of service."], "b": [["<p>操作系统启动只证明机器完成了引导。上线验收还要确认 GPU 可以识别、链路已就绪，以及节点能承担目标角色。以 NVIDIA Mission Control 为例，部分 Slurm 部署在作业前后执行健康检查，失败时将节点标记为排空状态，停止接收新作业。</p>"], ["<p>A successful boot confirms that the OS started. Acceptance checks also verify that GPUs are visible, links are ready, and the node can perform its intended role. In some NVIDIA Mission Control deployments with Slurm, checks run before and after jobs. A failure marks the node for draining and stops new jobs from landing there.</p>"]]},
+    {"t": ["退回维护与重新上线", "Return to Maintenance and Requalify"], "d": ["需要维修或重新装机的节点先退出服务，处理完成后重新通过检查。", "A node that needs repair or reimaging leaves service and passes validation again before returning."], "b": [["<p>资产记录和镜像配置在首次交付后继续用于维护。故障节点可退出调度，经过诊断、维修或重装后再验证。若平台把节点作为裸金属服务交付，租户释放实例与运营方把节点重新标为可分配是两个状态。</p>"], ["<p>The inventory record and image configuration remain useful after the first handoff. A failed node can leave scheduling, undergo diagnostics, repair, or reimaging, and then be validated again. In a bare-metal service, release by a tenant and return to the allocatable pool are separate states.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

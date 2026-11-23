@@ -51,9 +51,3 @@
 .v-enclave .v-enclave-tgl[hidden]{display:block;opacity:0;pointer-events:none}
 .v-enclave .v-enclave-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
 @media (max-width:640px){.v-enclave .v-enclave-tgl{font-size:14px;padding:6px 12px}}
-/* 厂商 logo：VAST 字标（浅色纯黑、深色纯白）、NVIDIA 横版两色原件（深色垫浅灰底 #DADCDF，logo 不改色）；文件同 assets/brand/ */
-.v-enclave .vwm{fill:#000000}
-.v-enclave .nvbk{fill:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .v-enclave .vwm{fill:#FFFFFF}:root:not([data-theme=light]) .v-enclave .nvbk{fill:#DADCDF}}
-:root[data-theme=dark] .v-enclave .vwm{fill:#FFFFFF}
-:root[data-theme=dark] .v-enclave .nvbk{fill:#DADCDF}

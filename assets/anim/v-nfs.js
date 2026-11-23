@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下更紧的排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-nfs.css，全部限定在 .ssa-v-nfs 容器之内。
-   VAST 字标引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字，由 CSS 切换），不内嵌。 */
+   样式在 assets/anim/v-nfs.css，全部限定在 .ssa-v-nfs 容器之内。 */
 (function(){
 var ID='v-nfs',NSTEPS=6;
 var EN={"NFSv3 · NFSv4.1 · NFSv4.2":"NFSv3 · NFSv4.1 · NFSv4.2","客户端 A":"Client A","客户端 B":"Client B","客户端 C":"Client C","DNS":"DNS","共享存储":"Shared storage","view /data":"view /data","a.dat":"a.dat","元数据（SCM）":"Metadata (SCM)","view 策略":"View policy","客户端 A、B：读写":"Clients A, B: read-write","客户端 C：只读":"Client C: read-only","NVMe-oF":"NVMe-oF",
@@ -21,7 +20,7 @@ var EN={"NFSv3 · NFSv4.1 · NFSv4.2":"NFSv3 · NFSv4.1 · NFSv4.2","客户端 A
 var ENM={"NLM 锁写入共享的 SCM 元数据":"NLM locks are stored in shared SCM metadata","地址 1、4 迁到 CNode 2、3，锁记录不动":"IPs 1, 4 move to CNodes 2, 3; lock stays","客户端 C 只读：CNode 3 拦下它的写入":"Client C read-only: CNode 3 blocks it","CNode 2 发现冲突，客户端 B 等待":"CNode 2 finds a conflict; B waits","交换机需接受无偿 ARP":"Switches must accept gratuitous ARP","每个标准挂载使用一个 VIP":"One VIP per standard mount","NFSv3：NLM 锁 · NFSv4.1：协议自带加锁":"NFSv3: NLM · NFSv4.1: built-in locks","集群 DNS：轮询分配 VIP":"Cluster DNS: VIPs in round-robin order"};
 var ARIA="VAST 上的 NFS：客户端经虚拟 IP 挂载到 CNode，文件锁写在共享元数据里";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
-var NS='http://www.w3.org/2000/svg',ROOT=window.SS_ROOT||'',CLS='ssa-'+ID;
+var NS='http://www.w3.org/2000/svg',CLS='ssa-'+ID;
 function mount(host,opts){
 opts=opts||{};
 host.classList.add(CLS);host.innerHTML='';
@@ -55,11 +54,6 @@ function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a=
 function hide(o){put(o,-99,-99,0)}
 /* 沿路线走：t 在 [t0, t0+dur] 内走完，之后 fo 秒淡出；返回进度（<0 未出发，0–1 在路上，>1 已到） */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){hide(o);return t<t0?-1:2}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,sm(u)*0.15+u*0.85),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
-/* 厂商 logo：VAST 字标引用 assets/brand 里的原件（浅色用黑字版、深色用白字版，由 CSS 切换）。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'vwm'},p);
- [['black','wm-l'],['white','wm-d']].forEach(([c,k])=>{const im=el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:k},g);im.setAttribute('href',ROOT+'assets/brand/vast-wordmark-'+c+'.svg')});return g}
-/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
-function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.6*T(s).length;const w=h*66/14,gap=Math.round(fs*0.45),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
 /* 小牌子（可整体移动）：中心 (x,y)，宽 w 高 h */
 function chip(x,y,w,h,s,fs,cls,p){const g=el('g',{class:'chip '+(cls||'')},p);el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:6},g);const t=tx(0,0,s,fs,'','middle',g);g.setAttribute('transform',`translate(${x} ${y})`);return {g,t,x,y,w,h,set(s2){t.textContent=T(s2)},mv(nx,ny){this.x=nx;this.y=ny;g.setAttribute('transform',`translate(${nx.toFixed(1)} ${ny.toFixed(1)})`)}}}
 function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
@@ -71,12 +65,12 @@ function protoLayout(mobile){
   cl:{xs:[170,400,630],y:16,w:178,h:60},side:{x:792,y:16,w:146,h:60},busY:102,
   cn:{xs:[200,480,760],y:124,w:220,h:106},chipW:68,chipH:28,fabY:256,fabX:[70,900],
   band:{x:60,y:276,w:840,h:172},bl:{x:84,y:312,w:250,h:120},br:{x:352,y:312,w:526,h:120},fileW:132,slotX:120,slotW:220,
-  cap:{x:480,y:478},note:{x:480,y:506},logoH:14,lbl1:72};
+  cap:{x:480,y:478},note:{x:480,y:506}};
  return {W:480,H:520,mobile:true,f:{lbl:19,sm:17,cap:17,chip:17,big:28},pw:18,ph:14,dr:6,sp:230,
   cl:{xs:[70,194,318],y:10,w:114,h:60},side:{x:388,y:10,w:84,h:60},busY:92,
   cn:{xs:[85,240,395],y:112,w:146,h:106},chipW:62,chipH:28,fabY:240,fabX:[12,468],
   band:{x:12,y:262,w:456,h:170},bl:{x:24,y:300,w:152,h:120},br:{x:188,y:300,w:268,h:120},fileW:104,slotX:84,slotW:172,
-  cap:{x:240,y:460},note:{x:240,y:494},logoH:11,lbl1:68};
+  cap:{x:240,y:460},note:{x:240,y:494}};
 }
 function protoBuild(o){
  const f=L.f,M=L.mobile,cl=L.cl,cn=L.cn;
@@ -97,7 +91,7 @@ function protoBuild(o){
  const r1=cn.y+58,r2=cn.y+88,off=L.chipW/2+4;
  E.cn=cn.xs.map((x,k)=>{const r={x:x-cn.w/2,y:cn.y,w:cn.w,h:cn.h};const gg=el('g',{},g);
   line(P(x,L.busY),P(x,cn.y),'',gg);line(P(x,cn.y+cn.h),P(x,L.fabY),'',gg);const b=box(r,gg);
-  if(k===0)vpair(x,cn.y+24,'CNode 1',f.lbl,'lbl b7',gg,L.logoH,L.lbl1);else tx(x,cn.y+24,'CNode '+(k+1),f.lbl,'lbl b7','middle',gg);
+  tx(x,cn.y+24,'CNode '+(k+1),f.lbl,'lbl b7','middle',gg);
   return {r,x,b,g:gg,slots:[P(x-off,r1),P(x+off,r1),P(x,r2)]}});
  E.chips=[];for(let j=0;j<6;j++){const k=j%3,s=E.cn[k].slots[j<3?0:1];const c=chip(s.x,s.y,L.chipW,L.chipH,'地址 '+(j+1),f.chip,'',E.cn[k].g);c.home=s;c.k=k;E.chips.push(c)}
  /* 叉号 */

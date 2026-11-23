@@ -2,10 +2,6 @@
    颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
 .ssa-v-rack{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
 .ssa-v-rack .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
-.ssa-v-rack .vwm-d{display:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-rack .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-rack .vwm-d{display:inline}}
-:root[data-theme=dark] .ssa-v-rack .vwm-l{display:none}
-:root[data-theme=dark] .ssa-v-rack .vwm-d{display:inline}
 .ssa-v-rack .ssa-scene text{dominant-baseline:central}
 .ssa-v-rack .ssa-scene .vis{transition:opacity .4s}
 .ssa-v-rack .ssa-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}

@@ -58,6 +58,3 @@
 .v-sim .cel.dup{stroke:var(--rose);stroke-width:2.5}
 .v-sim .qdot{fill:var(--slate);stroke:var(--card);stroke-width:2}
 .v-sim .thr{stroke:var(--ink2);stroke-width:2}
-.v-sim .vwm{fill:#000000}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .v-sim .vwm{fill:#FFFFFF}}
-:root[data-theme="dark"] .v-sim .vwm{fill:#FFFFFF}

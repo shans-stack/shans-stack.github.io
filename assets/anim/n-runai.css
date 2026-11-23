@@ -1,0 +1,27 @@
+.n-runai-diagram { display: block; width: 100%; height: auto; font-family: var(--f); }
+.n-runai-diagram text { fill: var(--ink); }
+.n-runai-diagram .name { font-weight: 600; }
+.n-runai-diagram .sub, .n-runai-diagram .note { fill: var(--ink2); }
+.n-runai-diagram .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.4; }
+.n-runai-diagram .artifact .panel { fill: none; stroke-dasharray: 4 3; }
+.n-runai-diagram .idle .panel { stroke-dasharray: 4 4; }
+.n-runai-diagram .idle .name { fill: var(--ink2); }
+.n-runai-diagram .node.arrived .panel, .n-runai-diagram .good .panel { stroke: var(--l5); }
+.n-runai-diagram .node.blocked .panel { stroke: var(--l1); }
+.n-runai-diagram .route { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
+.n-runai-diagram .route.control:not(.arrow) { stroke-dasharray: 5 3; }
+.n-runai-diagram .route.active { stroke: var(--l4); }
+.n-runai-diagram .route.ok, .n-runai-diagram .route.ok.active { stroke: var(--l5); }
+.n-runai-diagram .route.stop, .n-runai-diagram .route.stop.active { stroke: var(--l1); }
+.n-runai-diagram .packet { fill: var(--l4); }
+.n-runai-diagram .packet.ok { fill: var(--l5); }
+.n-runai-diagram .packet.stop { fill: var(--l1); }
+.n-runai-diagram .route, .n-runai-diagram .packet { pointer-events: none; }
+[data-station="n-runai"] .src a { display: inline; padding: 0; font-size: inherit; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-n-runai .stage .figbox { margin-block: 8px; }
+  .topic-n-runai .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-runai .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-runai .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-runai .stage .ctl { gap: 8px; margin-top: 10px; }
+}

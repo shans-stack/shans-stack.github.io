@@ -1,0 +1,61 @@
+.n-nemotron-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+  color: var(--ink);
+}
+.n-nemotron-scene text { fill: var(--ink); font-size: 18px; }
+.n-nemotron-scene .name { font-size: 20px; font-weight: 600; }
+.n-nemotron-scene .sub, .n-nemotron-scene .note { fill: var(--ink2); font-size: 16px; }
+.n-nemotron-scene .caption { font-size: 18px; font-weight: 500; line-height: 1.25; }
+.n-nemotron-scene .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; transition: stroke .14s ease; }
+.n-nemotron-scene .arrived .panel { stroke: var(--l4); }
+.n-nemotron-scene .accepted .panel { stroke: var(--l5); }
+.n-nemotron-scene .review .panel { stroke: var(--l1); }
+.n-nemotron-scene .idle .panel { stroke-dasharray: 4 3; }
+.n-nemotron-scene .idle .name { fill: var(--ink2); }
+.n-nemotron-scene .route {
+  --route-color: var(--l4);
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  transition: stroke .14s ease;
+}
+.n-nemotron-scene .route.active { stroke: var(--route-color); stroke-width: 1.9; }
+.n-nemotron-scene .route.control path:first-child, .n-nemotron-scene .route.idle path:first-child { stroke-dasharray: 4 3; }
+.n-nemotron-scene .packet { fill: var(--l4); stroke: var(--bg); stroke-width: .75; }
+.n-nemotron-scene .route.control { --route-color: var(--l3); }
+.n-nemotron-scene .route.ok { --route-color: var(--l5); }
+.n-nemotron-scene .route.review { --route-color: var(--l1); }
+.n-nemotron-scene .packet.control { fill: var(--l3); }
+.n-nemotron-scene .packet.ok { fill: var(--l5); }
+.n-nemotron-scene .packet.review { fill: var(--l1); }
+.n-nemotron-scene .tile { stroke: var(--l4); stroke-width: 1.5; fill: none; stroke-linejoin: round; }
+.n-nemotron-scene .tile.fixed { stroke: var(--ink3); }
+.n-nemotron-scene .tile.adapter { stroke: var(--l5); }
+.n-nemotron-scene .tile.cache { stroke: var(--l3); }
+.n-nemotron-scene .tile.review { stroke: var(--l1); }
+.n-nemotron-scene .tile .tile-text { font-size: 14px; fill: var(--ink2); stroke: none; font-weight: 600; }
+.n-nemotron-scene .tile .ground { stroke: var(--rule2); }
+.n-nemotron-scene .tile .shade { fill: var(--l4); stroke: none; }
+[data-station="n-nemotron"] .src a {
+  display: inline;
+  padding: 0;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (641px <= width <= 720px) {
+  .topic-n-nemotron .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .n-nemotron-scene .name { font-size: 16px; }
+  .n-nemotron-scene .caption, .n-nemotron-scene .sub, .n-nemotron-scene .note { font-size: 15px; }
+  .topic-n-nemotron .stage .figbox { margin-block: 6px; }
+  .topic-n-nemotron .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-nemotron .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-nemotron .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-nemotron .stage .ctl { gap: 8px; margin-top: 8px; }
+}

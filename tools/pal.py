@@ -26,4 +26,7 @@ PAL['muted']['D']['l'] += ['#B5A796', '#A3ADB8']
 # 第九色（VAST「介质与写入」线用）：橄榄灰。
 PAL['muted']['L']['l'] += ['#8A8A5C']
 PAL['muted']['D']['l'] += ['#B3B38A']
+# 第十、十一色（NVIDIA 图线多时用）：陶土、暗靛。
+PAL['muted']['L']['l'] += ['#A0705A', '#6F6A8F']
+PAL['muted']['D']['l'] += ['#C99A84', '#9C97BB']
 ACTIVE = 'muted'

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIPerf：推理服务的负载与时序 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 AIPerf 如何构造负载、测量流式响应并报告服务达标率。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-aiperf.css?v=d6a67d31">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-aiperf">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-aiperf">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="AIPerf: Load and Timing for Inference Serving">AIPerf：推理服务的负载与时序</h1>
+        <p class="meta"><span data-en="6 steps · streaming responses, arrival rate, request metrics">6 步 · 流式响应、到达率、请求指标</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/ai-dynamo/aiperf/releases/tag/v0.14.0&quot;&gt;AIPerf v0.14.0 Release&lt;/a&gt;"><a href="https://github.com/ai-dynamo/aiperf/releases/tag/v0.14.0">AIPerf v0.14.0 发布记录</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/ai-dynamo/aiperf/v0.14.0/README.md&quot;&gt;AIPerf v0.14.0 Project Documentation&lt;/a&gt;"><a href="https://raw.githubusercontent.com/ai-dynamo/aiperf/v0.14.0/README.md">AIPerf v0.14.0 项目文档</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/ai-dynamo/aiperf/v0.14.0/docs/tutorials/request-rate-concurrency.md&quot;&gt;Request Rate and Concurrency&lt;/a&gt;"><a href="https://raw.githubusercontent.com/ai-dynamo/aiperf/v0.14.0/docs/tutorials/request-rate-concurrency.md">请求速率与并发</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/ai-dynamo/aiperf/v0.14.0/docs/tutorials/goodput.md&quot;&gt;Goodput Methodology&lt;/a&gt;"><a href="https://raw.githubusercontent.com/ai-dynamo/aiperf/v0.14.0/docs/tutorials/goodput.md">Goodput 计算口径</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/benchmarking-llm-inference-at-scale-with-aiperf&quot;&gt;NVIDIA AIPerf Load and Metrics Guide&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/benchmarking-llm-inference-at-scale-with-aiperf">官方压测和指标说明</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-aiperf.js?v=a993e554"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-aiperf",
+ "ar": [
+  2.2222222222222223,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "从客户端测推理端点",
+    "Measuring an Inference Endpoint"
+   ],
+   "d": [
+    "AIPerf 作为外部客户端发送请求并记录响应时序。",
+    "AIPerf sends requests from an external client and records response timings."
+   ],
+   "b": [
+    [
+     "<p>AIPerf 是 NVIDIA 开源的生成式推理压测工具。端点是接收请求的服务接口。客户端测得的时延反映所用的连接、服务路径和响应传输。</p>",
+     "<p>截至 2026-11-23，最近的公开稳定版本是 AIPerf v0.14.0，于 2026-11-20 UTC 发布。</p>"
+    ],
+    [
+     "<p>AIPerf is NVIDIA's open-source load-testing tool for generative inference. An endpoint is the API that receives requests. Client-observed latency reflects the connection, serving path, and response transport used in the run.</p>",
+     "<p>As of November 23, 2026, the latest stable public release is AIPerf v0.14.0, published on November 20, 2026 UTC.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用例定义请求内容",
+    "Defining Request Contents"
+   ],
+   "d": [
+    "aiperf profile 将模型、端点类型、数据来源和流式响应设置组合成一次试验。",
+    "aiperf profile combines a model, endpoint type, data source, and streaming settings into one run."
+   ],
+   "b": [
+    [
+     "<p>合成负载可以控制输入与输出长度，自定义数据或轨迹可保留更接近实际的请求结构。分词器将文本映射为 Token。记录分词器版本与输出长度条件，可解释相同文本或相同输出上限下的计数差异。</p>"
+    ],
+    [
+     "<p>Synthetic load controls input and output lengths. Custom data or traces can preserve request structure more closely. A tokenizer maps text to tokens. Its revision and the output length settings help explain differences in token counts for the same text or generation limit.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "到达率与并发上限",
+    "Arrival Rate and the Concurrency Cap"
+   ],
+   "d": [
+    "请求速率控制发起节奏，并发控制限制同一时刻在途请求的数量。",
+    "Request rate sets the pacing, while concurrency limits how many requests can be in flight."
+   ],
+   "b": [
+    [
+     "<p>仅指定 <code>--concurrency</code> 时，完成一个请求即可为下一条腾出位置。指定 <code>--request-rate</code> 时，客户端按选定的到达模式调度。两项一起设置时，达到在途上限会推迟调度，因此配置速率与实际发出速率可能不同。</p>"
+    ],
+    [
+     "<p>With <code>--concurrency</code> alone, a completed request frees a slot for the next. With <code>--request-rate</code>, the client schedules requests using the selected arrival pattern. When both are set, reaching the in-flight cap can delay dispatch, so the configured and achieved send rates may differ.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从流式响应拆出时延",
+    "Timing a Streamed Response"
+   ],
+   "d": [
+    "首 Token 时延衡量开始等待，Token 间时延衡量流式输出的间隔。",
+    "Time to first token measures the initial wait, and inter-token latency measures gaps in the stream."
+   ],
+   "b": [
+    [
+     "<p>TTFT 从发出请求计到收到首个输出 Token。ITL 观察后续输出之间的间隔。端到端请求时延对应整条请求的完成时间。首包等待和流式输出节奏描述不同阶段。</p>"
+    ],
+    [
+     "<p>Time to first token (TTFT) runs from dispatch to the first output token. Inter-token latency (ITL) measures gaps between later outputs. End-to-end request latency covers the request through completion. Initial wait and streaming cadence describe different stages.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "吞吐与达标请求",
+    "Throughput and Goodput"
+   ],
+   "d": [
+    "输出吞吐统计生成的 Token，goodput 统计同时满足所设时延目标的请求。",
+    "Output throughput tracks tokens per second. Goodput tracks requests per second meeting all latency targets."
+   ],
+   "b": [
+    [
+     "<p>SLO 是可量测的服务目标。<code>--goodput</code> 可指定首 Token、请求时延和 Token 间时延等门槛。达标比例是另一项指标，分母包含错误请求，分子为满足全部目标的请求。</p>"
+    ],
+    [
+     "<p>A service-level objective (SLO) is a measurable service target. <code>--goodput</code> can set thresholds on metrics such as time to first token, request latency, and inter-token latency. The attainment fraction divides the number of compliant requests by the total including errors.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "辨别客户端与服务端上限",
+    "Distinguishing Client and Server Limits"
+   ],
+   "d": [
+    "客户端的调度延迟或连接等待也可能限制实际发出的流量。",
+    "Client scheduling delays or connection waits can limit the traffic actually sent."
+   ],
+   "b": [
+    [
+     "<p>报告的吞吐和时延与模型、端点、请求分布和客户端资源相关。配置的目标速率与实际发出速率出现差距时，调度记录、客户端资源和错误计数有助于定位限制。一次负载下的峰值也无法代表其他输入长度或并发档位。</p>"
+    ],
+    [
+     "<p>Reported throughput and latency depend on the model, endpoint, request distribution, and client resources. When achieved dispatch falls short of the configured rate, scheduling records, client resource use, and errors help identify the limit. Peak throughput from one load point applies to its tested lengths and concurrency.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

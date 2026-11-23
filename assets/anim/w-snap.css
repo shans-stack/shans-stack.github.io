@@ -1,0 +1,23 @@
+.w-snap-scene{display:block;width:100%;height:auto;overflow:hidden;font:500 16px var(--f)}
+.w-snap-scene text{fill:var(--ink);dominant-baseline:central}
+.w-snap-scene .w-snap-title{font-size:18px;font-weight:700}
+.w-snap-scene .w-snap-row{fill:var(--ink2)}
+.w-snap-scene .w-snap-note{fill:var(--ink3);font-size:15px}
+.w-snap-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.2}
+.w-snap-key .w-snap-card{stroke:var(--l6);stroke-width:2}
+.w-snap-muted .w-snap-card{stroke-dasharray:5 5}
+.w-snap-scene .w-snap-good{fill:var(--ink);font-weight:700}
+.w-snap-scene .w-snap-deleted{fill:var(--l1);font-weight:700}
+.w-snap-scene .w-snap-out{fill:var(--ink3);text-decoration:line-through}
+.w-snap-path{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
+.w-snap-path.w-snap-idle{stroke:var(--rule2);stroke-dasharray:5 5}
+.w-snap-path.w-snap-file{stroke:var(--l6)}
+.w-snap-path.w-snap-meta{stroke:var(--l3)}
+.w-snap-scene .w-snap-link{fill:var(--ink2);paint-order:stroke;stroke:var(--diagram-bg,var(--surface));stroke-width:5;stroke-linejoin:round}
+.present .w-snap-scene{--diagram-bg:var(--bg)}
+.w-snap-packet{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.w-snap-packet.w-snap-file{fill:var(--l6)}
+.w-snap-packet.w-snap-meta{fill:var(--l3)}
+@media(max-width:640px){
+  .w-snap-scene .w-snap-title,.w-snap-scene .w-snap-note{font-size:16px}
+}

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB200 NVL72：整柜结构与 NVLink 域 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明GB200 NVL72。将 72 颗 Blackwell GPU 与 36 颗 Grace CPU 集成在一柜，由第五代 NVLink 将 GPU 连成一个域。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-nvl72.css?v=b08b8cc1">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-nvl72">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-nvl72">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="GB200 NVL72: Rack Architecture and NVLink Domain">GB200 NVL72：整柜结构与 NVLink 域</h1>
+        <p class="meta"><span data-en="5 steps · Blackwell, Grace, NVLink">5 步 · Blackwell、Grace、NVLink</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://dam-cdn.nvd.orangelogic.com/AssetLink/y441155802qub41q118b2852i557jem5.pdf&quot;&gt;Datasheet&lt;/a&gt;"><a href="https://dam-cdn.nvd.orangelogic.com/AssetLink/y441155802qub41q118b2852i557jem5.pdf">NVIDIA Blackwell · 数据表</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb200-nvl72/&quot;&gt;Product Specifications&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">GB200 NVL72 · 产品规格</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html&quot;&gt;Rack-Scale Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html">DGX GB 整柜 · 硬件指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/network-fabrics.html&quot;&gt;Network Fabrics&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/network-fabrics.html">DGX GB200 SuperPOD · 网络</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;Product Specifications&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">GB300 NVL72 · 产品规格</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/&quot;&gt;Product Specifications&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/">Vera Rubin NVL72 · 产品规格</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-nvl72.js?v=47a4b00a"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-nvl72",
+ "ar": [
+  2.191780821917808,
+  0.8490566037735849
+ ],
+ "steps": [
+  {
+   "t": [
+    "整柜作为一个系统",
+    "The Rack as a System"
+   ],
+   "d": [
+    "GB200 NVL72 把 72 颗 Blackwell GPU 与 36 颗 Grace CPU 集成到一个液冷机柜。",
+    "GB200 NVL72 integrates 72 Blackwell GPUs and 36 Grace CPUs in one liquid-cooled rack."
+   ],
+   "b": [
+    [
+     "<p>机柜将计算托盘、NVLink 交换托盘、线缆背板、供电和液冷集成为一个系统。NVL72 对应 72 颗 GPU 共享一个 NVLink 域。这里的数量是 NVIDIA 数据表和 DGX 硬件指南所列的整柜组成，截至 2026-11-23。</p>"
+    ],
+    [
+     "<p>The rack integrates compute trays, NVLink switch trays, a cabled backplane, power delivery, and liquid cooling. NVL72 refers to 72 GPUs sharing one NVLink domain. The component counts are from the NVIDIA datasheet and DGX hardware guide, as of November 23, 2026.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Grace Blackwell Superchip 与计算托盘",
+    "Grace Blackwell Superchips and Compute Trays"
+   ],
+   "d": [
+    "一个 GB200 Superchip 用 NVLink-C2C 将一颗 Grace CPU 与两颗 Blackwell GPU 相连。",
+    "A GB200 Superchip uses NVLink-C2C to connect one Grace CPU with two Blackwell GPUs."
+   ],
+   "b": [
+    [
+     "<p>NVLink-C2C 是芯片间互联，用来连接模块内的 CPU 与 GPU。DGX GB200 NVL72 每个计算托盘含两个 GB200 Superchip，整柜装入 18 个这样的托盘。</p>"
+    ],
+    [
+     "<p>NVLink-C2C is a chip-to-chip interconnect between the CPU and GPUs in the module. Each DGX GB200 NVL72 compute tray contains two GB200 Superchips, and 18 such trays populate the rack.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "NVLink 交换结构",
+    "The Switched NVLink Fabric"
+   ],
+   "d": [
+    "第五代 NVLink 经交换托盘和背板连通柜内 GPU，使计算托盘之间可以直接进行 GPU 通信。",
+    "Fifth-generation NVLink connects in-rack GPUs through switch trays and the backplane, enabling GPU communication across compute trays."
+   ],
+   "b": [
+    [
+     "<p>NVLink 域是由 NVLink 连通的一组 GPU。DGX GB200 使用九个 NVLink 交换托盘和无源铜缆背板，使不同计算托盘的 GPU 能在同一域内交换数据。Grace CPU 通过模块内的 NVLink-C2C 与 GPU 相连。</p>"
+    ],
+    [
+     "<p>An NVLink domain is a group of GPUs interconnected by NVLink. DGX GB200 uses nine NVLink switch trays and a passive copper cable backplane so GPUs on different compute trays can exchange data in the same domain. Grace CPUs connect to GPUs through each module’s NVLink-C2C links.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "跨柜扩展与存储接入",
+    "Inter-Rack Scaling and Storage Access"
+   ],
+   "d": [
+    "跨柜 GPU 通信走独立计算网络，共享存储经存储网络接入。",
+    "A separate compute network carries GPU communication between racks, and a storage network provides access to shared storage."
+   ],
+   "b": [
+    [
+     "<p>DGX GB200 的计算托盘通过 ConnectX 适配器接入跨柜计算网，通过 BlueField 数据处理器接入存储和管理网络。在 DGX GB200 SuperPOD 设计里，跨柜计算走 InfiniBand，存储和带内管理走以太网。</p>"
+    ],
+    [
+     "<p>DGX GB200 compute trays use ConnectX adapters to join the inter-rack compute network and BlueField data processing units to reach storage and management networks. In the DGX GB200 SuperPOD design, InfiniBand carries inter-rack compute traffic, while Ethernet serves storage and in-band management.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "GB200 NVL4 与后续整柜",
+    "GB200 NVL4 and Later Rack Systems"
+   ],
+   "d": [
+    "同代 GB200 NVL4 面向服务器内的四 GPU 互联，后续 NVL72 整柜延续单柜 GPU 域。",
+    "The same-generation GB200 NVL4 links four GPUs in a server, and later NVL72 racks retain a single rack-scale GPU domain."
+   ],
+   "b": [
+    [
+     "<p>GB200 NVL4 在兼容的 MGX 模块化服务器设计中连接四颗 Blackwell GPU。GB300 NVL72 使用 Blackwell Ultra GPU，保留 Grace CPU 和第五代 NVLink。Vera Rubin NVL72 改用 Vera CPU、Rubin GPU 和第六代 NVLink。对照以各产品的公开规格为准，截至 2026-11-23。</p>"
+    ],
+    [
+     "<p>GB200 NVL4 connects four Blackwell GPUs in compatible MGX modular server designs. GB300 NVL72 uses Blackwell Ultra GPUs and retains Grace CPUs and fifth-generation NVLink. Vera Rubin NVL72 uses Vera CPUs, Rubin GPUs, and sixth-generation NVLink. The comparison reflects NVIDIA’s published product specifications as of November 23, 2026.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

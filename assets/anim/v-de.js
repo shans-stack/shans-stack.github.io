@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-de.css，全部限定在 .ssa-v-de 容器之内。
-   VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
+   样式在 assets/anim/v-de.css，全部限定在 .ssa-v-de 容器之内。 */
 (function(){
 var ID='v-de',NSTEP=7;
 var EN={"    … return 结果":"    … return result","DataEngine 流水线":"DataEngine pipeline","触发器":"Trigger","监听事件":"Watches events","函数部署 A":"Function deployment A","函数部署 B":"Function deployment B","函数 A":"Function A","函数 B":"Function B","容器镜像仓库":"Container registry","函数资源引用镜像":"A function references a container image","事件":"Event","触发器 → 函数 → 函数：一条流水线":"Trigger → function → function: one pipeline",
@@ -63,12 +62,6 @@ function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a=
 function setText(o,s){const v=T(s);if(o.t.textContent!==v)o.t.textContent=v}
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,sm(u)),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const dur=(pts,sp)=>plen(pts)/(sp||L.sp);
-/* VAST 字标：<image> 引用 assets/brand/ 里的原件，浅色模式黑字、深色模式白字；(x,y) 为左端、竖直居中 */
-function vlogo(x,y,h,p){const w=h*66/14,g=el('g',{class:'vlogo'},p),base=(window.SS_ROOT||'')+'assets/brand/';
-  ['black','white'].forEach(c=>{const i=el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:c==='black'?'vwm-l':'vwm-d',preserveAspectRatio:'xMinYMid meet'},g);i.setAttribute('href',base+'vast-wordmark-'+c+'.svg')});
-  g.w=w;return g}
-/* 带 VAST 字标的标题：字标在前，名字紧跟其后，同一行 */
-function vtitle(x,y,s,fs,cls,p,h){const g=vlogo(x,y,h||L.lg,p);return tx(x+g.w+Math.round(fs*0.4),y,s,fs,cls||'ttl','start',p)}
 function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
 function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.toggle(c,!!on))}
 /* ---------- 场景 ---------- */
@@ -77,15 +70,15 @@ const SCENE={
  toggles:{2:{param:'order',values:['ordered','unordered'],label:v=>v==='ordered'?'换成不按序':'换成按序',aria:'切换投递方式，当前 ',name:v=>v==='ordered'?'按序':'不按序'},
           4:{param:'run',values:['cnode','k8s'],label:v=>v==='cnode'?'换成外部 Kubernetes':'换成 CNode 计算集群',aria:'切换运行位置，当前 ',name:v=>v==='cnode'?'CNode 计算集群':'外部 Kubernetes'}},
  layout(m){
-  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17},pw:22,ph:16,dr:7,sp:330,lg:15,cap:{x:480,y:480},tgl:{x:840,y:40},tgls:{4:{x:788,y:410}}};
-  return {W:480,H:660,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17},pw:18,ph:14,dr:6,sp:240,lg:13,cap:{x:240,y:640},tgl:{x:240,y:600},tgls:{4:{x:240,y:600}}};
+  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17},pw:22,ph:16,dr:7,sp:330,cap:{x:480,y:480},tgl:{x:840,y:40},tgls:{4:{x:788,y:410}}};
+  return {W:480,H:660,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17},pw:18,ph:14,dr:6,sp:240,cap:{x:240,y:640},tgl:{x:240,y:600},tgls:{4:{x:240,y:600}}};
  },
  build(){
   const f=L.f,m=L.mobile;
   const nb=(r,t1,t2,g,cls)=>{const b=box(r,g,cls||'box');if(t2){tx(C(r).x,C(r).y-11,t1,f.sm,'lbl','middle',g);tx(C(r).x,C(r).y+13,t2,f.xs,'ink3-t','middle',g)}else tx(C(r).x,C(r).y,t1,f.sm,'lbl','middle',g);return b};
   /* ===== 1：四类资源 ===== */
   {const ln=grp('1'),g=grp('1');const s={};E.s1=s;
-   s.fr=m?R(8,10,464,380):R(24,24,912,250);box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'DataEngine 流水线',f.sm,'ttl',g);
+   s.fr=m?R(8,10,464,380):R(24,24,912,250);box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'DataEngine 流水线',f.sm,'ttl','start',g);
    s.n=m?[R(140,56,200,60),R(140,166,200,60),R(140,276,200,60)]:[R(60,110,210,70),R(375,110,210,70),R(690,110,210,70)];
    s.rg=m?R(8,420,464,170):R(300,320,636,130);box(s.rg,g,'box soft',14);tx(s.rg.x+16,s.rg.y+22,'容器镜像仓库',f.sm,'ttl','start',g);
    tx(m?s.rg.x+16:s.rg.x+s.rg.w-16,m?s.rg.y+s.rg.h-20:s.rg.y+22,'函数资源引用镜像',f.xs,'ink3-t',m?'start':'end',g);
@@ -112,7 +105,7 @@ const SCENE={
    s.e2=m?elbowV(P(C(s.et).x,s.et.y+s.et.h),P(C(s.tp).x-30,s.tp.y)):elbowH(P(s.et.x+s.et.w,C(s.et).y),P(s.tp.x,C(s.tp).y-14),796);
    s.s2=m?elbowV(P(C(s.st).x,s.st.y+s.st.h),P(C(s.tp).x+30,s.tp.y)):elbowH(P(s.st.x+s.st.w,C(s.st).y),P(s.tp.x,C(s.tp).y+14),806);
    poly(s.e2,'',ln);poly(s.s2,'',ln);
-   nb(s.cl,'客户端','',g);box(s.vw,g,'box frame',14);vtitle(s.vw.x+16,s.vw.y+22,'源视图',f.sm,'ttl',g);tx(s.vw.x+s.vw.w-16,s.vw.y+(m?22:50),'/photos/',f.sm,'ink3-t mono','end',g);
+   nb(s.cl,'客户端','',g);box(s.vw,g,'box frame',14);tx(s.vw.x+16,s.vw.y+22,'源视图',f.sm,'ttl','start',g);tx(s.vw.x+s.vw.w-16,s.vw.y+(m?22:50),'/photos/',f.sm,'ink3-t mono','end',g);
    s.fl=[0,1,2].map(k=>{const r=el('rect',{x:s.slot[k].x-60,y:s.slot[k].y-16,width:120,height:32,rx:6,class:'cell'},g);const t=tx(s.slot[k].x,s.slot[k].y,['cat.jpg','notes.txt','dog.jpg'][k],f.sm,'lbl mono','middle',g);r.style.opacity=0;t.style.opacity=0;return {r,t}});
    s.etB=nb(s.et,'元素触发器','后缀 .jpg',g);s.stB=nb(s.st,'定时触发器','按计划',g);s.tpB=nb(s.tp,'topic','',g,'box och');
    s.nm=tx(C(s.et).x,m?s.et.y-14:s.et.y-16,'',f.xs,'ink3-t st','middle',g);
@@ -152,7 +145,7 @@ const SCENE={
    box(s.rg,g,'box soft',14);tx(s.rg.x+16,s.rg.y+22,'镜像仓库',f.sm,'ttl','start',g);
    s.chB=s.chip.map((r,i)=>{const b=box(r,g,'box',8);tx(C(r).x,C(r).y,i?'my-fn:v2':'my-fn:v1',f.sm,'lbl mono','middle',g);return b});s.chB[1].parentNode;
    s.v2=[s.chB[1],g.lastChild];
-   box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'DataEngine',f.sm,'ttl',g);
+   box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'DataEngine',f.sm,'ttl','start',g);
    nb(s.pl,'流水线','',g);s.fnB=box(s.fn,g);s.fnT=tx(C(s.fn).x,C(s.fn).y,'',f.sm,'lbl','middle',g);
   }
   /* ===== 5：在哪里跑 ===== */
@@ -162,7 +155,7 @@ const SCENE={
    s.kn=[0,1,2].map(k=>m?R(22+k*148,456,140,90):R(660,140+k*62,256,50));
    s.cn.forEach((r,k)=>{line(P(C(r).x,r.y+r.h),P(C(r).x,s.tp.y),'thin',ln)});
    s.kp=m?[P(C(s.tp).x,s.tp.y+s.tp.h),P(C(s.tp).x,s.k8.y)]:[P(s.tp.x+s.tp.w,C(s.tp).y),P(612,C(s.tp).y),P(612,C(s.k8).y),P(s.k8.x,C(s.k8).y)];s.kl=poly(s.kp,'',ln);
-   box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'集群',f.sm,'ttl',g);
+   box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'集群',f.sm,'ttl','start',g);
    s.bars=s.cn.map((r,k)=>{box(r,g,'box',10);tx(C(r).x,r.y+20,'CNode',f.sm,'lbl b7','middle',g);
     const tr=R(r.x+18,r.y+38,r.w-36,r.h-(m?70:76));el('rect',{x:tr.x,y:tr.y,width:tr.w,height:tr.h,rx:6,class:'cell'},g);
     const st=el('rect',{x:tr.x,y:tr.y,width:tr.w,height:tr.h,rx:6,class:'box fills'},g);const cp=el('rect',{x:tr.x,y:tr.y,width:tr.w,height:0,rx:6,class:'box fillv'},g);

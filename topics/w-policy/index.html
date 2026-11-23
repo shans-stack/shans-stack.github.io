@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA 快照策略 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 快照策略对关联的文件系统统一安排快照创建、保留轮转和可选的对象存储上传。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-policy.css?v=68ed7e0c">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-policy">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-policy">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA Snapshot Policies">WEKA 快照策略</h1>
+        <p class="meta"><span data-en="5 steps · Scheduling, Retention, Object Storage">5 步 · 调度、保留、对象存储</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshot-policies&quot;&gt;WEKA Docs · Snapshot Policies&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshot-policies">WEKA 文档 · 快照策略</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshot-policies/manage-snapshot-policies-using-the-gui&quot;&gt;WEKA Docs · Manage Snapshot Policies&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshot-policies/manage-snapshot-policies-using-the-gui">WEKA 文档 · 管理快照策略</a></li>
+      <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-policy.js?v=c4a341b1"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "w-policy",
+  ar: [848/324, 370/430],
+  steps: [
+    {
+      t: ["将策略关联到文件系统", "Attach a Policy to Filesystems"],
+      d: ["一条策略可管理多个关联文件系统的快照计划和保留设置。", "One policy can apply snapshot schedules and retention settings to multiple attached filesystems."],
+      b: [["\u003cp>快照策略是一组自动创建和管理快照的规则。规则在策略中配置，并作用于与该策略关联的文件系统。文件系统仍各自生成自己的恢复点。\u003c/p>"], ["\u003cp>A snapshot policy is a set of rules for creating and managing snapshots automatically. The rules are defined in the policy and apply to its attached filesystems. Each filesystem still gets its own recovery points.\u003c/p>"]]
+    },
+    {
+      t: ["按计划生成恢复点", "Create Recovery Points on a Schedule"],
+      d: ["小时、日、周、月或自定义周期决定何时创建快照。", "Hourly, daily, weekly, monthly, or periodic schedules determine when snapshots are created."],
+      b: [["\u003cp>调度决定何时捕获文件系统状态。小时和日计划可提供较密集的时间点，周和月计划可覆盖较长的历史范围。自定义周期可以在指定的时间窗口内按间隔安排快照。\u003c/p>"], ["\u003cp>Schedules determine when filesystem state is captured. Hourly and daily schedules can provide closely spaced recovery points, while weekly and monthly schedules can cover a longer history. A periodic schedule uses a custom interval within a defined time window.\u003c/p>"]]
+    },
+    {
+      t: ["处理同一时刻的重叠计划", "Resolve Overlapping Schedules"],
+      d: ["同一文件系统的计划重叠时，只有优先级最高的计划创建快照。", "When schedules overlap on one filesystem, only the highest-priority schedule creates a snapshot."],
+      b: [["\u003cp>WEKA 按月、周、日、小时、自定义周期的顺序确定优先级。例如周计划与日计划在同一时刻触发时，只创建周快照，避免在同一文件系统上为一个时间点生成重复快照。\u003c/p>"], ["\u003cp>WEKA gives priority to monthly schedules, then weekly, daily, hourly, and periodic schedules. If a weekly and a daily schedule coincide, only the weekly snapshot is created. This avoids duplicate recovery points for the same filesystem and time.\u003c/p>"]]
+    },
+    {
+      t: ["按保留数量轮转", "Rotate Snapshots by Retention Count"],
+      d: ["快照超过计划的保留数量时，较早的策略快照会轮转退出。", "When the schedule exceeds its retention count, older policy snapshots rotate out."],
+      b: [["\u003cp>保留数量决定每个计划留下多少个恢复点。示意中保留两个日快照，新快照加入后，最早的日快照退出。停用策略后若下调保留设置，关联文件系统的已有快照仍可能被删除。\u003c/p>"], ["\u003cp>The retention count determines how many recovery points a schedule keeps. In the example, the policy retains two daily snapshots. When the next arrives, the oldest rotates out. A disabled policy can still delete existing snapshots on attached filesystems if retention is reduced.\u003c/p>"]]
+    },
+    {
+      t: ["将上传纳入计划", "Add Uploads to a Schedule"],
+      d: ["计划可将生成的快照上传到文件系统已关联的对象存储。", "A schedule can upload its snapshots to object storage already attached to the filesystem."],
+      b: [["\u003cp>对象存储以桶组织数据。计划可指定本地、远端或两类对象存储目标。上传由后台任务处理，恢复点的创建时间与对象端副本的完成时间是两个阶段。\u003c/p>"], ["\u003cp>Object stores organize data in buckets. A schedule can target a local object store, a remote object store, or both. A background task handles the upload, so recovery-point creation and completion of the copy in object storage are separate stages.\u003c/p>"]]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

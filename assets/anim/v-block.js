@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-block.css，全部限定在 .ssa-v-block 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg（浅色）与 vast-wordmark-white.svg（深色），不内嵌。 */
+   样式在 assets/anim/v-block.css，全部限定在 .ssa-v-block 容器之内。 */
 (function(){
 var EN={"文件视图":"File view","块":"Block","主机":"Host","共享目录":"Shared directory","同一批数据":"Same data","卷":"Volume","映射到主机":"Mapped to host",
 "文件视图提供目录，块卷呈现为设备":"A file view exposes directories. A block volume appears as a device.",
@@ -56,13 +55,6 @@ function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a==null?1:a;o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=o.a}
 /* 沿线走：t 在 [t0, t0+dur] 内沿 pts 走，之后 fo 秒内淡出；返回进度（之前 -1，淡出时 1.5） */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
-/* VAST 字标：引用 assets/brand 原件。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const R=window.SS_ROOT||'';
-  const g=el('g',{class:'vwm','aria-label':'VAST'},p),a={x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h};
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-black.svg',class:'vwm-l'},a),g);
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-white.svg',class:'vwm-d'},a),g);return g}
-/* 部件名 + VAST 字标排成一行：文字从 x 起（左对齐），字标紧跟在文字后面。返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h){const t=tx(x,y,s,fs,cls,'start',p);let w;try{w=t.getComputedTextLength()}catch(e){w=0}if(!w)w=fs*0.62*T(s).length;const m=vmark(x+w+Math.round(fs*0.35),y,h,p,'start');return {t,m}}
 function xmark(c,a,b,p){const g=el('g',{class:'xm'},p);line(P(c.x-b,c.y-a),P(c.x+b,c.y+a),'xmark',g);line(P(c.x-b,c.y+a),P(c.x+b,c.y-a),'xmark',g);return g}
 const dur=pts=>plen(pts)/L.sp;
 const SCENE={
@@ -127,9 +119,9 @@ const SCENE={
   E.sw=box(SW,g2,'box',8);tx(swc.x,swc.y,'以太网交换机',f.sm,'lbl','middle',g2);
   const gN=grp('2');if(!M){tx(L.netLbl.x,L.netLbl.y,'NVMe/TCP',f.sm,'slate-t b7','middle',gN);tx(L.netLbl.x,L.netLbl.y+24,'普通以太网',f.sm,'ink3-t','middle',gN)}
   else{tx(L.netLbl.x,L.netLbl.y,'NVMe/TCP',f.sm,'slate-t b7','start',gN);tx(L.netLbl.x,L.netLbl.y+24,'普通以太网',f.sm,'ink3-t','start',gN)}
-  E.cnR.forEach((r,k)=>{E.cnB.push(box(r,g2));
-   if(!M){const ly=r.y+r.h/2+CN.lblDy;if(k===0)vlabel(r.x+14,ly,'CNode',f.lbl,'lbl b7',g2,13);else tx(r.x+14,ly,'CNode',f.lbl,'lbl b7','start',g2)}
-   else{tx(r.x+8,r.y+22,'CNode',f.lbl,'lbl b7','start',g2);if(k===0)vmark(r.x+2,r.y-12,11,g2,'start')}});
+  E.cnR.forEach(r=>{E.cnB.push(box(r,g2));
+   if(!M){const ly=r.y+r.h/2+CN.lblDy;tx(r.x+14,ly,'CNode',f.lbl,'lbl b7','start',g2)}
+   else tx(r.x+8,r.y+22,'CNode',f.lbl,'lbl b7','start',g2)});
   E.xCN=E.cnR.map(r=>{const g=xmark(C(r),r.h*0.3,M?r.w*0.2:r.w*0.12,g2);g.style.opacity=0;return g});
   E.cnOff=E.cnR.map(r=>tx(M?C(r).x:r.x+r.w-14,M?r.y+r.h+16:r.y+r.h/2+CN.lblDy,'',f.sm,'rose-t st',M?'middle':'end',g2));
   const D=L.db;E.dbx=box(D,g2,'box soft',12);tx(D.x+12,D.y+20,'DBox',f.sm,'ttl','start',g2);
@@ -144,7 +136,6 @@ const SCENE={
   /* ---- 第 3 步：子系统、卷、主机 ---- */
   const g3=grp('3');const Q=L.p3;
   const ty=Q.ss.ttlB?Q.ss.y+Q.ss.h-70:Q.ss.y+30;box(Q.ss,g3,'box soft',16);tx(Q.ss.x+18,ty,'子系统',f.lbl,'lbl b7','start',g3);tx(Q.ss.x+18,ty+28,'只开 Block 的 view · 带 NQN',f.sm,'ink3-t','start',g3);
-  vmark(Q.ss.x+Q.ss.w-(M?14:18),ty,M?11:13,g3,'end');
   E.vol3=Q.vols.map((r,i)=>{const b=box(r,g3,'box',10);tx(C(r).x,C(r).y,'卷 '+(i+1),f.lbl,'lbl','middle',g3);return b});
   E.h3=Q.hosts.map((r,i)=>{const b=box(r,g3);tx(C(r).x,C(r).y-14,i?'主机 B':'主机 A',f.lbl,'lbl b7','middle',g3);tx(C(r).x,C(r).y+16,'host NQN',f.sm,'mono ink3-t','middle',g3);return b});
   /* 映射线：[卷, 主机] */

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLPerf Endpoints：模型服务的端到端基准 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 MLPerf Endpoints 的 API 测量边界、负载、并发、质量核验和结果读法。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-mlpe.css?v=94197861">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-mlpe">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="MLPerf Endpoints: An End-to-End Benchmark for Model Serving">MLPerf Endpoints：模型服务的端到端基准</h1>
+        <p class="meta"><span data-en="6 steps · API Inference, Concurrency, Interactivity">6 步 · API 推理、并发、交互速度</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/benchmarks/endpoints/&quot;&gt;MLCommons · MLPerf Endpoints Methodology&lt;/a&gt;"><a href="https://mlcommons.org/benchmarks/endpoints/">MLCommons · MLPerf Endpoints 基准方法</a></li>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/2026/11/mlperf-endpoints-how-to-submit/&quot;&gt;MLCommons · v1.0 Workloads and Submission Guide&lt;/a&gt;"><a href="https://mlcommons.org/2026/11/mlperf-endpoints-how-to-submit/">MLCommons · v1.0 负载与提交说明</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/endpoints&quot;&gt;MLCommons · Reference Client&lt;/a&gt;"><a href="https://github.com/mlcommons/endpoints">MLCommons · 参考客户端</a></li>
+      <li data-en="&lt;a href=&quot;https://results.mlcommons.org/&quot;&gt;MLCommons · Public Result Releases&lt;/a&gt;"><a href="https://results.mlcommons.org/">MLCommons · 历轮公开日期</a></li>
+      <li data-en="&lt;a href=&quot;https://results.mlcommons.org/endpoints&quot;&gt;MLCommons · Result Charts and Fields&lt;/a&gt;"><a href="https://results.mlcommons.org/endpoints">MLCommons · 结果图与字段</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-mlpe.js?v=12cc985f"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "b-mlpe",
+  ar: [860/392, 400/472],
+  steps: [
+  {
+    "t": [
+      "从 API 客户端测量",
+      "Measuring from the API Client"
+    ],
+    "d": [
+      "参考客户端向运行中的推理服务发送请求，并从客户端记录返回的响应。",
+      "The reference client sends requests to a live inference endpoint and records responses at the client."
+    ],
+    "b": [
+      [
+        "<p>端点是推理服务接收请求的 API 地址。基准从客户端经 HTTP 发送请求到端点，再观察返回的响应。测量范围涵盖客户端到端点的网络路径，以及服务端的排队、批处理和模型执行。</p>"
+      ],
+      [
+        "<p>An endpoint is the API address that accepts inference requests. The benchmark sends HTTP requests from the client and observes the responses as they arrive. The measurement covers the network path between client and endpoint, along with server-side queueing, batching, and model execution.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "按规定负载发送请求",
+      "Replaying the Defined Workload"
+    ],
+    "d": [
+      "单轮负载测一次请求与响应，多轮智能体负载回放包含工具调用的交互轨迹。",
+      "A single-turn workload measures one request and response. An agentic workload replays multi-turn traces that include tool calls."
+    ],
+    "b": [
+      [
+        "<p>测试组合由模型、数据集和交互方式共同定义。v1.0 的单轮任务包括摘要与推理。多轮智能体任务回放交互轨迹，也就是按顺序组织的多轮请求和工具调用上下文。后续轮次带着更多上下文发出。单轮请求与整段多轮任务的结果对应不同的测量单位。</p>"
+      ],
+      [
+        "<p>Each test is defined by a model, dataset, and interaction pattern. The v1.0 single-turn tasks include summarization and reasoning. Multi-turn agentic workloads replay traces, ordered interactions that include requests and tool-call context. Later turns carry more context. A single request and a complete multi-turn task are different units of measurement.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "逐档改变并发",
+      "Testing at Discrete Concurrency Levels"
+    ],
+    "d": [
+      "客户端在多个并发档位分别运行测试，每个档位产生一个观测点。",
+      "The client runs separate tests at several concurrency levels, producing one observation per level."
+    ],
+    "b": [
+      [
+        "<p>并发是同时在途的请求数。参考工具 <code>inference-endpoint</code> 向选定的端点和模型施加规定流量。按照主办方的 v1.0 提交说明，智能体赛项规划 7 个测量点，非智能体赛项规划 8 至 32 个点，其中含一次专门的 Offline 运行。</p>",
+        "<p>Offline 模式一次提交整批查询，用于观测最大吞吐。在线并发点描述服务在不同在途负载下的表现，两类点各有对应的测试条件。</p>"
+      ],
+      [
+        "<p>Concurrency counts requests that are in flight at the same time. The <code>inference-endpoint</code> reference tool sends the defined traffic to the selected model and endpoint. The organizer’s v1.0 submission guide specifies seven measurement points for agentic benchmarks and eight to 32 points for non-agentic benchmarks, including a dedicated Offline run.</p>",
+        "<p>The Offline mode submits the full batch of queries together to observe maximum throughput. Online concurrency points describe how the service behaves at different in-flight loads. Each type of point has its own test conditions.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "验证质量并披露配置",
+      "Validating Quality and Disclosing the Setup"
+    ],
+    "d": [
+      "性能测量与模型质量验证共同进入提交，公开结果附有配置和审阅状态。",
+      "A submission includes performance measurements and model quality checks. Published results carry configuration and review status."
+    ],
+    "b": [
+      [
+        "<p>每种不同配置都要验证模型质量。提交还披露软硬件配置及系统供电容量。标准化组别要求模型等效性和软件披露，以便在相同规则下比较。</p>",
+        "<p>通过自动检查后，结果可以在同行审阅完成前以临时状态公开。结果表的审阅状态区分临时结果和已完成核验的正式结果。</p>"
+      ],
+      [
+        "<p>Model quality is checked for each distinct configuration. Submissions also disclose the hardware and software setup and provisioned system power. The Standardized division requires model equivalence and software disclosure so results can be compared under the same rules.</p>",
+        "<p>A result can appear as provisional after automated checks while peer review is still underway. The review status distinguishes provisional results from official results that have completed verification.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "同时看系统吞吐和交互速度",
+      "Reading Throughput and Interactivity Together"
+    ],
+    "d": [
+      "系统吞吐汇总所有请求的输出，交互速度和首 Token 时延描述单个用户收到响应的体验。",
+      "System throughput aggregates output across requests. Interactivity and time to first token describe the response a user sees."
+    ],
+    "b": [
+      [
+        "<p>系统吞吐以每秒生成的 Token 数表示。交互速度以单个用户每秒收到的 Token 数表示，智能体结果还提供覆盖整段任务的平均交互速度。首 Token 时延（TTFT）是从发出请求到收到首个 Token 的时间。P90 表示约九成观测值在该时延以内。</p>",
+        "<p>每个点代表一次运行。较高的系统吞吐可能伴随较慢的单用户输出，因此同样的吞吐下仍需看交互速度和首 Token 时延。发布图保留离散测量点，点间的显示连线不增加测量数据。</p>"
+      ],
+      [
+        "<p>System throughput counts generated tokens per second across the service. Interactivity describes the tokens per second seen by one user. Agentic results also report average interactivity over the full task. Time to first token (TTFT) is the time from sending a request to receiving its first token. P90 is the latency at or below which roughly nine in ten observations fall.</p>",
+        "<p>Each point represents one run. Higher system throughput may come with slower output for each user, so points with similar throughput can still differ in interactivity and TTFT. The published chart retains discrete observations. Any connecting lines add no measurements between those points.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "对齐条件再比较",
+      "Comparing Results under the Same Conditions"
+    ],
+    "d": [
+      "可比条件包括基准版本、模型、负载、组别、审阅状态和交互目标。",
+      "Comparisons depend on the benchmark version, model, workload, division, review status, and interactivity target."
+    ],
+    "b": [
+      [
+        "<p>截至 2026 年 11 月 23 日，MLCommons 结果档案的最新公开版本为 MLPerf Endpoints v1.0，结果于 2026 年 11 月 19 日公开。各次提交的发布日期另列在结果表中。</p>",
+        "<p>跨系统比较需要同版本、同模型、同负载和同组别，并核对审阅状态与测量配置。在相近交互目标下比较相应运行点，可以避免把 Offline 峰值当作在线服务可持续的吞吐。</p>"
+      ],
+      [
+        "<p>As of November 23, 2026, the latest public release in the MLCommons results archive was MLPerf Endpoints v1.0, published on November 19, 2026. The results table also lists publication dates for individual submissions.</p>",
+        "<p>Cross-system comparisons require the same benchmark version, model, workload, and division, with review status and test configuration checked as well. Comparing operating points at a similar interactivity target avoids treating peak Offline throughput as sustainable online throughput.</p>"
+      ]
+    ]
+  }
+]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

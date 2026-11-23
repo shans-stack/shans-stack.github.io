@@ -58,6 +58,3 @@
 .v-ldc .bandbox{fill:none;stroke:var(--ochre);stroke-width:2.5;stroke-dasharray:6 4;transition:opacity .3s}
 .v-ldc .bandbox.read{stroke:var(--slate)}
 .v-ldc .ochreL{stroke:var(--ochre);stroke-width:3.5}
-.v-ldc .vwm{fill:#000000}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .v-ldc .vwm{fill:#FFFFFF}}
-:root[data-theme="dark"] .v-ldc .vwm{fill:#FFFFFF}

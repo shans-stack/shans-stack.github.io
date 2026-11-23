@@ -1,0 +1,26 @@
+.b-mdtest-scene { display: block; width: 100%; height: auto; }
+.b-mdtest-scene text {
+  fill: var(--ink);
+  font: 500 20px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.b-mdtest-scene .b-mdtest-note { fill: var(--ink2); font-size: 17px; }
+.b-mdtest-scene .b-mdtest-box { fill: var(--bg); stroke: var(--ink3); stroke-width: 1.4; }
+.b-mdtest-scene .b-mdtest-line { fill: none; stroke: var(--ink3); stroke-width: 1.5; stroke-linejoin: round; }
+.b-mdtest-scene .b-mdtest-guide { stroke-dasharray: 4 5; }
+.b-mdtest-scene .b-mdtest-token { fill: var(--ink2); }
+
+@media (max-width: 720px) {
+  body.topic-b-mdtest .mhost { aspect-ratio: var(--ar); }
+  body.topic-b-mdtest.present .stage .figbox { margin-block: 0; }
+}
+@media (max-width: 640px) {
+  body.topic-b-mdtest .mhost { aspect-ratio: var(--arm); }
+  .b-mdtest-scene text { font-size: 18px; }
+}
+
+@media (max-width: 440px) {
+  body.topic-b-mdtest .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-mdtest .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

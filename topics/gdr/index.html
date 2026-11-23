@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPUDirect RDMA：显存与网卡的数据路径 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明GPUDirect RDMA：显存与网卡的数据路径。支持 GPUDirect RDMA 的网卡可直接读写 GPU 显存，跨节点传输的数据无需在主机内存中转。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/gdr.css?v=b94fa576">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-gdr">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="gdr">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="GPUDirect RDMA: The Data Path Between GPU Memory and the NIC">GPUDirect RDMA：显存与网卡的数据路径</h1>
+        <p class="meta"><span data-en="5 steps · GPU memory, NICs, PCIe">5 步 · 显存、网卡、PCIe</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuda/gpudirect-rdma/index.html&quot;&gt;NVIDIA CUDA · GPUDirect RDMA, Paths, and Synchronization&lt;/a&gt;"><a href="https://docs.nvidia.com/cuda/gpudirect-rdma/index.html">NVIDIA CUDA · GPUDirect RDMA 概述、路径与同步</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/25.3.1/gpu-operator-rdma.html&quot;&gt;NVIDIA GPU Operator · DMA-BUF and nvidia-peermem&lt;/a&gt;"><a href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/25.3.1/gpu-operator-rdma.html">NVIDIA GPU Operator · DMA-BUF 和 nvidia-peermem</a></li>
+      <li data-en="&lt;a href=&quot;https://www.kernel.org/doc/html/latest/driver-api/pci/p2pdma.html&quot;&gt;Linux Kernel Documentation · PCI Peer-to-Peer DMA&lt;/a&gt;"><a href="https://www.kernel.org/doc/html/latest/driver-api/pci/p2pdma.html">Linux 内核文档 · PCI 对等 DMA</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html#nccl-net-gdr-level&quot;&gt;NCCL User Guide · GPU-to-NIC Topology Distance&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html#nccl-net-gdr-level">NCCL 用户指南 · GPU 与网卡的拓扑距离</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/gdr.js?v=9b270efa"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "gdr",
+ "ar": [
+  2.021276595744681,
+  0.6792452830188679
+ ],
+ "steps": [
+  {
+   "t": [
+    "经主机内存中转",
+    "Staging Through Host Memory"
+   ],
+   "d": [
+    "GPU 到 GPU 的跨节点传输可以先走两端的主机内存缓冲区。",
+    "A cross-node GPU transfer can stage its payload in host-memory buffers at both ends."
+   ],
+   "b": [
+    [
+     "<p>跨节点交换张量时，数据起点和终点都可能在 GPU 显存。传统中转路径先把源显存里的数据复制到主机内存，由发送端网卡从那里读取。接收端网卡把数据写入主机内存，再复制到目标显存。</p>"
+    ],
+    [
+     "<p>When nodes exchange tensors, the data can start and end in GPU memory. A staged path first copies it from source GPU memory to a host buffer that the sending NIC reads. The receiving NIC writes to a host buffer before another copy places the data in destination GPU memory.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "网卡直接访问显存",
+    "Direct NIC Access to GPU Memory"
+   ],
+   "d": [
+    "两端网卡可通过本机 PCIe 访问显存，把数据包经网络送到对端。",
+    "Each NIC can access its local GPU memory over PCIe. The network carries packets between the NICs."
+   ],
+   "b": [
+    [
+     "<p>GPUDirect RDMA 是 NVIDIA 对其 GPU 与第三方设备直接交换数据的技术名称。PCIe 是节点内部连接 GPU 和网卡等设备的总线。在典型的双端直达路径中，发送网卡读取本地显存，接收网卡写入对端本地显存。RDMA 网络连接两端的网卡，两端 PCIe 各负责本节点内的数据搬运。</p>"
+    ],
+    [
+     "<p>GPUDirect RDMA is NVIDIA’s name for direct data exchange between its GPUs and peer devices. PCIe is the local bus that connects devices such as GPUs and NICs. In a typical direct path at both ends, the sending NIC reads local GPU memory and the receiving NIC writes local GPU memory at the other end. The RDMA network connects the NICs, while PCIe carries data within each node.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "显存注册与传输提交",
+    "Memory Registration and Transfer Submission"
+   ],
+   "d": [
+    "通信软件先将显存缓冲区注册给网卡，再提交传输请求。",
+    "Communication software registers the GPU buffer for NIC access before submitting a transfer."
+   ],
+   "b": [
+    [
+     "<p>内存注册让驱动建立网卡可用的地址映射和访问权限。NVIDIA 的 Linux 软件栈可使用 DMA-BUF（内核在设备驱动之间共享缓冲区的机制），或在受支持的环境中使用 nvidia-peermem。图中的主机发起方式由 CPU 运行的通信软件完成注册与提交，网卡通过直接内存访问（DMA）搬运数据。</p>"
+    ],
+    [
+     "<p>Memory registration lets drivers establish the address mapping and access permissions used by the NIC. NVIDIA’s Linux stack can use DMA-BUF, a kernel mechanism for sharing buffers between device drivers, or nvidia-peermem in supported environments. In the host-initiated path shown here, software running on the CPU registers the buffer and submits the request. The NIC moves the payload using direct memory access (DMA).</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "传输完成与 GPU 读取",
+    "Transfer Completion and GPU Reads"
+   ],
+   "d": [
+    "网卡写入完成后，依赖这块数据的 GPU 运算按 CUDA 的同步规则开始。",
+    "After the NIC write completes, dependent GPU work starts according to CUDA’s synchronization rules."
+   ],
+   "b": [
+    [
+     "<p>传输路径和内存可见性是两件事。一个已经在运行的 GPU 内核若与网卡同时访问同一块接收缓冲区，可能读到旧数据或尚未写全的数据。在图示的主机提交方式中，通信软件确认写入完成，再按 CUDA 的工作提交或同步规则安排依赖这批数据的运算。</p>"
+    ],
+    [
+     "<p>The transfer path and memory visibility are separate concerns. A GPU kernel already running while the NIC writes the same receive buffer can see stale or partially written data. In the host-submission example shown here, communication software establishes that the write has completed before arranging dependent work through CUDA submission or synchronization.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "节点内拓扑与传输选择",
+    "Local Topology and Transfer Selection"
+   ],
+   "d": [
+    "直接访问取决于 GPU 与网卡之间的 PCIe 路径，以及平台、驱动和通信库的支持。",
+    "Direct access depends on the PCIe path between the GPU and NIC and on support from the platform, drivers, and communication library."
+   ],
+   "b": [
+    [
+     "<p>两个设备即使位于同一台服务器，PCIe 路径也可能不同。经同一 PCIe 交换机的路径与跨处理器插槽的路径，需要分别确认平台的对等 DMA 能力。NCCL（GPU 集合通信库）可按 GPU 与网卡的拓扑距离限制 GPUDirect RDMA 的使用。需要主机缓冲区的路径仍可采用 RDMA 传输。</p>"
+    ],
+    [
+     "<p>Two devices in one server can still have different PCIe paths. A path through a shared PCIe switch and one that crosses CPU sockets have different peer DMA considerations. NCCL, a GPU collective communication library, can limit GPUDirect RDMA by GPU-to-NIC topology distance. Network transfer can still use RDMA when the path needs host staging.</p>"
+    ]
+   ]
+  }
+ ]
+};
+
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

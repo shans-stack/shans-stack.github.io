@@ -1,0 +1,35 @@
+.gdr-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 500 17px var(--f);
+}
+.gdr-scene text { fill: var(--ink); dominant-baseline: central; }
+.gdr-scene .gdr-note { fill: var(--ink2); font-size: 16px; }
+.gdr-scene .gdr-heading { font-size: 19px; font-weight: 600; }
+.gdr-scene .gdr-token { fill: var(--ink); font-size: 16px; font-weight: 700; }
+.gdr-link { fill: none; stroke: var(--rule2); stroke-width: 2.2; stroke-linejoin: round; }
+.gdr-link.gdr-optical { stroke: var(--ink2); stroke-width: 3.2; }
+.gdr-link.gdr-control { stroke: var(--ink3); stroke-dasharray: 4 5; }
+.gdr-link.gdr-rose { stroke: var(--l1); }
+.gdr-link.gdr-sage { stroke: var(--l5); }
+.gdr-link.gdr-fault { stroke: var(--l1); stroke-dasharray: 4 5; }
+.gdr-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.25; }
+.gdr-box.gdr-idle { stroke-dasharray: 4 4; }
+.gdr-box.gdr-fault { stroke: var(--l1); stroke-width: 2; }
+.gdr-block { fill: var(--ink2); stroke: var(--surface); stroke-width: 1; }
+.gdr-block.gdr-rose { fill: color-mix(in srgb, var(--l1) 65%, var(--surface)); stroke: var(--l1); }
+.gdr-block.gdr-sage { fill: color-mix(in srgb, var(--l5) 65%, var(--surface)); stroke: var(--l5); }
+.gdr-scene .gdr-token { paint-order: stroke; stroke: var(--surface); stroke-width: 2; }
+@media (641px <= width <= 720px) {
+  .topic-gdr .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .topic-gdr .stage .figbox { margin: 0; }
+  .topic-gdr .stage .cap { margin-top: 8px; column-gap: 12px; }
+  .topic-gdr .stage h2 { font-size: 24px; line-height: 1.2; }
+  .topic-gdr .stage .desc { font-size: 16px; line-height: 1.35; }
+  .gdr-scene { font-size: 15px; }
+  .gdr-scene .gdr-heading { font-size: 17px; }
+  .gdr-scene .gdr-note, .gdr-scene .gdr-token { font-size: 14px; }
+}

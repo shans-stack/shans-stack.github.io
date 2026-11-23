@@ -5,10 +5,6 @@
 .ssa-v-dedup .v-dedup-scene text{dominant-baseline:central}
 .ssa-v-dedup .v-dedup-scene .vis{transition:opacity .4s}
 .ssa-v-dedup .v-dedup-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
-.ssa-v-dedup .vwm-d{display:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-dedup .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-dedup .vwm-d{display:inline}}
-:root[data-theme=dark] .ssa-v-dedup .vwm-l{display:none}
-:root[data-theme=dark] .ssa-v-dedup .vwm-d{display:inline}
 .ssa-v-dedup .ssa-tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
 .ssa-v-dedup .ssa-tgl[hidden]{display:block;opacity:0;pointer-events:none}
 .ssa-v-dedup .ssa-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}

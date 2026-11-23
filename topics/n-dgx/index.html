@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA DGX 系统：从 GPU 服务器到整柜计算 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA DGX 服务器的组成、节点内外互联、整柜计算和集群部署。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-dgx.css?v=e687d5e2">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-dgx">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language">
+      <button type="button" data-lang-set="zh" lang="zh-Hans" aria-label="简体中文" data-en-label="Simplified Chinese" data-en="ZH" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" lang="zh-Hant" aria-label="繁體中文" data-en-label="Traditional Chinese" data-en="TW" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" lang="en" aria-label="英文" data-en-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-dgx">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA DGX Systems: From GPU Servers to Rack-Scale Compute">NVIDIA DGX 系统：从 GPU 服务器到整柜计算</h1>
+        <p class="meta"><span data-en="5 steps · GPU Servers, NVLink, Clusters">5 步 · GPU 服务器、NVLink、集群</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-systems/index.html&quot;&gt;NVIDIA DGX Systems Documentation&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-systems/index.html">NVIDIA DGX 系统文档</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html&quot;&gt;DGX B200 User Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html">DGX B200 用户指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxb300-user-guide/introduction-to-dgxb300.html&quot;&gt;DGX B300 User Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxb300-user-guide/introduction-to-dgxb300.html">DGX B300 用户指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html&quot;&gt;DGX Vera Rubin NVL72 Hardware&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">DGX Vera Rubin NVL72 硬件</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/hgx/&quot;&gt;NVIDIA HGX Platform&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/hgx/">NVIDIA HGX 平台</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/dgx-basepod-overview.html&quot;&gt;DGX BasePOD Reference Architecture Overview&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/dgx-basepod-overview.html">DGX BasePOD 参考架构概览</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/dgx-superpod/&quot;&gt;DGX SuperPOD Product Page&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/dgx-superpod/">DGX SuperPOD 产品页</a></li>
+      <li data-en="Animations are schematic and show no measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-dgx.js?v=99cf9d96"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-dgx",
+  "ar": [
+    2.375,
+    0.88
+  ],
+  "steps": [
+    {
+      "t": [
+        "DGX 交付完整计算系统",
+        "DGX Delivers a Complete Compute System"
+      ],
+      "d": [
+        "DGX 将 GPU、主机、网络和本地存储集成为完整的 AI 计算系统。",
+        "DGX integrates GPUs, host compute, networking, and local storage into a complete AI compute system."
+      ],
+      "b": [
+        [
+          "<p>以 DGX B300 为例，一台服务器内有 Blackwell Ultra GPU、主机 CPU 和内存，以及用于启动和缓存的本地固态盘。系统还包括集群网卡和数据处理器（DPU），用于连接集群、存储和管理网络。HGX 是供服务器厂商集成的多 GPU 平台，DGX B300 则给出了完整服务器的组成。</p>"
+        ],
+        [
+          "<p>A DGX B300 server contains Blackwell Ultra GPUs, host CPUs and memory, and local solid-state drives for boot and cache. It also has cluster adapters and data processing units (DPUs) for cluster, storage, and management networks. HGX is a multi-GPU platform for system builders. The DGX B300 guide specifies the components of a complete server.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "节点内和节点间用不同互联",
+        "Different Fabrics Inside and Between Nodes"
+      ],
+      "d": [
+        "DGX B300 的 GPU 通过 NVLink 互联，跨节点通信经 ConnectX 网卡进入集群网络。",
+        "DGX B300 GPUs communicate over NVLink, while cross-node traffic enters the cluster fabric through ConnectX adapters."
+      ],
+      "b": [
+        [
+          "<p>NVLink 是连接 GPU 的高速互联，NVLink Switch 在该系统内转发 GPU 之间的数据。跨出节点时，ConnectX-8 网卡接入集群网络。DGX B300 还使用 BlueField-3 数据处理器接入存储和管理网络，这些接口承担不同的通信职责。</p>"
+        ],
+        [
+          "<p>NVLink is a high-speed interconnect for GPUs. NVLink switches carry traffic between GPUs within this system. Across nodes, ConnectX-8 adapters connect to the cluster fabric. DGX B300 also uses BlueField-3 data processing units for storage and management networking, giving those interfaces a separate role.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "DGX B200 与 B300",
+        "DGX B200 and B300"
+      ],
+      "d": [
+        "B200 和 B300 都是服务器级构建块，分别采用 Blackwell 和 Blackwell Ultra GPU。",
+        "B200 and B300 are server-scale building blocks based on Blackwell and Blackwell Ultra GPUs, respectively."
+      ],
+      "b": [
+        [
+          "<p>DGX B200 采用 B200 GPU 和 ConnectX-7，DGX B300 改用 B300 GPU 和 ConnectX-8。两款都面向训练、推理与分析，并使用第五代 NVLink 在节点内互联 GPU。GPU、网卡与机箱配置应按具体型号区分。</p>"
+        ],
+        [
+          "<p>DGX B200 uses B200 GPUs and ConnectX-7 adapters. DGX B300 uses B300 GPUs and ConnectX-8 adapters. Both support training, inference, and analytics, and both use fifth-generation NVLink within the node. GPU, adapter, and chassis details depend on the system model.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "将互联扩展到整柜",
+        "Extending the Fabric Across a Rack"
+      ],
+      "d": [
+        "DGX Vera Rubin NVL72 将计算托盘和 NVLink 交换托盘组成一个机柜级 GPU 互联域。",
+        "DGX Vera Rubin NVL72 combines compute and NVLink switch trays in a single rack-scale GPU fabric."
+      ],
+      "b": [
+        [
+          "<p>计算托盘内有 Vera CPU 和 Rubin GPU。各托盘通过机柜背面的互联接入 NVLink 交换托盘，形成覆盖整柜的 GPU 互联域。电源系统和液冷分配也在柜级集成。柜间组网由计算托盘的集群网卡负责。</p>"
+        ],
+        [
+          "<p>The compute trays contain Vera CPUs and Rubin GPUs. A rear interconnect links the compute trays to NVLink switch trays, forming a shared GPU fabric across the rack. Power delivery and liquid cooling are also integrated at rack level. Cluster adapters in the compute trays connect racks to each other.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 DGX 到 BasePOD 与 SuperPOD",
+        "From DGX to BasePOD and SuperPOD"
+      ],
+      "d": [
+        "BasePOD 与 SuperPOD 将相应的 DGX 计算单元和网络、存储、管理软件组合成集群。",
+        "BasePOD and SuperPOD combine the applicable DGX compute systems with networking, storage, and management software."
+      ],
+      "b": [
+        [
+          "<p>BasePOD 参考架构用经验证的组件建设企业 AI 集群。例如，NVIDIA 的 B200 版 BasePOD 文档把 DGX B200 用作计算节点，并配套网络和经验证的存储。SuperPOD 面向更大规模的 AI 基础设施，公开设计包含基于 Blackwell 或 Rubin 的 DGX 计算选项，具体网络和存储随设计而定。</p>"
+        ],
+        [
+          "<p>BasePOD provides a validated design for enterprise AI clusters. For example, the B200 BasePOD guide uses DGX B200 compute nodes alongside networking and validated storage. SuperPOD targets larger AI infrastructure, with published DGX compute options based on Blackwell or Rubin. The choice of fabric and storage depends on the design.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

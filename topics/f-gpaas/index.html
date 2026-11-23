@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPU 即服务 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明GPU 即服务。把 GPU 容量按需交付为裸金属、虚拟机或容器资源，供租户运行任务。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-gpaas.css?v=65c40e01">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-gpaas">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="GPU as a Service">GPU 即服务</h1>
+        <p class="meta"><span data-en="5 steps · AI Services and Self-Service">5 步 · AI 服务与自助交付</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://rafay.co/solutions/rafay-powered-bare-metal-gpus-as-a-service-bmaas&quot;&gt;Rafay · GPU Bare Metal as a Service&lt;/a&gt;"><a href="https://rafay.co/solutions/rafay-powered-bare-metal-gpus-as-a-service-bmaas">Rafay · GPU 裸金属服务</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-GPU-PaaS-Deployment-Guide.pdf&quot;&gt;Rafay · GPU PaaS Deployment Guide&lt;/a&gt;"><a href="https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-GPU-PaaS-Deployment-Guide.pdf">Rafay · GPU PaaS 部署指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dsx/ncp/part-2-software-components/nvidia-software-for-infrastructure-as-a-service&quot;&gt;NVIDIA · GPU Infrastructure and VM Delivery&lt;/a&gt;"><a href="https://docs.nvidia.com/dsx/ncp/part-2-software-components/nvidia-software-for-infrastructure-as-a-service">NVIDIA · GPU 基础设施与虚拟机交付</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/&quot;&gt;Kubernetes · Schedule GPUs&lt;/a&gt;"><a href="https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/">Kubernetes · 调度 GPU</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/platform/ai-token-factory&quot;&gt;Rafay · Model Endpoints and Token Metering&lt;/a&gt;"><a href="https://rafay.co/platform/ai-token-factory">Rafay · 模型端点与 Token 计量</a></li>
+      <li data-en="Illustrative, not measured.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-gpaas.js?v=d03752cb"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-gpaas",
+  "ar": [880/300,350/410],
+  "steps": [
+    {"t": ["从目录申请 GPU 容量", "Request Capacity From a Catalog"], "d": ["把 GPU 容量按需交付为裸金属、虚拟机或容器资源，供租户运行任务。", "Delivers GPU capacity on demand as bare metal, VMs or containers for tenants to run jobs."], "b": [["<p>GPU 即服务（GPUaaS）把运营方管理的 GPU 资源做成租户可申请的规格。目录可列出 GPU 类型或份额、网络和运行环境。控制平面检查权限、配额和可用容量，再按模板创建或分配资源。</p>"], ["<p>GPU as a Service (GPUaaS) exposes operator-managed GPU resources as offerings that tenants can request. A catalog can specify the GPU type or share, network, and runtime environment. The control plane checks permissions, quota, and available capacity before provisioning resources from a template.</p>"]]},
+    {"t": ["交付整台服务器", "Deliver a Bare-Metal Server"], "d": ["裸金属交付把已装机并接通网络的物理服务器直接分配给租户。", "Bare-metal delivery assigns a provisioned and networked physical server directly to a tenant."], "b": [["<p>整机交付以物理节点为单位，租户在获分配的主机上运行任务。运营方仍管理硬件库存与节点生命周期。Rafay 的裸金属服务是一个实现例子，公开资料描述了按库存匹配服务器、租户自助分配和生命周期管理。</p>"], ["<p>The unit of delivery is a physical node. The tenant runs jobs on the assigned host, and the operator continues to manage hardware inventory and node lifecycle. Rafay’s bare-metal service is one implementation that documents matching requests to inventory, tenant self-service allocation, and lifecycle management.</p>"]]},
+    {"t": ["交付虚拟机", "Deliver a Virtual Machine"], "d": ["虚拟机提供独立的来宾操作系统，并按规格附上 GPU 访问能力。", "A virtual machine provides its own guest OS and GPU access according to its profile."], "b": [["<p>虚拟机（VM）由虚拟化层在物理主机上创建。支持时，可用直通把物理 GPU 交给来宾系统，也可用虚拟 GPU（vGPU）向来宾系统呈现 GPU 资源。虚拟机规格和 GPU 交付方式共同决定租户取得的资源。</p>"], ["<p>A virtualization layer creates a virtual machine (VM) on a physical host. Where supported, passthrough can assign a physical GPU to the guest, while a virtual GPU (vGPU) can expose GPU resources as a virtual device. The VM profile and GPU assignment mode together define what the tenant receives.</p>"]]},
+    {"t": ["交付容器运行环境", "Deliver a Container Environment"], "d": ["容器以镜像封装应用和依赖，由集群调度器把任务放在有相应 GPU 资源的节点。", "Containers package applications and dependencies in images. A cluster scheduler places each job on a node with suitable GPU resources."], "b": [["<p>在 Kubernetes 中，设备插件可以向调度器公开 GPU 资源。Pod 是 Kubernetes 的调度单位，可在资源请求中声明所需 GPU，平台再根据配置交付整卡或共享资源。独立开发工作区和训练任务都可以建立在这种环境上。</p>"], ["<p>In Kubernetes, a device plugin can advertise GPU resources to the scheduler. A Pod, the Kubernetes scheduling unit, can request a GPU resource. The platform can then deliver a whole device or shared access, depending on its configuration. This can support development workspaces and training jobs.</p>"]]},
+    {"t": ["区分计算资源与托管服务", "Distinguish Capacity From Managed Services"], "d": ["GPU 容量交付可记录资源占用时间，模型端点可按处理的 Token 计量。", "GPU capacity can be metered by allocation time, while model endpoints can be metered by the tokens they process."], "b": [["<p>GPUaaS 交付运行任务所需的资源。平台还可交付带 API 的推理环境，或直接交付含应用逻辑的托管 AI 应用。Rafay 的公开目录同时覆盖计算实例和托管服务。分配时长可归入计算用量，模型 API 的输入输出 Token 则可单独归入模型服务用量。</p>"], ["<p>GPUaaS delivers the resources needed to run jobs. A platform may also deliver an inference environment with an API or a managed AI application with its own application logic. Rafay’s public catalog material covers both compute instances and managed services. Allocation duration can be recorded as compute usage, while a model API’s input and output tokens can be tracked as service usage.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

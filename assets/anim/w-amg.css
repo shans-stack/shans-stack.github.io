@@ -1,0 +1,36 @@
+.ssa-w-amg{--path:var(--l4);--data:var(--l5);--signal:var(--l3);--warn:var(--l1)}
+.ssa-w-amg svg{display:block;width:100%;height:auto;overflow:visible}
+.ssa-w-amg-body{fill:var(--bg);stroke:var(--rule2);stroke-width:1.2}
+.ssa-w-amg-card[data-tone=store] .ssa-w-amg-body{fill:color-mix(in srgb,var(--data) 8%,var(--bg))}
+.ssa-w-amg-label,.ssa-w-amg-detail,.ssa-w-amg-note{font-family:var(--f);dominant-baseline:central;text-anchor:middle}
+.ssa-w-amg-label{fill:var(--ink);font-size:19px;font-weight:600}
+.ssa-w-amg-detail,.ssa-w-amg-note{fill:var(--ink2);font-size:16px}
+.ssa-w-amg-card[data-state=on] .ssa-w-amg-body{stroke:var(--data);stroke-width:2}
+.ssa-w-amg-card[data-state=on] .ssa-w-amg-detail{fill:var(--ink);font-weight:600}
+.ssa-w-amg-card[data-state=idle] .ssa-w-amg-body{stroke-dasharray:4 4}
+.ssa-w-amg-card[data-state=idle] .ssa-w-amg-label{fill:var(--ink2)}
+.ssa-w-amg-chip{fill:var(--data)}
+.ssa-w-amg-chip[data-color=""]{visibility:hidden}
+.ssa-w-amg-chip[data-color=B]{fill:var(--path)}
+.ssa-w-amg-chip[data-color=R]{fill:var(--warn)}
+.ssa-w-amg-wire{fill:none;stroke:var(--rule2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ssa-w-amg-arrow{fill:var(--rule2)}
+.ssa-w-amg-wire[data-kind=control]{stroke-dasharray:5 4}
+.ssa-w-amg-wire.ssa-w-amg-done{stroke:var(--data)}
+.ssa-w-amg-arrow.ssa-w-amg-done,.ssa-w-amg-packet{fill:var(--data)}
+.ssa-w-amg-wire.ssa-w-amg-done[data-kind=control]{stroke:var(--path)}
+.ssa-w-amg-arrow.ssa-w-amg-done[data-kind=control],.ssa-w-amg-packet[data-kind=control]{fill:var(--path)}
+.ssa-w-amg-wire.ssa-w-amg-done[data-kind=signal]{stroke:var(--signal)}
+.ssa-w-amg-arrow.ssa-w-amg-done[data-kind=signal],.ssa-w-amg-packet[data-kind=signal]{fill:var(--signal)}
+@media(min-width:641px) and (max-width:720px){
+  .topic-w-amg .mhost{aspect-ratio:var(--ar)}
+}
+@media(max-width:640px){
+  .ssa-w-amg-label{font-size:16px}
+  .ssa-w-amg-detail,.ssa-w-amg-note{font-size:15px}
+  .topic-w-amg.present .stage .figbox{margin:0}
+  .topic-w-amg.present .stage .cap{grid-template-columns:1fr;gap:4px;margin-top:8px}
+  .topic-w-amg.present .stage .cnt{grid-row:auto;font-size:14px;line-height:1.2}
+  .topic-w-amg.present .stage h2{font-size:24px;line-height:1.25}
+  .topic-w-amg.present .stage .desc{font-size:17px;line-height:1.45}
+}

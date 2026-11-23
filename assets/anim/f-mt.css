@@ -1,0 +1,23 @@
+.f-mt-figure {
+  display: block;
+  width: 100%;
+  text-anchor: middle;
+  font: 500 16px var(--f);
+}
+.f-mt-figure [data-tone="normal"] { --edge: var(--l4); }
+.f-mt-figure [data-tone="allowed"] { --edge: var(--l5); }
+.f-mt-figure [data-tone="denied"] { --edge: var(--l1); }
+.f-mt-box { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; }
+.f-mt-figure [data-node][data-active="true"] .f-mt-box { stroke: var(--edge); stroke-width: 2; }
+.f-mt-title { fill: var(--ink); font-size: 18px; font-weight: 600; }
+.f-mt-detail, .f-mt-note { fill: var(--ink2); }
+.f-mt-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linejoin: round; }
+.f-mt-figure [data-active="true"] .f-mt-wire { stroke: var(--edge); stroke-width: 2; }
+.f-mt-packet { fill: var(--edge); stroke: var(--bg); stroke-width: 1; }
+.topic-f-mt .mhost { aspect-ratio: var(--ar); }
+.topic-f-mt .src a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-f-mt .mhost { aspect-ratio: var(--arm); }
+  .topic-f-mt .stage .figbox { margin-block: 8px; }
+  .f-mt-title { font-size: 17px; }
+}

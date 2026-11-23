@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Vera Rubin NVL72：Rubin GPU 与第六代 NVLink 整柜 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps cover the Vera Rubin NVL72 rack, sixth-generation NVLink, changes from GB300, and volume shipment status." content="分 5 步说明Vera Rubin NVL72 的整柜组成、第六代 NVLink、相对 GB300 的变化与批量出货状态。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-vr.css?v=db04d9d0">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-vr">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-vr">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Vera Rubin NVL72: Rubin GPUs and a Sixth-Generation NVLink Rack">NVIDIA Vera Rubin NVL72：Rubin GPU 与第六代 NVLink 整柜</h1>
+        <p class="meta"><span data-en="5 steps · Rubin, Vera, NVLink">5 步 · Rubin、Vera、NVLink</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/&quot;&gt;NVIDIA Vera Rubin NVL72 Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/">NVIDIA Vera Rubin NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html&quot;&gt;NVIDIA DGX Vera Rubin NVL72 User Guide · Hardware&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">NVIDIA DGX Vera Rubin NVL72 用户指南 · 硬件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxvr-user-guide/networking.html&quot;&gt;NVIDIA DGX Vera Rubin NVL72 User Guide · Networking&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/networking.html">NVIDIA DGX Vera Rubin NVL72 用户指南 · 网络</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;NVIDIA GB300 NVL72 Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">NVIDIA GB300 NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout&quot;&gt;NVIDIA Volume Shipment Announcement (November 17, 2026)&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA 批量出货公告（2026-11-17）</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027&quot;&gt;NVIDIA FY2027 Third-Quarter Results (November 17, 2026)&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027">NVIDIA 2027 财年第三季度财报（2026-11-17）</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-vr.js?v=bb17f687"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-vr",
+  "ar": [
+    2.549019607843137,
+    0.935064935064935
+  ],
+  "steps": [
+    {
+      "t": [
+        "Rubin GPU 与 Vera CPU 组成整柜",
+        "Rubin GPUs and Vera CPUs in One Rack"
+      ],
+      "d": [
+        "将 72 颗 Rubin GPU 与 36 颗 Vera CPU 集成在一柜，由第六代 NVLink 将 GPU 连成一个域。",
+        "The rack combines 72 Rubin GPUs with 36 Vera CPUs and connects the GPUs in one domain over sixth-generation NVLink."
+      ],
+      "b": [
+        [
+          "<p>Vera Rubin NVL72 是液冷整柜系统。Rubin 是 GPU 架构，Vera 是配套的 CPU。NVLink 是 NVIDIA 的高速互联技术。这里的 NVL72 表示柜内 72 颗 GPU 通过该互联形成一个通信域，可直接交换数据。</p>"
+        ],
+        [
+          "<p>Vera Rubin NVL72 is a liquid-cooled rack-scale system. Rubin is the GPU architecture, and Vera is the accompanying CPU. NVLink is NVIDIA’s high-speed interconnect. Here NVL72 denotes a single in-rack fabric where 72 GPUs can communicate directly.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "计算与交换分布在不同托盘",
+        "Separate Compute and Switch Trays"
+      ],
+      "d": [
+        "计算托盘提供 CPU 和 GPU，NVLink 交换托盘提供柜内 GPU 互联。",
+        "Compute trays house CPUs and GPUs, and NVLink switch trays provide GPU connectivity across the rack."
+      ],
+      "b": [
+        [
+          "<p>DGX Vera Rubin NVL72 用户指南列出 18 个计算托盘，每个托盘装有两颗 Vera CPU 和四颗 Rubin GPU。另有九个第六代 NVLink 交换托盘。计算与交换托盘通过背部连接器和线缆组件互联，计算托盘由机柜内的液冷管路供给冷却液。</p>"
+        ],
+        [
+          "<p>The DGX Vera Rubin NVL72 user guide describes 18 compute trays, each with two Vera CPUs and four Rubin GPUs, plus nine sixth-generation NVLink switch trays. Rear connectors and cable cartridges interconnect the compute and switch trays. A rack manifold supplies coolant to the compute trays.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "柜内 NVLink 与柜间网络分层",
+        "In-Rack NVLink and Inter-Rack Networking"
+      ],
+      "d": [
+        "第六代 NVLink 负责单柜 GPU 互联，ConnectX-9 连接用于横向扩展的网络。",
+        "Sixth-generation NVLink connects GPUs within one rack, and ConnectX-9 attaches the rack to a scale-out network."
+      ],
+      "b": [
+        [
+          "<p>柜内 GPU 消息可由 NVLink 交换托盘转发。跨柜扩展时，ConnectX-9 SuperNIC（面向加速计算流量的网卡）可接入 Quantum-X800 InfiniBand 或 Spectrum-X 以太网。各机柜保留自己的 NVLink 域。在 DGX 配置中，BlueField-4 DPU 是单独的可编程处理器，负责以太网存储和管理网络。</p>"
+        ],
+        [
+          "<p>The NVLink switch trays forward GPU traffic inside a rack. For scale-out, ConnectX-9 SuperNICs, network adapters for accelerated computing traffic, can attach to Quantum-X800 InfiniBand or Spectrum-X Ethernet. Each rack retains its own NVLink domain. In the DGX configuration, a separate programmable BlueField-4 data processing unit handles Ethernet storage and management networking.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 GB300 演进到 Vera Rubin",
+        "From GB300 to Vera Rubin"
+      ],
+      "d": [
+        "Vera Rubin 保留单柜 72 GPU 域，将 Grace、Blackwell Ultra 和第五代 NVLink 更新为 Vera、Rubin 和第六代 NVLink。",
+        "Vera Rubin retains the single-rack 72-GPU domain and updates Grace, Blackwell Ultra, and fifth-generation NVLink to Vera, Rubin, and sixth-generation NVLink."
+      ],
+      "b": [
+        [
+          "<p>GB300 NVL72 采用 Grace CPU 和 Blackwell Ultra GPU。Vera Rubin NVL72 切换到 Vera CPU 与 Rubin GPU，使用第三代 MGX NVL72 机柜设计和第六代 NVLink。MGX 是 NVIDIA 的模块化系统设计规范，两款系统均由计算托盘和交换托盘构成。</p>"
+        ],
+        [
+          "<p>GB300 NVL72 uses Grace CPUs and Blackwell Ultra GPUs. Vera Rubin NVL72 moves to Vera CPUs and Rubin GPUs, with the third-generation MGX NVL72 rack design and sixth-generation NVLink. MGX is NVIDIA’s modular system design specification. Both systems are built around compute and switch trays.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "批量出货的官方时间点",
+        "NVIDIA’s Volume Shipment Milestone"
+      ],
+      "d": [
+        "截至 2026 年 11 月 23 日，NVIDIA 已确认 Vera Rubin NVL72 和 Vera CPU 在 2027 财年第三季度开始批量出货。",
+        "As of November 23, 2026, NVIDIA had confirmed that Vera Rubin NVL72 and Vera CPUs began volume shipments in the third quarter of fiscal 2027."
+      ],
+      "b": [
+        [
+          "<p>NVIDIA 于 2026 年 11 月 17 日发布供应链公告，同日的财报列明该季度于 2026 年 10 月 25 日结束。批量出货描述整柜及 CPU 的供应进展。各云服务的区域、规格和开放时间遵循各自的服务公告。</p>"
+        ],
+        [
+          "<p>NVIDIA published the supply-chain announcement on November 17, 2026. Its earnings release that day places the quarter end on October 25, 2026. Volume shipments describe supply of the rack systems and CPUs. Regions, configurations, and availability dates for cloud services follow their individual announcements.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

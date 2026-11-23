@@ -1,0 +1,15 @@
+.d-lnet svg{display:block;width:100%;font-family:var(--f);overflow:hidden}
+.d-lnet text{fill:var(--ink);text-anchor:middle;dominant-baseline:middle}
+.d-lnet [data-tone=meta]{--signal:var(--l4)}
+.d-lnet [data-tone=data]{--signal:var(--l6)}
+.d-lnet [data-tone=idle]{--signal:var(--rule2)}
+.d-lnet [data-tone=failed]{--signal:var(--l1)}
+.d-lnet .d-lnet-node{fill:color-mix(in srgb,var(--signal,var(--rule)) 8%,var(--surface));stroke:var(--signal,var(--rule2));stroke-width:1.5}
+.d-lnet .d-lnet-link{fill:none;stroke:var(--signal);stroke-width:2;stroke-linejoin:round}
+.d-lnet [data-tone=idle] path,.d-lnet [data-tone=failed] path{stroke-dasharray:5 5}
+.d-lnet .d-lnet-packet{fill:var(--signal);stroke:var(--surface);stroke-width:1}
+.d-lnet .d-lnet-title,.d-lnet .d-lnet-status,.d-lnet .d-lnet-mark{font-weight:600}
+.d-lnet .d-lnet-mark{fill:#090c10}
+.d-lnet .d-lnet-detail,.d-lnet .d-lnet-route,.d-lnet .d-lnet-note{fill:var(--ink2)}
+[data-station="d-lnet"] .src li a{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:.2em}
+@media (641px <= width <= 720px){main[data-station="d-lnet"] .mhost{aspect-ratio:var(--ar)}}

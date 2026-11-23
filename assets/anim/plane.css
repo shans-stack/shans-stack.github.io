@@ -1,0 +1,35 @@
+.plane-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 500 17px var(--f);
+}
+.plane-scene text { fill: var(--ink); dominant-baseline: central; }
+.plane-scene .plane-note { fill: var(--ink2); font-size: 16px; }
+.plane-scene .plane-heading { font-size: 19px; font-weight: 600; }
+.plane-scene .plane-token { fill: var(--ink); font-size: 16px; font-weight: 700; }
+.plane-link { fill: none; stroke: var(--rule2); stroke-width: 2.2; stroke-linejoin: round; }
+.plane-link.plane-optical { stroke: var(--ink2); stroke-width: 3.2; }
+.plane-link.plane-control { stroke: var(--ink3); stroke-dasharray: 4 5; }
+.plane-link.plane-rose { stroke: var(--l1); }
+.plane-link.plane-sage { stroke: var(--l5); }
+.plane-link.plane-fault { stroke: var(--l1); stroke-dasharray: 4 5; }
+.plane-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.25; }
+.plane-box.plane-idle { stroke-dasharray: 4 4; }
+.plane-box.plane-fault { stroke: var(--l1); stroke-width: 2; }
+.plane-block { fill: var(--ink2); stroke: var(--surface); stroke-width: 1; }
+.plane-block.plane-rose { fill: color-mix(in srgb, var(--l1) 65%, var(--surface)); stroke: var(--l1); }
+.plane-block.plane-sage { fill: color-mix(in srgb, var(--l5) 65%, var(--surface)); stroke: var(--l5); }
+.plane-scene .plane-token { paint-order: stroke; stroke: var(--surface); stroke-width: 2; }
+@media (641px <= width <= 720px) {
+  .topic-plane .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .topic-plane .stage .figbox { margin: 0; }
+  .topic-plane .stage .cap { margin-top: 8px; column-gap: 12px; }
+  .topic-plane .stage h2 { font-size: 24px; line-height: 1.2; }
+  .topic-plane .stage .desc { font-size: 16px; line-height: 1.35; }
+  .plane-scene { font-size: 15px; }
+  .plane-scene .plane-heading { font-size: 17px; }
+  .plane-scene .plane-note, .plane-scene .plane-token { font-size: 14px; }
+}

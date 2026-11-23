@@ -1,0 +1,31 @@
+.n-nvl72-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:19px}
+.n-nvl72-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-nvl72-figure .n-nvl72-detail,.n-nvl72-figure .n-nvl72-caption,.n-nvl72-figure .n-nvl72-note{font-size:17px;fill:var(--ink2)}
+.n-nvl72-figure .n-nvl72-label{font-weight:650}
+.n-nvl72-figure .n-nvl72-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-nvl72-figure .n-nvl72-primary{stroke:var(--l4)}
+.n-nvl72-figure .n-nvl72-optional{stroke-dasharray:5 4}
+.n-nvl72-figure .n-nvl72-active{fill:color-mix(in srgb,var(--l4) 14%,var(--bg));stroke:var(--l4);stroke-width:2}
+.n-nvl72-figure .n-nvl72-alert,.n-nvl72-figure .n-nvl72-alert.n-nvl72-active{stroke:var(--l1);fill:color-mix(in srgb,var(--l1) 16%,var(--bg))}
+.n-nvl72-figure .n-nvl72-link{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
+.n-nvl72-figure .n-nvl72-link.n-nvl72-signal{stroke:var(--l5)}
+.n-nvl72-figure .n-nvl72-link.n-nvl72-control{stroke:var(--ink3);stroke-dasharray:5 4}
+.n-nvl72-figure .n-nvl72-link.n-nvl72-fault{stroke:var(--l1);stroke-dasharray:2 7}
+.n-nvl72-figure .n-nvl72-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.2}
+.n-nvl72-figure .n-nvl72-packet.n-nvl72-control{fill:var(--ink3)}
+.n-nvl72-figure .n-nvl72-packet.n-nvl72-signal{fill:var(--l5)}
+@media(max-width:640px){
+  .n-nvl72-figure svg{font-size:17px}
+  .n-nvl72-figure .n-nvl72-detail,.n-nvl72-figure .n-nvl72-caption,.n-nvl72-figure .n-nvl72-note{font-size:16px}
+  body.topic-n-nvl72.present .stage{padding:12px;row-gap:10px}
+  body.topic-n-nvl72.present .stage .figbox,body.topic-n-nvl72.present .stage .cap,body.topic-n-nvl72.present .stage .ctl{margin:0}
+  body.topic-n-nvl72.present .stage .cap{display:block}
+  body.topic-n-nvl72.present .stage h2{font-size:24px}
+  body.topic-n-nvl72.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-nvl72 .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-nvl72-figure .n-nvl72-packet{display:none}
+}

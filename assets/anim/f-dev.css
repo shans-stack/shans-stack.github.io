@@ -1,0 +1,39 @@
+.f-dev-diagram {
+  display: block;
+  width: 100%;
+  font: 500 22px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.f-dev-diagram [data-tone="signal"] { --tone: var(--l4); }
+.f-dev-diagram [data-tone="policy"] { --tone: var(--l3); }
+.f-dev-diagram [data-tone="ready"] { --tone: var(--l5); }
+.f-dev-diagram [data-tone="attention"] { --tone: var(--l1); }
+.f-dev-card {
+  fill: color-mix(in srgb, var(--tone, var(--bg)) 10%, var(--bg));
+  stroke: var(--tone, var(--rule2));
+  stroke-width: 1.5;
+}
+.f-dev-line {
+  fill: none;
+  stroke: var(--tone, var(--rule2));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.f-dev-line[data-inactive="true"] { stroke: var(--rule2); stroke-dasharray: 5 7; }
+.f-dev-parcel { fill: var(--tone, var(--l4)); }
+.f-dev-packet { fill: var(--tone); stroke: var(--bg); stroke-width: 1.2; }
+.f-dev-title { fill: var(--ink); font-size: 25px; font-weight: 600; }
+.f-dev-detail, .f-dev-note { fill: var(--ink2); }
+.f-dev-note { fill: var(--ink3); font-size: 19px; }
+.topic-f-dev .mhost { aspect-ratio: var(--ar); }
+.topic-f-dev .src a { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 640px) {
+  .f-dev-diagram { font-size: 23px; }
+  .f-dev-title { font-size: 24px; }
+  .f-dev-note { font-size: 22px; }
+  .topic-f-dev .mhost { aspect-ratio: var(--arm); }
+  .topic-f-dev .stage .figbox { margin-block: 4px; }
+}

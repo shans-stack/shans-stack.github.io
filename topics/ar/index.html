@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自适应路由：在可用出口间动态选路 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明自适应路由：在可用出口间动态选路。交换机可根据队列或端口利用率，从通往同一目的地的可用出口中动态选路。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/ar.css?v=43dfb584">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-ar">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="ar">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Adaptive Routing: Choosing Among Eligible Egress Paths">自适应路由：在可用出口间动态选路</h1>
+        <p class="meta"><span data-en="5 steps · ECMP, egress queues, reordering">5 步 · ECMP、端口队列、乱序</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking-ethernet-software/cumulus-linux-516/Layer-3/Routing/Equal-Cost-Multipath-Load-Sharing/&quot;&gt;Cumulus Linux · ECMP, Queue Awareness, and Adaptive Routing&lt;/a&gt;"><a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-linux-516/Layer-3/Routing/Equal-Cost-Multipath-Load-Sharing/">Cumulus Linux · ECMP、队列感知与自适应路由</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking/display/infiniband-cluster-bring-up-procedure-v1-0.0.pdf&quot;&gt;NVIDIA · InfiniBand Cluster Bring-Up Procedure, Adaptive Routing Groups&lt;/a&gt;"><a href="https://docs.nvidia.com/networking/display/infiniband-cluster-bring-up-procedure-v1-0.0.pdf">NVIDIA · InfiniBand 集群启用指南，自适应路由组</a></li>
+      <li data-en="&lt;a href=&quot;https://www.opencompute.org/documents/ocp-mrc-1-0-pdf&quot;&gt;OCP · MRC Specification, Receive Window and Congestion Control&lt;/a&gt;"><a href="https://www.opencompute.org/documents/ocp-mrc-1-0-pdf">OCP · MRC 规范，接收窗口与拥塞控制</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/ar.js?v=b879b54f"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "ar",
+ "ar": [
+  2.021276595744681,
+  0.6792452830188679
+ ],
+ "steps": [
+  {
+   "t": [
+    "等价多路径与哈希碰撞",
+    "Equal-Cost Paths and Hash Collisions"
+   ],
+   "d": [
+    "按流哈希可以把流量分到等价路径，也可能把多条大流映射到同一个出口。",
+    "Flow hashing can distribute traffic across equal-cost paths or map several large flows to the same egress port."
+   ],
+   "b": [
+    [
+     "<p>等价多路径（ECMP）允许交换机为同一目的地使用多个路由代价相同的下一跳。按流哈希利用包头字段为一条流选取下一跳，通常能使该流在拓扑稳定时沿同一路径转发。不同的流也可能得到相同的选择，导致一个出口排队，另一条路径仍有余量。</p>"
+    ],
+    [
+     "<p>Equal-cost multipath (ECMP) allows multiple next hops with the same routing cost for a destination. Flow hashing uses packet header fields to select a next hop for a flow, generally keeping it on one path while topology is stable. Different flows can hash to the same egress port, creating a queue even when another path has spare capacity.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按出口状态动态选路",
+    "Dynamic Selection by Egress State"
+   ],
+   "d": [
+    "自适应路由可依据本地队列或端口利用率，选择负载较低的合格出口。",
+    "Adaptive routing can use local queue occupancy or port utilization to choose a less loaded eligible egress port."
+   ],
+   "b": [
+    [
+     "<p>队列占用反映当前有多少数据等待从端口发出。自适应路由在既有的合格下一跳中利用这类信号做转发选择。图中的交换机把后续符合条件的数据导向另一条路径，已经进入队列的数据仍沿原路径发送。本地采样只能反映所观察到的端口状态。</p>"
+    ],
+    [
+     "<p>Queue occupancy reflects how much data is waiting to leave a port. Adaptive routing uses signals like this to select among eligible next hops. In the diagram the switch sends later eligible traffic over the other path, while traffic already queued continues on its original path. Local measurements describe the state of the ports being observed.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "逐包分流与接收顺序",
+    "Per-Packet Forwarding and Arrival Order"
+   ],
+   "d": [
+    "同一条流的包如果走不同路径，后发的包可能先到。",
+    "When packets from one flow take different paths, a later packet can arrive first."
+   ],
+   "b": [
+    [
+     "<p>逐包选路允许相邻分组使用不同出口。路径时延和排队时间的差异可能改变到达顺序，因此这种模式要求端到端传输支持乱序到达。例如 OCP 的 MRC 规范要求接收端在跟踪窗口内按包序号记录已收到的数据，并允许直接放置符合条件的数据。</p>"
+    ],
+    [
+     "<p>Per-packet selection allows consecutive packets to leave through different ports. Differences in path delay and queuing can change arrival order, so this mode requires transport support for out-of-order arrivals. The OCP MRC specification, for example, has the receiver track received packets by sequence number within a window and allows direct placement for eligible data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "候选出口由网络实现定义",
+    "How Implementations Define Eligible Paths"
+   ],
+   "d": [
+    "以太网 ECMP 与 InfiniBand 自适应路由组各有一套定义候选出口的方式。",
+    "Ethernet ECMP and InfiniBand adaptive routing groups define eligible egress ports in different ways."
+   ],
+   "b": [
+    [
+     "<p>以运行 Cumulus Linux 的以太网实现为例，交换机可对符合条件的 IP 包在 ECMP 成员端口间逐包选择。NVIDIA 的 InfiniBand 部署文档给出另一种实现，子网管理器为目的地配置自适应路由组，交换机从组内出口转发。适用的流量和候选范围由具体实现决定。</p>"
+    ],
+    [
+     "<p>In the Ethernet implementation documented for Cumulus Linux, a switch can select an ECMP member port for each eligible IP packet. NVIDIA’s InfiniBand deployment guide describes adaptive routing groups set up by the subnet manager for destinations. The switch selects an output port from the group. Eligibility and the set of candidate ports depend on the implementation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "改路径与调发送速率",
+    "Path Selection and Rate Control"
+   ],
+   "d": [
+    "当多条路径共享同一个拥堵出口时，换路径之外还需要拥塞控制。",
+    "When multiple paths share a congested egress port, congestion control is needed in addition to path selection."
+   ],
+   "b": [
+    [
+     "<p>图中两条路径在接入目的节点前汇合，末段出口成为共同瓶颈。换上游路径仍会经过这个出口。拥塞控制通过反馈调节发送端的注入速率。例如显式拥塞通知（ECN）可让设备标记拥塞，端点据传输机制处理反馈并调整速率。</p>"
+    ],
+    [
+     "<p>In the diagram, two paths converge before reaching the destination, making the final egress port a shared bottleneck. A different upstream path still reaches that port. Congestion control uses feedback to adjust how quickly the sender injects traffic. Explicit Congestion Notification (ECN), for example, allows devices to mark congestion and endpoints to respond according to the transport.</p>"
+    ]
+   ]
+  }
+ ]
+};
+
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

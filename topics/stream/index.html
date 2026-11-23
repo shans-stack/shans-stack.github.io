@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>流式摄取 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明事件如何从采集端进入分区日志、由下游读取和重放，再提交到数据平台的表。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/stream.css?v=fce2baf0">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-stream">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="stream">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Streaming Ingest">流式摄取</h1>
+        <p class="meta"><span data-en="6 steps · event logs, offsets, replay">6 步 · 事件日志、偏移量、重放</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://kafka.apache.org/43/getting-started/introduction/&quot;&gt;Apache Kafka · Event Streaming and Core Concepts&lt;/a&gt;"><a href="https://kafka.apache.org/43/getting-started/introduction/">Apache Kafka · 事件流与基础概念</a></li>
+      <li data-en="&lt;a href=&quot;https://kafka.apache.org/44/kafka-connect/overview/&quot;&gt;Apache Kafka · Kafka Connect Overview&lt;/a&gt;"><a href="https://kafka.apache.org/44/kafka-connect/overview/">Apache Kafka · Kafka Connect 概览</a></li>
+      <li data-en="&lt;a href=&quot;https://kafka.apache.org/44/design/design/&quot;&gt;Apache Kafka · Design: Producers, Consumers, and Delivery Semantics&lt;/a&gt;"><a href="https://kafka.apache.org/44/design/design/">Apache Kafka · 设计：生产、消费与交付语义</a></li>
+      <li data-en="&lt;a href=&quot;https://kafka.apache.org/44/operations/monitoring/#consumer-monitoring&quot;&gt;Apache Kafka · Consumer Monitoring&lt;/a&gt;"><a href="https://kafka.apache.org/44/operations/monitoring/#consumer-monitoring">Apache Kafka · 消费积压监控</a></li>
+      <li data-en="&lt;a href=&quot;https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/stateful-stream-processing/#state-persistence&quot;&gt;Apache Flink · Stateful Stream Processing&lt;/a&gt;"><a href="https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/stateful-stream-processing/#state-persistence">Apache Flink · 有状态流处理</a></li>
+      <li data-en="&lt;a href=&quot;https://iceberg.apache.org/docs/latest/flink-writes/#metrics&quot;&gt;Apache Iceberg · Flink Writes&lt;/a&gt;"><a href="https://iceberg.apache.org/docs/latest/flink-writes/#metrics">Apache Iceberg · Flink 写入</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/stream.js?v=01641fb9"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "stream",
+ "ar": [
+  2.7941176470588234,
+  1.0606060606060606
+ ],
+ "steps": [
+  {
+   "t": [
+    "采集持续产生的事件",
+    "Capturing a Continuous Stream of Events"
+   ],
+   "d": [
+    "设备读数、应用日志和数据库变更在源头持续产生，采集端把它们发送到事件流。",
+    "Device readings, application logs, and database changes arrive continually and are published as a stream of events."
+   ],
+   "b": [
+    [
+     "<p>事件是一条记录，描述一次发生的事情。例如，设备读数可包含设备标识、读取时间和测量值。应用可以直接发送事件，外部系统也可以通过连接器接入。变更数据捕获（CDC）就是把数据库的插入、更新或删除转成事件的一种做法。</p>"
+    ],
+    [
+     "<p>An event records something that happened. A device reading, for example, can include a device ID, a timestamp, and a measured value. Applications can publish events directly, and connectors can bring in data from external systems. Change data capture (CDC) is one way to turn database inserts, updates, and deletes into events.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按分区追加到日志",
+    "Appending Events to Partitioned Logs"
+   ],
+   "d": [
+    "同一主题可分为多个分区，每个分区独立追加记录，并为记录分配偏移量。",
+    "A topic can have multiple partitions. Each partition appends records and assigns them offsets."
+   ],
+   "b": [
+    [
+     "<p><b>主题（topic）</b>是给一类事件命名的集合。它可拆成多个<b>分区（partition）</b>，每个分区是一条按追加顺序保存的日志。<b>偏移量（offset）</b>是记录在分区内的位置。日志保留已写入的记录，因此读取与写入可以各自进行。</p>",
+     "<p>以 Kafka 为例，在分区数和按键路由规则稳定时，可用设备 ID 作为键，把同一设备的事件送入同一分区。追加顺序只在分区内成立，也可能与设备上记录的事件发生时间不同。</p>"
+    ],
+    [
+     "<p>A <b>topic</b> is a named collection of events. It can be split into <b>partitions</b>, each with a log that stores records in append order. An <b>offset</b> identifies a record’s position within its partition. The log retains written records, allowing reads and writes to proceed independently.</p>",
+     "<p>With Kafka, for example, a stable partition count and key-based routing let events with the same device ID go to the same partition. Append order applies within each partition and may differ from the order in which events occurred at the device.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "独立读取同一事件流",
+    "Reading the Same Stream Independently"
+   ],
+   "d": [
+    "不同消费组可读取同一批保留的事件，并各自记录每个分区的读取进度。",
+    "Different consumer groups can read the same retained events and track their progress separately for each partition."
+   ],
+   "b": [
+    [
+     "<p><b>消费者</b>是读取事件的程序。在 Kafka 的消费组模型中，每组代表一项独立的订阅，各自保存每个分区的读取进度。例如，告警程序和写表任务可作为两个消费组。告警程序已读到的事件仍留在日志中，写表任务可以从自己的位置读取。</p>"
+    ],
+    [
+     "<p>A <b>consumer</b> is a program that reads events. In Kafka’s consumer group model, each group represents an independent subscription and keeps its own position in each partition. An alerting application and a table writer, for example, can run as separate groups. Events read by the alerting application remain in the log and can still be read by the table writer from its own position.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "写入持续进行时的积压",
+    "Consumer Lag During Ingestion"
+   ],
+   "d": [
+    "如果事件持续写入而读取停滞，日志末尾会超前于消费者的读取位置，形成积压。",
+    "If writes continue while reads stall, the end of the log moves ahead of the consumer’s read position and lag grows."
+   ],
+   "b": [
+    [
+     "<p>在采用拉取模式的系统中，消费者按自身处理能力向日志请求事件。<b>消费积压（consumer lag）</b>可用分区的最新写入位置与消费位置之间的偏移量差来观察。暂时停顿时，未读事件仍在日志里。读取恢复后，消费者可在保留范围内逐步追上。</p>"
+    ],
+    [
+     "<p>In a pull-based system, consumers request events at a rate they can handle. <b>Consumer lag</b> can be tracked as the offset gap between the end of a partition and the consumer’s position. During a temporary stall, unread events stay in the log. When reading resumes, the consumer can catch up as long as the unread range is still retained.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从已保存的位置重放",
+    "Replaying from a Saved Position"
+   ],
+   "d": [
+    "任务恢复时从已保存的位置重新读取，故障前已写出的事件可能再次送达。",
+    "A recovering job rereads from a saved position, so an event written before the failure can be delivered again."
+   ],
+   "b": [
+    [
+     "<p>消费任务可以保存下一条要读的偏移量。需要维护中间状态的流处理任务还可使用<b>检查点（checkpoint）</b>，也就是对输入位置和处理状态的一次一致性快照。恢复后，任务从保存的位置重放日志中仍保留的事件。</p>",
+     "<p>如果目标系统已写入一条事件，而对应进度尚未保存就发生故障，恢复时可能再次写入同一事件。目标端可按稳定的事件 ID 做<b>幂等写入</b>，让重复提交后的数据状态与提交一次相同。端到端的交付保证取决于输入、进度和目标写入如何协调。</p>"
+    ],
+    [
+     "<p>A consumer job can save the offset of the next record to read. Stream processing jobs that maintain intermediate state can also use a <b>checkpoint</b>, a consistent snapshot of input positions and processing state. On recovery, the job replays events still retained in the log from the saved position.</p>",
+     "<p>If the destination writes an event and the job fails before saving its corresponding progress, recovery can send the same event again. The destination can use stable event IDs for <b>idempotent writes</b>, so repeated submissions leave the same stored state as one. End-to-end delivery guarantees depend on how the input, progress, and destination writes are coordinated.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "把事件写成可查询的表",
+    "Publishing Events as Queryable Tables"
+   ],
+   "d": [
+    "写入端可整理事件并持续提交到数据平台，查询读取已提交的表数据。",
+    "A writer can transform events and commit them continually to the data platform, where queries read committed table data."
+   ],
+   "b": [
+    [
+     "<p>写入端可把原始事件转换成结构化的行，例如从设备事件提取设备 ID、事件时间和读数。湖仓表是数据湖上的可查询表。以 Flink 写入 Iceberg 为例，数据文件写出后由表提交发布，后续查询可读到新提交的数据。</p>",
+     "<p>因此，同一条事件有两个可观察的时间点：写入事件日志，以及在目标表中可查询。两者之间还包含消费、转换和表提交，日志中已有事件时，表仍可能在等待提交。</p>"
+    ],
+    [
+     "<p>A writer can transform raw events into structured rows, extracting the device ID, event time, and reading, for example. A lakehouse table is a queryable table over a data lake. When Flink writes to Iceberg, for example, a table commit publishes the written data files so subsequent queries can read the new data.</p>",
+     "<p>An event therefore has two observable milestones: arrival in the event log and visibility in the destination table. Consumption, transformation, and table commits happen between them. An event may already be in the log while its table commit is still pending.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['SC', 'TC', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

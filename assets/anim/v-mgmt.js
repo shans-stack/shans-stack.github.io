@@ -5,15 +5,13 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-mgmt.css，全部限定在 .ssa-v-mgmt 容器之内。
-   厂商字标引用 assets/brand/ 里的原件（<image>，浅色用黑字、深色用白字），不内嵌。 */
+   样式在 assets/anim/v-mgmt.css，全部限定在 .ssa-v-mgmt 容器之内。 */
 (function(){
 var EN={"VAST 管理服务 VMS：独立容器，网页、CLI 与脚本共用 REST API，收集指标、送出告警，宿主故障时换一台 CNode 接着运行": "VAST Management Service: a separate container whose REST API serves the web UI, CLI and scripts, collects metrics, sends alarms and moves to another CNode if its host fails", "网页控制台": "Web UI", "VAST CLI": "VAST CLI", "脚本 / 自动化": "Scripts", "客户端 1": "Client 1", "客户端 2": "Client 2", "客户端 3": "Client 3", "邮件": "Email", "Webhook": "Webhook", "Syslog": "Syslog", "Prometheus": "Prometheus", "CNode": "CNode", "数据服务": "Data service", "VMS": "VMS", "NVMe-oF 网络": "NVMe-oF network", "DBox": "DBox", "三个入口，同一套 REST API": "Three entry points, one REST API", "示意，不代表实测数字": "Schematic, not measured", "配置告警通知，Prometheus 定时抓取指标": "Configured alarm notifications and Prometheus scraping", "告警通知与 Prometheus 抓取": "Alarm notifications and metrics", "管理容器": "Management", "REST API": "REST API", "指标数据库": "Metrics DB", "无流量": "No traffic", "严重告警": "Critical alarm", "确认失联 · 选举": "Confirm down · elect", "新宿主": "New host", "10 秒一点": "Every 10 s", "留 24 小时": "24 hours", "5 分钟一点": "5 min", "留 1 周": "1 week", "1 小时一点": "Hourly", "留 1 个月": "1 month", "1 天一点": "Daily", "留 1 年": "1 year", "VMS 管理集群，协议服务处理读写": "VMS manages the cluster. Protocol services handle I/O.", "历史指标按时间粒度分级保留": "Historical metrics are retained at several resolutions", "历史指标分级保留": "Metrics retention tiers", "Data Flow：客户端经 VIP 访问 CNode": "Data Flow: client access to CNodes through VIPs", "客户端经 VIP 访问 CNode": "Clients reach CNodes through VIPs", "VIP A · 较低": "VIP A · Light", "VIP B · 很高": "VIP B · High", "VMS 切换宿主，存活节点继续提供数据服务": "VMS moves. Surviving nodes continue serving I/O.", "VMS 恢复 · 存活节点继续提供数据服务": "VMS moves. Surviving nodes serve I/O."};
 var ENM={"管理容器": "Mgmt", "确认失联 · 选举": "Electing", "VMS 管理集群，协议服务处理读写": "VMS management and client I/O"};
 var ARIA="VAST 管理服务 VMS：独立容器，网页、CLI 与脚本共用 REST API，收集指标、送出告警，宿主故障时换一台 CNode 接着运行";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-v-mgmt');host.innerHTML='';
@@ -40,15 +38,6 @@ function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-p
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function rev(pts){return pts.slice().reverse()}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-/* 文字宽度估计（中文按一字宽，西文按 0.6 字宽） */
-function tw(s,fs){s=T(s);let w=0;for(const ch of s)w+=/[⺀-￿]/.test(ch)?fs:fs*0.6;return w}
-/* VAST 字标：(x,y) 为字标竖直中线上的锚点，h 为高度；浅色黑字、深色白字，两张图由 CSS 切换 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'vwm','aria-label':'VAST'},p);
-  ['black','white'].forEach((c,i)=>el('image',{href:asset('assets/brand/vast-wordmark-'+c+'.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:i?'vwm-d':'vwm-l'},g));return g}
-/* NVIDIA 横版 logo（裁边版，宽高比 2090:414）；深色模式垫浅灰底 */
-function nvmark(x,y,h,p,anchor){const w=h*2090/414;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'nvm','aria-label':'NVIDIA'},p);
-  el('rect',{x:(x-h*0.25).toFixed(1),y:(y-h/2-h*0.2).toFixed(1),width:(w+h*0.5).toFixed(1),height:(h*1.4).toFixed(1),rx:2,class:'nvbk'},g);
-  el('image',{href:asset('assets/brand/nvidia-logo-horz-trim.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h},g);return g}
 let L=null,E,S,step=0,T0=0,raf=0,last=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(c){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function dot(c){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
@@ -65,14 +54,14 @@ const SCENE={
    const cn={xs:[262,488,714],w:214,h:160,y:40};
    return {W:960,H:420,mobile:false,f:{lbl:20,sm:17,cap:18},pw:22,ph:16,dr:7,sp:300,
     act:{x:16,w:178,h:50,ys3:[62,142,222],ys4:[52,120,188,256]},BX:226,TY:22,
-    cn,hd:{dx:16,dy:22,lg:14},data:{dy:40,h:40},vms:{dy:96,h:48,rw:52},chx:22,
+    cn,hd:{dx:16,dy:22},data:{dy:40,h:40},vms:{dy:96,h:48,rw:52},chx:22,
     FY:236,db:{xs:[400,790],w:270,h:56,y:272},fabLbl:{x:595,y:254},
     st:{dy:16},lad:{xs:[16,16,16,16],ys:[32,100,168,236],w:178,h:58},cap:{x:480,y:372},note:{x:480,y:399}};
   }
   const cn={xs:[8,166,324],w:148,h:150,y:96};
   return {W:480,H:452,mobile:true,f:{lbl:18,sm:18,cap:18},pw:18,ph:14,dr:6,sp:220,
    act:{y:10,h:46,xs3:[12,168,324],w3:144,xs4:[12,128,244,360],w4:108},LX:4,TY:76,
-   cn,hd:{dx:10,dy:20,lg:11},data:{dy:34,h:36},vms:{dy:80,h:52,rw:44},chx:18,
+   cn,hd:{dx:10,dy:20},data:{dy:34,h:36},vms:{dy:80,h:52,rw:44},chx:18,
    FY:284,db:{xs:[122,358],w:220,h:56,y:318},fabLbl:{x:240,y:301},
    st:{dy:15},lad:{xs:[12,128,244,360],ys:[4,4,4,4],w:108,h:58},cap:{x:240,y:412},note:{x:240,y:438}};
  },
@@ -97,7 +86,6 @@ const SCENE={
    const o={r,chx,data:{x:x+12,y:c.y+L.data.dy,w:c.w-24,h:L.data.h},vms:{x:x+12,y:c.y+L.vms.dy,w:c.w-L.vms.rw,h:L.vms.h}};
    o.b=box(r,gC);
    const hx=x+L.hd.dx,hy=c.y+L.hd.dy;tx(hx,hy,'CNode',f.lbl,'lbl b7','start',gC);
-   if(i===0)vmark(hx+tw('CNode',f.lbl)*1.15+8,hy,L.hd.lg,gC,'start');
    o.dataB=box(o.data,gC,'box soft',8);tx(o.data.x+o.data.w/2,o.data.y+o.data.h/2,'数据服务',f.sm,'ink2-t st','middle',gC);
    o.ch=[line(P(chx,o.data.y+o.data.h),P(chx,c.y+c.h),'thin',gC),line(P(chx,c.y+c.h),P(chx,L.FY),'',gC)];
    o.top=line(P(chx,L.TY),P(chx,c.y),'',grp('3 4',gC));

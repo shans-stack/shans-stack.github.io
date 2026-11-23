@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mdtest：并行文件系统元数据 · Shan's Stack</title>
+<meta name="description" content="分 5 步解释 mdtest 的测量对象、目录布局、并行参数和操作速率。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-mdtest.css?v=6af58960">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-mdtest">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-mdtest">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="mdtest: Parallel File System Metadata">mdtest：并行文件系统元数据</h1>
+        <p class="meta"><span data-en="5 steps · metadata, MPI, directory layout">5 步 · 元数据、MPI、目录布局</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/hpc/ior/releases/tag/4.0.0&quot;&gt;IOR 4.0.0 Release&lt;/a&gt;"><a href="https://github.com/hpc/ior/releases/tag/4.0.0">IOR 4.0.0 官方发布</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/hpc/ior/4.0.0/src/mdtest.c&quot;&gt;mdtest 4.0.0 Implementation and Options&lt;/a&gt;"><a href="https://raw.githubusercontent.com/hpc/ior/4.0.0/src/mdtest.c">mdtest 4.0.0 实现与参数说明</a></li>
+      <li data-en="&lt;a href=&quot;https://man7.org/linux/man-pages/man3/readdir.3.html&quot;&gt;Linux man-pages: Directory Enumeration&lt;/a&gt;"><a href="https://man7.org/linux/man-pages/man3/readdir.3.html">Linux man-pages：目录枚举</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-mdtest.js?v=90652614"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-mdtest",
+ "ar": [
+  2.5641025641025643,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "元数据操作",
+    "Metadata Operations"
+   ],
+   "d": [
+    "mdtest 对文件或目录执行创建、属性查询和删除，分别统计各阶段速率。",
+    "mdtest creates, looks up, and removes files or directories, reporting a rate for each phase."
+   ],
+   "b": [
+    [
+     "<p>元数据是文件系统记录的名称、类型、大小等信息。创建和删除改变目录项，属性查询（<code>stat</code>）按名称读取属性。mdtest 将这些操作分阶段运行。</p>",
+     "<p>截至 2026-11-23，mdtest 随 IOR 发布的最新正式版为 4.0.0，发布于 2024-01-12。</p>"
+    ],
+    [
+     "<p>Metadata includes information the file system records about entries, such as names, types, and sizes. Create and remove change directory entries. A metadata lookup (<code>stat</code>) reads attributes for a named entry. mdtest runs these operations in separate phases.</p>",
+     "<p>As of 2026-11-23, the latest stable IOR release that bundles mdtest is 4.0.0, released on 2024-01-12.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "MPI 进程与并发",
+    "MPI Processes and Concurrency"
+   ],
+   "d": [
+    "MPI 启动多个进程，在指定测试目录内并行执行同一阶段。",
+    "MPI launches multiple processes to run the same phase concurrently in the test directory."
+   ],
+   "b": [
+    [
+     "<p>MPI（消息传递接口）负责启动和协调并行进程，每个进程称为一个 rank。<code>mpiexec -n</code> 指定进程数，mdtest 的 <code>-d</code> 指定测试目录，<code>-n</code> 指定每个进程处理的条目数。测试目录独立于业务数据。</p>",
+     "<p><code>-i</code> 指定重复次数。相同进程数分布在不同客户端时，客户端缓存和网络路径也会变化。</p>"
+    ],
+    [
+     "<p>MPI (Message Passing Interface) launches and coordinates processes, known as ranks. <code>mpiexec -n</code> sets the process count. mdtest's <code>-d</code> sets the test directory and its <code>-n</code> sets the item count per process. The test directory is separate from application data.</p>",
+     "<p>The <code>-i</code> option sets the number of iterations. Placing the same number of ranks across a different set of clients can change client caching and network paths.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "共享目录与独立目录",
+    "Shared and Per-Rank Directories"
+   ],
+   "d": [
+    "共享目录和每进程独立目录对同一命名空间施加不同的争用。",
+    "Shared and per-rank directories put different contention on the namespace."
+   ],
+   "b": [
+    [
+     "<p><code>-u</code> 给每个 rank 分配独立工作目录。共享布局中，多个 rank 可在同一工作目录里用不同的文件名操作。<code>-b</code> 与 <code>-z</code> 控制目录树的分支和深度，<code>-I</code> 控制树中每个目录的条目数。</p>"
+    ],
+    [
+     "<p>The <code>-u</code> option gives each rank its own working directory. In a shared layout, multiple ranks can work on differently named entries in the same directory. <code>-b</code> and <code>-z</code> set tree branching and depth, and <code>-I</code> sets the items per directory in the tree.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按阶段读取速率",
+    "Reading Rates by Phase"
+   ],
+   "d": [
+    "创建、属性查询和删除分别报告每秒操作数，并按文件或目录区分。",
+    "Create, stat, and remove report operations per second separately for files and directories."
+   ],
+   "b": [
+    [
+     "<p>阶段速率描述测试配置下完成操作的速度。多次迭代的汇总用于观察波动，<code>-P</code> 可同时显示速率和时间。<code>-F</code> 只测文件，<code>-D</code> 只测目录。</p>",
+     "<p><code>-w</code> 和 <code>-e</code> 分别控制每文件写入和读取的字节数。引入文件内容传输时，涉及数据 I/O 的阶段也会反映数据路径开销。</p>"
+    ],
+    [
+     "<p>Phase rates describe how fast a configuration completes operations. Summaries across repeated iterations reveal variability, and <code>-P</code> reports both rates and timings. <code>-F</code> selects files only and <code>-D</code> selects directories only.</p>",
+     "<p>The <code>-w</code> and <code>-e</code> options set bytes written and read per file. With content transfer enabled, phases that include data I/O also reflect data path costs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "属性查询与目录枚举",
+    "Attribute Lookup and Directory Enumeration"
+   ],
+   "d": [
+    "查询已知名称的属性和枚举目录条目是两种工作负载。",
+    "Looking up attributes for known names and enumerating directory entries are separate workloads."
+   ],
+   "b": [
+    [
+     "<p>mdtest 的 <code>stat</code> 阶段逐个查询已知路径。目录枚举通过 <code>readdir</code> 等接口读取条目列表。应用若还要显示大小、权限等属性，可能在枚举后发起更多查询。评估目录列表耗时时，测量对象是实际的列表操作及其属性查询行为。</p>",
+     "<p>两次 mdtest 运行也需要匹配操作类型、目录布局、进程与客户端分布、文件数据量和缓存条件。</p>"
+    ],
+    [
+     "<p>The mdtest <code>stat</code> phase looks up known paths individually. Directory enumeration reads entry lists through interfaces such as <code>readdir</code>. An application displaying sizes or permissions may issue additional lookups after enumeration. List latency therefore depends on the actual listing operation and its attribute lookups.</p>",
+     "<p>Comparing two mdtest runs also requires matching the operation, directory layout, rank and client placement, file data sizes, and cache conditions.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

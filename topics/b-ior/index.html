@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IOR：并行存储吞吐 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 IOR 的 MPI 进程、文件布局、缓存条件和吞吐报告。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-ior.css?v=985585ed">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-ior">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-ior">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="IOR: Parallel Storage Throughput">IOR：并行存储吞吐</h1>
+        <p class="meta"><span data-en="5 steps · Storage Tools, MPI, Parallel I/O">5 步 · 存储工具、MPI、并行 I/O</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://ior.readthedocs.io/en/latest/&quot;&gt;IOR Project Introduction&lt;/a&gt;"><a href="https://ior.readthedocs.io/en/latest/">IOR 项目介绍</a></li>
+      <li data-en="&lt;a href=&quot;https://ior.readthedocs.io/en/latest/userDoc/tutorial.html&quot;&gt;IOR Tutorial, Caching, and Output&lt;/a&gt;"><a href="https://ior.readthedocs.io/en/latest/userDoc/tutorial.html">IOR 入门、缓存与输出</a></li>
+      <li data-en="&lt;a href=&quot;https://ior.readthedocs.io/en/latest/userDoc/options.html&quot;&gt;IOR Options&lt;/a&gt;"><a href="https://ior.readthedocs.io/en/latest/userDoc/options.html">IOR 参数</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/hpc/ior/releases/tag/4.0.0&quot;&gt;IOR 4.0.0 Release&lt;/a&gt;"><a href="https://github.com/hpc/ior/releases/tag/4.0.0">IOR 4.0.0 发布记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-ior.js?v=904e2327"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-ior",
+ "ar": [
+  2.6,
+  1.0588235294117647
+ ],
+ "steps": [
+  {
+   "t": [
+    "多个进程读写同一套存储",
+    "Parallel Processes on One Storage System"
+   ],
+   "d": [
+    "IOR 用 MPI 组织多个进程，对并行存储分别测量写入和读取吞吐。",
+    "IOR uses MPI to coordinate processes and measure write and read throughput separately on parallel storage."
+   ],
+   "b": [
+    [
+     "<p>MPI（消息传递接口）为分布在一个或多个节点上的进程提供通信与协调机制。IOR 的进程各自执行 I/O，常用接口包括 POSIX 文件调用和 MPI-IO。吞吐反映这些进程共同运行时的结果。文件与目录的元数据操作另由同项目的 mdtest 衡量。</p>",
+     "<p>截至 2026-11-23，最新公开正式版为 IOR 4.0.0，发布于 2024-01-12。</p>"
+    ],
+    [
+     "<p>MPI, the Message Passing Interface, provides communication and coordination for processes across one or more nodes. IOR processes perform I/O through interfaces such as POSIX file calls or MPI-IO. Throughput reflects their combined run. The companion mdtest benchmark measures file and directory metadata operations.</p>",
+     "<p>As of November 23, 2026, IOR 4.0.0 was the latest public stable release. It was released on January 12, 2024.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "共享文件与每进程一文件",
+    "Shared Files and File per Process"
+   ],
+   "d": [
+    "文件布局决定多个进程是访问同一个文件内的各自区间，还是访问独立文件。",
+    "File layout determines whether processes use separate regions of one file or operate on separate files."
+   ],
+   "b": [
+    [
+     "<p>MPI 启动器定义进程数和节点放置，例如 <code>mpirun -n N ior -f workload.ior</code> 启动 N 个进程，脚本定义 I/O 接口、方向与测试路径。常规布局下，各进程可写入共享文件中不同的区间；<code>-F</code> 切换到每进程一个文件。两种布局对文件系统的并发访问方式有不同要求，布局是读报告的重要条件。</p>"
+    ],
+    [
+     "<p>The MPI launcher defines process count and placement. For example, <code>mpirun -n N ior -f workload.ior</code> starts N processes, and the script defines the I/O interface, direction, and test path. In a typical shared-file layout, processes write distinct regions of the same file. <code>-F</code> selects a file per process. The layouts exercise file system concurrency differently, making layout a key reporting condition.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "传输大小、块和分段",
+    "Transfers, Blocks, and Segments"
+   ],
+   "d": [
+    "在完整写读阶段，每个进程每段处理一个块，块由多次传输组成。",
+    "For a complete read or write phase, each process handles one block per segment, and each block consists of transfers."
+   ],
+   "b": [
+    [
+     "<p><code>-t</code> 是一次传输大小，<code>-b</code> 是每进程每段的数据量，<code>-s</code> 是段数。在常规顺序配置且完整跑完的情况下，每个方向的逻辑总字节数等于参与进程数乘以 <code>-b</code> 再乘以 <code>-s</code>。提前截止的运行以实际传输量为准。</p>"
+    ],
+    [
+     "<p><code>-t</code> sets the transfer size, <code>-b</code> sets bytes per process per segment, and <code>-s</code> sets the number of segments. In a regular sequential configuration that completes, logical bytes in each direction equal the participating process count times <code>-b</code> times <code>-s</code>. A run that stops early uses its actual transfer volume.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "客户端缓存与同步",
+    "Client Cache and Synchronization"
+   ],
+   "d": [
+    "读回可命中本地页面缓存，缓冲写也可能在后端完成前结束计时。",
+    "Readback can hit the local page cache, and buffered writes can finish timing before backend completion."
+   ],
+   "b": [
+    [
+     "<p><code>-C</code> 调整读回任务映射。跨节点的偏移与实际进程放置匹配时，进程可读到另一节点写入的数据，从而避开写入节点的本地页面缓存。对 POSIX 测试，<code>-e</code> 在写阶段关闭文件时执行同步。<code>-Q</code> 可指定读回偏移。在这类测试中，缓存和写完成是两个测量条件，服务端缓存仍需考虑。</p>"
+    ],
+    [
+     "<p><code>-C</code> changes the readback task mapping. With a cross-node offset that matches actual rank placement, a process reads data written on another node, avoiding the writer's local page cache. For POSIX tests, <code>-e</code> synchronizes the write at file close. <code>-Q</code> can set the readback offset. Client caching and write completion are separate measurement conditions. Server-side caching still matters.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "吞吐与阶段用时",
+    "Throughput and Phase Timing"
+   ],
+   "d": [
+    "每次迭代分别报告读和写的聚合吞吐，以及打开、传输、关闭和总用时。",
+    "Each iteration reports aggregate read and write throughput separately, with open, transfer, close, and total times."
+   ],
+   "b": [
+    [
+     "<p>IOR 迭代输出中的 <code>bw(MiB/s)</code> 是全体参与进程的聚合吞吐。打开、读写、关闭及总用时能帮助区分时间花在何处。重复运行的结果可以查看波动；单看最好一次，或把 IOR 聚合吞吐当成应用吞吐，会丢失文件布局、缓存、进程数和实际访问模式所限定的范围。</p>"
+    ],
+    [
+     "<p>The <code>bw(MiB/s)</code> field in IOR's iteration output is aggregate throughput across participating processes. Open, read/write, close, and total times help identify where time was spent. Repeated runs show variation. A single best iteration or an application-throughput claim based on IOR alone loses the scope defined by layout, cache, process count, and access pattern.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

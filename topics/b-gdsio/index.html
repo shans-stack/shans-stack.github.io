@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gdsio：GPU 存储数据路径 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明gdsio 如何测量 GPU 存储路径、核对实际传输模式并解读吞吐和时延。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-gdsio.css?v=21a5bdc6">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-gdsio">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-gdsio">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="gdsio: GPU Storage Data Paths">gdsio：GPU 存储数据路径</h1>
+        <p class="meta"><span data-en="5 steps · GPUDirect Storage, Data Paths, Latency">5 步 · GPUDirect Storage、数据路径、时延</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/gpudirect-storage/getting-started/demonstrating-gds-with-gdsio.html&quot;&gt;NVIDIA gdsio Introduction and Path Examples&lt;/a&gt;"><a href="https://docs.nvidia.com/gpudirect-storage/getting-started/demonstrating-gds-with-gdsio.html">NVIDIA gdsio 入门与路径示例</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/gpudirect-storage/troubleshooting-guide/displaying-gds-nvidia-fs-driver-statistics.html&quot;&gt;NVIDIA gdsio Options, gdscheck, and Runtime Statistics&lt;/a&gt;"><a href="https://docs.nvidia.com/gpudirect-storage/troubleshooting-guide/displaying-gds-nvidia-fs-driver-statistics.html">NVIDIA gdsio 参数、gdscheck 和运行统计</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/gpudirect-storage/getting-started/index.html&quot;&gt;NVIDIA GDS Getting-Started Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/gpudirect-storage/getting-started/index.html">NVIDIA GDS 入门指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/gpudirect-storage/release-notes/new-features-and-changes.html&quot;&gt;NVIDIA GDS v1.20 Release Notes&lt;/a&gt;"><a href="https://docs.nvidia.com/gpudirect-storage/release-notes/new-features-and-changes.html">NVIDIA GDS v1.20 发行说明</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-toolkit-major-components&quot;&gt;NVIDIA CUDA 13.5 Component Table&lt;/a&gt;"><a href="https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-toolkit-major-components">NVIDIA CUDA 13.5 组件表</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/nvidia-cuda-13-5-brings-nvidia-vera-rubin-ga-support/&quot;&gt;NVIDIA CUDA 13.5 Release Announcement&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/nvidia-cuda-13-5-brings-nvidia-vera-rubin-ga-support/">NVIDIA CUDA 13.5 发布公告</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/gpudirect-storage/api-reference-guide/usage.html&quot;&gt;NVIDIA cuFile API and Compatibility Mode&lt;/a&gt;"><a href="https://docs.nvidia.com/gpudirect-storage/api-reference-guide/usage.html">NVIDIA cuFile API 与兼容模式</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-gdsio.js?v=32bd2cda"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-gdsio",
+ "ar": [
+  2.4516129032258065,
+  1.0285714285714285
+ ],
+ "steps": [
+  {
+   "t": [
+    "GPU 缓冲区与存储",
+    "GPU Buffers and Storage"
+   ],
+   "d": [
+    "GPUDirect Storage 自带的读写测试工具，比较直连路径和经主机内存的路径。",
+    "The read/write test tool that ships with GPUDirect Storage, comparing the direct path with the host-memory path."
+   ],
+   "b": [
+    [
+     "<p>gdsio 运行合成读写。GPU 缓冲区是 GPU 内存中用于接收或发送数据的区域。测试覆盖存储到缓冲区的传输，应用算子执行属于测试范围之外。</p>",
+     "<p>截至 2026-11-23，NVIDIA 当前发布说明列出 GDS v1.20。CUDA 13.5 于 2026-11-04 公布，组件表列出 cuFile 1.20.0.107。gdsio 随 GDS 分发，官方入门指南更新于 2026-11-17。</p>"
+    ],
+    [
+     "<p>gdsio issues synthetic reads and writes. A GPU buffer is a region of GPU memory that receives or sends data. The test covers transfers between storage and a buffer. Application kernel execution falls outside its scope.</p>",
+     "<p>As of November 23, 2026, NVIDIA’s current release notes list GDS v1.20. NVIDIA announced CUDA 13.5 on November 4, 2026, and its component table lists cuFile 1.20.0.107. gdsio ships with GDS. NVIDIA updated its getting-started guide on November 17, 2026.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "直连传输与主机内存中转",
+    "Direct and Host-Staged Transfers"
+   ],
+   "d": [
+    "同一读负载下，直连模式跳过主机数据缓冲区，中转模式先将数据读入主机内存。",
+    "For the same read workload, direct mode bypasses the host data buffer and staged mode reads into host memory first."
+   ],
+   "b": [
+    [
+     "<p><code>-x 0</code> 选择 GPU 直连模式。条件满足时，DMA（直接内存访问）可在存储路径与 GPU 内存之间移动数据。主机仍参与提交请求。<code>-x 2</code> 选择经主机内存中转的模式，读取时数据先到主机内存，再复制到 GPU。写入时方向相反。</p>"
+    ],
+    [
+     "<p><code>-x 0</code> selects the direct GPU mode. On a supported path, DMA (direct memory access) moves data between the storage path and GPU memory. The host still submits requests. <code>-x 2</code> selects host staging. Reads land in host memory and are then copied to the GPU. Writes reverse the direction.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "固定负载参数",
+    "Matching Workload Parameters"
+   ],
+   "d": [
+    "路径对照固定 I/O 方向、块大小、线程、测试文件和运行时长。",
+    "A path comparison holds I/O direction, block size, threads, test files, and duration constant."
+   ],
+   "b": [
+    [
+     "<p>I/O 块大小是每次请求的数据量。单文件与目录模式会改变线程共享一个文件还是各自访问文件。顺序或随机访问、工作集和预热条件也需要一致。两次运行使用相同 GPU 和存储目标，便于把差异与传输路径联系起来。</p>"
+    ],
+    [
+     "<p>I/O block size is the data volume in each request. Single-file and directory modes determine whether threads share one file or work on separate files. Sequential or random access, the working set, and warm-up conditions should also match. Keeping the GPU and storage target fixed makes it easier to relate differences to the transfer path.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "实际路径与兼容回退",
+    "Actual Transfer Paths and Compatibility Fallback"
+   ],
+   "d": [
+    "模式参数指明请求的路径，运行统计提供实际传输路径的证据。",
+    "The mode selects the requested path. Runtime statistics provide evidence of the actual transfer path."
+   ],
+   "b": [
+    [
+     "<p><code>gdscheck</code> 提供平台和文件系统的支持信息。在支持的环境下，cuFile 运行统计可用于核对直接传输和兼容路径。兼容模式允许在部分直连条件不满足时以主机内存中转完成 I/O。对齐条件和文件系统支持都会影响可用路径。</p>"
+    ],
+    [
+     "<p><code>gdscheck</code> reports platform and file system support. Where available, cuFile runtime statistics help distinguish direct transfers from compatibility I/O. Compatibility mode can complete I/O through host staging when some direct-path requirements are unmet. Alignment and file system support affect which path is available.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "吞吐与平均时延",
+    "Throughput and Mean Latency"
+   ],
+   "d": [
+    "GiB/s 与平均 I/O 时延分别描述数据速率和单次操作耗时。",
+    "GiB/s and mean I/O latency describe the data rate and the average time per operation."
+   ],
+   "b": [
+    [
+     "<p>gdsio 输出吞吐、平均时延、完成操作数和总时间。吞吐按测试窗口内的数据量理解，平均时延按操作理解。在多线程下，请求可以重叠，平均时延的倒数不能直接用作总 IOPS。单一配置的结果也无法代表训练任务的端到端提速。</p>"
+    ],
+    [
+     "<p>gdsio reports throughput, mean latency, completed operations, and total time. Throughput describes data volume over the test window, while mean latency is a per-operation measure. With multiple threads, requests can overlap, so the reciprocal of mean latency cannot be used directly as aggregate IOPS. A single configuration also cannot establish end-to-end training speedup.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

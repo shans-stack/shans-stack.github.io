@@ -1,0 +1,41 @@
+.b-mlpi-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  --diagram-rule: var(--ink3);
+  --diagram-accent: var(--lc, var(--l4));
+}
+
+.b-mlpi-diagram text {
+  fill: var(--ink);
+  font: 500 21px var(--f);
+  dominant-baseline: central;
+}
+
+.b-mlpi-diagram .b-mlpi-note,
+.b-mlpi-diagram .b-mlpi-muted { fill: var(--ink2); font-size: 17px; }
+.b-mlpi-diagram .b-mlpi-rule { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; }
+.b-mlpi-diagram .b-mlpi-guide { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.b-mlpi-diagram .b-mlpi-node { fill: var(--surface); stroke: var(--diagram-rule); stroke-width: 1.4; }
+.b-mlpi-diagram .b-mlpi-active { fill: var(--diagram-accent); }
+.b-mlpi-diagram .b-mlpi-pass { fill: var(--l5); }
+.b-mlpi-diagram .b-mlpi-warn { fill: var(--l1); }
+.b-mlpi-diagram .b-mlpi-quiet { fill: var(--blk); }
+.b-mlpi-diagram .b-mlpi-active-line,
+.b-mlpi-diagram .b-mlpi-pass-line,
+.b-mlpi-diagram .b-mlpi-warn-line,
+.b-mlpi-diagram .b-mlpi-quiet-line { fill: none; stroke-width: 3; stroke-linecap: round; }
+.b-mlpi-diagram .b-mlpi-active-line { stroke: var(--diagram-accent); }
+.b-mlpi-diagram .b-mlpi-pass-line { stroke: var(--l5); }
+.b-mlpi-diagram .b-mlpi-warn-line { stroke: var(--l1); }
+.b-mlpi-diagram .b-mlpi-quiet-line { stroke: var(--blk); }
+
+body.topic-b-mlpi .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-mlpi .mhost { aspect-ratio: var(--arm); }
+  .b-mlpi-diagram text { font-size: 16px; }
+  .b-mlpi-diagram .b-mlpi-note,
+  .b-mlpi-diagram .b-mlpi-muted { font-size: 16px; }
+}

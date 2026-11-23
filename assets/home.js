@@ -29,8 +29,7 @@ function talks(){
   }).join('');
 }
 /* 换乘站不单独列，按这张表放进最相关的那条线（地图上的胶囊照旧）。 */
-var HOMELINE={rdma:'n',nvmeof:'n',gds:'s',dist:'c',ckpt:'d',vec:'a'};
-function cols(){SS.renderCols($('cols'),HOME,HOMELINE)}
+function cols(){SS.renderCols($('cols'),HOME)}
 function news(){
   var ids=Object.keys(SS.stations).filter(function(id){return SS.stations[id].added&&SS.stations[id].st==='live'}).sort(function(a,b){return SS.stations[a].added<SS.stations[b].added?1:-1}).slice(0,4);
   $('news').innerHTML=ids.map(function(id){var s=SS.stations[id],mid=SS.inMap(id,HOME)?HOME:SS.maps.filter(function(m){return SS.inMap(id,m.id)})[0].id,ls=SS.linesIn(id,mid);

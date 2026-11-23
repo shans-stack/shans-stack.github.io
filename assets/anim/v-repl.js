@@ -5,15 +5,13 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-repl.css，全部限定在 .ssa-v-repl 容器之内。
-   厂商字标引用 assets/brand/ 里的原件（<image>，浅色用黑字、深色用白字），不内嵌。 */
+   样式在 assets/anim/v-repl.css，全部限定在 .ssa-v-repl 容器之内。 */
 (function(){
 var EN={"复制暂停": "Replication paused", "VAST 复制：受保护路径与复制对端，异步复制只送改动，RPO 与跳过，一对多，计划内与计划外切换，同步复制两边写盘才确认": "VAST replication: protected paths and peers, async replication of changes only, RPO and skipped snapshots, one-to-many, planned and unplanned failover, and sync replication that waits for both sides", "集群 A": "Cluster A", "集群 B": "Cluster B", "集群 C": "Cluster C", "集群 D": "Cluster D", "集群 E": "Cluster E", "/proj": "/proj", "快照": "Snapshots", "恢复点": "Restore points", "客户端": "Client", "受保护路径": "Protected path", "复制对端": "Replication peer", "复制链路": "Replication link", "源": "Source", "只读 · 最近一次完整复制": "Read-only · last complete copy", "只送改动": "Changes only", "启用后先做一次初始同步": "An initial sync runs as soon as it is enabled", "初始同步完成，生成第一个恢复点": "Initial sync done; the first restore point exists", "带宽充足": "High bandwidth", "带宽不足": "Low bandwidth", "已完成": "Completed", "已完成 ": "Completed ", "跳过": "Skipped", "示意，不代表实测数字": "Schematic, not measured", "一个路径送到多套集群，一套集群也能接收多个路径": "One path goes to several clusters, and one cluster can receive several paths", "一对多，也能多对一": "One-to-many and many-to-one", "2 个来源": "2 sources", "换成计划外切换": "Switch to unplanned", "换成计划内切换": "Switch to planned", "计划内切换": "planned failover", "计划外切换": "unplanned failover", "切换对比，当前 ": "Switch comparison, now showing ", "计划内切换：先同步剩余改动，再反转方向": "Planned failover: sync what remains, then reverse direction", "计划内：同步完再反转": "Planned: sync, then reverse", "源 · 可读写": "Source · read-write", "只读": "Read-only", "复制方向 →": "Direction →", "同步剩余改动": "Syncing the rest", "只读 · 新的对端": "Read-only · new peer", "新的源 · 可读写": "New source · read-write", "← 复制方向": "← Direction", "失联": "Unreachable", "换成两地距离较远": "Switch to distant sites", "换成两地距离较近": "Switch to nearby sites", "距离较近": "nearby sites", "距离较远": "distant sites", "主": "Primary", "从": "Secondary", "两地距离较远": "Sites far apart", "两地距离较近": "Sites close together", "距离越远，等待对端确认越久": "The farther apart, the longer the wait for the peer", "两套集群都写进 SSD，才向客户端确认": "The client gets its ACK only after both clusters write to SSD", "距离越远，确认越慢": "Farther apart, slower ACK", "两边都写进盘才确认": "ACK after both sides write", "只传输快照增量": "Only the snapshot delta is transferred", "传输超出间隔时可能跳过计划快照": "An overrun can skip a scheduled snapshot", "超出间隔时可跳过计划快照": "An overrun can skip a snapshot", "计划外切换：从最近完成的恢复点继续": "Unplanned failover resumes at the latest restore point", "计划外：从最近完成的恢复点继续": "Unplanned: resume from the last restore point", "独立 · 可读写": "Standalone · read-write", "对端缺少尚未复制的写入": "Unreplicated write is absent at the peer", "等待确认": "ACK pending", "延迟较高": "Higher latency", "延迟较低": "Lower latency", "复制方向 ↓": "Direction ↓", "复制方向 ↑": "Direction ↑"};
 var ENM={"两地距离较远": "Far", "两地距离较近": "Near", "复制暂停": "Paused", "只读 · 最近一次完整复制": "Read-only copy", "新的源 · 可读写": "New source", "只读 · 新的对端": "New peer", "独立 · 可读写": "Standalone", "对端缺少尚未复制的写入": "Write absent at peer", "等待确认": "Await ACK", "延迟较高": "Slow ACK", "延迟较低": "Fast ACK"};
 var ARIA="VAST 复制：受保护路径与复制对端，异步复制只送改动，RPO 与跳过，一对多，计划内与计划外切换，同步复制两边写盘才确认";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-v-repl');host.innerHTML='';
@@ -40,15 +38,6 @@ function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-p
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function rev(pts){return pts.slice().reverse()}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-/* 文字宽度估计（中文按一字宽，西文按 0.6 字宽） */
-function tw(s,fs){s=T(s);let w=0;for(const ch of s)w+=/[⺀-￿]/.test(ch)?fs:fs*0.6;return w}
-/* VAST 字标：(x,y) 为字标竖直中线上的锚点，h 为高度；浅色黑字、深色白字，两张图由 CSS 切换 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'vwm','aria-label':'VAST'},p);
-  ['black','white'].forEach((c,i)=>el('image',{href:asset('assets/brand/vast-wordmark-'+c+'.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:i?'vwm-d':'vwm-l'},g));return g}
-/* NVIDIA 横版 logo（裁边版，宽高比 2090:414）；深色模式垫浅灰底 */
-function nvmark(x,y,h,p,anchor){const w=h*2090/414;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'nvm','aria-label':'NVIDIA'},p);
-  el('rect',{x:(x-h*0.25).toFixed(1),y:(y-h/2-h*0.2).toFixed(1),width:(w+h*0.5).toFixed(1),height:(h*1.4).toFixed(1),rx:2,class:'nvbk'},g);
-  el('image',{href:asset('assets/brand/nvidia-logo-horz-trim.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h},g);return g}
 let L=null,E,S,step=0,T0=0,raf=0,last=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(c){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function dot(c){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
@@ -70,14 +59,14 @@ const SCENE={
   if(!mobile){
    const fr=(x)=>({x,y:36,w:280,h:204});
    return {W:960,H:374,mobile:false,f:{lbl:20,sm:17,cap:18},pw:28,ph:22,dr:7,sp:280,
-    A:fr(110),B:fr(570),cell:{dx:33,dy:66,w:46,h:40,st:56},laneDy:128,snap:{dy:150,lx:20,x0:148,st:25,w:20},hd:{dy:26,lg:14},lblDy:52,stBelow:true,
+    A:fr(110),B:fr(570),cell:{dx:33,dy:66,w:46,h:40,st:56},laneDy:128,snap:{dy:150,lx:20,x0:148,st:25,w:20},hd:{dy:26},lblDy:52,stBelow:true,
     link:'h',client:{x:10,w:90,h:44},lnkLbl:{x:480,y:152},tgl:{x:480,y:290},lossY:288,cap:{x:480,y:334},note:{x:480,y:360},
     B2:{lanes:[118,256],x0:196,x1:820,iv:114,t1:76,t2:162,lx:20,cx:892},
     C3:{src:[{x:60,y:124},{x:60,y:228}],dst:[{x:660,y:20},{x:660,y:124},{x:660,y:228}],w:220,h:56,bus:440}};
   }
   const fr=(y)=>({x:116,y,w:338,h:168});
   return {W:480,H:530,mobile:true,f:{lbl:18,sm:18,cap:18},pw:24,ph:18,dr:6,sp:220,
-   A:fr(36),B:fr(292),cell:{dx:30,dy:60,w:54,h:38,st:76},laneDy:118,snap:{dy:136,lx:14,x0:155,st:30,w:20},hd:{dy:22,lg:11},lblDy:46,stBelow:false,
+   A:fr(36),B:fr(292),cell:{dx:30,dy:60,w:54,h:38,st:76},laneDy:118,snap:{dy:136,lx:14,x0:155,st:30,w:20},hd:{dy:22},lblDy:46,stBelow:false,
    link:'v',client:{x:8,w:100,h:40},lnkLbl:{x:460,y:250},tgl:{x:210,y:262},lossY:222,cap:{x:240,y:494},note:{x:240,y:518},
    B2:{lanes:[130,330],x0:24,x1:456,iv:70,t1:45,t2:105,lx:20,cy:56},
    C3:{src:[{x:8,y:170},{x:8,y:300}],dst:[{x:318,y:40},{x:318,y:170},{x:318,y:300}],w:154,h:56,bus:240}};
@@ -89,7 +78,6 @@ const SCENE={
   ['A','B'].forEach(k=>{const F=L[k],c={F};
    c.frame=box(F,gA,'box',16);
    const hx=F.x+16,hy=F.y+L.hd.dy;c.title=tx(hx,hy,k==='A'?'集群 A':'集群 B',f.lbl,'lbl b7','start',gA);
-   if(k==='A')vmark(hx+tw('集群 A',f.lbl)+10,hy,L.hd.lg,gA,'start');
    c.st=L.stBelow?tx(F.x+F.w/2,F.y+F.h+22,'',f.sm,'st','middle',gA):tx(F.x+F.w-16,F.y+L.lblDy,'',f.sm,'st','end',gA);
    tx(hx,F.y+L.lblDy,'/proj',f.sm,'ink3-t','start',grp('1 2 5',gA));
    tx(hx,F.y+L.lblDy,'S3',f.sm,'ink3-t','start',grp('6',gA));
@@ -127,7 +115,7 @@ const SCENE={
   /* ===== 场景 C：一对多、多对一 ===== */
   const Q=L.C3,gC=grp('4');E.Q={src:[],dst:[]};
   const bx=(p,nm,g)=>{const r={x:p.x,y:p.y,w:Q.w,h:Q.h};box(r,g);const t=tx(r.x+16,r.y+r.h/2,nm,f.lbl,'lbl b7','start',g);return {r,t}};
-  E.Q.src.push(bx(Q.src[0],'集群 A',gC));vmark(Q.src[0].x+16+tw('集群 A',f.lbl)+10,Q.src[0].y+Q.h/2,L.hd.lg,gC,'start');
+  E.Q.src.push(bx(Q.src[0],'集群 A',gC));
   E.Q.src.push(bx(Q.src[1],'集群 E',gC));
   ['集群 B','集群 C','集群 D'].forEach((nm,i)=>{const o=bx(Q.dst[i],nm,gC);o.n=L.mobile?tx(o.r.x+o.r.w/2,o.r.y+o.r.h+20,'',f.sm,'st sage-t','middle',gC):tx(o.r.x+o.r.w-14,o.r.y+o.r.h/2,'',f.sm,'st sage-t','end',gC);E.Q.dst.push(o)});
   const a=E.Q.src[0].r,ay=a.y+a.h/2,dy=E.Q.dst.map(o=>o.r.y+o.r.h/2);

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPU 调度 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 GPU 调度如何检查资源需求、配额和节点约束，再将工作负载绑定到节点。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-sched.css?v=8f984677">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-sched">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-sched">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="GPU Scheduling">GPU 调度</h1>
+        <p class="meta"><span data-en="6 steps · GPUs, quotas, node pools">6 步 · GPU、配额、节点池</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/&quot;&gt;Kubernetes · Schedule GPUs&lt;/a&gt;"><a href="https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/">Kubernetes · 调度 GPU</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/&quot;&gt;Kubernetes · kube-scheduler&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/">Kubernetes · kube-scheduler</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/policy/resource-quotas/&quot;&gt;Kubernetes · Resource Quotas&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">Kubernetes · 资源配额</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/&quot;&gt;Kubernetes · Assigning Pods to Nodes&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/">Kubernetes · 节点放置条件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/run-ai/self-hosted/documentation/platform-management/runai-scheduler/scheduling/concepts-and-principles&quot;&gt;NVIDIA Run:ai · Scheduling Concepts&lt;/a&gt;"><a href="https://docs.nvidia.com/run-ai/self-hosted/documentation/platform-management/runai-scheduler/scheduling/concepts-and-principles">NVIDIA Run:ai · 调度概念</a></li>
+      <li data-en="&lt;a href=&quot;https://run-ai-docs.nvidia.com/self-hosted/platform-management/aiinitiatives/organization/projects&quot;&gt;NVIDIA Run:ai · Projects&lt;/a&gt;"><a href="https://run-ai-docs.nvidia.com/self-hosted/platform-management/aiinitiatives/organization/projects">NVIDIA Run:ai · 项目</a></li>
+      <li data-en="&lt;a href=&quot;https://run-ai-docs.nvidia.com/self-hosted/platform-management/aiinitiatives/resources/node-pools&quot;&gt;NVIDIA Run:ai · Node Pools&lt;/a&gt;"><a href="https://run-ai-docs.nvidia.com/self-hosted/platform-management/aiinitiatives/resources/node-pools">NVIDIA Run:ai · 节点池</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-sched.js?v=a2bdbbaa"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "f-sched",
+ "ar": [880/330, 1],
+ "steps": [
+  {
+   "t": [
+    "把工作负载放到节点",
+    "Place Workloads on Nodes"
+   ],
+   "d": [
+    "按 GPU 资源需求、租户配额与节点约束，把工作负载放置到可用节点。",
+    "Places workloads on available nodes according to GPU requests, tenant quotas and node constraints."
+   ],
+   "b": [
+    [
+     "<p>GPU 工作负载可以是训练任务或推理服务的实例。在 Kubernetes 中，Pod 是调度器放置和运行容器的基本单位。调度器为待放置的 Pod 寻找可运行的节点，随后把 Pod 绑定到所选节点。绑定确定了运行位置。</p>"
+    ],
+    [
+     "<p>A GPU workload can be a training job or an inference service instance. In Kubernetes, a Pod is the basic unit the scheduler places to run containers. The scheduler finds a node that can run a pending Pod and binds it to the selected node. The binding records where it will run.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "匹配 GPU 资源需求",
+    "Match GPU Resource Requests"
+   ],
+   "d": [
+    "工作负载声明所需的 GPU 数量，平台按节点公布的可分配资源判断容量。",
+    "The workload declares how many GPUs it needs, and the platform evaluates capacity using the resources advertised by each node."
+   ],
+   "b": [
+    [
+     "<p>Kubernetes 的设备插件可把 GPU 暴露为扩展资源，即节点可供调度的一类设备资源。给单个 Pod 分配多个 GPU 时，这些设备需来自同一节点。因此，分散在不同节点的空闲 GPU 不能合并满足同一个 Pod。</p>"
+    ],
+    [
+     "<p>A Kubernetes device plugin can expose GPUs as extended resources, a class of schedulable devices on a node. If a single Pod needs multiple GPUs, those GPUs must be on the same node. Free GPUs spread across multiple nodes cannot be combined to satisfy that Pod.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按配额控制资源准入",
+    "Apply Quota to Resource Admission"
+   ],
+   "d": [
+    "配额约束租户或项目的资源用量，节点容量决定工作负载能放到哪里。",
+    "Quota governs resource use by a tenant or project, while node capacity determines where a workload can run."
+   ],
+   "b": [
+    [
+     "<p>Kubernetes ResourceQuota 可以限制命名空间中扩展资源请求的总量。命名空间是 Kubernetes 中划分对象和资源的范围。超出硬配额的请求会在准入时被拒绝，满足配额的请求仍需匹配可用节点。带队列的调度系统还可以定义保底份额和空闲容量的共享规则。</p>"
+    ],
+    [
+     "<p>Kubernetes ResourceQuota can cap aggregate extended-resource requests in a namespace. A namespace scopes Kubernetes objects and resources. Requests above a hard quota are rejected at admission, and requests within quota must still find a suitable node. Queue-based scheduling systems can also define entitled shares and rules for sharing spare capacity.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "筛选满足约束的节点",
+    "Filter Nodes by Constraints"
+   ],
+   "d": [
+    "节点标签和硬性放置条件将候选范围限定到符合要求的节点。",
+    "Node labels and mandatory placement constraints narrow the candidate set to eligible nodes."
+   ],
+   "b": [
+    [
+     "<p>节点标签是描述节点属性的键值对，可标明 GPU 型号或所属节点池。节点池将具有共同属性的节点归为一组。调度器先排除型号不符、资源不足或不满足硬性约束的节点，再按偏好为剩余候选节点评分。</p>"
+    ],
+    [
+     "<p>Node labels are key-value attributes that can identify GPU models or pool membership. A node pool groups nodes with shared characteristics. The scheduler filters out nodes with an incompatible GPU model, insufficient resources, or unmet mandatory constraints, then scores the remaining nodes according to preferences.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "绑定到节点或等待资源",
+    "Bind to a Node or Wait"
+   ],
+   "d": [
+    "有合格节点时可完成绑定，暂时没有合格节点的 Pod 保持待调度。",
+    "A Pod can bind when an eligible node is available and remains pending when none can currently run it."
+   ],
+   "b": [
+    [
+     "<p>筛选与评分后，调度器把 Pod 绑定到一个候选节点，节点侧再启动容器。若当前没有合格节点，Pod 会保持待调度状态，直到后续调度尝试找到匹配。待调度的原因可以区分资源不足和节点约束未满足。</p>"
+    ],
+    [
+     "<p>After filtering and scoring, the scheduler binds the Pod to a candidate node and the node starts the containers. If no eligible node is available, the Pod stays pending until a later scheduling attempt finds a match. Scheduling reasons can distinguish insufficient resources from unmet node constraints.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用项目和节点池分配份额",
+    "Allocate Shares by Project and Node Pool"
+   ],
+   "d": [
+    "NVIDIA Run:ai 提供项目与节点池的配置，并按项目在各节点池中的份额管理资源竞争。",
+    "NVIDIA Run:ai uses projects and node pools to manage contention according to each project’s share in a pool."
+   ],
+   "b": [
+    [
+     "<p>在 NVIDIA Run:ai 中，项目可代表团队或一组工作负载，节点池按节点标签聚合同类资源。项目可在不同节点池配置 GPU 配额。NVIDIA Run:ai 的调度器会按节点池计算项目的公平份额，结合项目的配额、请求及可共享的空闲资源。</p>"
+    ],
+    [
+     "<p>In NVIDIA Run:ai, a project can represent a team or a group of workloads, and a node pool groups similar resources by node labels. A project can have GPU quotas for different pools. The NVIDIA Run:ai scheduler calculates project fair shares per pool based on quota, demand, and spare resources available for sharing.</p>"
+    ]
+   ]
+  }
+ ]
+};
+document.addEventListener('ss-lang', ({detail}) => {
+  const en = detail === 'en';
+  document.querySelector('meta[name=description]').content = ["分 6 步说明 GPU 调度如何检查资源需求、配额和节点约束，再将工作负载绑定到节点。","Six steps on how GPU scheduling checks requests, quotas, and node constraints before binding workloads to nodes."][en ? 1 : 0];
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

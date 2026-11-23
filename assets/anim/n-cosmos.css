@@ -1,0 +1,61 @@
+.n-cosmos-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+  color: var(--ink);
+}
+.n-cosmos-scene text { fill: var(--ink); font-size: 18px; }
+.n-cosmos-scene .name { font-size: 20px; font-weight: 600; }
+.n-cosmos-scene .sub, .n-cosmos-scene .note { fill: var(--ink2); font-size: 16px; }
+.n-cosmos-scene .caption { font-size: 18px; font-weight: 500; line-height: 1.25; }
+.n-cosmos-scene .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; transition: stroke .14s ease; }
+.n-cosmos-scene .arrived .panel { stroke: var(--l4); }
+.n-cosmos-scene .accepted .panel { stroke: var(--l5); }
+.n-cosmos-scene .review .panel { stroke: var(--l1); }
+.n-cosmos-scene .idle .panel { stroke-dasharray: 4 3; }
+.n-cosmos-scene .idle .name { fill: var(--ink2); }
+.n-cosmos-scene .route {
+  --route-color: var(--l4);
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  transition: stroke .14s ease;
+}
+.n-cosmos-scene .route.active { stroke: var(--route-color); stroke-width: 1.9; }
+.n-cosmos-scene .route.control path:first-child, .n-cosmos-scene .route.idle path:first-child { stroke-dasharray: 4 3; }
+.n-cosmos-scene .packet { fill: var(--l4); stroke: var(--bg); stroke-width: .75; }
+.n-cosmos-scene .route.control { --route-color: var(--l3); }
+.n-cosmos-scene .route.ok { --route-color: var(--l5); }
+.n-cosmos-scene .route.review { --route-color: var(--l1); }
+.n-cosmos-scene .packet.control { fill: var(--l3); }
+.n-cosmos-scene .packet.ok { fill: var(--l5); }
+.n-cosmos-scene .packet.review { fill: var(--l1); }
+.n-cosmos-scene .tile { stroke: var(--l4); stroke-width: 1.5; fill: none; stroke-linejoin: round; }
+.n-cosmos-scene .tile.fixed { stroke: var(--ink3); }
+.n-cosmos-scene .tile.adapter { stroke: var(--l5); }
+.n-cosmos-scene .tile.cache { stroke: var(--l3); }
+.n-cosmos-scene .tile.review { stroke: var(--l1); }
+.n-cosmos-scene .tile .tile-text { font-size: 14px; fill: var(--ink2); stroke: none; font-weight: 600; }
+.n-cosmos-scene .tile .ground { stroke: var(--rule2); }
+.n-cosmos-scene .tile .shade { fill: var(--l4); stroke: none; }
+[data-station="n-cosmos"] .src a {
+  display: inline;
+  padding: 0;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (641px <= width <= 720px) {
+  .topic-n-cosmos .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .n-cosmos-scene .name { font-size: 16px; }
+  .n-cosmos-scene .caption, .n-cosmos-scene .sub, .n-cosmos-scene .note { font-size: 15px; }
+  .topic-n-cosmos .stage .figbox { margin-block: 6px; }
+  .topic-n-cosmos .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-cosmos .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-cosmos .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-cosmos .stage .ctl { gap: 8px; margin-top: 8px; }
+}

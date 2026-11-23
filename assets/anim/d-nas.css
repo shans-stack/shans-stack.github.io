@@ -1,0 +1,28 @@
+.d-nas-diagram {
+  display:block; width:100%; height:auto; overflow:hidden;
+  font-family:var(--f); --diagram-data:var(--l5); --diagram-native:var(--l6);
+  --diagram-request:var(--l4); --diagram-key:var(--l3); --diagram-sealed:var(--l8);
+}
+.d-nas-box {fill:var(--bg); stroke:var(--rule2); stroke-width:1.25}
+.d-nas-node[data-state=idle] .d-nas-box {stroke-dasharray:4 4; fill:var(--surface)}
+.d-nas-node[data-state=blocked] .d-nas-box {stroke:var(--l1); fill:color-mix(in srgb,var(--l1) 13%,var(--surface))}
+.d-nas-node[data-state=done] .d-nas-box {stroke:var(--l5); fill:color-mix(in srgb,var(--l5) 13%,var(--surface))}
+.d-nas-title,.d-nas-detail,.d-nas-note {dominant-baseline:central}
+.d-nas-title {fill:var(--ink); font-size:20px; font-weight:600}
+.d-nas-detail {fill:var(--ink2); font-size:18px}
+.d-nas-note {fill:var(--ink3); font-size:16px}
+.d-nas-route {color:var(--rule2)}
+.d-nas-route[data-state=active] {color:var(--route-tone)}
+.d-nas-wire,.d-nas-arrow {fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.d-nas-route[data-state=idle] .d-nas-wire {stroke-dasharray:4 5}
+.d-nas-data {--route-tone:var(--diagram-data)}
+.d-nas-native {--route-tone:var(--diagram-native)}
+.d-nas-key {--route-tone:var(--diagram-key)}
+.d-nas-request {--route-tone:var(--diagram-request)}
+.d-nas-sealed {--route-tone:var(--diagram-sealed)}
+.d-nas-packet,.d-nas-stored {fill:var(--route-tone); stroke:var(--surface); stroke-width:1}
+@media (max-width:640px) {
+  .d-nas-title {font-size:16.5px}
+  .d-nas-detail {font-size:15.5px}
+  .d-nas-note {font-size:15px}
+}

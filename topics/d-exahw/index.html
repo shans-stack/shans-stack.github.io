@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXAScaler 硬件：AI400X3M、X3 与 X2 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 EXAScaler 硬件的文件服务、X3M、X3 与 X2 的配置、数据表性能和选型。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-exahw.css?v=4adc8416">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-exahw">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="EXAScaler Hardware: AI400X3M, X3, and X2">EXAScaler 硬件：AI400X3M、X3 与 X2</h1>
+        <p class="meta"><span data-en="5 steps · EXAScaler, NVMe, HDD">5 步 · EXAScaler、NVMe、硬盘扩展</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/download/ai400x3m-datasheet/&quot;&gt;DDN AI400X3M Datasheet&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/download/ai400x3m-datasheet/">DDN AI400X3M 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/products/ai400x3m/&quot;&gt;DDN AI400X3M Product Page&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/products/ai400x3m/">DDN AI400X3M 产品页</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/&quot;&gt;DDN AI400X3M Launch Release&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/">DDN AI400X3M 发布稿</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/download/sfa400x3-es400x3-ai400x3-datasheet/&quot;&gt;DDN AI400X3 Series Datasheet&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/download/sfa400x3-es400x3-ai400x3-datasheet/">DDN AI400X3 系列数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddnstorage.com.cn/ai400x3.html&quot;&gt;DDN China AI400X3 Product Page&lt;/a&gt;"><a class="gen-source" href="https://www.ddnstorage.com.cn/ai400x3.html">DDN 中国 AI400X3 产品页</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf&quot;&gt;DDN X2 Platform Datasheet&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf">DDN X2 平台数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/wp-content/uploads/2024/08/ddn-a3i-data-sheet-2024-x2t.pdf&quot;&gt;DDN AI400X2 Standard, QLC, and Turbo Datasheet&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/wp-content/uploads/2024/08/ddn-a3i-data-sheet-2024-x2t.pdf">DDN AI400X2 标准、QLC 与 Turbo 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/press-releases/ddn-unveils-next-generation-data-intelligence-platform-enhancements-to-drive-ai-and-hpc-innovation/&quot;&gt;DDN AI200X2 HDD Expansion Announcement&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/press-releases/ddn-unveils-next-generation-data-intelligence-platform-enhancements-to-drive-ai-and-hpc-innovation/">DDN AI200X2 硬盘扩展公告</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/blog/ddn-launches-ai400x3-and-infinia-2.1-at-isc-2025/&quot;&gt;DDN AI400X3 Launch Overview&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/blog/ddn-launches-ai400x3-and-infinia-2.1-at-isc-2025/">DDN AI400X3 发布说明</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/blog/ddn-and-google-cloud-bring-high-performance-parallel-file-systems-to-cloud-ai-workloads-with-managed-lustre-powered-by-ddn-exascaler/&quot;&gt;DDN EXAScaler Lustre Architecture&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/blog/ddn-and-google-cloud-bring-high-performance-parallel-file-systems-to-cloud-ai-workloads-with-managed-lustre-powered-by-ddn-exascaler/">DDN EXAScaler 的 Lustre 架构</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-exahw.js?v=2651ee71"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "d-exahw",
+  "ar": [
+    2.911392405063291,
+    0.9621621621621622
+  ],
+  "steps": [
+    {
+      "t": [
+        "集群中的存储设备",
+        "Storage Appliances in the Cluster"
+      ],
+      "d": [
+        "计算节点经存储网络访问 EXAScaler 的共享文件路径，存储设备负责保存数据。",
+        "Compute nodes access shared EXAScaler file paths over the storage network, and the appliances store the data."
+      ],
+      "b": [
+        [
+          "<p>EXAScaler 是基于 Lustre 的并行文件系统，多个客户端可同时访问同一个命名空间，也就是同一套文件路径。训练节点从共享存储读取数据集，并写回检查点。检查点是用于恢复训练的模型与训练状态。</p>"
+        ],
+        [
+          "<p>EXAScaler is a Lustre-based parallel file system. Multiple clients can access one namespace, a shared set of file paths, at the same time. Training nodes read datasets from shared storage and write back checkpoints, which capture the model and training state needed to resume a run.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "文件服务与控制器",
+        "File Services and Controllers"
+      ],
+      "d": [
+        "文件服务处理目录与文件读写，存储控制器连接并管理底层介质。",
+        "File services handle directories and file I/O, while storage controllers connect to and manage the underlying media."
+      ],
+      "b": [
+        [
+          "<p>客户端按路径打开文件时，元数据服务查询文件名、目录和数据布局。客户端随后访问对象存储服务读取文件内容。文件服务与介质之间由存储控制器处理设备 I/O。</p>",
+          "<p>DDN 将 AI400X3 和 AI400X2 分别列为基于 SFA400X3 和 SFA400X2 存储平台的文件存储设备。</p>"
+        ],
+        [
+          "<p>When a client opens a file by path, the metadata service looks up the file name, directory, and data layout. The client then reads the file contents through an object storage service. Storage controllers handle device I/O between the file services and the media.</p>",
+          "<p>DDN documents AI400X3 and AI400X2 as file storage appliances based on the SFA400X3 and SFA400X2 storage platforms, respectively.</p>"
+        ]
+      ]
+    },
+    {
+     "t": [
+      "硬件配置",
+      "Hardware Configurations"
+     ],
+     "d": [
+      "AI400X3M 延续 2U 双活全闪设计，并增加 XDR 主机接入选项。",
+      "AI400X3M retains the 2U active-active all-flash design and adds an XDR host connectivity option."
+     ],
+     "b": [
+      [
+       "<p>DDN 于 2026 年 6 月发布 AI400X3M。机箱内集成 EXAScaler、双活存储控制器和 24 个支持热插拔的 2.5 英寸双端口 PCIe Gen5 NVMe 盘位。产品提供数据与元数据合设、专用元数据服务和专用对象存储服务机型。</p>",
+       "<p>与 AI400X3 的 NDR 选项相比，AI400X3M 的数据表列出 4 个 XDR／400GbE OSFP 端口或 8 个 NDR200／200GbE QSFP112 端口。截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M 数据表</a>、<a class=\"gen-source\" href=\"https://www.ddn.com/products/ai400x3m/\">产品页</a>及<a class=\"gen-source\" href=\"https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/\">发布稿</a>。</p>"
+      ],
+      [
+       "<p>DDN introduced the AI400X3M in June 2026. The chassis integrates EXAScaler, active-active storage controllers, and 24 hot-swappable 2.5-inch dual-port PCIe Gen5 NVMe bays. The lineup includes a combined data and metadata appliance and dedicated metadata and object storage appliances.</p>",
+       "<p>Where AI400X3 lists NDR, the AI400X3M datasheet lists four XDR/400GbE OSFP ports or eight NDR200/200GbE QSFP112 ports. As of 2026-11-23, from the <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M Datasheet</a>, <a class=\"gen-source\" href=\"https://www.ddn.com/products/ai400x3m/\">product page</a>, and <a class=\"gen-source\" href=\"https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/\">launch release</a>.</p>"
+      ]
+     ],
+     "tabs": [
+      {
+       "key": "x3m",
+       "t": [
+        "X3M",
+        "X3M"
+       ],
+       "d": [
+        "AI400X3M 延续 2U 双活全闪设计，并增加 XDR 主机接入选项。",
+        "AI400X3M retains the 2U active-active all-flash design and adds an XDR host connectivity option."
+       ],
+       "b": [
+        [
+         "<p>DDN 于 2026 年 6 月发布 AI400X3M。机箱内集成 EXAScaler、双活存储控制器和 24 个支持热插拔的 2.5 英寸双端口 PCIe Gen5 NVMe 盘位。产品提供数据与元数据合设、专用元数据服务和专用对象存储服务机型。</p>",
+         "<p>与 AI400X3 的 NDR 选项相比，AI400X3M 的数据表列出 4 个 XDR／400GbE OSFP 端口或 8 个 NDR200／200GbE QSFP112 端口。截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M 数据表</a>、<a class=\"gen-source\" href=\"https://www.ddn.com/products/ai400x3m/\">产品页</a>及<a class=\"gen-source\" href=\"https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/\">发布稿</a>。</p>"
+        ],
+        [
+         "<p>DDN introduced the AI400X3M in June 2026. The chassis integrates EXAScaler, active-active storage controllers, and 24 hot-swappable 2.5-inch dual-port PCIe Gen5 NVMe bays. The lineup includes a combined data and metadata appliance and dedicated metadata and object storage appliances.</p>",
+         "<p>Where AI400X3 lists NDR, the AI400X3M datasheet lists four XDR/400GbE OSFP ports or eight NDR200/200GbE QSFP112 ports. As of 2026-11-23, from the <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M Datasheet</a>, <a class=\"gen-source\" href=\"https://www.ddn.com/products/ai400x3m/\">product page</a>, and <a class=\"gen-source\" href=\"https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/\">launch release</a>.</p>"
+        ]
+       ]
+      },
+      {
+       "key": "x3",
+       "t": [
+        "X3",
+        "X3"
+       ],
+       "d": [
+        "AI400X3 将双活控制器、Genoa 处理器和 PCIe Gen5 NVMe 集成在 2U 机箱内。",
+        "The AI400X3 integrates active-active controllers, Genoa processors, and PCIe Gen5 NVMe in a 2U chassis."
+       ],
+       "b": [
+        [
+         "<p>AI400X3 有 24 个可热插拔的 2.5 英寸双端口 NVMe 盘位。两个控制器都能处理 I/O，双端口盘提供两条访问路径。DDN 列出 400GbE 或 NDR、200GbE 或 NDR200，以及 BlueField-3 网卡选项。</p>",
+         "<p>从 AI400X2 到 AI400X3，处理器由第三代 Intel Xeon Scalable 换到 AMD Genoa，盘侧使用 PCIe Gen5，并增加 400GbE 和 NDR 接入选项。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/sfa400x3-es400x3-ai400x3-datasheet/\">DDN AI400X3 系列数据表</a>、<a class=\"gen-source\" href=\"https://www.ddnstorage.com.cn/ai400x3.html\">DDN 中国 AI400X3 产品页</a>、<a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf\">DDN X2 平台数据表</a>。</p>"
+        ],
+        [
+         "<p>The AI400X3 has 24 hot-swappable 2.5-inch dual-port NVMe bays. Both controllers handle I/O, and dual-port drives offer two paths. DDN lists 400GbE or NDR, 200GbE or NDR200, and BlueField-3 connectivity options.</p>",
+         "<p>The move from AI400X2 to AI400X3 changes the processor platform from third-generation Intel Xeon Scalable to AMD Genoa, uses PCIe Gen5 on the drive side, and adds 400GbE and NDR options. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://www.ddn.com/download/sfa400x3-es400x3-ai400x3-datasheet/\">DDN AI400X3 Series Datasheet</a>, <a class=\"gen-source\" href=\"https://www.ddnstorage.com.cn/ai400x3.html\">DDN China AI400X3 Product Page</a>, <a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf\">DDN X2 Platform Datasheet</a>.</p>"
+        ]
+       ]
+      },
+      {
+       "key": "x2",
+       "t": [
+        "X2",
+        "X2"
+       ],
+       "d": [
+        "AI400X2 提供标准、QLC 与 Turbo 配置。同代 AI200X2 可接硬盘柜。",
+        "The AI400X2 comes in standard, QLC, and Turbo configurations. The same-generation AI200X2 can attach HDD shelves."
+       ],
+       "b": [
+        [
+         "<p>AI400X2 以双活控制器和第三代 Intel Xeon Scalable 处理器运行 EXAScaler。标准配置采用 TLC 闪存和双端口 NVMe 盘。QLC 版本增加闪存容量。同样采用 TLC 的 Turbo 将主机侧端口从 8 个增加到 16 个。</p>",
+         "<p>DDN 在同一 X2 产品组中列出 AI200X2，并单独说明其硬盘扩展选项。在这种配置中，EXAScaler 设备提供文件服务，扩展柜容纳旋转磁盘。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf\">DDN X2 平台数据表</a>、<a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-a3i-data-sheet-2024-x2t.pdf\">DDN AI400X2 标准、QLC 与 Turbo 数据表</a>、<a class=\"gen-source\" href=\"https://www.ddn.com/press-releases/ddn-unveils-next-generation-data-intelligence-platform-enhancements-to-drive-ai-and-hpc-innovation/\">DDN AI200X2 硬盘扩展公告</a>。</p>"
+        ],
+        [
+         "<p>The AI400X2 runs EXAScaler with active-active controllers and third-generation Intel Xeon Scalable processors. The standard version uses dual-port NVMe drives with TLC flash. The QLC version emphasizes flash capacity, and the TLC-based Turbo increases the number of host ports from eight to sixteen.</p>",
+         "<p>DDN lists the AI200X2 in the same X2 product group and documents its HDD expansion option separately. In that configuration, the EXAScaler appliance provides file services, and the shelves house the spinning disks. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf\">DDN X2 Platform Datasheet</a>, <a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-a3i-data-sheet-2024-x2t.pdf\">DDN AI400X2 Standard, QLC, and Turbo Datasheet</a>, <a class=\"gen-source\" href=\"https://www.ddn.com/press-releases/ddn-unveils-next-generation-data-intelligence-platform-enhancements-to-drive-ai-and-hpc-innovation/\">DDN AI200X2 HDD Expansion Announcement</a>.</p>"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "t": [
+      "性能",
+      "Performance"
+     ],
+     "d": [
+      "DDN 公布单台 AI400X3M 的顺序读写上限和随机读峰值。",
+      "DDN lists sequential read and write limits and peak random-read IOPS per AI400X3M appliance."
+     ],
+     "b": [
+      [
+       "<p>单台 2U AI400X3M 的顺序读最高 190 GB/s，顺序写最高 110 GB/s，峰值随机读为 800 万 IOPS。数据表未列 I/O 块大小、客户端数量或对应的盘容量档位。截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M 数据表</a>。</p>"
+      ],
+      [
+       "<p>One 2U AI400X3M is rated for up to 190 GB/s sequential read, up to 110 GB/s sequential write, and 8 million peak random-read IOPS. The datasheet does not specify I/O sizes, client count, or the drive-capacity tier for these figures. As of 2026-11-23, from the <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M Datasheet</a>.</p>"
+      ]
+     ],
+     "tabs": [
+      {
+       "key": "x3m",
+       "t": [
+        "X3M",
+        "X3M"
+       ],
+       "d": [
+        "DDN 公布单台 AI400X3M 的顺序读写上限和随机读峰值。",
+        "DDN lists sequential read and write limits and peak random-read IOPS per AI400X3M appliance."
+       ],
+       "b": [
+        [
+         "<p>单台 2U AI400X3M 的顺序读最高 190 GB/s，顺序写最高 110 GB/s，峰值随机读为 800 万 IOPS。数据表未列 I/O 块大小、客户端数量或对应的盘容量档位。截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M 数据表</a>。</p>"
+        ],
+        [
+         "<p>One 2U AI400X3M is rated for up to 190 GB/s sequential read, up to 110 GB/s sequential write, and 8 million peak random-read IOPS. The datasheet does not specify I/O sizes, client count, or the drive-capacity tier for these figures. As of 2026-11-23, from the <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai400x3m-datasheet/\">DDN AI400X3M Datasheet</a>.</p>"
+        ]
+       ],
+       "fig": "x3m-perf",
+       "figNote": [
+        "单台 2U。随机读块大小未公布。截至 2026-11-23，出自 DDN AI400X3M 数据表。",
+        "One 2U appliance. Random-read block size is unpublished. As of 2026-11-23, from the DDN AI400X3M Datasheet."
+       ]
+      },
+      {
+       "key": "x3",
+       "t": [
+        "X3",
+        "X3"
+       ],
+       "d": [
+        "AI400X3 与 AI400X3i 的顺序读写规格相同，4K 随机读按机型分别列出。",
+        "AI400X3 and AI400X3i share sequential throughput ratings and have separate 4K random-read ratings."
+       ],
+       "b": [
+        [
+         "<p>两款均按单台 2U 设备列规格，顺序读最高 140 GB/s，顺序写最高 110 GB/s。4K 随机读为 AI400X3 的 150 万 IOPS 与 AI400X3i 的 400 万 IOPS。数据表未列两款的 CPU 核数，也未列顺序读写块大小、客户端数量或对应的盘容量档位。截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/sfa400x3-es400x3-ai400x3-datasheet/\">DDN AI400X3 与 AI400X3i 数据表</a>。</p>"
+        ],
+        [
+         "<p>Per 2U appliance, both models are rated for up to 140 GB/s sequential read and up to 110 GB/s sequential write. For 4K random reads, AI400X3 is rated at 1.5 million IOPS and AI400X3i at 4 million IOPS. The datasheet does not list CPU core counts, sequential I/O sizes, client count, or the drive-capacity tier for these figures. As of 2026-11-23, from the <a class=\"gen-source\" href=\"https://www.ddn.com/download/sfa400x3-es400x3-ai400x3-datasheet/\">DDN AI400X3 and AI400X3i Datasheet</a>.</p>"
+        ]
+       ],
+       "fig": "x3-perf",
+       "figNote": [
+        "按单台 2U 设备列规格。截至 2026-11-23，出自 DDN AI400X3 与 AI400X3i 数据表。",
+        "Ratings are per 2U appliance. As of 2026-11-23, from the DDN AI400X3 and AI400X3i Datasheet."
+       ]
+      },
+      {
+       "key": "x2",
+       "t": [
+        "X2",
+        "X2"
+       ],
+       "d": [
+        "DDN 的 X2 数据表分别列出标准 AI400X2 的单机顺序读写上限。",
+        "DDN’s X2 datasheet lists sequential read and write limits for a single standard AI400X2."
+       ],
+       "b": [
+        [
+         "<p>单台标准 AI400X2 的规格为最高 90 GB/s 顺序读和 65 GB/s 顺序写。数据表未列块大小、客户端数或具体盘容量档位。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf\">DDN X2 平台数据表</a>。</p>"
+        ],
+        [
+         "<p>One standard AI400X2 is rated for up to 90 GB/s sequential read and 65 GB/s sequential write. The sheet gives no I/O size, client count, or specific drive-capacity tier for these figures. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf\">DDN X2 Platform Datasheet</a>.</p>"
+        ]
+       ],
+       "fig": "x2-perf",
+       "figNote": [
+        "单台 AI400X2。截至 2026-11-23，出自 DDN X2 平台数据表。",
+        "One AI400X2 appliance. As of 2026-11-23, from the DDN X2 Platform Datasheet."
+       ]
+      }
+     ]
+    },
+    {
+      "t": [
+        "按工作负载选型",
+        "Choosing by Workload"
+      ],
+      "d": [
+        "训练与推理的读取需求、X2 全闪容量和大数据集存放，对应不同的选型重点。",
+        "Training and inference reads, X2 all-flash capacity, and large dataset storage call for different hardware choices."
+      ],
+      "b": [
+        [
+          "<p>训练数据读取或推理小块读并发高时，可评估 AI400X3M 的读能力。AI400X3 与 AI400X3i 可按顺序吞吐和 4K 随机读需求评估。训练检查点写入需单独按写入带宽核算。采用 X2 平台时，按基础全闪、闪存容量和主机端口需求评估 AI400X2 的标准、QLC 与 Turbo 配置。大型科研输入和计算结果以存放容量为主时，可评估 AI200X2 的 HDD 扩展。</p>",
+          "<p>设备选型还取决于客户端并发、读写模式、所需可用容量和存储网络。文件服务的部署另有合设与专用设备两种方式，分别将元数据与文件数据服务放在同一设备或不同设备上。两种方式均由 EXAScaler 提供共享文件路径。</p>"
+        ],
+        [
+          "<p>AI400X3M is an option for concurrent training reads or small-block inference reads. AI400X3 and AI400X3i can be evaluated against sequential throughput and 4K random-read requirements. Size checkpoint writes separately against the write bandwidth requirement. On the X2 platform, the standard, QLC, and Turbo AI400X2 configurations address baseline all-flash storage, greater flash capacity, and additional host connections, respectively. The HDD-expanded AI200X2 is an option for storing large research inputs and outputs.</p>",
+          "<p>Other selection factors include client concurrency, I/O patterns, required usable capacity, and the storage network. File services can also be deployed together on one appliance or on dedicated metadata and data appliances. Both layouts expose shared file paths through EXAScaler.</p>"
+        ]
+      ],
+      "scene": 5
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

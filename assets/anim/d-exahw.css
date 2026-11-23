@@ -1,0 +1,18 @@
+.d-exahw-diagram { display: block; width: 100%; height: auto; font-family: var(--f); }
+.d-exahw-diagram text { fill: var(--ink); }
+.d-exahw-diagram .heading, .d-exahw-diagram .name { font-weight: 600; }
+.d-exahw-diagram .node text { text-anchor: middle; }
+.d-exahw-diagram .subtitle, .d-exahw-diagram .note { fill: var(--ink2); }
+.d-exahw-diagram .housing { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; }
+.d-exahw-diagram .selected .housing { stroke: var(--ink2); }
+.d-exahw-diagram .route { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
+.d-exahw-diagram .packet { fill: var(--ink2); }
+[data-station="d-exahw"] .src a { display: inline; padding: 0; font-size: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 640px) and (max-height: 760px) {
+  [data-station="d-exahw"] ~ .stage .figbox { margin-block: 12px; }
+  [data-station="d-exahw"] ~ .stage .cap { margin-top: 8px; }
+  [data-station="d-exahw"] ~ .stage .cap h2 { font-size: 24px; }
+  [data-station="d-exahw"] ~ .stage .cap .desc { font-size: 16px; line-height: 1.5; }
+  [data-station="d-exahw"] ~ .stage .ctl { margin-top: 8px; row-gap: 8px; }
+}

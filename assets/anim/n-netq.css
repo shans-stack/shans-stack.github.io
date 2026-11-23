@@ -1,0 +1,31 @@
+.n-netq-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:19px}
+.n-netq-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-netq-figure .n-netq-detail,.n-netq-figure .n-netq-caption,.n-netq-figure .n-netq-note{font-size:17px;fill:var(--ink2)}
+.n-netq-figure .n-netq-label{font-weight:650}
+.n-netq-figure .n-netq-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-netq-figure .n-netq-primary{stroke:var(--l4)}
+.n-netq-figure .n-netq-optional{stroke-dasharray:5 4}
+.n-netq-figure .n-netq-active{fill:color-mix(in srgb,var(--l4) 14%,var(--bg));stroke:var(--l4);stroke-width:2}
+.n-netq-figure .n-netq-alert,.n-netq-figure .n-netq-alert.n-netq-active{stroke:var(--l1);fill:color-mix(in srgb,var(--l1) 16%,var(--bg))}
+.n-netq-figure .n-netq-link{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
+.n-netq-figure .n-netq-link.n-netq-signal{stroke:var(--l5)}
+.n-netq-figure .n-netq-link.n-netq-control{stroke:var(--ink3);stroke-dasharray:5 4}
+.n-netq-figure .n-netq-link.n-netq-fault{stroke:var(--l1);stroke-dasharray:2 7}
+.n-netq-figure .n-netq-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.2}
+.n-netq-figure .n-netq-packet.n-netq-control{fill:var(--ink3)}
+.n-netq-figure .n-netq-packet.n-netq-signal{fill:var(--l5)}
+@media(max-width:640px){
+  .n-netq-figure svg{font-size:17px}
+  .n-netq-figure .n-netq-detail,.n-netq-figure .n-netq-caption,.n-netq-figure .n-netq-note{font-size:16px}
+  body.topic-n-netq.present .stage{padding:12px;row-gap:10px}
+  body.topic-n-netq.present .stage .figbox,body.topic-n-netq.present .stage .cap,body.topic-n-netq.present .stage .ctl{margin:0}
+  body.topic-n-netq.present .stage .cap{display:block}
+  body.topic-n-netq.present .stage h2{font-size:24px}
+  body.topic-n-netq.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-netq .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-netq-figure .n-netq-packet{display:none}
+}

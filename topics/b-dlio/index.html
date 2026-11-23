@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DLIO：深度学习训练的存储 I/O · Shan's Stack</title>
+<meta name="description" content="分 5 步说明DLIO 如何模拟训练数据读取与检查点 I/O，以及如何解读样本速率。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-dlio.css?v=1c98f8ee">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-dlio">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-dlio">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DLIO: Storage I/O for Deep Learning Training">DLIO：深度学习训练的存储 I/O</h1>
+        <p class="meta"><span data-en="5 steps · Training Data, Checkpoints, Storage I/O">5 步 · 训练数据、检查点、存储 I/O</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/argonne-lcf/dlio_benchmark/releases&quot;&gt;DLIO v2.0.1 Release Record&lt;/a&gt;"><a href="https://github.com/argonne-lcf/dlio_benchmark/releases">DLIO v2.0.1 公开发行记录</a></li>
+      <li data-en="&lt;a href=&quot;https://dlio-benchmark.readthedocs.io/en/latest/config.html&quot;&gt;DLIO Configuration Reference&lt;/a&gt;"><a href="https://dlio-benchmark.readthedocs.io/en/latest/config.html">DLIO 配置参考</a></li>
+      <li data-en="&lt;a href=&quot;https://dlio-benchmark.readthedocs.io/en/latest/run.html&quot;&gt;Running and Profiling DLIO&lt;/a&gt;"><a href="https://dlio-benchmark.readthedocs.io/en/latest/run.html">DLIO 运行与分析</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/storage&quot;&gt;MLCommons Storage Benchmark Code and Rules&lt;/a&gt;"><a href="https://github.com/mlcommons/storage">MLCommons 存储基准代码与规则</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-dlio.js?v=df576471"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-dlio",
+ "ar": [
+  2.4516129032258065,
+  1.0285714285714285
+ ],
+ "steps": [
+  {
+   "t": [
+    "训练 I/O 的测量范围",
+    "The Scope of Training I/O"
+   ],
+   "d": [
+    "模拟深度学习训练的数据读取和检查点 I/O，供 MLPerf Storage 等基准产生负载。",
+    "Emulates deep learning data loading and checkpoint I/O, generating load for benchmarks such as MLPerf Storage."
+   ],
+   "b": [
+    [
+     "<p>DLIO（Deep Learning I/O Benchmark）通过实际读取样本和读写检查点复现训练的存储访问。检查点保存训练状态，可用于恢复。配置中的计算时间用等待模拟，模型算子和训练中的进程间通信在模拟范围之外。</p>",
+     "<p>截至 2026-11-23，项目最新公开发行版为 v2.0.1，发布于 2025-10-28。</p>"
+    ],
+    [
+     "<p>DLIO (Deep Learning I/O Benchmark) reproduces training storage access by reading samples and reading or writing checkpoints. A checkpoint saves training state for recovery. Configured delays represent compute time. The emulation excludes model operators and training communication between processes.</p>",
+     "<p>As of November 23, 2026, the latest public project release is v2.0.1, published on October 28, 2025.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "数据生成与定时运行",
+    "Dataset Generation and Timed Runs"
+   ],
+   "d": [
+    "先生成合成数据，再对已生成的数据集运行训练模拟。",
+    "Generate synthetic data first, then run the training emulation against the prepared dataset."
+   ],
+   "b": [
+    [
+     "<p>YAML 配置描述数据格式、文件数和样本大小。DLIO 可使用 MPI 启动多个进程，每个进程代表一个训练进程并读取分给它的样本。数据准备和定时运行可分开执行，以减小生成过程带来的缓存影响，并把文件生成排除在训练 I/O 分析之外。</p>"
+    ],
+    [
+     "<p>A YAML configuration describes the data format, file count, and sample size. DLIO can use MPI to launch multiple processes, each representing a training process and reading its assigned samples. Separate preparation and timed runs reduce cache effects from generation and keep dataset creation out of the training I/O profile.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "批次读取与计算节拍",
+    "Batch Reads and Compute Timing"
+   ],
+   "d": [
+    "批大小、读取线程和模拟计算时间共同决定读请求的节拍。",
+    "Batch size, reader threads, and emulated compute time shape the timing of reads."
+   ],
+   "b": [
+    [
+     "<p>一个批次是一组交给一次训练步的样本。批大小决定每步消耗多少样本，读取线程影响可同时发起多少读取，文件或样本的打乱方式改变访问顺序。<code>computation_time</code> 表示每步的模拟计算时间，可按目标训练步的计时设定。数据加载器支持预取时，可在当前步等待期间准备后续批次。</p>"
+    ],
+    [
+     "<p>A batch is a group of samples consumed by one training step. Batch size sets the number of samples per step, reader threads affect read concurrency, and shuffling files or samples changes access order. <code>computation_time</code> represents the emulated compute time per step and can be based on timings from the target training workload. A loader that supports prefetching can prepare later batches while the current step waits.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "检查点与恢复",
+    "Checkpointing and Recovery"
+   ],
+   "d": [
+    "检查点按配置的训练间隔写入，恢复阶段可重新读取状态。",
+    "Checkpoints are written at configured training intervals and can be read back during recovery."
+   ],
+   "b": [
+    [
+     "<p>检查点频率可按训练步或 epoch 设置。Epoch 指遍历训练数据的一轮。启用按步触发时，步数间隔优先于 epoch 间隔。检查点写入与恢复读取应分别计时，它们与持续的样本读取具有不同的访问模式。</p>"
+    ],
+    [
+     "<p>Checkpoint frequency can be set in steps or epochs. An epoch is one pass through the training data. A positive step interval takes precedence over the epoch interval. Checkpoint saves and recovery loads have different access patterns from ongoing sample reads and are interpreted separately.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "样本速率与结果边界",
+    "Sample Rate and Result Scope"
+   ],
+   "d": [
+    "结合每秒样本数、I/O 轨迹和有效配置解读结果。",
+    "Interpret samples per second alongside the I/O trace and effective configuration."
+   ],
+   "b": [
+    [
+     "<p>每秒样本数反映指定节拍下的样本供给能力。即使存储相同，缩短模拟计算时间、改变批大小或让数据落入缓存，都可能改变结果。输出目录保留有效配置和分析文件，便于核对这些条件。MLPerf Storage 使用 DLIO 生成部分工作负载，公开成绩另受该轮规则、负载和提交条件约束。</p>"
+    ],
+    [
+     "<p>Samples per second describe sample delivery under a defined training cadence. Shorter emulated compute time, a different batch size, or cached data can change the result on the same storage. The output directory retains the effective configuration and profiling files. MLPerf Storage uses DLIO for some workloads and applies separate round-specific rules, workloads, and submission requirements to published results.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

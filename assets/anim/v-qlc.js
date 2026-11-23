@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-qlc.css，全部限定在 .ssa-v-qlc 容器之内。
-   VAST 字标引用 assets/brand/vast-wordmark-black.svg 与 vast-wordmark-white.svg 原件（浅色、深色各一）。 */
+   样式在 assets/anim/v-qlc.css，全部限定在 .ssa-v-qlc 容器之内。 */
 (function(){
 var ID='v-qlc';
 var EN={"SLC · 2 档 · 1 比特":"SLC · 2 levels · 1 bit","QLC · 16 档 · 4 比特":"QLC · 16 levels · 4 bits","约 3 V":"~3 V","约 0 V":"~0 V","读出":"Reads","读对":"Correct","读错":"Misread","擦除":"Erase","电子漏出":"Electrons leak","早期 SLC 约 10 万次擦写":"Early SLC: ~100,000 cycles","约为早期 SLC 的百分之一":"~1/100 of early SLC","示意，不代表实测数字":"Schematic, not measured",
@@ -18,7 +17,7 @@ var EN={"SLC · 2 档 · 1 比特":"SLC · 2 levels · 1 bit","QLC · 16 档 · 
 var ENM={"先写 SCM，之后迁往 QLC":"SCM first, QLC later","SCM 吸收短期更新":"SCM buffers transient updates","在集群内分散磨损":"Wear spread across SSDs","4 KB 写入也用掉整页":"4 KB uses a whole page"};
 var ARIA="QLC 闪存：电压档位、擦写寿命、写入路径与写入大小";
 function makeScene(H){
-const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade,vlabel}=H;
+const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade}=H;
 const L_=()=>H.L(),E_=()=>H.E();
 const SCENE={
  still:[2,4.5,8,6,5,8],
@@ -59,7 +58,7 @@ const SCENE={
   {const s=L.s3,g=grp('3');E.s3=[];
    s.lanes.forEach((y,k)=>{const cli={x:s.cli.x,y:y-s.cli.h/2,w:s.cli.w,h:s.cli.h},q={x:s.q.x,y:y-s.q.h/2,w:s.q.w,h:s.q.h};
     const ly=y-s.q.h/2-26;
-    if(k)vlabel(s.cli.x,ly,'先写 SCM，之后迁往 QLC',f.lbl,'lbl b7',g,M?12:14);else tx(s.cli.x,ly,'直接写 QLC',f.lbl,'lbl b7','start',g);
+    tx(s.cli.x,ly,k?'先写 SCM，之后迁往 QLC':'直接写 QLC',f.lbl,'lbl b7','start',g);
     let scm=null;
     if(k){scm={x:s.scm.x,y:y-s.scm.h/2,w:s.scm.w,h:s.scm.h};line([P(cli.x+cli.w,y),P(scm.x,y)],'',g);line([P(scm.x+scm.w,y),P(q.x,y)],'dash',g)}
     else line([P(cli.x+cli.w,y),P(q.x,y)],'',g);
@@ -95,7 +94,7 @@ const SCENE={
   {const s=L.s6,g=grp('6'),d=s.dr;
    rect(s.src,'box',g);tx(C(s.src).x,C(s.src).y,'写入',f.sm,'lbl','middle',g);
    E.scm6=rect(s.scm,'box on',g,12);
-   vlabel(s.scm.x,s.scm.y-18,'SCM',f.sm,'lbl b7',g,M?12:13);
+   tx(s.scm.x,s.scm.y-18,'SCM',f.sm,'lbl b7','start',g);
    tx(C(s.scm).x,s.scm.y+s.scm.h+22,'SCM 吸收短期更新',f.sm,'ochre-t st','middle',g);
    const sy=C(s.src).y;line([P(s.src.x+s.src.w,sy),P(s.scm.x,sy)],'',g);
    E.dr6=[];const bus=M?d.y0-26:d.x0-40;
@@ -168,7 +167,6 @@ return SCENE;
 
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-'+ID);host.innerHTML='';
@@ -207,17 +205,7 @@ function run(p,pts,t,t0,dur,opt){opt=opt||{};const u=(t-t0)/dur;
   if(u<=1){put(p,along(pts,sm(u)),1);return u}
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return 1.5}
 const loopFade=(u,per)=>u>per-0.45?clamp((per-u)/0.45,0,1):u<0.35?clamp(u/0.35,0,1):1;
-/* VAST 字标：引用 assets/brand 原件，浅色用黑字版、深色用白字版（CSS 切换）。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;
-  const g=el('g',{class:'vwm'},p);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-black.svg'),class:'vwm-l','aria-label':'VAST'},g);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-white.svg'),class:'vwm-d','aria-hidden':'true'},g);
-  return g}
-/* 部件名 + VAST 字标排成一行：名字右端在 x（anchor end），字标紧跟其后；返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h,anchor){const t=tx(x,y,s,fs,cls,anchor||'start',p);let w=0;try{w=t.getComputedTextLength()}catch(e){}
-  if(!w)w=estW(T(s),fs);const a=anchor||'start';const x1=a==='start'?x+w:a==='middle'?x+w/2:x;const m=vmark(x1+Math.round(fs*0.4),y,h||Math.round(fs*0.72),p,'start');return {t,m}}
-function estW(s,fs){let w=0;for(const ch of s)w+=/[\u2e80-\uffff]/.test(ch)?fs:fs*0.56;return w}
-const H={estW,el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,vmark,vlabel,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
+const H={el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
 const SCENE=makeScene(H);
 /* ---------- 引擎 ---------- */
 function applyVis(){

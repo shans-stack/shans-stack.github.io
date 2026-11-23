@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自加密盘与 KMIP：盘内加密和密钥管理 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明自加密盘与 KMIP：盘内加密和密钥管理。自加密盘在盘内加解密，DDN SFA 可借助外部 KMIP 服务保管盘的认证密钥。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-kmip.css?v=ddbf3742">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-kmip">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Self-Encrypting Drives and KMIP: On-Drive Encryption and Key Management">自加密盘与 KMIP：盘内加密和密钥管理</h1>
+        <p class="meta"><span data-en="5 steps · Encryption at Rest, SED, Key Management">5 步 · 静态加密、自加密盘、密钥管理</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/support/technical-support-bulletins/&quot;&gt;DDN: SED Authentication Key Backup Bulletin (SPT-TSB-0141)&lt;/a&gt;"><a href="https://www.ddn.com/support/technical-support-bulletins/">DDN：SED 认证密钥备份公告（SPT-TSB-0141）</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.oasis-open.org/kmip/kmip-profiles/v2.0/os/kmip-profiles-v2.0-os.html&quot;&gt;OASIS: KMIP 2.0 Profiles, Section 5.11&lt;/a&gt;"><a href="https://docs.oasis-open.org/kmip/kmip-profiles/v2.0/os/kmip-profiles-v2.0-os.html">OASIS：KMIP 2.0 配置规范，第 5.11 节</a></li>
+      <li data-en="&lt;a href=&quot;https://www.seagate.com/files/docs/pdf/whitepaper/self-encrypting-drives-tp600.2-1103us.pdf&quot;&gt;Seagate: Self-Encrypting Drive Technology White Paper, Appendix A&lt;/a&gt;"><a href="https://www.seagate.com/files/docs/pdf/whitepaper/self-encrypting-drives-tp600.2-1103us.pdf">Seagate：自加密盘技术白皮书，附录 A</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-kmip.js?v=62de1b26"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-kmip",
+ "ar": [
+  3,
+  1.1042944785276074
+ ],
+ "steps": [
+  {
+   "t": [
+    "盘内硬件加密",
+    "Hardware Encryption Inside the Drive"
+   ],
+   "d": [
+    "自加密盘在数据写入介质前完成加密。",
+    "A self-encrypting drive encrypts data before writing it to the media."
+   ],
+   "b": [
+    [
+     "<p>自加密盘（Self-Encrypting Drive，SED）把加密引擎集成在盘内。数据写入时，盘内引擎用介质加密密钥把数据转换成密文后再落盘。这里保护的是静态数据，即已经保存在介质上的数据。</p>"
+    ],
+    [
+     "<p>A self-encrypting drive (SED) contains its own encryption engine. On a write, the engine uses a media encryption key to turn the incoming data into ciphertext before storing it. This protects data at rest, meaning data already stored on the media.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "认证密钥解锁",
+    "Unlocking With an Authentication Key"
+   ],
+   "d": [
+    "启用自动锁定的盘再次上电时，需要正确的认证密钥才能开放数据访问。",
+    "After power is restored, an auto-locking drive requires the correct authentication key before it grants access to its data."
+   ],
+   "b": [
+    [
+     "<p>介质加密密钥用于在盘内加解密。另一把认证密钥用于向盘证明访问方有权解锁，盘离开原阵列后再次上电也仍需这项认证。介质上的密文在锁定和解锁前后都保持原样。</p>"
+    ],
+    [
+     "<p>The media encryption key is used inside the drive for encryption and decryption. A separate authentication key proves that the requesting system is authorized to unlock the drive. The drive still requires that credential if powered on outside its original array. The ciphertext on the media remains unchanged when the drive locks or unlocks.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "外置 KMIP 密钥服务",
+    "External KMIP Key Service"
+   ],
+   "d": [
+    "在外置密钥部署中，DDN SFA 阵列通过 KMIP 取得给盘解锁的认证密钥。",
+    "In an external key deployment, the DDN SFA array obtains drive authentication keys over KMIP."
+   ],
+   "b": [
+    [
+     "<p>KMIP 全称 Key Management Interoperability Protocol（密钥管理互操作协议），定义密钥管理客户端与服务端之间的交互。DDN 的公开公告确认，SFA OS（DDN SFA 阵列的操作系统）所用的 SED 认证密钥可保存在 KMIP 服务端。阵列与服务端交换密钥，随后向盘提交认证密钥。</p>"
+    ],
+    [
+     "<p>The Key Management Interoperability Protocol (KMIP) defines how a key management client communicates with a server. DDN publicly documents that SED authentication keys used by SFA OS, the operating system of the DDN SFA array, can be stored on a KMIP server. The array obtains the key from the service and presents it to the drive.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "解锁后的读路径",
+    "Read Path After Unlocking"
+   ],
+   "d": [
+    "已解锁的盘在盘内解密，阵列沿正常数据路径接收读出的数据。",
+    "An unlocked drive decrypts data internally and returns it along the array’s normal data path."
+   ],
+   "b": [
+    [
+     "<p>盘从介质读出密文，用同一介质加密密钥在盘内解密，再把数据交给阵列。KMIP 服务负责认证密钥的管理，常规读请求由阵列和已解锁的盘完成。</p>"
+    ],
+    [
+     "<p>The drive reads ciphertext from the media, decrypts it internally with the media encryption key, and returns the resulting data to the array. The KMIP service manages authentication keys. The array and unlocked drive handle ordinary reads.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "控制器更换后的密钥恢复",
+    "Key Recovery After Controller Replacement"
+   ],
+   "d": [
+    "SFA OS 丢失盘的认证密钥时，外部备份或 KMIP 服务可提供恢复所需的密钥。",
+    "If SFA OS loses its drive authentication keys, an external backup or KMIP service can supply them for recovery."
+   ],
+   "b": [
+    [
+     "<p>DDN 以双控制器更换为例说明恢复条件。如果阵列端原来的认证密钥丢失，重新访问已锁定盘的数据依赖于找回对应的密钥。公告同时要求把认证密钥备份到外部介质，以保留独立的恢复途径。</p>"
+    ],
+    [
+     "<p>DDN uses replacement of both controllers as an example. If the array loses its original authentication keys, regaining access to locked drives depends on recovering the corresponding keys. Its bulletin also calls for an external media backup to preserve an independent recovery path.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

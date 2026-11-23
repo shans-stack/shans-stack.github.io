@@ -1,0 +1,20 @@
+.f-hicache-anim svg { display: block; width: 100%; overflow: hidden; font-family: var(--f); }
+.f-hicache-anim text { dominant-baseline: central; fill: var(--ink); font-size: 19px; }
+.f-hicache-anim .name { font-weight: 700; font-size: 23px; }
+.f-hicache-anim .detail { fill: var(--ink2); font-size: 18px; }
+.f-hicache-anim .node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.f-hicache-anim .node.active { fill: color-mix(in srgb, var(--l5) 10%, var(--surface)); stroke: var(--l5); }
+.f-hicache-anim .node.waiting { stroke: var(--l1); }
+.f-hicache-anim .route { fill: none; stroke: var(--l4); stroke-width: 1.8; stroke-linejoin: round; }
+.f-hicache-anim .route.link { stroke: var(--rule2); }
+.f-hicache-anim .route.copy, .f-hicache-anim .route.batch { stroke: var(--l5); }
+.f-hicache-anim .route.evict { stroke: var(--l1); }
+.f-hicache-anim .route.ref, .f-hicache-anim .route.ref-map, .f-hicache-anim .route.evict { stroke-dasharray: 5 4; }
+.f-hicache-anim .route.arrow { stroke-dasharray: none; }
+.f-hicache-anim .chip { fill: var(--l4); stroke: var(--surface); stroke-width: 1; }
+.f-hicache-anim .chip.copy, .f-hicache-anim .chip.batch { fill: var(--l5); }
+@media (max-width: 640px) {
+  .f-hicache-anim text { font-size: 15px; }
+  .f-hicache-anim .name { font-size: 17px; }
+  .f-hicache-anim .detail { font-size: 14px; }
+}

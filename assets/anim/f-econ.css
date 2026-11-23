@@ -1,0 +1,33 @@
+.f-econ-diagram {
+  --signal: var(--l4);
+  --accent: var(--l6);
+  --good: var(--l5);
+  --blocked: var(--l1);
+  display: block;
+  width: 100%;
+  font: 500 17px var(--f);
+}
+.f-econ-diagram [data-tone="signal"] { --color: var(--signal); }
+.f-econ-diagram [data-tone="accent"] { --color: var(--accent); }
+.f-econ-diagram [data-tone="good"] { --color: var(--good); }
+.f-econ-diagram [data-tone="blocked"], .f-econ-diagram [data-tone="busy"] { --color: var(--blocked); }
+.f-econ-card { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.3; }
+.f-econ-node[data-arrived="true"] .f-econ-card { stroke: var(--lc); stroke-width: 2; }
+.f-econ-path, .f-econ-arrow {
+  fill: none;
+  stroke: var(--color, var(--rule2));
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.f-econ-packet { fill: var(--color); stroke: var(--bg); stroke-width: 1.2; }
+.f-econ-title, .f-econ-caption { fill: var(--ink); font-weight: 600; }
+.f-econ-title { font-size: 20px; }
+.f-econ-detail, .f-econ-note { fill: var(--ink2); }
+.topic-f-econ .mhost { aspect-ratio: 880 / 302; }
+.topic-f-econ .src a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-f-econ .mhost { aspect-ratio: 350 / 462; }
+  .f-econ-title { font-size: 17px; }
+  .f-econ-caption { font-size: 15px; }
+  .topic-f-econ .stage .figbox { margin-block: 5px; }
+}

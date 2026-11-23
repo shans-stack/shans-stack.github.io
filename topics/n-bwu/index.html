@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Blackwell Ultra：B300 显存与注意力计算 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Blackwell Ultra 的同族设计、B300 显存和注意力改进，以及 GB300 整柜。" data-description-en="Five steps explain the Blackwell Ultra design, B300 memory and attention improvements, and the GB300 rack..">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-bwu.css?v=bdb8c6b3">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-bwu">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-bwu">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Blackwell Ultra: B300 Memory and Attention Compute">NVIDIA Blackwell Ultra：B300 显存与注意力计算</h1>
+        <p class="meta"><span data-en="5 steps · B300, HBM3E, Softmax">5 步 · B300、HBM3E、Softmax</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/&quot;&gt;NVIDIA Blackwell Ultra Technical Overview&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/">NVIDIA Blackwell Ultra 技术说明</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/hgx/&quot;&gt;NVIDIA HGX Platform and Specifications&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/hgx/">NVIDIA HGX 产品与规格</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;NVIDIA GB300 NVL72&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">NVIDIA GB300 NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/pdf/dgx-spod-gb300-ra.pdf&quot;&gt;NVIDIA DGX GB300 SuperPOD Reference Architecture&lt;/a&gt;"><a href="https://docs.nvidia.com/pdf/dgx-spod-gb300-ra.pdf">NVIDIA DGX GB300 SuperPOD 参考架构</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html&quot;&gt;NVIDIA DGX GB Rack Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html">NVIDIA DGX GB 整柜硬件指南</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-bwu.js?v=58f97f78"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-bwu",
+  "ar": [
+    2.392638036809816,
+    0.9836065573770492
+  ],
+  "steps": [
+    {
+      "t": [
+        "Blackwell 同族的增强版",
+        "An Enhanced Member of the Blackwell Family"
+      ],
+      "d": [
+        "Blackwell 的增强版，B300 为该 GPU，GB300 Superchip 将两颗 Blackwell Ultra GPU 与一颗 Grace CPU 相连。",
+        "An enhanced version of Blackwell used by B300. The GB300 Superchip connects two Blackwell Ultra GPUs to one Grace CPU."
+      ],
+      "b": [
+        [
+          "<p>B300 延续了 Blackwell 的双裸片封装和第五代 Tensor Core。双裸片通过封装内的 NV-HBI 高带宽接口连接，合成一个可编程的 GPU。整柜使用的 GB300 Superchip 则通过 NVLink-C2C 芯片到芯片互联，把两颗 B300 与一颗 Grace CPU 组合起来。</p>"
+        ],
+        [
+          "<p>B300 retains Blackwell’s dual-die package and fifth-generation Tensor Cores. A high-bandwidth in-package interface, NV-HBI, joins the dies into one programmable GPU. The GB300 Superchip used in the rack connects two B300 GPUs to one Grace CPU over the NVLink-C2C chip-to-chip interconnect.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "HBM3E 容量扩充",
+        "Higher HBM3E Capacity"
+      ],
+      "d": [
+        "B300 使用容量更大的 HBM3E，为模型权重和 KV Cache 留出更多显存空间。",
+        "B300 uses higher-capacity HBM3E, leaving more GPU memory for model weights and the KV cache."
+      ],
+      "b": [
+        [
+          "<p>HBM3E 是封装上的高带宽显存。与旗舰 B200 配置相比，B300 提高了显存容量，显存类型仍是 HBM3E。KV Cache 保存之前 token 的注意力键和值，生成后续 token 时可重用。多请求并发或上下文变长时，这些缓存与模型权重一起占用显存。</p>"
+        ],
+        [
+          "<p>HBM3E is high-bandwidth memory on the GPU package. B300 increases memory capacity over the flagship B200 configuration while retaining HBM3E. The KV cache stores attention keys and values from previous tokens for reuse during generation. Longer contexts and concurrent requests increase the amount of GPU memory used alongside model weights.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "加速注意力中的 Softmax",
+        "Accelerating Softmax in Attention"
+      ],
+      "d": [
+        "B300 加强了特殊函数单元中用于 Softmax 的指令，改进注意力计算的归一化阶段。",
+        "B300 improves the special-function instructions used by softmax, the normalization stage of attention."
+      ],
+      "b": [
+        [
+          "<p>注意力先计算 token 之间的相关分数，再由 Softmax 将分数归一化为权重，最后用这些权重汇总值向量。Softmax 所需的指数等运算由特殊函数单元（SFU）执行。Blackwell Ultra 提高了相关指令的吞吐能力，改进的是注意力链路中的一个具体阶段。</p>"
+        ],
+        [
+          "<p>Attention computes scores between tokens, normalizes them into weights with softmax, and uses those weights to combine value vectors. Special function units (SFUs) execute operations such as the exponentials used by softmax. Blackwell Ultra increases throughput for relevant instructions, improving a specific stage in the attention pipeline.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "GPU 互联仍为第五代",
+        "The GPU Fabric Retains Fifth-Generation NVLink"
+      ],
+      "d": [
+        "GB300 沿用第五代 NVLink 与 Grace 配对设计，代际变化集中在 GPU 内。",
+        "GB300 retains fifth-generation NVLink and Grace pairing, with the generational changes centered on the GPU."
+      ],
+      "b": [
+        [
+          "<p>B200 和 B300 均可经第五代 NVLink 交换网络与同域 GPU 通信，配套 Superchip 用 NVLink-C2C 连接 Grace。这个边界区分了两类变化：B300 的显存与计算单元有所增强，柜内 GPU 互联仍属于与 GB200 相同的 NVLink 代际。</p>"
+        ],
+        [
+          "<p>B200 and B300 both communicate with peers in the domain over a fifth-generation switched NVLink fabric. Their Superchips connect to Grace over NVLink-C2C. This separates the changes in B300’s memory and compute units from the rack GPU interconnect, which stays in the same NVLink generation as GB200.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "HGX B300 与 GB300 NVL72",
+        "HGX B300 and GB300 NVL72"
+      ],
+      "d": [
+        "HGX B300 以服务器内的 GPU 底板为单位，GB300 NVL72 以一整柜的 NVLink 域为单位。",
+        "HGX B300 is organized around a server GPU baseboard, while GB300 NVL72 is organized around a rack-wide NVLink domain."
+      ],
+      "b": [
+        [
+          "<p>HGX B300 可在一块底板上部署八颗 B300。DGX GB300 NVL72 代表整柜路线，计算托盘承载 Grace 和 Blackwell Ultra GPU，交换托盘通过背部铜缆把 72 颗 GPU 接成一域，机柜还集成供电和液冷部件。两者主要区分服务器底板和整柜这两个系统层级。</p>"
+        ],
+        [
+          "<p>HGX B300 can deploy eight B300 GPUs on one baseboard. DGX GB300 NVL72 takes the rack-scale approach. Its compute trays carry Grace CPUs and Blackwell Ultra GPUs, and switch trays connect 72 GPUs into one domain through the rear copper interconnect. The rack also integrates power and liquid cooling components.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

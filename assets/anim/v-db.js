@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-db.css，全部限定在 .ssa-v-db 容器之内。
-   VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
+   样式在 assets/anim/v-db.css，全部限定在 .ssa-v-db 容器之内。 */
 (function(){
 var ID='v-db',NSTEP=6;
 var EN={"WHERE 金额 > 500":"WHERE amount > 500","块 1":"Chunk 1","块 2":"Chunk 2","块 3":"Chunk 3","块 4":"Chunk 4","块 5":"Chunk 5","块 6":"Chunk 6","NFS 客户端":"NFS client","S3 客户端":"S3 client","SQL 客户端":"SQL client","目录":"Directory","bucket":"Bucket","数据库视图":"Database view","schema · 表":"schema · table","快照":"Snapshots","数据缩减":"Data reduction","适用表复制":"Replication","配额":"Quotas",
@@ -64,12 +63,6 @@ function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a=
 function setText(o,s){const v=T(s);if(o.t.textContent!==v)o.t.textContent=v}
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,sm(u)),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const dur=(pts,sp)=>plen(pts)/(sp||L.sp);
-/* VAST 字标：<image> 引用 assets/brand/ 里的原件，浅色模式黑字、深色模式白字；(x,y) 为左端、竖直居中 */
-function vlogo(x,y,h,p){const w=h*66/14,g=el('g',{class:'vlogo'},p),base=(window.SS_ROOT||'')+'assets/brand/';
-  ['black','white'].forEach(c=>{const i=el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:c==='black'?'vwm-l':'vwm-d',preserveAspectRatio:'xMinYMid meet'},g);i.setAttribute('href',base+'vast-wordmark-'+c+'.svg')});
-  g.w=w;return g}
-/* 带 VAST 字标的标题：字标在前，名字紧跟其后，同一行 */
-function vtitle(x,y,s,fs,cls,p,h){const g=vlogo(x,y,h||L.lg,p);return tx(x+g.w+Math.round(fs*0.4),y,s,fs,cls||'ttl','start',p)}
 function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
 function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.toggle(c,!!on))}
 /* ---------- 场景 ---------- */
@@ -77,9 +70,9 @@ const COLC=['slate','och','vio','ok'];
 const SCENE={
  still:[1.6,5.2,4.4,6.5,2.2,8.4],
  layout(m){
-  if(!m)return {W:960,H:480,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17,big:30},pw:22,ph:16,dr:7,sp:330,lg:15,
+  if(!m)return {W:960,H:480,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17,big:30},pw:22,ph:16,dr:7,sp:330,
    cap:{x:480,y:458},tgl:{x:480,y:458}};
-  return {W:480,H:640,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17,big:26},pw:18,ph:14,dr:6,sp:240,lg:13,
+  return {W:480,H:640,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17,big:26},pw:18,ph:14,dr:6,sp:240,
    cap:{x:240,y:618},tgl:{x:240,y:618}};
  },
  build(){
@@ -89,7 +82,7 @@ const SCENE={
    const xs=m?[84,240,396]:[200,480,760],cw=m?144:200,ew=m?144:220;
    const cl=xs.map(x=>R(x-cw/2,m?36:20,cw,m?46:50)),fr=m?R(6,124,468,330):R(60,110,840,250);
    const el_=xs.map(x=>R(x-ew/2,m?176:160,ew,m?258:170));
-   box(fr,g,'box frame',16);vtitle(fr.x+(m?14:20),fr.y+(m?22:24),'Element Store',f.sm,'ttl',g);
+   box(fr,g,'box frame',16);tx(fr.x+(m?14:20),fr.y+(m?22:24),'Element Store',f.sm,'ttl','start',g);
    const names=['NFS 客户端','S3 客户端','SQL 客户端'],proto=['NFS','S3','VAST SQL'];
    E.s1.cl=[];E.s1.el=[];E.s1.path=[];
    cl.forEach((r,i)=>{E.s1.cl.push(box(r,g));tx(C(r).x,C(r).y,names[i],f.sm,'lbl','middle',g);
@@ -110,7 +103,8 @@ const SCENE={
    s.cl=m?R(150,10,180,56):R(20,200,150,60);s.cn=m?R(150,94,180,52):R(222,200,170,60);
    s.scm=m?R(30,176,420,190):R(446,90,210,280);s.qlc=m?R(30,404,420,184):R(718,90,222,280);
    box(s.cl,g);tx(C(s.cl).x,C(s.cl).y-11,'应用',f.sm,'lbl','middle',g);tx(C(s.cl).x,C(s.cl).y+12,'INSERT',f.xs,'slate-t mono st','middle',g);
-   s.cnB=box(s.cn,g);{const lw=f.sm*3.1,w=L.lg*66/14,x0=C(s.cn).x-(lw+7+w)/2;vlogo(x0,C(s.cn).y,L.lg,g);tx(x0+w+7,C(s.cn).y,'CNode',f.sm,'lbl b7','start',g)}
+   s.cnB=box(s.cn,g);
+   tx(C(s.cn).x,C(s.cn).y,'CNode',f.sm,'lbl b7','middle',g);
    s.scmB=box(s.scm,g,'box',14);tx(s.scm.x+16,s.scm.y+22,'持久写缓冲',f.sm,'ttl','start',g);
    s.qlcB=box(s.qlc,g,'box',14);tx(s.qlc.x+16,s.qlc.y+22,'容量闪存',f.sm,'ttl','start',g);
    const cw=m?34:36,chh=m?24:26,gap=4;
@@ -148,7 +142,7 @@ const SCENE={
   /* ===== 第 3 步：列块小，先看页脚 ===== */
   {const g=grp('3');const s={};E.s3=s;
    s.cn=m?R(140,14,200,52):R(330,22,300,60);box(s.cn,g);
-   {const lw=f.sm*3.1,w=L.lg*66/14,x0=C(s.cn).x-(lw+7+w)/2;vlogo(x0,C(s.cn).y,L.lg,g);tx(x0+w+7,C(s.cn).y,'CNode',f.sm,'lbl b7','start',g)}
+   tx(C(s.cn).x,C(s.cn).y,'CNode',f.sm,'lbl b7','middle',g);
    s.q=tx(m?240:s.cn.x-24,m?92:C(s.cn).y,'WHERE 金额 > 500',f.sm,'slate-t mono st',m?'middle':'end',g);
    s.cnt=tx(m?240:s.cn.x+s.cn.w+24,m?118:C(s.cn).y,'',f.sm,'lbl st',m?'middle':'start',g);
    const V=[[12,380],[40,620],[5,90],[510,990],[100,500],[300,700]];s.V=V;
@@ -183,8 +177,7 @@ const SCENE={
     tx((cn.x+cn.w+en.x)/2,y-16,'网络',f.xs,'ink3-t','middle',g);
     s.tb.push(box(tb,g));tx(C(tb).x,y,'表',f.sm,'lbl','middle',g);
     s.cn.push(box(cn,g));
-    if(i===0){const w=(m?12:14)*66/14,lw=f.sm*3.1,x0=C(cn).x-(lw+6+w)/2;vlogo(x0,y-14,m?12:14,g);tx(x0+w+6,y-14,'CNode',f.sm,'lbl b7','start',g)}
-    else tx(C(cn).x,y-14,'CNode',f.sm,'lbl b7','middle',g);
+    tx(C(cn).x,y-14,'CNode',f.sm,'lbl b7','middle',g);
     tx(C(cn).x,y+14,i?'先按条件过滤':'只把行读出',f.xs,i?'sage-t st':'ink3-t','middle',g);
     s.en.push(box(en,g));tx(C(en).x,y,'查询引擎',f.sm,'lbl','middle',g);
     const cx=m?440:868;tx(cx,y-22,m?'回传':'经网络回传',f.xs,'ink3-t','middle',g);
@@ -194,7 +187,7 @@ const SCENE={
   }
   /* ===== 第 5 步：原生引擎跑在 CNode 上，外部引擎走连接器 ===== */
   {const g=grp('5');const s={};E.s5=s;
-   s.fr=m?R(20,90,440,290):R(300,40,360,360);box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+24,'集群',f.sm,'ttl',g);
+   s.fr=m?R(20,90,440,290):R(300,40,360,360);box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+24,'集群',f.sm,'ttl','start',g);
    const cxs=m?[130,240,350]:[380,480,580],cw=m?100:92;
    s.cn=cxs.map(x=>{const r=R(x-cw/2,m?130:84,cw,m?44:50);box(r,g);tx(x,C(r).y,'CNode',f.sm,'lbl','middle',g);return r});
    s.band=m?R(40,194,400,40):R(318,160,324,44);s.bandB=box(s.band,g,'box fillv',10);tx(C(s.band).x,C(s.band).y,'原生查询引擎',f.sm,'violet-t st','middle',g);
@@ -217,7 +210,7 @@ const SCENE={
     s.kc=R(812,110,136,70);s.sq=R(812,262,136,70)}
    else{s.pr=R(150,10,180,48);s.fr=R(8,80,464,420);s.cn=[0,1,2].map(i=>R([84,240,396][i]-68,120,136,60));s.tb=R(30,226,428,262);
     s.kc=R(26,528,200,58);s.sq=R(254,528,200,58)}
-   box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+24,'Event Broker',f.sm,'ttl',g);
+   box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+24,'Event Broker',f.sm,'ttl','start',g);
    box(s.pr,g);tx(C(s.pr).x,C(s.pr).y,'Kafka 生产者',f.sm,'lbl','middle',g);
    const sub=['P0 的 leader','P1 的 leader',''];
    s.cnB=s.cn.map((r,i)=>{const b=box(r,g);tx(C(r).x,sub[i]?C(r).y-11:C(r).y,'CNode',f.sm,'lbl','middle',g);if(sub[i])tx(C(r).x,C(r).y+12,sub[i],f.xs,i?'ochre-t st':'slate-t st','middle',g);return b});

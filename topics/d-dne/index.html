@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DNE3：目录自动分片 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 DNE3：目录自动分片。启用自动分片后，Lustre 可按目录大小阈值增加目录条带，并把目录项分布到多个 MDT。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-dne.css?v=0e59f115">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-dne">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DNE3: Automatic Directory Restriping">DNE3：目录自动分片</h1>
+        <p class="meta"><span data-en="5 steps · DNE3, Directory Striping, MDT">5 步 · DNE3、目录条带、MDT</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/lustre-file-system-exascaler/&quot;&gt;DDN EXAScaler Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/lustre-file-system-exascaler/">DDN EXAScaler 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Metadata_Service_%28MDS%29&quot;&gt;Lustre Wiki: Metadata Service and DNE&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Metadata_Service_%28MDS%29">Lustre 官方文档：元数据服务与 DNE</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Understanding_Lustre_Internals&quot;&gt;Lustre Wiki: DNE Internals&lt;/a&gt;"><a href="https://wiki.lustre.org/Understanding_Lustre_Internals">Lustre 官方文档：DNE 内部机制</a></li>
+      <li data-en="&lt;a href=&quot;https://doc.lustre.org/lustre_manual.pdf&quot;&gt;Lustre Operations Manual: Directory Restriping and Auto-Split (§23.1.5.3–4)&lt;/a&gt;"><a href="https://doc.lustre.org/lustre_manual.pdf">Lustre Operations Manual：目录重条带化与自动分片（§23.1.5.3–4）</a></li>
+      <li data-en="&lt;a href=&quot;https://www.opensfs.org/wp-content/uploads/2020/06/LUG20-Lustre_2.14_and_Beyond.pdf&quot;&gt;Whamcloud: Automatic Directory Restriping (LUG Technical Presentation)&lt;/a&gt;"><a href="https://www.opensfs.org/wp-content/uploads/2020/06/LUG20-Lustre_2.14_and_Beyond.pdf">Whamcloud：自动目录重条带化（LUG 公开技术报告）</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-dne.js?v=11d381ea"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-dne",
+ "ar": [
+  3.52,
+  1.1842105263157894
+ ],
+ "steps": [
+  {
+   "t": [
+    "单个 MDT 承载元数据",
+    "Metadata on a Single MDT"
+   ],
+   "d": [
+    "单 MDT 文件系统将根目录与其他文件和目录的元数据集中在同一个目标卷。",
+    "In a single-MDT file system, one target holds the root and metadata for all other files and directories."
+   ],
+   "b": [
+    [
+     "<p>元数据目标卷（Metadata Target，MDT）保存目录项和文件属性等信息。MDT0 保存 Lustre 文件系统的根目录。只有一个 MDT 时，查找名称、列目录和创建文件等操作都使用该卷对应的元数据服务。</p>"
+    ],
+    [
+     "<p>A metadata target (MDT) stores information such as directory entries and file attributes. MDT0 holds the root of a Lustre file system. With one MDT, name lookup, directory listing, and file creation all use the metadata service for that target.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "将子目录放到远程 MDT",
+    "Placing a Subdirectory on a Remote MDT"
+   ],
+   "d": [
+    "DNE1 可将一个子目录放到另一个 MDT，并保留它在同一目录树中的路径。",
+    "DNE1 lets a subdirectory reside on another MDT while retaining its path in the same directory tree."
+   ],
+   "b": [
+    [
+     "<p>分布式命名空间（Distributed Namespace Environment，DNE）使一个文件系统能够使用多个 MDT。远程目录是 DNE 的第一种分布方式：例如根目录留在 MDT0，指定的子目录由 MDT1 承载。不同目录的请求因此可以由不同元数据服务器处理。</p>"
+    ],
+    [
+     "<p>Distributed Namespace Environment (DNE) lets one file system use multiple MDTs. Remote directories are its first placement mechanism. For example, the root stays on MDT0 and a designated subdirectory resides on MDT1. Different directory requests can then go to different metadata servers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "把同一目录拆成固定条带",
+    "Splitting One Directory into Fixed Stripes"
+   ],
+   "d": [
+    "DNE2 用名称哈希把同一目录的条目分散到多个目录分片。",
+    "DNE2 uses a name hash to distribute entries from one directory among multiple shards."
+   ],
+   "b": [
+    [
+     "<p>目录分片是保存部分目录项的元数据对象。条带化目录能够在多个 MDT 上保存这些分片。文件名经过哈希函数得到一个用于选择分片的值，因此不同名字的查找和创建请求可落到不同 MDT。</p>"
+    ],
+    [
+     "<p>A directory shard is a metadata object holding a subset of the directory entries. A striped directory can store these shards on multiple MDTs. A hash function maps each name to a shard, so lookups and creates for different names can go to different MDTs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "目录增长触发自动分片",
+    "Directory Growth Triggers Auto-Splitting"
+   ],
+   "d": [
+    "启用 DNE3 自动分片后，目录达到配置的条目数量阈值时可增加条带数。",
+    "With DNE3 auto-split enabled, a directory can gain stripes when its entry count reaches a configured threshold."
+   ],
+   "b": [
+    [
+     "<p>DNE3 的自动重条带化可让较小的目录先用较少分片，随后按目录规模扩展。系统添加分片时，部分现有名称条目根据新的布局移到新增分片。条带数受可用 MDT 数量限制。</p>"
+    ],
+    [
+     "<p>DNE3 auto-restriping allows smaller directories to start with fewer shards and expand as they grow. When the system adds shards, some existing name entries move to the new shards under the updated layout. The available MDTs limit the stripe count.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "目录布局与文件数据布局各司其职",
+    "Directory Layout and File Data Layout"
+   ],
+   "d": [
+    "目录分片决定名称条目的位置，文件布局决定常规数据对象所在的 OST。",
+    "Directory stripes place name entries, while file layouts place ordinary data objects on OSTs."
+   ],
+   "b": [
+    [
+     "<p>目录扩展后，文件和子目录仍通过原有路径访问。对于内容存放在对象存储目标卷（OST）的文件，客户端继续按文件布局定位数据对象。目录分片分散的是元数据操作，文件内容仍由其数据布局定位。</p>"
+    ],
+    [
+     "<p>After a directory expands, files and subdirectories remain accessible through the same paths. For files whose contents reside on object storage targets (OSTs), the client still finds the data objects through the file layout. Directory striping distributes metadata operations, and the file layout continues to locate the file contents.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

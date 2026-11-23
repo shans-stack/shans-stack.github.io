@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Nemotron：智能体的开放多模态模型 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA Nemotron 开放模型的多模态理解、工具调用和部署。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-nemotron.css?v=15c3b5d5">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-nemotron">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-nemotron">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Nemotron: Open Multimodal Models for Agents">NVIDIA Nemotron：智能体的开放多模态模型</h1>
+        <p class="meta"><span data-en="5 steps · model weights, multimodal understanding, tool calling">5 步 · 模型权重、多模态理解、工具调用</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/ai-data-science/foundation-models/nemotron/&quot;&gt;NVIDIA Nemotron Product Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/ai-data-science/foundation-models/nemotron/">Nemotron 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16&quot;&gt;NVIDIA&amp;#x27;s Nemotron 3 Nano Model Card&lt;/a&gt;"><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16">NVIDIA 发布的 Nemotron 3 Nano 模型卡</a></li>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16&quot;&gt;NVIDIA&amp;#x27;s Nano Omni Model Card&lt;/a&gt;"><a href="https://huggingface.co/nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16">NVIDIA 发布的 Nano Omni 模型卡</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/nvidia-nemotron-3-nano-omni-powers-multimodal-agent-reasoning-in-a-single-efficient-open-model/&quot;&gt;NVIDIA Technical Blog: Nano Omni Multimodal Reasoning&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/nvidia-nemotron-3-nano-omni-powers-multimodal-agent-reasoning-in-a-single-efficient-open-model/">NVIDIA 技术博客：Nano Omni 多模态推理</a></li>
+      <li data-en="Animations are schematic and show no measured data.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-nemotron.js?v=3d33978c"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-nemotron",
+  "ar": [
+    3.3076923076923075,
+    0.8780487804878049
+  ],
+  "steps": [
+    {
+      "t": [
+        "模型在智能体里的位置",
+        "Where the Model Fits in an Agent"
+      ],
+      "d": [
+        "Nemotron 为智能体提供模型能力，应用运行时负责协调模型调用、工具和状态。",
+        "Nemotron supplies model capabilities, while the application runtime coordinates model calls, tools, and state."
+      ],
+      "b": [
+        [
+          "<p>Nemotron 是 NVIDIA 面向智能体的开放模型系列。模型根据输入生成文本或结构化输出，智能体运行时管理多轮任务的上下文，并决定后续如何处理模型输出。</p>",
+          "<p>系列覆盖语言和多模态模型。模态指文本、图像或音频等信息形式，不同模型支持的输入和输出组合各有范围。</p>"
+        ],
+        [
+          "<p>Nemotron is NVIDIA's open model family for agents. A model generates text or structured output from its inputs. The agent runtime maintains context across turns and decides what to do with the model output next.</p>",
+          "<p>The family includes language and multimodal models. A modality is a form of information such as text, images, or audio. Each model supports a specific set of inputs and outputs.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "语言模型与工具调用",
+        "Language Models and Tool Calling"
+      ],
+      "d": [
+        "支持工具调用的 Nemotron 模型可生成调用参数，运行时负责执行工具并回传结果。",
+        "A Nemotron model with tool-calling support can generate call arguments. The runtime invokes the tool and returns the result."
+      ],
+      "b": [
+        [
+          "<p>以 Nemotron 3 Nano 文本模型为例，工具调用表示模型生成一个带工具名和参数的结构化请求。工具由应用提供，例如查阅文档目录的接口。</p>",
+          "<p>运行时解析请求、执行相应工具，并把结果加入模型下一轮输入。最终回答可以据此结合工具返回的数据。</p>"
+        ],
+        [
+          "<p>For a text model such as Nemotron 3 Nano, tool calling means generating a structured request with a tool name and its arguments. The application supplies the tool, such as an interface for searching a document catalog.</p>",
+          "<p>The runtime parses the request, invokes the selected tool, and includes the result in the model's next input. The final answer can then incorporate the returned data.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "多模态模型理解图像与声音",
+        "Multimodal Understanding of Images and Sound"
+      ],
+      "d": [
+        "Nemotron 3 Nano Omni 可在同一上下文中处理文本、图像、视频和音频，并输出文本。",
+        "Nemotron 3 Nano Omni can process text, images, video, and audio in a shared context and return text."
+      ],
+      "b": [
+        [
+          "<p>例如，智能体可将检查问题与一段设备视频交给 Nano Omni。模型能结合画面和音频产生文字描述，运行时再将结果交给后续步骤。</p>",
+          "<p>这里的多模态能力指理解多类输入。Nano Omni 模型卡声明的输出形式是文本，应用可据此安排感知组件与后续模型的交接。</p>"
+        ],
+        [
+          "<p>An agent can send an inspection question and a video of equipment to Nano Omni. The model can use both images and audio to generate a text description. The runtime can then pass that output to the next stage.</p>",
+          "<p>Multimodal capability here refers to understanding several input types. Nano Omni's model card specifies text output, which defines the handoff between perception and a downstream model.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "开放交付物与模型选择",
+        "Open Artifacts and Model Selection"
+      ],
+      "d": [
+        "模型卡将权重、训练资料和使用条款关联到具体变体，便于按任务选择。",
+        "Model cards tie weights, training materials, and usage terms to specific variants so they can be selected by task."
+      ],
+      "b": [
+        [
+          "<p>权重是模型训练得到的参数。Nemotron 3 Nano 与 Nano Omni 的公开资料列有权重、训练资料与训练配方。公开范围与许可按具体交付物确定。</p>",
+          "<p>模型选择首先取决于任务需要的输入形式和输出行为。纯文本工具调用与视频内容理解可由不同变体承担，并各自验证。</p>"
+        ],
+        [
+          "<p>Weights are the parameters learned during training. The public materials for Nemotron 3 Nano and Nano Omni list weights, training materials, and training recipes. The scope of disclosure and licensing depend on the artifact.</p>",
+          "<p>Model choice starts with the required input types and output behavior. Text-only tool calling and video understanding can use different variants, each evaluated against its own task.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从模型权重到应用接口",
+        "From Model Weights to an Application API"
+      ],
+      "d": [
+        "兼容的推理引擎加载 Nemotron 权重，服务层将模型能力交给应用调用。",
+        "A compatible inference engine loads Nemotron weights, and a serving layer exposes the model to applications."
+      ],
+      "b": [
+        [
+          "<p>同一模型的模型卡或部署资料会列出经过适配的推理运行时。以 Nano Omni 为例，NVIDIA 提供 TensorRT-LLM 等引擎的部署资料。引擎执行模型计算，部署后的接口负责接收应用请求。</p>",
+          "<p>若任务需要额外定制，可在部署前使用 NeMo 的训练工具适配模型，并在目标任务上重新评估。</p>"
+        ],
+        [
+          "<p>A model card or deployment guide identifies relevant inference runtimes. For Nano Omni, NVIDIA provides deployment material for engines including TensorRT-LLM. The engine runs model computations, and the serving endpoint accepts application requests.</p>",
+          "<p>When a task requires further adaptation, NeMo training tools can customize the model before deployment, followed by another evaluation on the target task.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

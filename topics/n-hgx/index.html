@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA HGX：服务器里的多 GPU 平台 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps trace the NVIDIA HGX baseboard, its GPU interconnect, and how it fits into servers and racks." content="分 5 步说明 NVIDIA HGX 的底板与服务器集成、GPU 互联、代际型号及与 DGX 和整柜系统的关系。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-hgx.css?v=b6e62b25">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-hgx">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-hgx">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA HGX: A Multi-GPU Platform Inside the Server">NVIDIA HGX：服务器里的多 GPU 平台</h1>
+        <p class="meta"><span data-en="5 steps · GPU Baseboards, NVLink, Servers">5 步 · GPU 底板、NVLink、服务器</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/hgx/&quot;&gt;NVIDIA HGX Platform and Specifications&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/hgx/">NVIDIA HGX 平台与规格</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/enterprise-reference-architectures/hgx-ai-factory-h100-h200-b200/latest/components.html&quot;&gt;NVIDIA HGX AI Factory · H100, H200, and B200 Components&lt;/a&gt;"><a href="https://docs.nvidia.com/enterprise-reference-architectures/hgx-ai-factory-h100-h200-b200/latest/components.html">NVIDIA HGX AI Factory · H100、H200 和 B200 组件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/enterprise-reference-architectures/hgx-ai-factory/latest/components.html&quot;&gt;NVIDIA HGX AI Factory · B300 Components&lt;/a&gt;"><a href="https://docs.nvidia.com/enterprise-reference-architectures/hgx-ai-factory/latest/components.html">NVIDIA HGX AI Factory · B300 组件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/hgx-platforms/fabric-manager-user-guide/index.html&quot;&gt;NVIDIA Fabric Manager · HGX Fabric Topologies&lt;/a&gt;"><a href="https://docs.nvidia.com/hgx-platforms/fabric-manager-user-guide/index.html">NVIDIA Fabric Manager · HGX 互联拓扑</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html&quot;&gt;NVIDIA DGX B200 System User Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html">NVIDIA DGX B200 系统用户指南</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/&quot;&gt;NVIDIA Vera Rubin NVL72 Rack&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/">NVIDIA Vera Rubin NVL72 整柜</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-hgx.js?v=cd443928"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-hgx",
+ "ar": [
+  2.2857142857142856,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "服务器里的 GPU 底板",
+    "The GPU Baseboard Inside a Server"
+   ],
+   "d": [
+    "HGX 把数据中心 GPU 与 GPU 间互联装在同一块底板，供服务器厂商集成。",
+    "HGX brings data-center GPUs and their interconnect onto a common baseboard for server manufacturers."
+   ],
+   "b": [
+    [
+     "<p>底板是安装 GPU 模块和互联器件的电路板。服务器厂商将 HGX 底板与主机 CPU、内存、电源、散热和网络等组件集成到整机中，具体配置随服务器设计而变。</p>"
+    ],
+    [
+     "<p>A baseboard is a circuit board for GPU modules and interconnect devices. Server manufacturers integrate the HGX baseboard with host CPUs, memory, power, cooling, and networking. The server design determines the complete configuration.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "GPU 在底板上交换数据",
+    "GPUs Exchange Data Across the Baseboard"
+   ],
+   "d": [
+    "NVLink 提供 GPU 间的高速连接，NVLink Switch 在同一互联域中转发 GPU 流量。",
+    "NVLink provides high-speed GPU links, and NVLink Switch forwards GPU traffic within the same interconnect domain."
+   ],
+   "b": [
+    [
+     "<p>互联域是一组可以通过这套互联直接通信的 GPU。以 HGX B200 或 B300 为例，底板上的 GPU 经 NVLink 接入交换芯片，在同一节点内交换模型计算所需的数据。驱动和平台配套软件负责使互联可用，应用在可用的拓扑上执行计算。</p>"
+    ],
+    [
+     "<p>An interconnect domain is a group of GPUs that can communicate directly over the same fabric. On HGX B200 and B300, GPUs connect to switch chips over NVLink to exchange model data within the node. Drivers and platform software bring up the fabric so applications can compute across the available topology.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "节点内互联与节点间网络",
+    "Intra-Node Fabric and Inter-Node Networking"
+   ],
+   "d": [
+    "底板内的 GPU 通信用 NVLink，多台 HGX 服务器则可通过 InfiniBand 或 Ethernet 网络协作。",
+    "GPUs on the baseboard use NVLink, while multiple HGX servers can cooperate over InfiniBand or Ethernet."
+   ],
+   "b": [
+    [
+     "<p>节点是可以接入集群的一台服务器。节点内将 GPU 连在一起称为 scale-up，连接更多节点称为 scale-out。HGX 的集群设计可借助网络适配器将服务器接入外部交换机，节点间的计算通信经过这套网络。</p>"
+    ],
+    [
+     "<p>A node is a server that joins a cluster. Connecting GPUs within a node is called scale-up, and connecting more nodes is called scale-out. In an HGX cluster design, network adapters connect servers to external switches, which carry compute traffic between nodes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从 Hopper 到 Rubin 的底板",
+    "Baseboards from Hopper to Rubin"
+   ],
+   "d": [
+    "HGX H100 和 H200 对应 Hopper，B200 对应 Blackwell，B300 对应 Blackwell Ultra，Rubin NVL8 对应 Rubin。",
+    "HGX H100 and H200 use Hopper, B200 uses Blackwell, B300 uses Blackwell Ultra, and Rubin NVL8 uses Rubin."
+   ],
+   "b": [
+    [
+     "<p>同一代底板也有不同的 GPU 配置。H200 每颗 GPU 的显存大于 H100，B300 每颗 GPU 的显存大于 B200。HGX B200 和 B300 使用第五代 NVLink，HGX Rubin NVL8 使用第六代。NVIDIA 的 HGX 规格将 Rubin NVL8 的 x86 主机方案与搭载 Vera CPU 的 HGX Vera Rubin NVL8 分开列出。</p>"
+    ],
+    [
+     "<p>A generation can include several GPU configurations. The H200 offers more memory per GPU than the H100, and the B300 offers more per GPU than the B200. HGX B200 and B300 use fifth-generation NVLink, and HGX Rubin NVL8 uses sixth-generation NVLink. NVIDIA's HGX specifications list the x86 host option for HGX Rubin NVL8 separately from HGX Vera Rubin NVL8 with a Vera CPU.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "HGX、DGX 与整柜系统",
+    "HGX, DGX, and Rack-Scale Systems"
+   ],
+   "d": [
+    "HGX 是服务器厂商集成的平台，DGX 是 NVIDIA 的系统系列，NVL72 则是整柜级互联的实例。",
+    "HGX is a platform for server integration, DGX is NVIDIA's system family, and NVL72 is an example of rack-scale interconnect."
+   ],
+   "b": [
+    [
+     "<p>HGX B200 与 DGX B200 都采用 Blackwell B200 GPU。前者描述底板平台，后者描述配套主机、网络和系统软件的整机。Vera Rubin NVL72 将 NVLink 域延伸到整柜，对应的系统边界也从单台服务器变为机柜。</p>"
+    ],
+    [
+     "<p>HGX B200 and DGX B200 both use Blackwell B200 GPUs. HGX identifies the baseboard platform, and DGX identifies the complete system with its host, networking, and system software. Vera Rubin NVL72 extends the NVLink domain across the rack, making the rack the system boundary.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

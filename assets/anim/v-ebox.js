@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布（每台 EBox 一行）；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-ebox.css，全部限定在 .ssa-v-ebox 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg 与 -white.svg（浅色用黑、深色用白），不内嵌。 */
+   样式在 assets/anim/v-ebox.css，全部限定在 .ssa-v-ebox 容器之内。 */
 (function(){
 var EN={"EBox 1":"EBox 1","EBox 2":"EBox 2","EBox 3":"EBox 3","EBox 4":"EBox 4","EBox 5":"EBox 5","DNode A":"DNode A","DNode B":"DNode B",
 "NVMe-oF 网络":"NVMe-oF network","CNode 容器：跑存储逻辑":"CNode container: storage logic","DNode A：接一半盘":"DNode A: half the drives","DNode B：接另一半盘":"DNode B: the other half",
@@ -28,7 +27,6 @@ host.classList.add('ssa-v-ebox');host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','ssa-scene');svg.setAttribute('role','img');host.appendChild(svg);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mq=matchMedia('(max-width: 640px)');
-const ROOT=window.SS_ROOT||'';
 function T(s){if(lang()!=='en')return s;if(L&&L.mobile&&ENM[s]!==undefined)return ENM[s];return EN[s]!==undefined?EN[s]:s}
 /* ---------- 通用小工具 ---------- */
 function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
@@ -43,9 +41,6 @@ function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-p
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function rev(pts){return pts.slice().reverse()}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-/* VAST 字标：引用品牌原件，浅色用黑、深色用白（CSS 切换）。(x,y) 为字标竖直中线上的起点，h 为高度 */
-function vmark(x,y,h,p){const w=h*66/14,g=el('g',{class:'vwm'},p);
-  [['l','black'],['d','white']].forEach(([k,c])=>el('image',{href:ROOT+'assets/brand/vast-wordmark-'+c+'.svg',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm-'+k},g));return g}
 let L=null,E,S,step=0,T0=0,raf=0,last=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(cls){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(cls||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
@@ -95,7 +90,6 @@ function build(){
     const g=el('g',{class:'ebx'},gN),o={g};
     o.frame=box(b.frame,g,'box soft',14);
     o.ttl=tx(b.title.x,b.title.y,'EBox '+(b.i+1),f.ttl,'ttl','start',g);
-    if(b.i===0){const lw=f.ttl*0.58*6+4;E.mark=vmark(b.title.x+lw,b.title.y,L.mobile?11:12,g)}
     o.cnL=poly(b.cnPath,'',g);
     o.dnL=b.dnPath.map(p=>poly(p,'',g));
     o.bar=[0,1].map(k=>{const xs=b.dr.filter(d=>d.k===k).map(d=>C(d.r).x),dc=C(b.dn[k]).x;return poly([P(Math.min(dc,...xs),b.barY),P(Math.max(dc,...xs),b.barY)],'thin',g)});
@@ -215,5 +209,90 @@ host.__anim=ctrl;
 return ctrl;
 }
 window.SSAnim=window.SSAnim||{};
-window.SSAnim['v-ebox']={steps:6,mount:mount};
+window.SSAnim['v-ebox']={steps:7,mount:mount, figures: {
+ "gen2": [
+  [
+   [
+    "1U 处理器与内存",
+    "1U CPU and Memory"
+   ],
+   [
+    "EPYC 9555P · 384 GB",
+    "EPYC 9555P · 384 GB"
+   ]
+  ],
+  [
+   [
+    "2U 处理器与内存",
+    "2U CPU and Memory"
+   ],
+   [
+    "EPYC 9655P · 768 GB",
+    "EPYC 9655P · 768 GB"
+   ]
+  ],
+  [
+   [
+    "盘位",
+    "Drive Bays"
+   ],
+   [
+    "10 / 12（1U）· 16 / 20（2U）",
+    "10 / 12 (1U) · 16 / 20 (2U)"
+   ]
+  ],
+  [
+   [
+    "数据网卡",
+    "Data NICs"
+   ],
+   [
+    "2 × ConnectX-7",
+    "2 × ConnectX-7"
+   ]
+  ]
+ ],
+ "gen1": [
+  [
+   [
+    "处理器",
+    "Processor"
+   ],
+   [
+    "EPYC 9454P · Genoa",
+    "EPYC 9454P · Genoa"
+   ]
+  ],
+  [
+   [
+    "内存",
+    "Memory"
+   ],
+   [
+    "384 GB DDR5-4800",
+    "384 GB DDR5-4800"
+   ]
+  ],
+  [
+   [
+    "盘位",
+    "Drive Bays"
+   ],
+   [
+    "1U · 10 / 12 × U.2",
+    "1U · 10 / 12 × U.2"
+   ]
+  ],
+  [
+   [
+    "数据网卡",
+    "Data NICs"
+   ],
+   [
+    "ConnectX-7 / BlueField-3",
+    "ConnectX-7 / BlueField-3"
+   ]
+  ]
+ ]
+}};
 })();

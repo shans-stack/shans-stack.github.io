@@ -1,0 +1,37 @@
+.b-vdbench-scene { display: block; width: 100%; height: auto; }
+
+.b-vdbench-scene text {
+  fill: var(--ink);
+  font: 500 19px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.b-vdbench-scene .b-vdbench-box,
+.b-vdbench-scene .b-vdbench-accent,
+.b-vdbench-scene .b-vdbench-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.4;
+}
+
+.b-vdbench-scene .b-vdbench-accent { stroke: var(--lc); stroke-width: 2; }
+.b-vdbench-scene .b-vdbench-quiet { stroke-dasharray: 4 5; }
+.b-vdbench-scene .b-vdbench-line,
+.b-vdbench-scene .b-vdbench-guide {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-vdbench-scene .b-vdbench-guide { stroke-dasharray: 4 5; }
+.b-vdbench-scene .b-vdbench-note { fill: var(--ink2); }
+.b-vdbench-scene .b-vdbench-signal { fill: var(--lc); }
+
+body.topic-b-vdbench .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-vdbench .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-vdbench.present .stage .figbox { margin-block: 0; }
+  .b-vdbench-scene text { font-size: 17px; }
+}

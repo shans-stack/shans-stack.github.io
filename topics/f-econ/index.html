@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token 吞吐与单位成本 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明在给定负载和延迟目标下测量输出吞吐，再以同一时段的成本和合格输出量计算单位成本。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-econ.css?v=79b6760d">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-econ">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-econ">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Token Throughput and Unit Cost">Token 吞吐与单位成本</h1>
+        <p class="meta"><span data-en="5 steps · Output Throughput, Service Targets, Unit Cost">5 步 · 输出吞吐、服务目标、单位成本</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/aiperf/v0.13.0/reference/ai-perf-metrics-reference&quot;&gt;NVIDIA AIPerf · Metrics Reference&lt;/a&gt;"><a href="https://docs.nvidia.com/aiperf/v0.13.0/reference/ai-perf-metrics-reference">NVIDIA AIPerf · 吞吐、延迟与合格请求指标</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/?p=98215&quot;&gt;NVIDIA · LLM Inference Benchmarking Fundamentals&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/?p=98215">NVIDIA · 大模型推理基准测试基础</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/?p=102298&quot;&gt;NVIDIA · Inference Total Cost of Ownership and Unit Cost&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/?p=102298">NVIDIA · 推理总拥有成本与单位成本</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/cost-mgmt-request-metadata.html&quot;&gt;AWS Amazon Bedrock · Computing Cost by Usage Category&lt;/a&gt;"><a href="https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/cost-mgmt-request-metadata.html">AWS Amazon Bedrock · 按用量类别归集成本</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-econ.js?v=b3c0a382"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-econ",
+  "ar": [880/302, 350/462],
+  "steps": [
+    {
+      "t": [
+        "定义输出 Token 吞吐",
+        "Defining Output Token Throughput"
+      ],
+      "d": [
+        "输出吞吐等于测量窗口内完成的请求所返回的输出 Token 总量除以窗口时长。",
+        "Output throughput is the number of output tokens returned by requests completed in the measurement window, divided by its duration."
+      ],
+      "b": [
+        [
+          "<p>Token 是模型处理文字时使用的离散单位。输出吞吐以每秒输出 Token 表示。输入 Token、输出 Token 和请求数是不同计量口径。测试同时记录输入和输出长度、并发量或请求到达速率，因为这些条件决定同一个吞吐值所对应的负载。这里采用 NVIDIA AIPerf 文档中按基准测试时长计算输出吞吐的口径。</p>"
+        ],
+        [
+          "<p>A token is a discrete unit a model uses to process text. Output throughput is expressed in output tokens per second. Input tokens, output tokens, and requests are separate measurement units. A benchmark records input and output lengths and either concurrency or request arrival rate, because those settings define the workload behind a throughput value. The definition here follows NVIDIA AIPerf’s benchmark-duration convention.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "同时测量吞吐和响应",
+        "Measuring Throughput and Responsiveness Together"
+      ],
+      "d": [
+        "并发批处理可以提高总输出量，负载过高时排队会延长首 Token 等待。",
+        "Batching concurrent requests can increase aggregate output, while queueing under heavy load can delay the first token."
+      ],
+      "b": [
+        [
+          "<p>并发指多个请求同时在途，批处理指一次调度处理多个请求。预填充处理输入并建立注意力缓存，解码逐步生成输出。输入输出长度、模型、推理引擎和部署资源都会改变可达吞吐。负载上升时，整套服务的吞吐与单请求的体验可能朝不同方向变化。</p>"
+        ],
+        [
+          "<p>Concurrency means multiple requests are in flight, and batching schedules more than one request together. Prefill processes the input and initializes the attention cache, and decode generates the output incrementally. Sequence lengths, the model, the inference engine, and deployment resources all affect attainable throughput. As load rises, aggregate throughput and individual responsiveness can move in different directions.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "按服务目标筛出合格输出",
+        "Counting Output That Meets Service Targets"
+      ],
+      "d": [
+        "先按服务目标筛选成功请求，再汇总这些请求的输出 Token。",
+        "Filter successful requests against service targets before summing their output tokens."
+      ],
+      "b": [
+        [
+          "<p>首 Token 延迟（TTFT）是从发出请求到收到首个输出 Token 的时间。Token 间延迟（ITL）描述输出期间相邻 Token 的时间间隔。服务水平目标（SLO）可对这两项设置阈值。NVIDIA AIPerf 将达到全部阈值的请求数除以测量时长，得到合格请求吞吐。单位成本也可采用类似筛选，把合格请求的输出 Token 加总作为分母。</p>"
+        ],
+        [
+          "<p>Time to first token (TTFT) runs from sending a request to receiving its first output token. Inter-token latency (ITL) describes the gap between adjacent tokens during generation. A service level objective (SLO) can set a threshold for each. NVIDIA AIPerf divides the count of requests meeting all thresholds by the measurement duration to get goodput in requests per second. A unit-cost calculation can use a similar filter and sum the output tokens from qualifying requests as its denominator.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "汇总同一窗口的运行成本",
+        "Summing Operating Costs over the Same Window"
+      ],
+      "d": [
+        "成本按同一测量范围归集，并计入窗口内的待机容量。",
+        "Sum the costs for the same measurement scope, including capacity held idle during the window."
+      ],
+      "b": [
+        [
+          "<p>自营环境可以把服务器折旧、托管和软件费用分摊到观测窗口。租用环境可以从已分配实例的使用时长计算资源成本，并按口径计入相关运行费用。运维、网络或存储费用是否纳入，取决于既定的成本范围；跨部署比较时范围和时间口径需一致。</p>"
+        ],
+        [
+          "<p>A self-operated deployment can allocate server depreciation, hosting, and software expenses to the observation window. A rented deployment can calculate resource cost from the time instances were allocated and include applicable operating expenses. Operations, network, and storage expenses follow the chosen cost scope. Comparable deployments use a consistent scope and time basis.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "计算每百万合格输出 Token 的成本",
+        "Calculating Cost per Million Qualifying Output Tokens"
+      ],
+      "d": [
+        "窗口总成本除以窗口内的合格输出 Token 数，再乘以一百万。",
+        "Divide total cost by qualifying output tokens in the same window and multiply by one million."
+      ],
+      "b": [
+        [
+          "<p>分子包括服务处理输入和保有容量的成本，分母采用符合服务目标的输出 Token。当合格输出量为零时，这个单位成本无定义。这个口径适用于比较相同模型、负载和目标下的部署效率。商业账单可以按输入、输出与缓存类别分别定费率，属于服务收费口径。</p>"
+        ],
+        [
+          "<p>The numerator includes the cost of processing inputs and holding capacity. The denominator is the output tokens from requests meeting service targets. Unit cost is undefined when there is no qualifying output. This measure can compare deployments under the same model, workload, and targets. Commercial billing follows service rates, which can be specified separately for input, output, and cache categories.</p>"
+        ]
+      ]
+    }
+  ]
+};
+document.addEventListener('ss-lang', () => {
+  document.querySelector('meta[name=description]').content = [
+  "分 5 步说明在给定负载和延迟目标下测量输出吞吐，再以同一时段的成本和合格输出量计算单位成本。",
+  "5 steps on AI token factories. Measure output throughput under a defined workload and latency target, then divide cost by qualifying output over the same interval."
+][window.SS.lang() === 'en' ? 1 : 0];
+  const english = window.SS.lang() === 'en';
+  const controls = document.querySelector('.nav .langs');
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  const labels = english ? ['ZH-CN', 'ZH-TW'] : ['简', '繁'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese'] : ['简体中文', '繁體中文'];
+  controls.querySelectorAll('button:not([data-lang-set=en])').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant'][i];
+  });
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

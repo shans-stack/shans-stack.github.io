@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LMCache：推理引擎外的 KV Cache · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 LMCache 如何接入推理引擎并存取 KV Cache。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-lmcache.css?v=809b38ea">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-lmcache">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-lmcache">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="LMCache: KV Cache Outside the Inference Engine">LMCache：推理引擎外的 KV Cache</h1>
+        <p class="meta"><span data-en="5 steps · KV connector, cache chunking, offload and retrieval">5 步 · KV Connector、缓存分块、卸载与回读</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.lmcache.ai/developer_guide/architecture.html&quot;&gt;LMCache Architecture Overview&lt;/a&gt;"><a href="https://docs.lmcache.ai/developer_guide/architecture.html">LMCache 架构概览</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/abs/2510.09665&quot;&gt;LMCache: An Efficient KV Cache Layer for Enterprise-Scale LLM Inference&lt;/a&gt;"><a href="https://arxiv.org/abs/2510.09665">LMCache 论文</a></li>
+      <li data-en="Schematic, not measured.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-lmcache.js?v=12c98d02"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "f-lmcache",
+  ar: [900/350,380/420],
+  steps: [
+    {
+      "t": [
+        "在推理引擎旁接入缓存层",
+        "Connecting a Cache Layer to the Inference Engine"
+      ],
+      "d": [
+        "以 vLLM 为例，KV 连接器将引擎中的 KV Cache 管理与 LMCache 的存取操作连接起来。",
+        "In vLLM, a KV connector links the engine’s KV cache manager to LMCache storage and retrieval."
+      ],
+      "b": [
+        [
+          "<p>KV Cache 是注意力层为已处理 token 保留的键和值。活动请求在 GPU 显存中使用这些数据。LMCache 通过接入引擎的连接器接受存入和回读操作，使可复用的键值可以保留在引擎活动显存之外。</p>"
+        ],
+        [
+          "<p>The KV cache contains the keys and values that attention layers retain for processed tokens. Active requests use that data in GPU memory. The LMCache connector integrates with the engine to store and retrieve reusable KV data outside its active GPU memory.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用 token 序列查找缓存块",
+        "Looking Up Cached Chunks by Token Sequence"
+      ],
+      "d": [
+        "LMCache 把可缓存的 token 序列按块索引，将匹配结果定位到已存键值。",
+        "LMCache indexes cacheable token sequences in chunks and maps matching entries to stored KV data."
+      ],
+      "b": [
+        [
+          "<p>这里的块（chunk）是 LMCache 索引和存取的一组连续 token 对应的键值。其索引把 token 序列关联到缓存条目及其位置。请求前缀命中多少，可以在实际搬运缓存数据之前确定。</p>"
+        ],
+        [
+          "<p>A chunk holds the keys and values for a consecutive group of tokens that LMCache indexes and retrieves together. Its index associates token sequences with cache entries and their locations. This lets the engine establish how much of a request’s prefix matches before moving the cache data.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "将 GPU 键值复制到后端",
+        "Copying GPU KV Data to a Backend"
+      ],
+      "d": [
+        "连接器可以把新计算的 KV Cache 复制到主机内存，并按配置保存在本地盘或远端后端。",
+        "The connector can copy newly computed KV data to host memory and store it on local disk or a remote backend when configured."
+      ],
+      "b": [
+        [
+          "<p>主机内存可缓存近期使用的块，其他后端可提供额外的保留空间。外部副本与活跃请求在 GPU 上使用的键值有各自的生命周期。图中以主机内存为中转，展示一种存储路径。</p>"
+        ],
+        [
+          "<p>Host memory can cache recently used chunks, and other backends can provide additional room for retention. External copies have a lifecycle separate from the KV data used by active requests on the GPU. The diagram shows one storage path that stages chunks in host memory.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "将命中块回读到显存",
+        "Loading Matching Chunks into GPU Memory"
+      ],
+      "d": [
+        "后续请求命中时，连接器把缓存块装回 GPU，供模型使用。",
+        "When a later request hits the cache, the connector loads the matching chunks back onto the GPU."
+      ],
+      "b": [
+        [
+          "<p>预填充（prefill）是推理引擎处理输入 token 的阶段。回读完成后，已匹配的前缀可以沿用存好的键值。引擎对未命中的输入继续做预填充，再进入生成阶段。</p>"
+        ],
+        [
+          "<p>Prefill is the inference stage that processes the input tokens. Once matching chunks have loaded, the engine can reuse the stored keys and values for the prefix. It prefills the uncached input before proceeding to generation.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "未命中时计算并存入",
+        "Computing and Storing on a Cache Miss"
+      ],
+      "d": [
+        "未命中的输入由模型正常计算，得到的新键值可经连接器写入缓存。",
+        "The model computes uncached input as usual, and the connector can store the resulting KV data."
+      ],
+      "b": [
+        [
+          "<p>缓存查找可能只匹配部分前缀，也可能完全没有命中。未命中的部分由推理引擎计算，LMCache 可接收新键值以供后续请求使用。读写后端的传输成本与能省下的预填充工作共同影响复用收益。</p>"
+        ],
+        [
+          "<p>A cache lookup can find part of the prefix or return no match. The inference engine computes the uncached portion, and LMCache can retain the new keys and values for later requests. The value of reuse depends on both the backend’s transfer cost and the prefill work saved.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

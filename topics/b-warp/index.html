@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MinIO Warp：S3 对象存储压测 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明MinIO Warp 的 S3 混合压测、对象列举和报告口径。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-warp.css?v=1046f7ba">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-warp">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-warp">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="MinIO Warp: S3 Object Storage Benchmarking">MinIO Warp：S3 对象存储压测</h1>
+        <p class="meta"><span data-en="5 steps · S3, Object Listing, Mixed Workloads">5 步 · S3、对象列举、混合负载</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/minio/warp/releases/tag/v1.8.2&quot;&gt;MinIO Warp v1.8.2 Release Record&lt;/a&gt;"><a href="https://github.com/minio/warp/releases/tag/v1.8.2">MinIO Warp v1.8.2 发行记录</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/minio/warp/blob/v1.8.2/README.md&quot;&gt;MinIO Warp v1.8.2 User Documentation&lt;/a&gt;"><a href="https://github.com/minio/warp/blob/v1.8.2/README.md">MinIO Warp v1.8.2 使用文档</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html&quot;&gt;Amazon S3 ListObjectsV2 API&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html">Amazon S3 ListObjectsV2 API</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-warp.js?v=44f34519"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-warp",
+ "ar": [
+  2.4516129032258065,
+  1.0285714285714285
+ ],
+ "steps": [
+  {
+   "t": [
+    "客户端与测试桶",
+    "The Client and Test Bucket"
+   ],
+   "d": [
+    "面向 S3 对象存储，可分别测对象列举，也可对读、写、取属性和删除做混合压测。",
+    "Tests S3 object storage: listing on its own, or a mixed load of GET, PUT, STAT and DELETE."
+   ],
+   "b": [
+    [
+     "<p>Warp 作 S3 客户端，向指定端点的测试桶发请求。桶是对象的命名容器。测试记录覆盖客户端到服务的请求路径，包括网络与服务端处理。默认流程会在测试前后清空测试桶，因此测试使用专用、可清空的桶。</p>",
+     "<p>截至 2026-11-23，项目最新公开发行版为 v1.8.2，发布于 2026-09-24。</p>"
+    ],
+    [
+     "<p>Warp acts as an S3 client and sends requests to a test bucket at the specified endpoint. A bucket is a named container for objects. Measurements cover the client-to-service request path, including network and server processing. The default workflow empties the test bucket before and after a run, so it uses a dedicated, disposable bucket.</p>",
+     "<p>As of November 23, 2026, the latest public project release is v1.8.2, published on September 24, 2026.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "混合操作与对象池",
+    "Mixed Operations and the Object Pool"
+   ],
+   "d": [
+    "混合模式按权重并发执行 GET、PUT、STAT 和 DELETE。",
+    "Mixed mode issues GET, PUT, STAT, and DELETE concurrently according to configured weights."
+   ],
+   "b": [
+    [
+     "<p>运行前上传初始对象形成对象池。GET 读取对象内容，PUT 写入对象，STAT 查询单个对象的属性，DELETE 移除对象。PUT 与 DELETE 会更新可用对象池。各 <code>*-distrib</code> 参数表示相对权重，归一化后形成操作比例。持续运行时，写入权重至少应与删除权重相同，以免对象池逐步耗尽。</p>"
+    ],
+    [
+     "<p>The run starts with a pool of preloaded objects. GET retrieves the payload, PUT writes an object, STAT fetches an individual object’s attributes, and DELETE removes an object. PUT and DELETE change the available pool. The <code>*-distrib</code> settings are relative weights that are normalized into operation shares. For sustained runs, the PUT weight should be at least the DELETE weight to avoid draining the pool.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "独立列举与键前缀",
+    "Separate Listing and Key Prefixes"
+   ],
+   "d": [
+    "LIST 按对象键前缀返回匹配项，分页结果可由多次请求取得。",
+    "LIST returns keys matching a prefix and may require multiple requests to retrieve all pages."
+   ],
+   "b": [
+    [
+     "<p><code>warp list</code> 单独运行列举负载。对象键是桶内对象的名称，前缀是名称开头的一段字符。测试可为并发线程准备不同前缀并按前缀列举。一个请求可返回多个对象，因此每秒列出的对象数与每秒 LIST 请求数应分别理解。准备阶段的 PUT 与列举分开统计。</p>"
+    ],
+    [
+     "<p><code>warp list</code> runs listing separately. An object key is its name within a bucket. A prefix is the opening part of that name. Warp can prepare distinct prefixes for concurrent workers and list one prefix at a time. A request can return multiple objects, so listed objects per second and LIST requests per second describe different rates. Preparation PUTs are reported separately from listing.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "并发、大小与端点",
+    "Concurrency, Object Size, and Endpoints"
+   ],
+   "d": [
+    "并发数、对象大小分布、端点配置和测试时长共同定义负载。",
+    "Concurrency, object size distribution, endpoint configuration, and duration define the load."
+   ],
+   "b": [
+    [
+     "<p><code>--concurrent</code> 控制并发操作，<code>--obj.size</code> 定义对象大小或大小分布，<code>--duration</code> 控制测量时长。多个端点时，客户端的端点选择策略也会改变负载分布。结果对照需记录这些条件，并保持传输和认证设置一致。</p>"
+    ],
+    [
+     "<p><code>--concurrent</code> controls concurrent operations, <code>--obj.size</code> specifies an object size or distribution, and <code>--duration</code> bounds the test window. With several endpoints, the client’s selection policy changes how load is distributed. Comparisons record those conditions and keep transport and authentication settings consistent.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按操作读取报告",
+    "Reading Results by Operation"
+   ],
+   "d": [
+    "大对象传输看字节速率，小对象和元数据操作结合操作速率、时延及错误数。",
+    "Use byte rate for large payload transfers and pair operation rates with latency and errors for small objects and metadata operations."
+   ],
+   "b": [
+    [
+     "<p>报告可按操作拆分，原始记录保留请求细节。GET、PUT 的 MiB/s 取决于传输字节量，STAT 或 LIST 的对象速率描述处理对象的速度。相同字节速率可来自不同大小和数量的对象。错误及操作比例会改变汇总结果的含义。</p>"
+    ],
+    [
+     "<p>Reports can separate operation types, and raw records retain request details. GET and PUT MiB/s reflects payload volume. STAT or LIST object rates describe how many objects are processed. The same byte rate can come from different object sizes and counts. Errors and the operation mix affect the meaning of an aggregate result.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

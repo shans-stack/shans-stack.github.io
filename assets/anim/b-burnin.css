@@ -1,0 +1,35 @@
+.b-burnin svg{display:block;width:100%;height:auto;overflow:hidden;font:500 16.5px var(--f);fill:var(--ink);font-variant-numeric:tabular-nums}
+.b-burnin text{dominant-baseline:middle}
+.b-burnin .strong{font-weight:700}
+.b-burnin .column,.b-burnin .caption,.b-burnin .secondary-text{fill:var(--ink2)}
+.b-burnin .caption{fill:var(--ink3)}
+.b-burnin .card{fill:var(--bg);stroke:var(--rule2)}
+.b-burnin .row{fill:var(--bg)}
+.b-burnin .good{fill:color-mix(in srgb,var(--l5) 17%,var(--surface))}
+.b-burnin .warn{fill:color-mix(in srgb,var(--l1) 19%,var(--surface))}
+.b-burnin .muted{fill:transparent;stroke:var(--rule2);stroke-dasharray:4 4}
+.b-burnin .connection,.b-burnin .rule,.b-burnin .trace,.b-burnin .cursor{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.b-burnin .connection{stroke:var(--l4);stroke-width:1.8}
+.b-burnin .connection.secondary{stroke:var(--l3)}
+.b-burnin .rule{stroke:var(--rule2)}
+.b-burnin .packet{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.b-burnin .packet.secondary{fill:var(--l3)}
+.b-burnin .emphasis{fill:var(--lc,var(--l4))}
+.b-burnin .warn-mark{fill:var(--l1);stroke:var(--ink);stroke-width:1}
+.b-burnin .warn-text,.b-burnin .result-text{font-weight:700}
+.b-burnin .tile{stroke:var(--rule2)}
+.b-burnin .tile-0{fill:color-mix(in srgb,var(--l4) 33%,var(--surface))}
+.b-burnin .tile-1{fill:color-mix(in srgb,var(--l5) 34%,var(--surface))}
+.b-burnin .tile-2{fill:color-mix(in srgb,var(--l3) 36%,var(--surface))}
+.b-burnin .tile-3{fill:color-mix(in srgb,var(--l2) 30%,var(--surface))}
+.b-burnin .trace{stroke:var(--l4);stroke-width:2}
+.b-burnin .cursor{stroke:var(--ink2);stroke-dasharray:3 4}
+body.topic-b-burnin .rel .src li a{overflow-wrap:anywhere}
+@media(max-width:640px){
+  body.topic-b-burnin.present .stage{padding:12px}
+  body.topic-b-burnin.present .stage .figbox{margin-block:6px}
+  body.topic-b-burnin.present .stage .cap{margin-top:8px}
+  body.topic-b-burnin.present .stage .desc{font-size:17px;line-height:1.45}
+  body.topic-b-burnin.present .stage h2{font-size:25px}
+  .b-burnin svg{font-size:14.5px}
+}

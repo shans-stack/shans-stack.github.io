@@ -1,0 +1,43 @@
+.n-spx-host { position: relative; }
+.n-spx-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+  --data: var(--l5);
+  --control: var(--l4);
+  --warn: var(--l1);
+}
+.n-spx-scene text { font-size: 19px; fill: var(--ink); }
+.n-spx-scene .n-spx-label { font-weight: 600; }
+.n-spx-scene .n-spx-detail { font-size: 18px; fill: var(--ink2); }
+.n-spx-scene .n-spx-letter { font-size: 18px; fill: var(--bg); font-weight: 700; }
+.n-spx-card, .n-spx-outline { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.n-spx-outline { fill: color-mix(in srgb, var(--data) 5%, var(--surface)); }
+.n-spx-active .n-spx-card, .n-spx-ready .n-spx-card {
+  fill: color-mix(in srgb, var(--data) 14%, var(--surface));
+  stroke: var(--data);
+}
+.n-spx-idle .n-spx-card { stroke-dasharray: 4 4; }
+.n-spx-idle .n-spx-label { fill: var(--ink2); }
+.n-spx-warn .n-spx-card { stroke: var(--warn); }
+.n-spx-line, .n-spx-arrow {
+  fill: none;
+  stroke: var(--data);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.n-spx-line.n-spx-control { stroke-dasharray: 5 4; }
+.n-spx-line.n-spx-control, .n-spx-arrow.n-spx-control { stroke: var(--control); }
+.n-spx-line.n-spx-warn, .n-spx-arrow.n-spx-warn { stroke: var(--warn); }
+.n-spx-line.n-spx-idle, .n-spx-arrow.n-spx-idle { stroke: var(--rule2); stroke-dasharray: 3 5; }
+.n-spx-token { fill: var(--data); pointer-events: none; }
+.n-spx-token.n-spx-control { fill: var(--control); }
+.n-spx-token.n-spx-warn { fill: var(--warn); }
+@media (min-width: 641px) and (max-width: 720px) {
+  .topic-n-spx .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .topic-n-spx .stage .figbox { margin-block: 10px; }
+}

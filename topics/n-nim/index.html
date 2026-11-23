@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA NIM：从容器到推理服务 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA NIM 如何选择模型配置、加载权重并提供推理 API。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-nim.css?v=8c2a192b">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-nim">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-nim">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA NIM: From Container to Inference Service">NVIDIA NIM：从容器到推理服务</h1>
+        <p class="meta"><span data-en="5 steps · containers, model profiles, inference APIs">5 步 · 容器、模型配置、推理 API</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/ai-data-science/products/nim-microservices/&quot;&gt;NVIDIA NIM Product Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/ai-data-science/products/nim-microservices/">NVIDIA NIM 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nim/large-language-models/latest/reference/architecture.html&quot;&gt;NIM for LLM and VLM: Architecture and Startup&lt;/a&gt;"><a href="https://docs.nvidia.com/nim/large-language-models/latest/reference/architecture.html">NIM for LLM and VLM：容器架构与启动</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nim/large-language-models/latest/deployment/model-profiles-and-selection.html&quot;&gt;NIM for LLM and VLM: Model Profiles and Selection&lt;/a&gt;"><a href="https://docs.nvidia.com/nim/large-language-models/latest/deployment/model-profiles-and-selection.html">NIM for LLM and VLM：模型配置选择</a></li>
+      <li data-en="Animations are schematic and show no measured data.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-nim.js?v=e7267d2f"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-nim",
+  "ar": [
+    3.3076923076923075,
+    0.8780487804878049
+  ],
+  "steps": [
+    {
+      "t": [
+        "推理服务的交付单元",
+        "The Inference Service as a Deployment Unit"
+      ],
+      "d": [
+        "NIM 将推理引擎、运行依赖和模型交付配置组织成可部署的微服务。",
+        "NIM packages the inference engine, runtime dependencies, and model configuration as a deployable microservice."
+      ],
+      "b": [
+        [
+          "<p>推理引擎负责加载模型并在 GPU 上执行计算。容器镜像将引擎和运行依赖一起交付，模型权重是训练得到的参数，可在启动时按配置获取。应用通过 API（应用程序编程接口）发送请求，推理服务管理模型及其运行环境。</p>"
+        ],
+        [
+          "<p>The inference engine loads the model and runs its computations on the GPU. The container image packages the engine and runtime dependencies. Model weights, the parameters learned during training, can be fetched at startup according to the deployment configuration. The application sends requests through an API, while the service manages the model and its runtime.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "模型配置与 GPU 匹配",
+        "Matching a Model Profile to the GPU"
+      ],
+      "d": [
+        "NIM 可根据检测到的 GPU 选择模型配置，也支持显式指定配置。",
+        "NIM can select a profile for the detected GPUs or use an explicitly chosen profile."
+      ],
+      "b": [
+        [
+          "<p>以 NIM for LLM and VLM 为例，模型配置（profile）描述特定模型的运行方式，包括目标 GPU、数值精度和并行方式。精度决定数值采用何种格式，并行方式决定计算如何分配到多颗 GPU。</p>",
+          "<p>同一模型可能有多个配置。可用组合取决于模型、镜像版本和硬件，应用请求仍可走同一类接口。</p>"
+        ],
+        [
+          "<p>In NIM for LLM and VLM, a model profile specifies how a particular model runs, including its GPU target, numeric precision, and parallelism. Precision determines the number format. Parallelism determines how computation is distributed across GPUs.</p>",
+          "<p>A model can have several profiles. Available combinations depend on the model, image version, and hardware, while the application can continue to use the same API format.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "权重加载与就绪检查",
+        "Weight Loading and Readiness Checks"
+      ],
+      "d": [
+        "容器启动后先报告存活，后端加载权重并通过检查后才报告就绪。",
+        "The container can report liveness at startup and becomes ready once the backend loads the weights and passes its checks."
+      ],
+      "b": [
+        [
+          "<p>在这一实现中，容器内的代理先开始监听。引擎需要的模型文件若已在本地缓存中，启动时可直接读取，否则先获取文件。引擎随后将模型加载到运行环境。</p>",
+          "<p>存活检查表示服务进程在运行。就绪检查确认后端已能接收请求，编排系统据此决定何时分发推理流量。</p>"
+        ],
+        [
+          "<p>In this implementation, a proxy inside the container starts listening first. If the model files are already cached locally, the engine can read them directly. Otherwise, the files are fetched before the engine loads the model.</p>",
+          "<p>Liveness indicates that the service process is running. Readiness confirms that the backend can receive requests, giving the orchestrator a signal for when to route inference traffic.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 API 请求到模型输出",
+        "From API Request to Model Output"
+      ],
+      "d": [
+        "容器内的代理接收请求，并交给推理引擎执行 GPU 计算。",
+        "The proxy inside the container accepts requests and forwards them to the inference engine for GPU execution."
+      ],
+      "b": [
+        [
+          "<p>以支持对话的语言模型为例，应用向 OpenAI 兼容的对话接口提交消息。代理转发请求，推理引擎运行模型，生成的文本经同一个服务接口返回。</p>",
+          "<p>请求格式定义应用与服务之间的交接方式。模型的输入形式和生成能力仍由具体模型及服务配置决定。</p>"
+        ],
+        [
+          "<p>For a language model that supports chat, the application submits messages to an OpenAI-compatible chat endpoint. The proxy forwards the request, the inference engine runs the model, and the generated text returns through the same service interface.</p>",
+          "<p>The request format defines the handoff between the application and the service. The selected model and service configuration determine which inputs and generation capabilities are available.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "托管试用与自行部署",
+        "Hosted and Self-Hosted Endpoints"
+      ],
+      "d": [
+        "同一种推理 API 可由托管端点提供，也可由自行部署的 NIM 提供。",
+        "The same kind of inference API can be exposed by a hosted endpoint or a self-hosted NIM."
+      ],
+      "b": [
+        [
+          "<p>托管端点由服务提供方运行。自行部署时，NIM 运行在部署方管理的基础设施上，由部署方配置镜像、GPU 资源和服务地址。</p>",
+          "<p>对于接口和模型均兼容的部署，应用可保留同一种请求格式。服务地址、认证和可用模型由目标部署决定。</p>"
+        ],
+        [
+          "<p>The service provider operates the hosted endpoint. In a self-hosted deployment, the operator configures the image, GPU resources, and service address on infrastructure under their control.</p>",
+          "<p>Deployments with matching APIs and compatible models can use the same request format. The target deployment determines the endpoint address, authentication, and available models.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DOCA：从应用规则到网卡卸载 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 DOCA Flow 如何在 BlueField 上配置管线、执行硬件转发并读取规则命中统计。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-doca.css?v=335bcd51">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-doca">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-doca">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DOCA: From Application Rules to NIC Offload">DOCA：从应用规则到网卡卸载</h1>
+        <p class="meta"><span data-en="5 steps · BlueField, DOCA Flow, Hardware Forwarding">5 步 · BlueField、DOCA Flow、硬件转发</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/networking/doca&quot;&gt;NVIDIA DOCA Software Platform&lt;/a&gt;"><a href="https://developer.nvidia.com/networking/doca">NVIDIA DOCA 软件平台</a></li>
+      <li data-en="&lt;a href=&quot;https://networking-docs.nvidia.com/doca/archive/3-6-0/doca-flow&quot;&gt;DOCA Flow Pipes, Entries, Miss Handling, and Monitoring&lt;/a&gt;"><a href="https://networking-docs.nvidia.com/doca/archive/3-6-0/doca-flow">DOCA Flow 管线、规则、未命中和监控</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-doca.js?v=eaca91f4"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-doca",
+  "ar": [
+    2.7439024390243905,
+    0.8181818181818182
+  ],
+  "steps": [
+    {
+      "t": [
+        "软件与硬件的分工",
+        "Dividing Work Between Software and Hardware"
+      ],
+      "d": [
+        "DOCA 提供软件库和工具，应用用它配置 BlueField 等网络设备的加速功能。",
+        "DOCA provides libraries and tools that applications use to configure acceleration on networking devices such as BlueField."
+      ],
+      "b": [
+        [
+          "\u003cp>BlueField DPU 是承担网络等基础设施任务的数据处理器。DOCA 为 BlueField 提供开发和运行所需的软件，DOCA-Host 也涵盖 BlueField 和 ConnectX 的主机端驱动与工具。以下以 BlueField 上的 DOCA Flow 为例，说明应用怎样配置包处理。\u003c/p>"
+        ],
+        [
+          "\u003cp>A BlueField DPU is a data processing unit that handles infrastructure tasks such as networking. DOCA supplies software for BlueField development and operation, and DOCA-Host includes host drivers and tools for BlueField and ConnectX. The following example uses DOCA Flow on BlueField to show how an application configures packet processing.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从管线模板到具体规则",
+        "From Pipe Templates to Specific Rules"
+      ],
+      "d": [
+        "DOCA Flow 用 pipe 定义匹配、动作和转发模板，再用 entry 填入具体规则。",
+        "DOCA Flow defines a template for matching, actions, and forwarding in a pipe, then adds concrete rules as entries."
+      ],
+      "b": [
+        [
+          "\u003cp>Pipe 可指定哪些包头字段用于匹配，以及命中后可执行哪些动作。Entry 将具体值填入模板，例如按目标端口匹配某类流量。应用负责创建模板和规则，受支持的规则由硬件匹配并执行。\u003c/p>"
+        ],
+        [
+          "\u003cp>A pipe can specify which header fields to match and which actions to apply on a hit. An entry supplies concrete values, such as a destination port for a class of traffic. The application creates the template and entries, and hardware evaluates and applies supported rules.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "匹配动作与硬件转发",
+        "Matching, Actions, and Hardware Forwarding"
+      ],
+      "d": [
+        "命中规则的数据包可由硬件执行动作，并按规则转发。",
+        "Hardware can apply actions to matching packets and forward them as the rule specifies."
+      ],
+      "b": [
+        [
+          "\u003cp>数据包进入指定的管线后，硬件按已配置的字段比对规则。命中时可执行支持的操作，例如修改允许改写的包头字段，并转发到指定端口或后续管线。已卸载的这条路径不需要应用逐包执行这些操作。\u003c/p>"
+        ],
+        [
+          "\u003cp>When a packet enters the pipe, hardware compares the configured fields against the entries. A match can trigger supported operations, such as rewriting an eligible header field, and forward the packet to a port or another pipe. The offloaded path handles those operations without per-packet work by the application.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "未命中也有明确去向",
+        "Defining the Miss Path"
+      ],
+      "d": [
+        "未匹配数据包进入配置的未命中路径，例如交由后续管线处理。",
+        "Unmatched packets follow the configured miss path, which can lead to another pipe."
+      ],
+      "b": [
+        [
+          "\u003cp>匹配路径与未命中路径可以指向不同位置。在示意配置中，第一条管线将命中的数据包转给业务端口，将其余数据包送到下一条规则管线。实际去向由规则、管线和端口设置决定。\u003c/p>"
+        ],
+        [
+          "\u003cp>The hit and miss paths can lead to different destinations. In the example, the first pipe forwards matching packets to a service port and sends the remaining packets to a second rule pipe. The actual destination depends on entry, pipe, and port settings.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用计数器观察规则命中",
+        "Observing Rule Hits with Counters"
+      ],
+      "d": [
+        "DOCA Flow 可为规则配置计数器，应用读取统计来观察命中流量。",
+        "DOCA Flow can attach counters to rules so applications can observe matching traffic."
+      ],
+      "b": [
+        [
+          "\u003cp>监控与转发可以在同一规则上配置。支持的计数器记录匹配的包或字节，控制应用再查询统计。数据包仍沿配置的转发路径行进，读取计数属于独立的控制操作。\u003c/p>"
+        ],
+        [
+          "\u003cp>Monitoring and forwarding can be configured on the same rule. Supported counters record matching packets or bytes, and the control application can query the statistics. Packets continue along the configured forwarding path while the application reads counters separately.\u003c/p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  if (!controls) return;
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

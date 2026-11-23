@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuralMesh 的分布式元数据 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明NeuralMesh 将元数据所有权划分给多个虚拟元数据服务器，由集群中的计算服务分布执行。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-meta.css?v=f7a858b0">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="w-meta-topic">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-meta">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Distributed Metadata in NeuralMesh">NeuralMesh 的分布式元数据</h1>
+        <p class="meta"><span data-en="5 steps · Sharding, concurrent access, failover">5 步 · 逻辑分片、并发访问、故障接管</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf&quot;&gt;WEKA · NeuralMesh Architecture White Paper, Pages 10–11 and 20–22&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf">WEKA · NeuralMesh 架构白皮书，第 10 至 11、20 至 22 页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/about&quot;&gt;WEKA Documentation · Introduction to NeuralMesh&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/about">WEKA 文档 · NeuralMesh 简介</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-meta.js?v=50804f20"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-meta",
+ "ar": [
+  2.2564102564102564,
+  0.7307692307692307
+ ],
+ "steps": [
+  {
+   "t": [
+    "命名空间与元数据",
+    "Namespaces and Metadata"
+   ],
+   "d": [
+    "文件名、属性和目录条目属于元数据，应用可在不读取文件内容的情况下查询这些信息。",
+    "File names, attributes, and directory entries are metadata that applications can query without reading file contents."
+   ],
+   "b": [
+    [
+     "<p>元数据描述文件及其在命名空间中的位置。例如，查询文件大小可以返回属性，读取文件则需要取得指定范围的内容。两个操作访问同一路径，处理的对象不同。</p>"
+    ],
+    [
+     "<p>Metadata describes a file and its place in the namespace. A file size query returns an attribute, while a read retrieves content from a specific range. Both operations address the same path and ask for different things.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "虚拟元数据服务器",
+    "Virtual Metadata Servers"
+   ],
+   "d": [
+    "计算服务在多台服务器上运行虚拟元数据服务器，每个逻辑分片管理一部分文件系统对象。",
+    "Compute services run virtual metadata servers across physical hosts, with each logical shard owning a subset of file system objects."
+   ],
+   "b": [
+    [
+     "<p>这里的分片是所有权的划分。一个物理主机的计算服务可运行多个虚拟元数据服务器。多个分片在集群内分布，元数据处理与其他文件系统计算共用同一组服务角色。</p>"
+    ],
+    [
+     "<p>A shard is a partition of ownership. A Compute service on one physical host can run multiple virtual metadata servers. These shards are spread across the cluster, where the same service role handles metadata and other file system work.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从请求确定所有者",
+    "Resolving the Owner"
+   ],
+   "d": [
+    "前端根据文件或文件范围计算逻辑所有者，再把请求发给运行该分片的计算服务。",
+    "The frontend derives the logical owner from the file or file range and routes the request to the Compute service running that shard."
+   ],
+   "b": [
+    [
+     "<p>对于涉及数据范围的请求，同一个文件内的不同范围可以由不同分片负责。逻辑所有者与当前承载该分片的物理主机是两层关系，后者可随集群状态变化。</p>"
+    ],
+    [
+     "<p>For requests that address file data, different ranges within one file can belong to different shards. Logical ownership and the physical host currently running the shard are distinct. The hosting assignment can change with cluster conditions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "并发处理不同分片",
+    "Concurrent Work Across Shards"
+   ],
+   "d": [
+    "命中不同分片的操作可以在不同计算服务上并行处理。",
+    "Operations targeting different shards can run concurrently on different Compute services."
+   ],
+   "b": [
+    [
+     "<p>例如，多个客户端并发访问不同文件或不同文件范围时，请求可以分散到多个虚拟元数据服务器。WEKA 也描述了对大型目录的拆分，使其中的条目可以分布处理。</p>"
+    ],
+    [
+     "<p>When clients access different files or file ranges concurrently, their requests can spread across multiple virtual metadata servers. WEKA also describes splitting large directories so that work on their entries can be distributed.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "分片的故障接管",
+    "Shard Failover"
+   ],
+   "d": [
+    "承载分片的主机失效时，其他故障域中的计算服务可以接管同一逻辑分片。",
+    "When a shard’s host fails, a Compute service in another failure domain can take over the same logical shard."
+   ],
+   "b": [
+    [
+     "<p>WEKA 将虚拟元数据服务器的候选执行位置分布在不同故障域。元数据日志记录操作，供恢复使用。接管改变分片的执行主机，应用仍使用原有文件路径。</p>"
+    ],
+    [
+     "<p>WEKA places candidate hosts for a virtual metadata server in different failure domains. A metadata journal records operations for recovery. Failover changes the host that runs the shard while applications continue to address the same file paths.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

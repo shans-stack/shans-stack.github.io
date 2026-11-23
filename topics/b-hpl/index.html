@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HPL：稠密线性求解性能 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明以双精度求解稠密线性方程组，校验数值解并报告计算吞吐。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-hpl.css?v=ea466b0f">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-hpl">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-hpl">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="HPL: Dense Linear System Performance">HPL：稠密线性求解性能</h1>
+        <p class="meta"><span data-en="6 steps · FP64, LU Factorization, Process Grids">6 步 · 双精度、LU 分解、进程网格</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://netlib.org/benchmark/hpl/&quot;&gt;Netlib HPL Reference Implementation and Version&lt;/a&gt;"><a href="https://netlib.org/benchmark/hpl/">Netlib HPL 参考实现与版本</a></li>
+      <li data-en="&lt;a href=&quot;https://netlib.org/benchmark/hpl/algorithm.html&quot;&gt;Netlib HPL Algorithm&lt;/a&gt;"><a href="https://netlib.org/benchmark/hpl/algorithm.html">Netlib 算法说明</a></li>
+      <li data-en="&lt;a href=&quot;https://netlib.org/benchmark/hpl/tuning.html&quot;&gt;Netlib HPL.dat Configuration and Residual Threshold&lt;/a&gt;"><a href="https://netlib.org/benchmark/hpl/tuning.html">Netlib HPL.dat 配置与残差阈值</a></li>
+      <li data-en="&lt;a href=&quot;https://top500.org/project/linpack/&quot;&gt;TOP500 Linpack Methodology&lt;/a&gt;"><a href="https://top500.org/project/linpack/">TOP500 Linpack 口径</a></li>
+      <li data-en="&lt;a href=&quot;https://www.top500.org/lists/top500/&quot;&gt;TOP500 List Archive&lt;/a&gt;"><a href="https://www.top500.org/lists/top500/">TOP500 公开列表档案</a></li>
+      <li data-en="&lt;a href=&quot;https://www.top500.org/news/top500-leadership-holds-steady-new-system-turnover-falls-historic-low/&quot;&gt;TOP500 68th Edition Announcement&lt;/a&gt;"><a href="https://www.top500.org/news/top500-leadership-holds-steady-new-system-turnover-falls-historic-low/">TOP500 第 68 期公告</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-hpl.js?v=b466ab84"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-hpl",
+ "ar": [
+  2.360248447204969,
+  0.8571428571428571
+ ],
+ "steps": [
+  {
+   "t": [
+    "双精度线性求解",
+    "A Double-Precision Linear Solve"
+   ],
+   "d": [
+    "HPL 对稠密方程组 Ax = b 求解，记录耗时与数值准确性。",
+    "HPL solves a dense system Ax = b and records elapsed time and numerical accuracy."
+   ],
+   "b": [
+    [
+     "<p>HPL 是 High Performance Linpack 的参考实现。系数矩阵 A 是稠密矩阵，绝大多数位置都存放系数。求解器用双精度浮点格式 FP64 求出向量 x，测试程序同时计时并检查解。TOP500 采用这一稠密线性求解基准。</p>"
+    ],
+    [
+     "<p>HPL is the reference implementation of High Performance Linpack. The coefficient matrix A is dense, with coefficients stored at nearly every position. The solver finds the vector x using FP64, the double-precision floating-point format, and the harness times and checks the solve. TOP500 uses this dense linear solve as its benchmark.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "矩阵分块与进程网格",
+    "Matrix Blocks and the Process Grid"
+   ],
+   "d": [
+    "矩阵块按二维循环规则分给 P × Q 个进程。",
+    "A two-dimensional block-cyclic layout distributes matrix tiles across P × Q processes."
+   ],
+   "b": [
+    [
+     "<p>N 是矩阵的阶数，NB 是方块的边长。HPL 沿行列循环分配这些方块，使分解向前推进后剩余的矩阵仍分布在多路进程上。P 和 Q 是逻辑网格的行列数，物理主机或 GPU 的归属由进程映射决定。</p>"
+    ],
+    [
+     "<p>N is the matrix order, and NB is the tile edge length. HPL cycles tile ownership across process rows and columns so that the remaining matrix stays distributed as factorization progresses. P and Q define the logical process grid. Process mapping determines the physical host or GPU assignment.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "分解、广播与更新",
+    "Factorization, Broadcast, and Update"
+   ],
+   "d": [
+    "LU 分解逐个处理面板，广播分解结果，再更新余下矩阵。",
+    "LU factorization processes a panel, broadcasts it, and updates the remaining matrix."
+   ],
+   "b": [
+    [
+     "<p>LU 分解把线性求解化为三角因子上的计算。HPL 一次处理一个面板，也就是一组相邻列。负责该面板的进程列选取主元并交换行，分解结果沿进程行广播，收到结果的进程更新本地余下矩阵。最后通过回代求出 x。</p>"
+    ],
+    [
+     "<p>LU factorization reduces the solve to computations on triangular factors. HPL handles one panel, a group of adjacent columns, at a time. The process column that owns the panel selects pivots and swaps rows. Factored data is broadcast across process rows for local updates. Back substitution then produces x.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "配置并启动",
+    "Configuring and Launching HPL"
+   ],
+   "d": [
+    "参考版由 MPI 启动 xhpl，HPL.dat 记录规模、网格与算法选项。",
+    "MPI launches the reference xhpl executable, and HPL.dat supplies the size, grid, and algorithm settings."
+   ],
+   "b": [
+    [
+     "<p>MPI 是进程间传递消息的接口。参考实现用 mpirun -np NPROC ./xhpl 启动，读取工作目录中的 HPL.dat，NPROC 是启动进程数。N 影响矩阵总内存占用，NB 影响局部计算和通信粒度，P × Q 对应该网格的参与进程数。运行记录需要绑定进程位置、线性代数库和实现版本，便于复现。</p>"
+    ],
+    [
+     "<p>MPI is the message-passing interface between processes. The reference xhpl executable reads HPL.dat from its working directory when launched with mpirun -np NPROC ./xhpl, where NPROC is the process count. N affects the matrix memory footprint, NB controls the granularity of local work and communication, and P × Q gives the participating process count for the grid. A reproducible record ties these parameters to process placement, the math library, and the implementation version.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "先校验解，再读计算吞吐",
+    "Validating the Solve and Reading Throughput"
+   ],
+   "d": [
+    "残差确认解的准确性，FLOP/s 表示这次稠密求解的计算吞吐。",
+    "The residual checks solution accuracy, and FLOP/s describes throughput for the dense solve."
+   ],
+   "b": [
+    [
+     "<p>残差来自 Ax 与 b 的差。HPL 将残差按问题尺度和机器精度归一化，再与配置阈值比较。通过校验的结果才适合用于成绩比较。TOP500 的 Rmax 是测得的最佳 Linpack 吞吐，Rpeak 是理论峰值，两者含义不同。</p>"
+    ],
+    [
+     "<p>The residual comes from the difference between Ax and b. HPL scales it by the problem and machine precision before checking it against the configured threshold. A performance result is comparable after validation. TOP500 reports Rmax as the best measured Linpack rate and Rpeak as the theoretical peak.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "成绩适用范围",
+    "What the Result Covers"
+   ],
+   "d": [
+    "HPL 的成绩适用于被测稠密双精度求解配置，AI 训练和存储性能需要独立工作负载。",
+    "HPL applies to the FP64 dense solve under test. AI training and storage require their own workloads."
+   ],
+   "b": [
+    [
+     "<p>截至 2026-11-23，Netlib 公布的参考版本为 HPL 2.3（2018-12-02）。TOP500 最新公开列表为第 68 期，主办方于 2026-11-16 公告，列表档案记载的发布日期为 2026-11-17。比较运行时，问题规模、参与的系统范围和实现都属于结果口径。</p>"
+    ],
+    [
+     "<p>As of 2026-11-23, Netlib lists HPL 2.3 (2018-12-02). TOP500 announced its 68th edition on 2026-11-16 and dates publication of the list to 2026-11-17. Problem size, system scope, and the implementation all define the basis for comparing runs.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

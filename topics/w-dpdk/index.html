@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuralMesh 的 DPDK 网络 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明NeuralMesh 使用 DPDK 在用户态访问网卡队列，执行集群数据路径的网络收发。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-dpdk.css?v=0f2e1621">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="w-dpdk-topic">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-dpdk">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DPDK Networking in NeuralMesh">NeuralMesh 的 DPDK 网络</h1>
+        <p class="meta"><span data-en="5 steps · NIC queues, polling, UDP">5 步 · 网卡队列、轮询、UDP</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/networking-in-wekaio&quot;&gt;WEKA Documentation · Networking&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/networking-in-wekaio">WEKA 文档 · 网络</a></li>
+      <li data-en="&lt;a href=&quot;https://doc.dpdk.org/guides/prog_guide/ethdev/ethdev.html&quot;&gt;DPDK Project Documentation · Poll Mode Driver&lt;/a&gt;"><a href="https://doc.dpdk.org/guides/prog_guide/ethdev/ethdev.html">DPDK 项目文档 · 轮询模式驱动</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-dpdk.js?v=f833ad81"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-dpdk",
+ "ar": [
+  2.2564102564102564,
+  0.7307692307692307
+ ],
+ "steps": [
+  {
+   "t": [
+    "网卡队列进入用户态",
+    "NIC Queues in User Space"
+   ],
+   "d": [
+    "数据平面开发套件（DPDK）让 WEKA 用户态进程访问网卡的发送和接收队列。",
+    "The Data Plane Development Kit (DPDK) gives WEKA user-space processes access to transmit and receive queues on the NIC."
+   ],
+   "b": [
+    [
+     "<p>网卡（NIC）通过队列交接需要发送或刚收到的数据包。性能优先模式将网卡队列接到 DPDK 数据路径，WEKA 可在用户态收发数据包。Linux 网络栈仍可为后端管理流量提供服务。</p>"
+    ],
+    [
+     "<p>A network interface card (NIC) uses queues to hand off packets for transmission or reception. Performance-optimized mode connects the NIC queues to the DPDK path for packet I/O in user space. The Linux network stack can still carry backend management traffic.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "轮询接收队列",
+    "Polling the Receive Queue"
+   ],
+   "d": [
+    "独占核上的轮询模式驱动持续检查接收队列，把已到达的包交给用户态处理。",
+    "A poll mode driver on a dedicated core repeatedly checks the receive queue and hands arriving packets to user-space processing."
+   ],
+   "b": [
+    [
+     "<p>轮询是处理线程主动查看队列的方式。DPDK 的轮询模式驱动可在一次调用中取出一批就绪的包，分摊函数调用和设备交互的开销。图中的成组移动表示批量处理。</p>"
+    ],
+    [
+     "<p>Polling means that a processing thread checks the queue itself. A DPDK poll mode driver can collect a batch of ready packets in a single call, amortizing function calls and device interaction. The packets moving together in the figure represent a batch.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "多队列与多核运行",
+    "Multiple Queues and Cores"
+   ],
+   "d": [
+    "多个核心可并行处理不同队列上的收发工作。",
+    "Multiple cores can process transmit and receive work on different queues in parallel."
+   ],
+   "b": [
+    [
+     "<p>将队列工作分给多个核心，可以让多个线程同时推进网络 I/O。图中每个核心负责对应的队列，展示 DPDK 的一种队列分工模型。实际映射取决于网卡、驱动和部署配置。</p>"
+    ],
+    [
+     "<p>Distributing queue work across cores lets multiple threads advance network I/O concurrently. In the illustrated DPDK layout, each core handles its own queue. The actual mapping depends on the NIC, driver, and deployment configuration.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "DPDK 与 UDP 的关系",
+    "How DPDK and UDP Fit Together"
+   ],
+   "d": [
+    "WEKA 的 DPDK 路径可以承载基于 UDP 的 WEKA 协议，客户端的内核 UDP 模式则经 Linux 网络栈收发。",
+    "The WEKA DPDK path can carry WEKA’s protocol over UDP, while client kernel UDP mode sends and receives through the Linux stack."
+   ],
+   "b": [
+    [
+     "<p>UDP 描述数据包使用的传输协议。DPDK 描述软件访问网卡的方式。图中两条线路分别表示用户态直达网卡的路径和经 Linux 内核的客户端路径，两条线路均可承载 UDP。</p>"
+    ],
+    [
+     "<p>UDP is a transport protocol carried in packets. DPDK describes a way for software to access the NIC. The two paths show user-space NIC access and client networking through the Linux kernel. Both can carry UDP.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "后端数据网络与客户端选项",
+    "Backend Data and Client Options"
+   ],
+   "d": [
+    "后端的数据网络使用 DPDK，应用服务器上的 WEKA 客户端可按驱动能力和 CPU 需求选择支持的模式。",
+    "Backend data networking uses DPDK, and WEKA clients on application servers can use supported modes based on driver capabilities and CPU needs."
+   ],
+   "b": [
+    [
+     "<p>支持接收中断的网卡驱动可让无状态客户端在共享核上运行 DPDK。接收中断在网卡有包到达时通知处理线程。客户端也可走内核 UDP 路径，集群后端的数据网络仍使用 DPDK。</p>"
+    ],
+    [
+     "<p>A NIC driver with the required receive-interrupt support lets a stateless client run DPDK without dedicating a core. A receive interrupt signals when packets arrive. A client can also use kernel UDP while the backend data network continues to use DPDK.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

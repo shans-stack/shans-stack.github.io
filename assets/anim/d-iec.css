@@ -1,0 +1,46 @@
+.d-iec-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+}
+.d-iec-scene text { fill: var(--ink); dominant-baseline: central; }
+.d-iec-scene [data-role="heading"] { font-size: 24px; font-weight: 650; }
+.d-iec-scene [data-role="note"] { fill: var(--ink2); font-size: 19px; }
+.d-iec-scene [data-role="rule"] { stroke: var(--rule); }
+.d-iec-scene [data-tone="object"] { --tone: var(--l4); }
+.d-iec-scene [data-tone="file"] { --tone: var(--l3); }
+.d-iec-scene [data-tone="cache"] { --tone: var(--l5); }
+.d-iec-scene [data-tone="parity"] { --tone: var(--l2); }
+.d-iec-scene [data-tone="engine"] { --tone: var(--l6); }
+.d-iec-scene [data-tone="fault"] { --tone: var(--l1); }
+.d-iec-scene [data-tone="idle"] { --tone: var(--rule2); }
+.d-iec-scene [data-role="routes"] path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--rule2) 62%, var(--ink3));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.d-iec-scene [data-role="routes"] [data-role="arrow"] { stroke: var(--ink3); }
+.d-iec-scene [data-role="routes"] [data-tone="idle"] { stroke-dasharray: 4 5; }
+.d-iec-scene [data-role="routes"] [data-tone="fault"],
+.d-iec-scene [data-role="routes"] [data-role="stop"] { stroke: var(--l1); }
+.d-iec-scene [data-role="markers"] rect { fill: var(--tone); stroke: var(--surface); stroke-width: 1.5; }
+.d-iec-scene [data-role="node"] rect {
+  fill: color-mix(in srgb, var(--tone) 12%, var(--surface));
+  stroke: var(--tone);
+  stroke-width: 1.5;
+}
+.d-iec-scene [data-role="node"][data-tone="idle"] rect,
+.d-iec-scene [data-role="node"][data-tone="fault"] rect { stroke-dasharray: 5 4; }
+.d-iec-scene [data-role="label"],
+.d-iec-scene [data-role="detail"] { text-anchor: middle; }
+.d-iec-scene [data-role="label"] { font-size: 24px; font-weight: 600; }
+.d-iec-scene [data-role="detail"] { fill: var(--ink2); font-size: 19px; }
+@media (max-width: 640px) {
+  .d-iec-scene [data-role="label"],
+  .d-iec-scene [data-role="heading"] { font-size: 19px; }
+  .d-iec-scene [data-role="detail"],
+  .d-iec-scene [data-role="note"] { font-size: 18px; }
+}

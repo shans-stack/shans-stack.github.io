@@ -1,0 +1,25 @@
+.an-meta {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 18px var(--f);
+  color: var(--ink);
+}
+.an-meta text { fill: currentColor; dominant-baseline: central; }
+.an-meta-title { font-weight: 650; }
+.an-meta-secondary, .an-meta-note { color: var(--ink2); }
+.an-meta-note { font-size: 16px; }
+.an-meta-normal { --accent: var(--ink3); }
+.an-meta-good { --accent: var(--l5); }
+.an-meta-slow { --accent: var(--l1); }
+.an-meta-idle { --accent: var(--rule2); }
+.an-meta-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.an-meta-line.an-meta-idle { stroke-dasharray: 5 5; }
+.an-meta-box { fill: color-mix(in srgb, var(--accent) 12%, var(--surface)); stroke: var(--accent); stroke-width: 1.5; }
+.an-meta-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; }
+@media (max-width: 640px) {
+  .an-meta, .an-meta-note { font-size: 15px; }
+}
+@media (641px <= width <= 720px) {
+  main[data-station="meta"] .mhost { aspect-ratio: var(--ar); }
+}

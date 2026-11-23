@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Hopper：从 FP8 到第四代 NVLink · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Hopper GPU 架构、FP8、H100 与 H200，以及 Hopper 在服务器和整柜中的位置。" data-description-en="Five steps explain the Hopper GPU architecture, FP8, H100 and H200, and Hopper’s place in servers and racks..">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-hopper.css?v=9a566963">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-hopper">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-hopper">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Hopper: From FP8 to Fourth-Generation NVLink">NVIDIA Hopper：从 FP8 到第四代 NVLink</h1>
+        <p class="meta"><span data-en="5 steps · H100, H200, FP8">5 步 · H100、H200、FP8</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/&quot;&gt;NVIDIA Hopper Architecture In-Depth&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/">NVIDIA Hopper 架构解析</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/h100/&quot;&gt;NVIDIA H100 GPU&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/h100/">NVIDIA H100 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/h200/&quot;&gt;NVIDIA H200 GPU&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/h200/">NVIDIA H200 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/hgx-platforms/fabric-manager-user-guide/index.html&quot;&gt;NVIDIA Fabric Manager User Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/hgx-platforms/fabric-manager-user-guide/index.html">NVIDIA Fabric Manager 用户指南</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/one-giant-superchip-for-llms-recommenders-and-gnns-introducing-nvidia-gh200-nvl32/&quot;&gt;NVIDIA GH200 NVL32 Technical Overview&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/one-giant-superchip-for-llms-recommenders-and-gnns-introducing-nvidia-gh200-nvl32/">NVIDIA GH200 NVL32 技术说明</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-hopper.js?v=466655be"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-hopper",
+  "ar": [
+    2.392638036809816,
+    0.9836065573770492
+  ],
+  "steps": [
+    {
+      "t": [
+        "从 Ampere 到 Hopper",
+        "From Ampere to Hopper"
+      ],
+      "d": [
+        "H100、H200 所属的 GPU 架构。",
+        "The GPU architecture behind H100 and H200."
+      ],
+      "b": [
+        [
+          "<p>Hopper 承接 A100 所用的 Ampere 架构。以 H100 为例，流式多处理器（SM）执行 GPU 线程，内部的 Tensor Core 专门执行矩阵运算。L2 缓存和 HBM 控制器为计算单元提供数据。HBM 是安装在 GPU 封装上的高带宽显存。</p>"
+        ],
+        [
+          "<p>Hopper succeeds Ampere, the architecture behind A100. In H100, streaming multiprocessors (SMs) execute GPU threads, and the Tensor Cores within them specialize in matrix operations. L2 cache and HBM controllers supply data to the compute units. HBM is high-bandwidth memory mounted on the GPU package.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Transformer Engine 引入 FP8",
+        "The Transformer Engine Introduces FP8"
+      ],
+      "d": [
+        "Hopper 的第四代 Tensor Core 支持 FP8，Transformer Engine 可为适合的矩阵运算选用较低精度。",
+        "Hopper’s fourth-generation Tensor Cores support FP8, and the Transformer Engine can use lower precision for suitable matrix operations."
+      ],
+      "b": [
+        [
+          "<p>FP8 是 8 位浮点格式。与 Ampere 的 Tensor Core 相比，Hopper 增加了原生 FP8 矩阵运算。Transformer Engine 是一套配合 Tensor Core 的硬件与软件机制，按运算选择精度并使用缩放因子管理数值范围，适合的运算可采用 FP8，其他运算可保留较高精度。</p>"
+        ],
+        [
+          "<p>FP8 is an 8-bit floating-point format. Hopper adds native FP8 matrix operations to the capabilities of Ampere Tensor Cores. The Transformer Engine combines hardware and software to select precision and manage numerical range with scaling factors. Suitable operations can use FP8 while others retain higher precision.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "张量搬运与计算并行",
+        "Concurrent Tensor Transfers and Compute"
+      ],
+      "d": [
+        "TMA 搬运下一块张量时，GPU 线程可继续处理已经就绪的数据。",
+        "With TMA moving the next tensor tile, GPU threads can continue processing data that is already available."
+      ],
+      "b": [
+        [
+          "<p>张量内存加速器（TMA）是 Hopper 新增的硬件搬运单元。GPU 线程提交描述符，TMA 按描述符在全局内存与 SM 的共享内存之间传输张量块。计算线程可与传输重叠执行，相关线程在使用新数据前等待传输完成。</p>"
+        ],
+        [
+          "<p>The Tensor Memory Accelerator (TMA) is a dedicated transfer unit added in Hopper. A GPU thread submits a descriptor, and TMA transfers tensor tiles between global memory and an SM’s shared memory. Compute can overlap with the transfer, and dependent threads wait for completion before using the new data.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "H100 与 H200 的显存分工",
+        "How H100 and H200 Differ in Memory"
+      ],
+      "d": [
+        "H100 SXM 采用 HBM3，H200 保留 Hopper 架构并采用容量和带宽更高的 HBM3E。",
+        "H100 SXM uses HBM3, while H200 retains the Hopper architecture and uses HBM3E with higher capacity and bandwidth."
+      ],
+      "b": [
+        [
+          "<p>在同一代计算架构中，H200 以显存为主要变化。较大的容量可容纳更多模型权重或运行状态，较高的带宽则有利于反复读取显存的大语言模型解码和科学计算。H100 的显存配置随型号而异，此处以 H100 SXM 作比较。</p>"
+        ],
+        [
+          "<p>H200’s main change within the same compute architecture is its memory. More capacity can hold more model weights or runtime state, while more bandwidth benefits workloads that repeatedly read GPU memory, such as language-model decoding and scientific computing. H100 memory configurations vary by model. The comparison here uses H100 SXM.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 HGX 到 GH200 NVL32",
+        "From HGX to GH200 NVL32"
+      ],
+      "d": [
+        "HGX 可在服务器内用第四代 NVLink 连接 Hopper GPU，GH200 NVL32 把互联延伸到整柜。",
+        "HGX can connect Hopper GPUs inside a server using fourth-generation NVLink, while GH200 NVL32 extends the fabric to rack scale."
+      ],
+      "b": [
+        [
+          "<p>NVLink 是 NVIDIA 的高速芯片互联技术。HGX H100 可在一块服务器底板上用 NVLink 和交换芯片连接 GPU。GH200 Grace Hopper Superchip 先用 NVLink-C2C（芯片到芯片互联）连接 Grace CPU 与 Hopper GPU，GH200 NVL32 参考设计再将 32 个 GH200 的 GPU 接入同一个 NVLink 域，即能够通过该互联彼此通信的一组 GPU。整柜包括计算托盘、NVLink 交换托盘、背部铜缆、供电和液冷部件。</p>"
+        ],
+        [
+          "<p>NVLink is NVIDIA’s high-speed chip interconnect. HGX H100 can connect GPUs on a single server baseboard through NVLink and switch chips. Each GH200 Grace Hopper Superchip first pairs a Grace CPU and a Hopper GPU over NVLink-C2C, a chip-to-chip connection. The GH200 NVL32 reference design then connects 32 GH200 GPUs in one NVLink domain, a group of GPUs that can communicate over the fabric. The rack contains compute trays, NVLink switch trays, a rear copper interconnect, power, and liquid cooling components.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+.w-policy-scene{display:block;width:100%;height:auto;overflow:hidden;font:500 16px var(--f)}
+.w-policy-scene text{fill:var(--ink);dominant-baseline:central}
+.w-policy-scene .w-policy-title{font-size:18px;font-weight:700}
+.w-policy-scene .w-policy-row{fill:var(--ink2)}
+.w-policy-scene .w-policy-note{fill:var(--ink3);font-size:15px}
+.w-policy-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.2}
+.w-policy-key .w-policy-card{stroke:var(--l6);stroke-width:2}
+.w-policy-muted .w-policy-card{stroke-dasharray:5 5}
+.w-policy-scene .w-policy-good{fill:var(--ink);font-weight:700}
+.w-policy-scene .w-policy-deleted{fill:var(--l1);font-weight:700}
+.w-policy-scene .w-policy-out{fill:var(--ink3);text-decoration:line-through}
+.w-policy-path{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
+.w-policy-path.w-policy-idle{stroke:var(--rule2);stroke-dasharray:5 5}
+.w-policy-path.w-policy-file{stroke:var(--l6)}
+.w-policy-path.w-policy-meta{stroke:var(--l3)}
+.w-policy-scene .w-policy-link{fill:var(--ink2);paint-order:stroke;stroke:var(--diagram-bg,var(--surface));stroke-width:5;stroke-linejoin:round}
+.present .w-policy-scene{--diagram-bg:var(--bg)}
+.w-policy-packet{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.w-policy-packet.w-policy-file{fill:var(--l6)}
+.w-policy-packet.w-policy-meta{fill:var(--l3)}
+@media(max-width:640px){
+  .w-policy-scene .w-policy-title,.w-policy-scene .w-policy-note{font-size:16px}
+}

@@ -1,0 +1,28 @@
+.f-slice-diagram {
+  display: block;
+  width: 100%;
+  font: 500 17px var(--f);
+}
+.f-slice-diagram [data-tone="A"] { --tone: var(--l5); }
+.f-slice-diagram [data-tone="B"] { --tone: var(--l6); }
+.f-slice-diagram [data-tone="C"] { --tone: var(--l4); }
+.f-slice-device, .f-slice-box, .f-slice-slot, .f-slice-inactive {
+  fill: var(--bg);
+  stroke: var(--tone, var(--rule2));
+  stroke-width: 1.5;
+}
+.f-slice-device { stroke: var(--ink3); }
+.f-slice-inactive { stroke-dasharray: 4 4; }
+.f-slice-slot { stroke: var(--rule2); }
+.f-slice-slot[data-active="true"] { stroke: var(--tone); stroke-width: 2.8; }
+.f-slice-fault[data-fault="true"] .f-slice-box { stroke: var(--l1); stroke-width: 2.8; }
+.f-slice-packet { fill: var(--tone); stroke: var(--bg); stroke-width: 1; }
+.f-slice-wire { fill: none; stroke: var(--rule2); stroke-width: 2; stroke-linejoin: round; }
+.f-slice-label, .f-slice-title, .f-slice-status { fill: var(--ink); }
+.f-slice-title { font-size: 19px; font-weight: 600; }
+.f-slice-status { font-weight: 600; }
+.f-slice-muted { fill: var(--ink2); }
+@media (max-width: 640px) {
+  .f-slice-diagram { font-size: 16.5px; }
+  .f-slice-title { font-size: 16.5px; }
+}

@@ -1,0 +1,29 @@
+.n-quantum-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:17px}
+.n-quantum-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:550}
+.n-quantum-figure .n-quantum-sub,.n-quantum-figure .n-quantum-note{fill:var(--ink2);font-size:15px;font-weight:450}
+.n-quantum-figure .n-quantum-frame-label{text-anchor:start}
+.n-quantum-figure .n-quantum-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.4}
+.n-quantum-figure .n-quantum-frame{fill:none;stroke:var(--rule2);stroke-width:1.4;stroke-dasharray:5 4}
+.n-quantum-figure .n-quantum-accent{stroke:var(--lc);stroke-width:1.8}
+.n-quantum-figure .n-quantum-active{fill:color-mix(in srgb,var(--lc) 16%,var(--bg));stroke:var(--lc);stroke-width:2.2}
+.n-quantum-figure .n-quantum-muted{fill:var(--surface);stroke-dasharray:4 4}
+.n-quantum-figure .n-quantum-panel.n-quantum-busy{fill:color-mix(in srgb,var(--l1) 10%,var(--bg));stroke:var(--l1)}
+.n-quantum-figure .n-quantum-link{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-quantum-figure .n-quantum-link.n-quantum-ref,.n-quantum-figure .n-quantum-link.n-quantum-telemetry{stroke-dasharray:4 4}
+.n-quantum-figure .n-quantum-link.n-quantum-data,.n-quantum-figure .n-quantum-link.n-quantum-result{stroke:var(--l5)}
+.n-quantum-figure .n-quantum-link.n-quantum-busy{stroke:var(--l1);stroke-dasharray:4 4}
+.n-quantum-figure .n-quantum-chip{fill:var(--l5);stroke:var(--bg);stroke-width:1}
+.n-quantum-figure .n-quantum-chip.n-quantum-result{fill:var(--lc)}
+.n-quantum-figure .n-quantum-chip.n-quantum-durable,.n-quantum-figure .n-quantum-chip.n-quantum-telemetry{fill:var(--ink3)}
+@media(max-width:640px){
+  .n-quantum-figure svg{font-size:15px}
+  .n-quantum-figure .n-quantum-sub,.n-quantum-figure .n-quantum-note{font-size:13px}
+  body.topic-n-quantum.present .stage{padding:12px;row-gap:12px}
+  body.topic-n-quantum.present .stage .figbox,body.topic-n-quantum.present .stage .cap,body.topic-n-quantum.present .stage .ctl{margin:0}
+  body.topic-n-quantum.present .stage .cap{display:block}
+  body.topic-n-quantum.present .stage h2{font-size:24px}
+  body.topic-n-quantum.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-quantum .mhost{aspect-ratio:var(--ar)}
+}

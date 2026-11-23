@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cuVS：GPU 向量索引与检索 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 cuVS 如何进行精确向量检索、构建 CAGRA 索引并调节搜索候选范围。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-cuvs.css?v=621ae5f5">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-cuvs">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-cuvs">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="cuVS: GPU Vector Indexing and Search">cuVS：GPU 向量索引与检索</h1>
+        <p class="meta"><span data-en="5 steps · Nearest Neighbors, CAGRA, Recall">5 步 · 最近邻、CAGRA、召回率</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/NVIDIA/cuvs&quot;&gt;NVIDIA cuVS Project&lt;/a&gt;"><a href="https://github.com/NVIDIA/cuvs">NVIDIA cuVS 项目</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuvs/user-guide/api-guides/indexing-guide/brute-force&quot;&gt;cuVS Brute-Force Search&lt;/a&gt;"><a href="https://docs.nvidia.com/cuvs/user-guide/api-guides/indexing-guide/brute-force">cuVS 暴力搜索</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuvs/user-guide/api-guides/indexing-guide/cagra&quot;&gt;CAGRA Build, Search, and Tuning&lt;/a&gt;"><a href="https://docs.nvidia.com/cuvs/user-guide/api-guides/indexing-guide/cagra">CAGRA 构建、搜索与调优</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-cuvs.js?v=b018831e"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-cuvs",
+  "ar": [
+    2.7439024390243905,
+    0.8181818181818182
+  ],
+  "steps": [
+    {
+      "t": [
+        "查询向量与最近邻",
+        "Query Vectors and Nearest Neighbors"
+      ],
+      "d": [
+        "cuVS 按距离或相似度从向量集里返回与查询最接近的候选。",
+        "cuVS finds the dataset vectors closest to a query under a distance or similarity metric."
+      ],
+      "b": [
+        [
+          "\u003cp>向量用一组数表示样本的特征，例如文本经嵌入模型生成的语义表示。近邻查询固定一种度量规则，例如平方欧氏距离，并选出排名前 k 个结果。cuVS 提供在 GPU 上执行这类检索的算法。\u003c/p>"
+        ],
+        [
+          "\u003cp>A vector represents a sample with numbers, such as a semantic representation produced by a text embedding model. Nearest-neighbor search uses a specified metric, such as squared Euclidean distance, and returns the top k results. cuVS provides GPU algorithms for this task.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "全量扫描得到精确结果",
+        "Exact Search by Exhaustive Scan"
+      ],
+      "d": [
+        "暴力搜索将查询与每个数据向量比较，再按得分保留前 k 个结果。",
+        "Brute-force search compares the query with every dataset vector and retains the top k by score."
+      ],
+      "b": [
+        [
+          "\u003cp>全量扫描在指定度量下提供精确近邻。随着数据集增大，每条查询需要检查的向量也随之增加。精确结果可作为衡量近似索引召回率的基准。\u003c/p>"
+        ],
+        [
+          "\u003cp>An exhaustive scan yields exact neighbors under the selected metric. The number of vectors examined per query grows with the dataset. Exact results can serve as a baseline for measuring the recall of an approximate index.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "构建 CAGRA 近邻图",
+        "Building the CAGRA Neighbor Graph"
+      ],
+      "d": [
+        "CAGRA 先构建候选近邻图，再筛选连接，形成可在 GPU 上搜索的索引。",
+        "CAGRA builds an initial neighbor graph and prunes its links into a GPU-searchable index."
+      ],
+      "b": [
+        [
+          "\u003cp>CAGRA 是 cuVS 的一种近似最近邻图索引。图中每个节点代表一个向量，边连接可供搜索访问的近邻。构建过程先找候选近邻，再筛减冗余连接，以固定的出度组织最终图。\u003c/p>"
+        ],
+        [
+          "\u003cp>CAGRA is an approximate nearest-neighbor graph index in cuVS. Each vertex represents a vector, and its links give search a set of neighbors to visit. Construction finds candidate neighbors first, then prunes redundant links to produce a graph with a fixed out-degree.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "沿图扩展候选",
+        "Exploring Candidates Along the Graph"
+      ],
+      "d": [
+        "查询从起始节点开始，沿近邻连边检查新候选并保留更接近查询的结果。",
+        "From starting vertices, search follows neighbor links and retains promising candidates as it goes."
+      ],
+      "b": [
+        [
+          "\u003cp>搜索计算当前候选与查询的距离，再扩展较有希望的候选节点的邻接边。访问到的候选形成有界的中间结果集合，最终从其中选出前 k 个。因为搜索只探索部分图节点，结果可能漏掉精确近邻。\u003c/p>"
+        ],
+        [
+          "\u003cp>Search scores candidates against the query and expands links from promising vertices. It maintains a bounded pool of intermediate candidates and returns the top k from that pool. Because traversal explores only part of the graph, it can miss exact neighbors.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用召回率衡量候选覆盖",
+        "Measuring Coverage with Recall"
+      ],
+      "d": [
+        "保留更多中间候选通常能提高召回率，同时增加查询工作量。",
+        "Keeping more intermediate candidates usually improves recall while increasing search work."
+      ],
+      "b": [
+        [
+          "\u003cp>召回率衡量返回结果覆盖了多少精确近邻。CAGRA 的 \u003ccode>itopk_size\u003c/code> 控制搜索中保留的候选数，必须至少为 k。增大该值通常可覆盖更多精确近邻，也要处理更多候选；实际取舍取决于数据和检索目标。\u003c/p>"
+        ],
+        [
+          "\u003cp>Recall measures how many exact neighbors appear in the returned results. CAGRA&#x27;s \u003ccode>itopk_size\u003c/code> sets how many intermediate candidates search keeps and must be at least k. A larger pool usually improves exact-neighbor coverage while increasing candidate work. The trade-off depends on the data and retrieval target.\u003c/p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  if (!controls) return;
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

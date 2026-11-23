@@ -1,0 +1,37 @@
+.b-dlio-scene { display: block; width: 100%; height: auto; }
+
+.b-dlio-scene text {
+  fill: var(--ink);
+  font: 500 19px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.b-dlio-scene .b-dlio-box,
+.b-dlio-scene .b-dlio-accent,
+.b-dlio-scene .b-dlio-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.4;
+}
+
+.b-dlio-scene .b-dlio-accent { stroke: var(--lc); stroke-width: 2; }
+.b-dlio-scene .b-dlio-quiet { stroke-dasharray: 4 5; }
+.b-dlio-scene .b-dlio-line,
+.b-dlio-scene .b-dlio-guide {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-dlio-scene .b-dlio-guide { stroke-dasharray: 4 5; }
+.b-dlio-scene .b-dlio-note { fill: var(--ink2); }
+.b-dlio-scene .b-dlio-signal { fill: var(--lc); }
+
+body.topic-b-dlio .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-dlio .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-dlio.present .stage .figbox { margin-block: 0; }
+  .b-dlio-scene text { font-size: 17px; }
+}

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grace CPU：Arm 核心、内存与芯片互联 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明Grace CPU。NVIDIA 的 Arm 架构数据中心 CPU。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-grace.css?v=0515d5b7">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-grace">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-grace">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Grace CPU: Arm Cores, Memory, and Chip Interconnects">Grace CPU：Arm 核心、内存与芯片互联</h1>
+        <p class="meta"><span data-en="5 steps · Arm, LPDDR5X, NVLink-C2C">5 步 · Arm、LPDDR5X、NVLink-C2C</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dccpu/index.html&quot;&gt;Data Center CPU Documentation&lt;/a&gt;"><a href="https://docs.nvidia.com/dccpu/index.html">NVIDIA · 数据中心 CPU 文档</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dccpu/grace-perf-tuning-guide/&quot;&gt;Grace Performance Tuning Guide · Architecture&lt;/a&gt;"><a href="https://docs.nvidia.com/dccpu/grace-perf-tuning-guide/">Grace 性能调优指南 · 架构</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb200-nvl72/&quot;&gt;Product Specifications&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">GB200 NVL72 · 产品规格</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;Product Specifications&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">GB300 NVL72 · 产品规格</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dccpu/vera-perf-tuning-guide/vera-cpu-and-superchip.html&quot;&gt;Vera Performance Tuning Guide · Vera CPU&lt;/a&gt;"><a href="https://docs.nvidia.com/dccpu/vera-perf-tuning-guide/vera-cpu-and-superchip.html">Vera 性能调优指南 · Vera CPU</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-grace.js?v=b75badb0"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-grace",
+ "ar": [
+  2.191780821917808,
+  0.8490566037735849
+ ],
+ "steps": [
+  {
+   "t": [
+    "Grace 在系统中的位置",
+    "Grace’s Role in the System"
+   ],
+   "d": [
+    "Grace 是 NVIDIA 的 Arm 架构数据中心 CPU，可用于纯 CPU 系统，也可配合 GPU 工作。",
+    "Grace is NVIDIA’s Arm-based data center CPU for CPU-only and GPU-accelerated systems."
+   ],
+   "b": [
+    [
+     "<p>Arm 指 CPU 核心所实现的指令集架构。Grace 提供通用主机计算，可承载操作系统与应用线程。在加速系统中，主机侧由 Grace 执行，GPU 执行适合并行加速的计算。</p>"
+    ],
+    [
+     "<p>Arm refers to the instruction-set architecture implemented by the CPU cores. Grace provides general-purpose host compute for the operating system and application threads. In accelerated systems, Grace handles host-side execution while the GPU performs parallel accelerated work.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "核心、片上互联与主机内存",
+    "Cores, On-Chip Fabric, and Host Memory"
+   ],
+   "d": [
+    "Arm Neoverse V2 核心通过片上一致性互联访问缓存、LPDDR5X 主机内存和系统 I/O。",
+    "Arm Neoverse V2 cores connect through an on-chip coherency fabric to cache, LPDDR5X host memory, and system I/O."
+   ],
+   "b": [
+    [
+     "<p>Scalable Coherency Fabric（SCF）是 Grace 的片上网状互联，连接处理核心、分布式缓存和系统接口。一致性机制协调多个核心对同一内存位置的读写。LPDDR5X 为 Grace 提供主机内存。GPU 的高带宽显存（HBM）是另一类物理内存。</p>"
+    ],
+    [
+     "<p>The Scalable Coherency Fabric (SCF) is Grace’s on-chip mesh linking processor cores, distributed cache, and system interfaces. Coherency coordinates how cores observe reads and writes to the same memory locations. LPDDR5X provides Grace’s host memory. GPU high-bandwidth memory (HBM) is a separate physical memory technology.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "两颗 Grace 组成 CPU Superchip",
+    "Two Grace CPUs in a CPU Superchip"
+   ],
+   "d": [
+    "Grace CPU Superchip 通过 NVLink-C2C 连接两颗 Grace，构成双路 CPU 模块。",
+    "The Grace CPU Superchip links two Grace CPUs over NVLink-C2C in a dual-socket CPU module."
+   ],
+   "b": [
+    [
+     "<p>NVLink-C2C 是提供一致性访问的芯片间互联。双路 Grace 模块的两侧各有本地内存，也可经互联访问对端内存。NUMA（非统一内存访问）描述本地内存和对端内存对应不同的访问路径。Grace CPU C1 则是单路配置。</p>"
+    ],
+    [
+     "<p>NVLink-C2C is a chip-to-chip interconnect that supports coherent access. Each side of the dual-socket Grace module has local memory and can reach the other side’s memory over the interconnect. Non-Uniform Memory Access (NUMA) describes these different paths to local and remote memory. Grace CPU C1 is a single-socket configuration.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Grace 与 GPU 组成加速模块",
+    "Pairing Grace with GPUs"
+   ],
+   "d": [
+    "Grace Hopper 与 Grace Blackwell 使用 NVLink-C2C 连接 CPU 和 GPU。",
+    "Grace Hopper and Grace Blackwell use NVLink-C2C to connect the CPU and GPU."
+   ],
+   "b": [
+    [
+     "<p>GH200 将 Grace 与 Hopper GPU 配对。GB200 将 Grace 与两颗 Blackwell GPU 相连，并用于 GB200 NVL72。CPU 主机内存和 GPU HBM 保持各自的物理位置，互联支持共享地址空间内的访问。</p>"
+    ],
+    [
+     "<p>GH200 pairs Grace with a Hopper GPU. GB200 connects Grace to two Blackwell GPUs and is used in GB200 NVL72. CPU host memory and GPU HBM remain physically distinct, with interconnect access across a shared address space.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Grace 与 Vera 的代际位置",
+    "Grace and Vera Across Generations"
+   ],
+   "d": [
+    "GB200 与 GB300 都使用 Grace，Vera Rubin 平台采用后继的 Vera CPU。",
+    "GB200 and GB300 use Grace, while the Vera Rubin platform uses its successor, the Vera CPU."
+   ],
+   "b": [
+    [
+     "<p>Grace 使用 Arm Neoverse V2 核心。NVIDIA 的后继 CPU Vera 改用自研 Arm 兼容 Olympus 核心和第二代 SCF。整柜型号的 GPU 与 CPU 升级可以不同步，因此 GB300 升级到 Blackwell Ultra GPU 时仍搭配 Grace。</p>"
+    ],
+    [
+     "<p>Grace uses Arm Neoverse V2 cores. Its successor, Vera, uses NVIDIA-designed Arm-compatible Olympus cores and second-generation SCF. A rack system’s CPU and GPU generations can advance separately: GB300 moved to Blackwell Ultra GPUs and retained Grace.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+.w-op-scene{display:block;width:100%;height:auto;overflow:hidden;font:500 17px var(--f)}
+.w-op-scene text{fill:var(--ink);dominant-baseline:central}
+.w-op-scene .w-op-title{font-size:19px;font-weight:700}
+.w-op-scene .w-op-row,.w-op-scene .w-op-annotation{fill:var(--ink2)}
+.w-op-scene .w-op-note{fill:var(--ink3)}
+.w-op-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.2}
+.w-op-key .w-op-card,.w-op-a .w-op-card{stroke:var(--l6);stroke-width:1.8}
+.w-op-b .w-op-card{stroke:var(--l4);stroke-width:1.8}
+.w-op-off .w-op-card{stroke-dasharray:5 5}
+.w-op-route{fill:none;stroke:var(--l6);stroke-width:2;stroke-linejoin:round}
+.w-op-route.w-op-signal{stroke:var(--l4);stroke-dasharray:5 3}
+.w-op-route.w-op-b,.w-op-route.w-op-meta{stroke:var(--l4)}
+.w-op-route.w-op-idle{stroke:var(--rule2);stroke-dasharray:5 5}
+.w-op-scene .w-op-route-label{fill:var(--ink2);paint-order:stroke;stroke:var(--diagram-bg,var(--surface));stroke-width:5;stroke-linejoin:round}
+.present .w-op-scene{--diagram-bg:var(--bg)}
+.w-op-packet,.w-op-mark{fill:var(--l6)}
+.w-op-packet{stroke:var(--surface);stroke-width:1}
+.w-op-packet.w-op-signal,.w-op-packet.w-op-b,.w-op-packet.w-op-meta,.w-op-mark.w-op-b{fill:var(--l4)}
+.w-op-mark.w-op-p{fill:var(--l2)}
+@media(max-width:640px){
+  .w-op-scene{font-size:15px}
+  .w-op-scene .w-op-title{font-size:16px}
+}
+.w-op-route.w-op-parity{stroke:var(--l2)}
+.w-op-packet.w-op-parity{fill:var(--l2)}

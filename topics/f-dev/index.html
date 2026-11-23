@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模型开发与训练：从实验到模型版本 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明从工作区验证代码与数据，到提交训练作业、保存检查点并登记可部署的模型版本。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-dev.css?v=c555a222">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-dev">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-dev">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Model Development and Training: From Experiment to Model Version">模型开发与训练：从实验到模型版本</h1>
+        <p class="meta"><span data-en="5 steps · interactive experiments, training jobs, model versions">5 步 · 交互实验、训练作业、模型版本</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/run-ai/self-hosted/documentation/workloads-in-nvidia-run-ai/workloads&quot;&gt;NVIDIA Run:ai · Workloads&lt;/a&gt;"><a href="https://docs.nvidia.com/run-ai/self-hosted/documentation/workloads-in-nvidia-run-ai/workloads">NVIDIA Run:ai · 工作负载</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/run-ai/self-hosted/documentation/workloads-in-nvidia-run-ai/using-training/train-models&quot;&gt;NVIDIA Run:ai · Standard Training Workloads&lt;/a&gt;"><a href="https://docs.nvidia.com/run-ai/self-hosted/documentation/workloads-in-nvidia-run-ai/using-training/train-models">NVIDIA Run:ai · 标准训练作业</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.pytorch.org/docs/2.15/generated/torch.nn.parallel.DistributedDataParallel.html&quot;&gt;PyTorch · Distributed Data Parallel&lt;/a&gt;"><a href="https://docs.pytorch.org/docs/2.15/generated/torch.nn.parallel.DistributedDataParallel.html">PyTorch · 分布式数据并行</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training&quot;&gt;PyTorch · Saving and Loading Checkpoints&lt;/a&gt;"><a href="https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training">PyTorch · 保存和恢复检查点</a></li>
+      <li data-en="&lt;a href=&quot;https://mlflow.org/docs/latest/ml/model-registry/&quot;&gt;MLflow · Model Registry&lt;/a&gt;"><a href="https://mlflow.org/docs/latest/ml/model-registry/">MLflow · 模型注册表</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html/getting_started_with_red_hat_openshift_ai_self-managed/overview-for-getting-started_get-started&quot;&gt;Red Hat · OpenShift AI Overview&lt;/a&gt;"><a href="https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html/getting_started_with_red_hat_openshift_ai_self-managed/overview-for-getting-started_get-started">Red Hat · OpenShift AI 概述</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-dev.js?v=93d8162c"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-dev",
+  "ar": [
+    2.727272727272727,
+    1.2
+  ],
+  "steps": [
+    {
+      "t": [
+        "交互式验证",
+        "Interactive Validation"
+      ],
+      "d": [
+        "在工作区加载训练代码和样本数据，通过小规模实验验证训练流程。",
+        "Load training code and sample data into a workspace to validate the training workflow with a small experiment."
+      ],
+      "b": [
+        [
+          "<p>工作区是可以从浏览器或开发工具连接的交互式运行环境。代码和样本数据接入后，可先验证数据读取、预处理和训练脚本，也可以调试内存或依赖问题。通过验证的代码版本与依赖配置可以交给批量训练使用。</p>","<p>Red Hat OpenShift AI 是这类平台的一个例子：它在 OpenShift 上提供工作区、训练、模型部署与监控工具。</p>"
+        ],
+        [
+          "<p>A workspace is an interactive runtime that developers reach through a browser or development tool. With code and sample data in place, it can validate data loading, preprocessing, and the training script, and help diagnose memory or dependency problems. The validated code revision and dependency configuration can then go into a batch training job.</p>","<p>Red Hat OpenShift AI is one example of such a platform, providing workbenches, training, model deployment, and monitoring tools on OpenShift.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "提交训练作业",
+        "Submitting a Training Job"
+      ],
+      "d": [
+        "将镜像、代码入口、数据和资源需求记录在作业规格里，由调度器分配资源。",
+        "A job specification records the image, entry point, data, and resource requirements for the scheduler."
+      ],
+      "b": [
+        [
+          "<p>容器镜像封装运行时和软件依赖，入口指定启动训练的命令。训练作业同时声明数据位置、参数和所需 GPU。调度器负责依据资源可用性和策略安排运行，提交后作业可独立于交互会话执行。NVIDIA Run:ai 将这种训练作业和交互式工作区定义为两类工作负载。</p>"
+        ],
+        [
+          "<p>A container image packages the runtime and software dependencies, and the entry point identifies the command that starts training. The job also declares its data location, parameters, and GPU requirements. The scheduler assigns capacity under its resource and policy constraints, and the submitted job can run independently of the interactive session. NVIDIA Run:ai defines training jobs and interactive workspaces as separate workload types.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "分布式训练",
+        "Distributed Training"
+      ],
+      "d": [
+        "多个训练进程可并行处理不同数据分片，并同步用于更新模型的梯度。",
+        "Multiple training workers can process different data shards in parallel and synchronize gradients for model updates."
+      ],
+      "b": [
+        [
+          "<p>一种常见方式是数据并行。各进程持有同一模型的副本，处理不同数据分片，计算各自的梯度，也就是参数的更新方向所依据的量。PyTorch DistributedDataParallel 在模型副本之间同步梯度，数据如何分给各进程由训练代码安排。</p>"
+        ],
+        [
+          "<p>Data parallelism is one common approach. Each worker holds a replica of the model, processes a different shard, and computes gradients, which guide parameter updates. PyTorch DistributedDataParallel synchronizes gradients between replicas. The training code determines how data is assigned to workers.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "保存与恢复检查点",
+        "Saving and Restoring Checkpoints"
+      ],
+      "d": [
+        "将检查点写入持久存储，后续作业可读取已保存的训练状态继续运行。",
+        "Write checkpoints to persistent storage so a later run can continue from saved training state."
+      ],
+      "b": [
+        [
+          "<p>检查点是某一训练进度的状态快照。恢复训练通常需要模型权重、优化器状态和进度信息。优化器负责根据梯度更新参数，其内部状态也会随训练演进。检查点保存在运行实例之外时，替换训练实例后仍可读取已成功写入的进度。</p>"
+        ],
+        [
+          "<p>A checkpoint is a snapshot of training state at a particular point. Resuming training typically needs model weights, optimizer state, and progress metadata. The optimizer uses gradients to update parameters and accumulates its own state over the run. Saving the checkpoint outside the running instance lets a replacement instance read the latest successfully written state.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "评估与版本登记",
+        "Evaluation and Model Registration"
+      ],
+      "d": [
+        "将通过评估的模型登记为可追溯的版本，供推理部署选用。",
+        "Register an evaluated model as a traceable version for selection by an inference deployment."
+      ],
+      "b": [
+        [
+          "<p>训练完成后，可在评估数据上检查产物是否满足任务要求，再把选中的模型登记到模型注册表。注册表保存模型的版本和关联信息。MLflow 的模型注册表可将版本关联到产出它的训练运行，部署方据此选择特定版本。</p>"
+        ],
+        [
+          "<p>After training, evaluation data can be used to check whether the resulting model meets the task requirements. The selected model can then be added to a model registry, which tracks versions and related metadata. The MLflow Model Registry can link a version to the run that produced it, giving deployment teams a specific version to select.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

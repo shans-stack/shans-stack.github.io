@@ -14,7 +14,6 @@ var EN={"客户端":"Client","同一个目录":"One directory","闪存池":"Flas
   "闪存池和硬盘池在同一个目录里：新写入先落闪存，后台建硬盘副本、清理闪存，冷文件变热后回到闪存":"A flash pool and a disk pool in one directory: new writes land on flash, disk copies are made and flash is cleaned in the background, and cold files that turn hot return to flash"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
-var LOGO={ddn:'assets/brand/ddn-logo-primary-color.svg',nv:'assets/brand/nvidia-logo-horz-trim.svg'};
 function mount(host,opts){
 opts=opts||{};
 const NS='http://www.w3.org/2000/svg';
@@ -24,19 +23,6 @@ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mq=matchMedia('(max-width: 640px)');
 let L,E,S,step=0;
 const LOW=0.5,HIGH=0.8,SPILL=0.9,HEATG=0.75;
-
-/* 在 SVG 里放一个官方 logo（站内 assets/brand 的原件）：h 是高度，宽按原件比例；返回 {g,w,h} */
-function brandLogo(key,x,y,h,p){const A={ddn:280/93,nv:2090/414}[key],w=h*A,px=h*0.22,py=h*0.16;
-  const g=document.createElementNS(NS,'g');(p||svg).appendChild(g);
-  const bk=document.createElementNS(NS,'rect');
-  for(const [k,v] of Object.entries({x:x-px,y:y-py,width:w+2*px,height:h+2*py,rx:2,class:'lgbk'}))bk.setAttribute(k,v);g.appendChild(bk);
-  const im=document.createElementNS(NS,'image');
-  for(const [k,v] of Object.entries({x,y,width:w,height:h,href:(window.SS_ROOT||'')+LOGO[key]}))im.setAttribute(k,v);
-  im.setAttribute('aria-label',key==='ddn'?'DDN':'NVIDIA');g.appendChild(im);return {g,w,h,bk,im,x}}
-/* logo 紧跟名字：英文名字更长时往右让，中文版位置不变 */
-function follow(lg,t,gap){if(!lg||!t)return;let end;try{end=+t.getAttribute('x')+t.getComputedTextLength()}catch(e){return}
-  const dx=Math.max(0,end+gap-lg.x);lg.g.setAttribute('transform',dx?`translate(${dx.toFixed(1)} 0)`:'')}
-function placeLogos(){follow(E.lg,E.nsT,15)}
 
 /* ---------- 版式：桌面左右两个池，手机上下两个池 ---------- */
 function layout(m){
@@ -89,9 +75,7 @@ function build(){
   el('rect',{x:c.x,y:c.y,width:c.w,height:c.h,rx:12,class:'blk'});
   tx(c.x+c.w/2,c.y+c.h/2,'客户端',f.lbl,'lbl','middle');
   el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:12,class:'blk'});
-  E.nsT=tx(n.x+16,n.y+n.h/2,'同一个目录',f.lbl,'lbl','start');
-  // 两个池同属一套 EXAScaler：DDN logo 放在「同一个目录」那一栏，避开中间的数据块路线
-  {const h=L.m?16:18;E.lg=brandLogo('ddn',L.m?150:366,n.y+n.h/2-h/2,h)}
+  tx(n.x+16,n.y+n.h/2,'同一个目录',f.lbl,'lbl','start');
   tx(n.x+n.w-16,n.y+n.h/2,'/data',f.lbl,'ink2-t b7','end');
   E.fbox=el('rect',{x:fl.x,y:fl.y,width:fl.w,height:fl.h,rx:16,class:'blk sage'});
   tx(fl.x+16,fl.y+24,'闪存池',f.ttl,'lbl b7','start');
@@ -125,7 +109,6 @@ function build(){
   const hx=h.x+h.w*HEATG;ln(hx,h.y-12,hx,h.y+12,'tick',hg);
   E.hs=tx(h.sx,h.y,'',f.sm,'st','start',hg);
   E.pk=el('g',{});
-  placeLogos();
 }
 
 /* ---------- 路线 ---------- */
@@ -252,7 +235,6 @@ function rebuild(){setup();enter(step)}
 mq.addEventListener('change',rebuild);
 const onLang=()=>rebuild();document.addEventListener('ss-lang',onLang);
 setup();
-if(document.fonts&&document.fonts.status!=='loaded')document.fonts.ready.then(()=>{if(!dead)placeLogos()});
 const ctrl={
   show(i){enter(Math.max(0,Math.min(NSTEP-1,i)))},
   pause(){paused=true;cancelAnimationFrame(raf)},

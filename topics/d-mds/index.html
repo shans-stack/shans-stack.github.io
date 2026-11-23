@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lustre 元数据服务器（MDS） · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Lustre 元数据服务器（MDS）。MDS 管理目录、文件属性和文件布局，并将元数据保存在 MDT。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-mds.css?v=51667b32">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-mds">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Lustre Metadata Server (MDS)">Lustre 元数据服务器（MDS）</h1>
+        <p class="meta"><span data-en="5 steps · Metadata, File Layout, MDT">5 步 · 元数据、文件布局、MDT</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/lustre-file-system-exascaler/&quot;&gt;DDN EXAScaler Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/lustre-file-system-exascaler/">DDN EXAScaler 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Metadata_Service_%28MDS%29&quot;&gt;Lustre Wiki: Metadata Service&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Metadata_Service_%28MDS%29">Lustre 官方文档：元数据服务</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Architecture_for_Admins&quot;&gt;Lustre Wiki: Architecture and Data Flow&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Architecture_for_Admins">Lustre 官方文档：架构与数据流</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-mds.js?v=358313b7"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-mds",
+ "ar": [
+  3.52,
+  1.1842105263157894
+ ],
+ "steps": [
+  {
+   "t": [
+    "MDS 提供服务，MDT 保存元数据",
+    "How the MDS and MDT Work Together"
+   ],
+   "d": [
+    "元数据服务器处理文件系统请求，元数据目标卷保存目录、文件名、权限和布局。",
+    "The metadata server processes file system requests, and the metadata target stores directories, file names, permissions, and layouts."
+   ],
+   "b": [
+    [
+     "<p>EXAScaler 基于 Lustre。Lustre 的元数据服务器（Metadata Server，MDS）负责管理命名空间，也就是应用看到的文件和目录树。元数据目标卷（Metadata Target，MDT）是持久化存储卷，保存目录结构、文件属性和描述数据位置的文件布局。</p>"
+    ],
+    [
+     "<p>EXAScaler is based on Lustre. The Lustre metadata server (MDS) manages the namespace, the tree of files and directories visible to applications. The metadata target (MDT) is the persistent storage volume for the directory hierarchy, file attributes, and layouts that describe where file data resides.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按路径查找文件",
+    "File Lookup by Path"
+   ],
+   "d": [
+    "客户端把路径查找交给 MDS，服务从 MDT 对应的目录项解析出文件。",
+    "The client sends a path lookup to the MDS, which resolves the file using the directory entries on the MDT."
+   ],
+   "b": [
+    [
+     "<p>目录项把名称关联到文件记录。对于尚未缓存的路径，Lustre 客户端向元数据服务请求查找。查找沿目录层级解析名称，随后可读取该文件的属性，例如属主和访问权限。</p>"
+    ],
+    [
+     "<p>A directory entry associates a name with its file record. For a path that is absent from its cache, the Lustre client requests a lookup from the metadata service. The lookup resolves names through the directory hierarchy and can then retrieve file attributes such as ownership and access permissions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "创建文件时分配布局",
+    "Layout Allocation at File Creation"
+   ],
+   "d": [
+    "MDS 依据布局策略为文件分配对象，并记录客户端访问这些对象所需的信息。",
+    "The MDS assigns objects according to the layout policy and records the information clients need to access them."
+   ],
+   "b": [
+    [
+     "<p>以数据存放在对象存储目标卷（Object Storage Target，OST）的文件为例，MDS 为文件确定布局，记录数据对象及条带参数。条带参数规定连续数据块如何分布到多个对象。目录可以设置默认布局，供新建文件继承。</p>"
+    ],
+    [
+     "<p>For a file whose contents reside on object storage targets (OSTs), the MDS determines the layout and records the data objects and striping parameters. Those parameters describe how consecutive chunks are distributed across objects. A directory can provide a default layout for new files to inherit.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "打开与读取走不同路径",
+    "Separate Paths for Open and Read"
+   ],
+   "d": [
+    "客户端打开文件时取得布局，随后直接向提供相关 OST 的数据服务器读取文件内容。",
+    "The client obtains the layout at open and then reads file contents directly from the object storage server that serves the relevant OST."
+   ],
+   "b": [
+    [
+     "<p>对于数据位于 OST 上的文件，客户端使用布局把文件的字节范围映射到相应的对象。对象存储服务器（Object Storage Server，OSS）将对象数据直接返回客户端。MDS 处理打开等元数据操作，文件内容沿客户端与 OSS 之间的路径传输。</p>"
+    ],
+    [
+     "<p>For a file with data on OSTs, the client uses the layout to map a byte range to the relevant objects. The object storage server (OSS) returns object data directly to the client. The MDS handles metadata operations such as open, while file contents travel between the OSS and the client.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "多个 MDT 承载同一目录树",
+    "A Single Directory Tree Across Multiple MDTs"
+   ],
+   "d": [
+    "MDT0 保存根目录，分布式命名空间可把其他目录的元数据放到其他 MDT。",
+    "MDT0 holds the root, and the distributed namespace can place metadata for other directories on additional MDTs."
+   ],
+   "b": [
+    [
+     "<p>分布式命名空间（Distributed Namespace Environment，DNE）允许同一个文件系统使用多个 MDT。例如，根目录位于 MDT0，某个子目录可由另一台 MDS 上的 MDT 承载。应用仍通过同一棵目录树访问这些目录。</p>"
+    ],
+    [
+     "<p>Distributed Namespace Environment (DNE) lets a single file system use multiple MDTs. For example, MDT0 holds the root, while an MDT on another MDS can host a subdirectory. Applications access both through the same directory tree.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

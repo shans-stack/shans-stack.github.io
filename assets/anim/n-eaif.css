@@ -1,0 +1,37 @@
+.n-eaif-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:18px}
+.n-eaif-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-eaif-figure .n-eaif-start{text-anchor:start}
+.n-eaif-figure .n-eaif-heading{font-size:21px;font-weight:650}
+.n-eaif-figure .n-eaif-secondary,.n-eaif-figure .n-eaif-note{fill:var(--ink2);font-size:17px}
+.n-eaif-figure .n-eaif-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-eaif-figure .n-eaif-boundary{fill:none;stroke-dasharray:6 5}
+.n-eaif-figure .n-eaif-accent,.n-eaif-figure .n-eaif-active{stroke:var(--l4);stroke-width:2}
+.n-eaif-figure .n-eaif-active{fill:color-mix(in srgb,var(--l4) 13%,var(--bg))}
+.n-eaif-figure .n-eaif-link{fill:none;stroke:var(--ink3);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.n-eaif-figure .n-eaif-link.n-eaif-electrical{stroke:var(--l2)}
+.n-eaif-figure .n-eaif-link.n-eaif-optical{stroke:var(--l5)}
+.n-eaif-figure .n-eaif-link.n-eaif-network{stroke:var(--l4)}
+.n-eaif-figure .n-eaif-link.n-eaif-dashed{stroke-dasharray:5 5}
+.n-eaif-figure .n-eaif-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.5}
+.n-eaif-figure .n-eaif-packet.n-eaif-electrical{fill:var(--l2)}
+.n-eaif-figure .n-eaif-packet.n-eaif-optical{fill:var(--l5)}
+@media(max-width:640px){
+  .n-eaif-figure svg{font-size:15px}
+  .n-eaif-figure .n-eaif-heading{font-size:17px}
+  .n-eaif-figure .n-eaif-secondary,.n-eaif-figure .n-eaif-note{font-size:14px}
+}
+.n-eaif-figure .n-eaif-link.n-eaif-active{stroke-width:4}
+@media(max-width:640px){
+  body.topic-n-eaif.present .stage{padding:12px;row-gap:12px}
+  body.topic-n-eaif.present .stage .figbox{margin:0}
+  body.topic-n-eaif.present .stage .cap{display:block;margin:0}
+  body.topic-n-eaif.present .stage h2{font-size:24px}
+  body.topic-n-eaif.present .stage .desc{font-size:17px;line-height:1.5}
+  body.topic-n-eaif.present .stage .ctl{margin:0}
+}
+@media(640px < width <=720px){
+  body.topic-n-eaif .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-eaif-figure .n-eaif-packet{display:none}
+}

@@ -1,0 +1,41 @@
+.b-clickbench-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.b-clickbench-scene text {
+  fill: var(--ink);
+  font: 500 20px var(--f);
+  dominant-baseline: central;
+}
+.b-clickbench-scene .b-clickbench-note,
+.b-clickbench-scene .b-clickbench-muted {
+  fill: var(--ink2);
+  font-size: 18px;
+}
+.b-clickbench-scene .b-clickbench-box,
+.b-clickbench-scene .b-clickbench-quiet,
+.b-clickbench-scene .b-clickbench-accent {
+  fill: var(--bg);
+  stroke: var(--ink3);
+  stroke-width: 1.4;
+}
+.b-clickbench-scene .b-clickbench-quiet { stroke-dasharray: 4 5; }
+.b-clickbench-scene .b-clickbench-accent { stroke: var(--lc); stroke-width: 2; }
+.b-clickbench-scene .b-clickbench-line,
+.b-clickbench-scene .b-clickbench-guide {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-clickbench-scene .b-clickbench-guide { stroke-dasharray: 4 5; }
+.b-clickbench-scene .b-clickbench-token { fill: var(--lc); }
+
+body.topic-b-clickbench .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-clickbench .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-clickbench.present .stage .figbox { margin-block: 0; }
+  .b-clickbench-scene text { font-size: 19px; }
+}

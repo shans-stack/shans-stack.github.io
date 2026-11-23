@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPU 分区与共享 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明GPU 分区与共享。支持的 GPU 可用硬件分区分配独立实例，也可按时间片共享，显存与故障隔离随方式而异。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-slice.css?v=7ca8fc6f">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-slice">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="GPU Partitioning and Sharing">GPU 分区与共享</h1>
+        <p class="meta"><span data-en="5 steps · GPU Infrastructure">5 步 · GPU 基础设施</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/introduction.html&quot;&gt;NVIDIA MIG · Architecture and Isolation&lt;/a&gt;"><a href="https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/introduction.html">NVIDIA MIG · 架构与隔离</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/concepts.html&quot;&gt;NVIDIA MIG · GPU and Compute Instances&lt;/a&gt;"><a href="https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/concepts.html">NVIDIA MIG · GPU 实例与计算实例</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/gpu-sharing.html&quot;&gt;NVIDIA GPU Operator · GPU Time-Slicing in Kubernetes&lt;/a&gt;"><a href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/gpu-sharing.html">NVIDIA GPU Operator · Kubernetes GPU 时间片</a></li>
+      <li data-en="Illustrative, not measured.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-slice.js?v=899353db"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-slice",
+  "ar": [880/338,350/444],
+  "steps": [
+    {"t": ["从整卡分配开始", "Start With a Whole GPU"], "d": ["支持的 GPU 可用硬件分区分配独立实例，也可按时间片共享，显存与故障隔离随方式而异。", "Supported GPUs can be split into isolated hardware partitions or shared by time-slicing; memory and fault isolation differ between the two."], "b": [["<p>整卡独占把物理 GPU 的计算单元和显存交给一个工作负载。分区和共享允许同一物理设备承载多个工作负载，区别在于分配的资源边界：是独立的硬件实例，还是访问同一设备的机会。</p>"], ["<p>An exclusive allocation gives one workload the compute resources and device memory of a physical GPU. Partitioning and sharing let several workloads use one physical device. The allocation boundary determines what each receives: an independent hardware instance or access to the same device.</p>"]]},
+    {"t": ["MIG 划定硬件边界", "MIG Divides Hardware Resources"], "d": ["NVIDIA MIG 把支持的 GPU 划分为多个可并行运行的 GPU 实例，各自拥有分配好的计算与显存资源。", "NVIDIA MIG divides a supported GPU into instances that can run in parallel with assigned compute and memory resources."], "b": [["<p>MIG（Multi-Instance GPU）是 NVIDIA 的硬件分区机制。实例规格定义可用的计算和显存资源。GPU 实例之间有独立的显存路径和硬件级故障隔离，可分别交给不同工作负载。实例仍位于同一块物理 GPU 上，整卡失效会影响其上的实例。</p>"], ["<p>MIG (Multi-Instance GPU) is NVIDIA’s hardware partitioning mechanism. A profile defines the compute and memory allocated to an instance. GPU instances have separate memory paths and hardware fault isolation, so they can serve separate workloads. The instances still reside on one physical GPU and share its fate if the entire device fails.</p>"]]},
+    {"t": ["时间片共享执行机会", "Time-Slicing Shares Execution Time"], "d": ["多个工作负载在同一 GPU 上交替执行，继续共享设备的显存容量和故障域。", "Workloads interleave execution on one GPU and remain within a shared memory capacity and fault domain."], "b": [["<p>时间片是调度器分配的一段执行时间。以 NVIDIA GPU Operator 的 Kubernetes 时间片机制为例，系统可向不同 Pod 暴露同一块 GPU 的逻辑副本。副本没有 MIG 的显存与故障隔离，也不会为每个 Pod 划出固定的计算或显存份额。</p>"], ["<p>A time slice is an interval of execution granted by a scheduler. With NVIDIA GPU Operator time-slicing in Kubernetes, several Pods can receive logical replicas of one GPU. Replicas lack MIG’s memory and fault isolation and do not reserve a fixed share of compute or device memory per Pod.</p>"]]},
+    {"t": ["从显存和故障判断边界", "Compare Memory and Fault Domains"], "d": ["MIG 按实例隔离显存与故障，时间片副本共用底层设备的边界。", "MIG isolates memory and faults per instance. Time-sliced replicas share the device boundary."], "b": [["<p>两个工作负载各占一个 MIG GPU 实例时，显存压力受各实例自己的容量与带宽约束。在时间片共享下，工作负载争用同一显存容量。影响整块共享 GPU 的故障也可能影响其上其他工作负载。共享显存容量本身并不意味着应用可以读取彼此的地址空间。</p>"], ["<p>With one MIG GPU instance per workload, memory demand is bounded by each instance’s own capacity and bandwidth. With time-slicing, workloads contend for the same device memory capacity. A fault that affects the shared GPU can also affect other workloads using it. Sharing memory capacity does not by itself allow applications to read each other’s address spaces.</p>"]]},
+    {"t": ["把隔离方式写进资源规格", "Describe Isolation in the Resource Profile"], "d": ["整卡、MIG 实例和时间片副本代表不同的调度资源和隔离边界。", "Whole GPUs, MIG instances, and time-sliced replicas represent different scheduling resources and isolation boundaries."], "b": [["<p>平台可按这些边界提供不同资源规格。NVIDIA GPU Operator 也支持对一个 MIG 实例再做时间片共享。硬件隔离仍发生在不同 MIG 实例之间，同一实例内的多个副本继续共享该实例的显存与故障域。</p>"], ["<p>A platform can expose resource profiles based on these boundaries. NVIDIA GPU Operator also supports time-slicing a MIG instance. Hardware isolation remains between MIG instances, while multiple replicas within one instance still share that instance’s memory and fault domain.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

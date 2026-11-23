@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DBox：内部没有单点的全闪存储箱 · Shan's Stack</title>
-<meta name="description" content="分 6 步说明 VAST 的 DBox：DNode 只转发，两个 DNode 双活各管一半盘，一个坏了另一个接管，一次故障最多带走一块盘，所以条带可以按盘来铺。">
+<meta name="description" content="分 7 步说明 VAST DBox 的共享介质、双活访问和故障切换，以及 Ceres 和 Mavericks 的硬件配置。">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
-<link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
-<link rel="stylesheet" href="../../assets/anim/v-dbox.css?v=fc6ec289">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/v-dbox.css?v=4bd0d0e1">
 <script>window.SS_ROOT='../../';</script>
-<link rel="stylesheet" href="../../assets/topic.css?v=db87ea93">
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
 <body>
 <script src="../../assets/symbols.js?v=01f317a9"></script>
@@ -20,7 +20,7 @@
 <header class="hd"><div class="wrap">
   <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
   <nav class="nav" aria-label="主导航" data-en-label="Main">
-    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
     <button class="lang" type="button" data-lang-toggle>EN</button>
   </nav>
 </div></header>
@@ -30,7 +30,7 @@
     <div class="crumb" id="crumb"></div>
     <div class="tt">
       <div><h1 data-en="DBox: An All-Flash Enclosure with No Single Point of Failure">DBox：内部没有单点的全闪存储箱</h1>
-        <p class="meta"><span data-en="6 steps · DNode, SCM, QLC, PCIe">6 步 · DNode、SCM、QLC、PCIe</span><span id="intalks"></span></p></div>
+        <p class="meta"><span data-en="7 steps · DNode, SCM, QLC, PCIe">7 步 · DNode、SCM、QLC、PCIe</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -43,9 +43,13 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): DBox high availability and data protection chapters.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：DBox 高可用与数据保护章节。</li>
-      <li data-en="VAST Data knowledge base (kb.vastdata.com): DBox and DNode hardware data sheets in Getting Started, and DBox High Availability.">VAST Data 官方知识库（kb.vastdata.com）：Getting Started 中的 DBox 与 DNode 硬件数据表、DBox High Availability。</li>
-      <li data-en="Animations are schematic. The number of stripe pieces in step 6 is not a real stripe width, and no measured numbers are shown.">动画为示意，第 6 步的条带片数不代表真实条带宽度，也不代表实测数字。</li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf&quot;&gt;VAST AI Operating System White Paper&lt;/a&gt;"><a class="gen-source" href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf">VAST AI Operating System 白皮书</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/hw-ds-dbox&quot;&gt;VAST DBox Hardware Datasheet Directory&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/hw-ds-dbox">VAST DBox 硬件数据表目录</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/dbox-df-3015v2df-3060v2-ceres-datasheet&quot;&gt;VAST Ceres V2 Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/dbox-df-3015v2df-3060v2-ceres-datasheet">VAST Ceres V2 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet&quot;&gt;VAST Ceres V1 Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet">VAST Ceres V1 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/dbox-df-5630-df-5660-mavericks-15mlk-datasheet&quot;&gt;VAST Mavericks 1.5 (MLK) Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/dbox-df-5630-df-5660-mavericks-15mlk-datasheet">VAST Mavericks 1.5 (MLK) 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet&quot;&gt;VAST Mavericks DF-56xx Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet">VAST Mavericks DF-56xx 数据表</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
 </main>
@@ -66,13 +70,13 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=592fc31f"></script>
-<script src="../../data/stations.js?v=78aee762"></script>
-<script src="../../data/maps.js?v=13800c68"></script>
-<script src="../../data/talks.js?v=9c02c723"></script>
-<script src="../../data/vendors.js?v=a0e9392a"></script>
-<script src="../../assets/core.js?v=67905bc1"></script>
-<script src="../../assets/anim/v-dbox.js?v=c8fab09c"></script>
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/v-dbox.js?v=572c714a"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-dbox",
@@ -94,11 +98,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>DBox 是 VAST 定制的存储箱，属于 JBOF（只装盘、不跑存储软件的盘柜）。集群的全部数据和元数据都放在 DBox 里，CNode 经 NVMe-oF 网络直接读写这些盘。</p>",
-     "<p>箱子里有两种盘：少量 SCM（存储级内存，又快又耐写，用作写缓冲和存元数据）和大量 QLC 闪存（单位容量便宜，用来长期存数据）。VAST 靠软件把便宜的 QLC 用得久，这部分见 SCM 写缓冲和闪存几何对齐两站。</p>"
+     "<p>这里以双 DNode 的 Mavericks 为例。SCM（存储级内存）用作持久写缓冲和元数据介质，QLC 闪存用于长期保存数据。Ceres 托盘与介质配置见硬件配置。</p>"
     ],
     [
      "<p>A DBox is VAST's custom storage enclosure, a JBOF (an enclosure that holds drives and runs no storage software). All the cluster's data and metadata live in DBoxes, and CNodes read and write those drives directly over the NVMe-oF network.</p>",
-     "<p>The enclosure holds two kinds of drive: a few SCM drives (storage-class memory, fast and high-endurance, used as the write buffer and for metadata) and many QLC flash drives (low cost per unit of capacity, used to keep data long term). VAST relies on software to make the inexpensive QLC last; see the SCM write buffer and flash geometry stops.</p>"
+     "<p>The next steps use a dual-DNode Mavericks as the example. Storage-class memory (SCM) provides persistent write buffering and metadata storage, while QLC flash holds long-term data. The Hardware Configurations section covers Ceres trays and media.</p>"
     ]
    ]
   },
@@ -221,10 +225,116 @@ window.SS_TOPIC_CFG={
      "<p>Redundant paths let the Classic layout use SSDs as failure domains. For a fixed number of parity blocks, wider stripes have a lower parity fraction.</p>"
     ]
    ]
+  },
+  {
+   "t": [
+    "硬件配置",
+    "Hardware Configurations"
+   ],
+   "d": [
+    "Ceres V2 保留 1U 双 DTray 机箱，每个 DTray 配一块 BlueField-3。",
+    "Ceres V2 retains a 1U dual-DTray chassis and uses one BlueField-3 per tray."
+   ],
+   "b": [
+    [
+     "<p>DTray 是可更换的网络接入托盘。Ceres V2 数据表列出两个双活 DTray，机箱提供 22 个 E1.L NAND SSD 位和 8 个 U.2 SCM 位，介质侧使用 PCIe Gen4。DPU（数据处理单元）将 SSD 接入集群网络。</p>",
+     "<p>相比于 Ceres V1 每托盘两块 BF1600，V2 每托盘使用一块 BlueField-3，含 16 个 Arm 核、48 GB DDR5 ECC 和两个 200GbE 或 NDR200 端口。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015v2df-3060v2-ceres-datasheet\">VAST Ceres V2 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet\">VAST Ceres V1 数据表</a>。</p>"
+    ],
+    [
+     "<p>A DTray is a replaceable fabric tray. The Ceres V2 sheet lists two active-active trays, 22 E1.L NAND SSD positions, and eight U.2 SCM positions on PCIe Gen4. A data processing unit (DPU) presents the SSDs to the cluster network.</p>",
+     "<p>Ceres V1 uses two BF1600 cards per tray. V2 uses one BlueField-3 per tray with 16 Arm cores, 48 GB DDR5 ECC, and two 200GbE or NDR200 ports. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015v2df-3060v2-ceres-datasheet\">VAST Ceres V2 Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet\">VAST Ceres V1 Datasheet</a>.</p>"
+    ]
+   ],
+   "tabs": [
+    {
+     "key": "ceres-v2",
+     "t": [
+      "Ceres V2",
+      "Ceres V2"
+     ],
+     "d": [
+      "Ceres V2 保留 1U 双 DTray 机箱，每个 DTray 配一块 BlueField-3。",
+      "Ceres V2 retains a 1U dual-DTray chassis and uses one BlueField-3 per tray."
+     ],
+     "b": [
+      [
+       "<p>DTray 是可更换的网络接入托盘。Ceres V2 数据表列出两个双活 DTray，机箱提供 22 个 E1.L NAND SSD 位和 8 个 U.2 SCM 位，介质侧使用 PCIe Gen4。DPU（数据处理单元）将 SSD 接入集群网络。</p>",
+       "<p>相比于 Ceres V1 每托盘两块 BF1600，V2 每托盘使用一块 BlueField-3，含 16 个 Arm 核、48 GB DDR5 ECC 和两个 200GbE 或 NDR200 端口。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015v2df-3060v2-ceres-datasheet\">VAST Ceres V2 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet\">VAST Ceres V1 数据表</a>。</p>"
+      ],
+      [
+       "<p>A DTray is a replaceable fabric tray. The Ceres V2 sheet lists two active-active trays, 22 E1.L NAND SSD positions, and eight U.2 SCM positions on PCIe Gen4. A data processing unit (DPU) presents the SSDs to the cluster network.</p>",
+       "<p>Ceres V1 uses two BF1600 cards per tray. V2 uses one BlueField-3 per tray with 16 Arm cores, 48 GB DDR5 ECC, and two 200GbE or NDR200 ports. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015v2df-3060v2-ceres-datasheet\">VAST Ceres V2 Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet\">VAST Ceres V1 Datasheet</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "ceres-v1",
+     "t": [
+      "Ceres V1",
+      "Ceres V1"
+     ],
+     "d": [
+      "Ceres V1 将 Mavericks 的 2U x86 布局改为 1U DPU 托盘和 E1.L 数据盘。",
+      "Ceres V1 shifts from the 2U x86 Mavericks layout to 1U DPU trays and E1.L data drives."
+     ],
+     "b": [
+      [
+       "<p>Ceres V1 的两个双活 DTray 每个配两块 BlueField BF1600。数据表按卡列出 16 个 Arm Cortex-A72 核和 64 GB DDR4，按托盘列出四个 100GbE 或 EDR 端口。</p>",
+       "<p>介质侧从 Mavericks 的 PCIe Gen3 全 U.2 布局，换成 PCIe Gen4 的 22 个 E1.L NAND SSD 位和 8 个 U.2 SCM 位。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet\">VAST Ceres V1 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet\">VAST Mavericks DF-56xx 数据表</a>。</p>"
+      ],
+      [
+       "<p>Each of the two active-active Ceres V1 trays has two BlueField BF1600 cards. The sheet lists 16 Arm Cortex-A72 cores and 64 GB DDR4 per card, and four 100GbE or EDR ports per tray.</p>",
+       "<p>The media layout changes from all-U.2 on PCIe Gen3 in Mavericks to 22 E1.L NAND SSD positions and eight U.2 SCM positions on PCIe Gen4. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-3015df-3060-ceres-datasheet\">VAST Ceres V1 Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet\">VAST Mavericks DF-56xx Datasheet</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "mavericks-mlk",
+     "t": [
+      "Mavericks 1.5 (MLK)",
+      "Mavericks 1.5 (MLK)"
+     ],
+     "d": [
+      "Mavericks 1.5 保留 2U 与双活 DNode，采用 AMD EPYC Milan 和 ConnectX-6。",
+      "Mavericks 1.5 retains 2U and active-active DNodes and uses AMD EPYC Milan and ConnectX-6."
+     ],
+     "b": [
+      [
+       "<p>DF-5630 / DF-5660 数据表列出每个 DNode 一颗 EPYC 7313P、64 GB DDR4 和一块双端口 ConnectX-6，整机四个 100GbE 或 HDR100 端口。机箱有 44 个 U.2 闪存 SSD 位和 12 个 U.2 SCM 位。</p>",
+       "<p>相比早期 DF-56xx 双路 Broadwell 与 ConnectX-5 配置，MLK 更换了处理器平台和网卡，保留 PCIe Gen3 的 56 盘位布局。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-5630-df-5660-mavericks-15mlk-datasheet\">VAST Mavericks 1.5 (MLK) 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet\">VAST Mavericks DF-56xx 数据表</a>。</p>"
+      ],
+      [
+       "<p>The DF-5630 / DF-5660 sheet lists an EPYC 7313P, 64 GB DDR4, and one dual-port ConnectX-6 per DNode, with four 100GbE or HDR100 ports for the enclosure. The chassis provides 44 U.2 flash SSD positions and 12 U.2 SCM positions.</p>",
+       "<p>MLK changes the processor platform and network adapters from the earlier dual-socket Broadwell and ConnectX-5 DF-56xx, retaining the PCIe Gen3 56-drive layout. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-5630-df-5660-mavericks-15mlk-datasheet\">VAST Mavericks 1.5 (MLK) Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet\">VAST Mavericks DF-56xx Datasheet</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "mavericks",
+     "t": [
+      "Mavericks",
+      "Mavericks"
+     ],
+     "d": [
+      "早期 Mavericks DF-56xx 在同一个 2U 机箱内采用两个 x86 DNode 和 56 个 U.2 盘位。",
+      "The early Mavericks DF-56xx combines two x86 DNodes and 56 U.2 drive positions in 2U."
+     ],
+     "b": [
+      [
+       "<p>两个 DNode 双活。每个 DNode 使用双路 Intel Xeon E5-2630 v4（Broadwell）、64 GB DDR4 和 ConnectX-5，可用一块双口卡或两块单口卡。整箱有四个 100GbE 或 EDR 端口。</p>",
+       "<p>机箱提供 44 个 U.2 闪存 SSD 位和 12 个 U.2 SCM 位，都使用 PCIe Gen3。前面讲解的双 DNode 路径以此类机型为例。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet\">VAST Mavericks DF-56xx 数据表</a>。</p>"
+      ],
+      [
+       "<p>Both DNodes are active. Each uses dual Intel Xeon E5-2630 v4 (Broadwell), 64 GB DDR4, and either a dual-port ConnectX-5 or two single-port cards. The enclosure provides four 100GbE or EDR ports.</p>",
+       "<p>The chassis provides 44 U.2 flash SSD positions and 12 U.2 SCM positions, all on PCIe Gen3. The dual-DNode path shown in the earlier steps corresponds to this kind of enclosure. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dbox-df-56xx-mavericks-singledual-nic-datasheet\">VAST Mavericks DF-56xx Datasheet</a>.</p>"
+      ]
+     ]
+    }
+   ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=81c36bc2"></script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
 </body>
 </html>

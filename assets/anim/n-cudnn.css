@@ -1,0 +1,47 @@
+.n-cudnn-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font-family: var(--f);
+  --data: var(--l5);
+  --control: var(--l4);
+  --miss: var(--l1);
+}
+.n-cudnn-scene text { font-size: 18px; fill: var(--ink); }
+.n-cudnn-scene .n-cudnn-label { font-weight: 600; }
+.n-cudnn-scene .n-cudnn-detail { font-size: 16px; fill: var(--ink2); }
+.n-cudnn-card {
+  fill: var(--surface);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.n-cudnn-active .n-cudnn-card, .n-cudnn-ready .n-cudnn-card {
+  fill: color-mix(in srgb, var(--data) 12%, var(--surface));
+  stroke: var(--data);
+}
+.n-cudnn-idle .n-cudnn-card { stroke-dasharray: 4 4; }
+.n-cudnn-idle .n-cudnn-label { fill: var(--ink2); }
+.n-cudnn-miss .n-cudnn-card { stroke: var(--miss); }
+.n-cudnn-line, .n-cudnn-arrow {
+  fill: none;
+  stroke: var(--data);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.n-cudnn-line.n-cudnn-control { stroke-dasharray: 5 5; }
+.n-cudnn-line.n-cudnn-miss { stroke-dasharray: 2 4; }
+.n-cudnn-line.n-cudnn-control, .n-cudnn-arrow.n-cudnn-control { stroke: var(--control); }
+.n-cudnn-line.n-cudnn-miss, .n-cudnn-arrow.n-cudnn-miss { stroke: var(--miss); }
+.n-cudnn-line.n-cudnn-idle, .n-cudnn-arrow.n-cudnn-idle { stroke: var(--rule2); }
+.n-cudnn-token { fill: var(--data); }
+.n-cudnn-token.n-cudnn-control { fill: var(--control); }
+.n-cudnn-token.n-cudnn-miss { fill: var(--miss); }
+@media (max-width: 640px) {
+  .n-cudnn-scene .n-cudnn-label { font-size: 17px; }
+  .n-cudnn-scene .n-cudnn-detail { font-size: 16px; }
+}
+@media (min-width: 641px) and (max-width: 720px) {
+  .topic-n-cudnn .mhost { aspect-ratio: var(--ar); }
+}

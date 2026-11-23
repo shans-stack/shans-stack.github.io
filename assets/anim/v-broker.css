@@ -12,13 +12,6 @@
 .v-broker-figure .v-broker-match .v-broker-selection{fill:color-mix(in srgb,var(--l5) 24%,var(--surface))}
 .v-broker-figure .v-broker-removed .v-broker-selection{fill:color-mix(in srgb,var(--l1) 25%,var(--surface))}
 .v-broker-figure .v-broker-scope text,.v-broker-figure .v-broker-match text,.v-broker-figure .v-broker-removed text{fill:var(--ink)}
-.v-broker-figure .v-broker-logo-dark{display:none}
-:root[data-theme=dark] .v-broker-figure .v-broker-logo-light{display:none}
-:root[data-theme=dark] .v-broker-figure .v-broker-logo-dark{display:inline}
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme=light]) .v-broker-figure .v-broker-logo-light{display:none}
-  :root:not([data-theme=light]) .v-broker-figure .v-broker-logo-dark{display:inline}
-}
 @media(max-width:639px){
   .v-broker-figure{font-size:14px}
   .v-broker-figure .v-broker-heading{font-size:16px}

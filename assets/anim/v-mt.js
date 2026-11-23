@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成窄版排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-mt.css，全部限定在 .ssa-v-mt 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg 与 -white.svg（浅色用黑、深色用白），不内嵌。 */
+   样式在 assets/anim/v-mt.css，全部限定在 .ssa-v-mt 容器之内。 */
 (function(){
 var EN={"租户 A 客户端":"Tenant A clients","租户 B 客户端":"Tenant B clients","其他网段":"Other subnet","租户 A 管理员":"Tenant A admin","VIP 池 A":"VIP pool A","VIP 池 B":"VIP pool B",
 "CNode 1":"CNode 1","CNode 2":"CNode 2","CNode 3":"CNode 3","CNode 4":"CNode 4","共享的 DBox":"Shared DBoxes","租户 A":"Tenant A","租户 B":"Tenant B","默认租户":"Default tenant","/data":"/data","/logs":"/logs","审计记录":"Audit log",
@@ -27,7 +26,6 @@ host.classList.add('ssa-v-mt');host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','ssa-scene');svg.setAttribute('role','img');host.appendChild(svg);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mq=matchMedia('(max-width: 640px)');
-const ROOT=window.SS_ROOT||'';
 function T(s){if(lang()!=='en')return s;if(L&&L.mobile&&ENM[s]!==undefined)return ENM[s];return EN[s]!==undefined?EN[s]:s}
 function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
 function tx(x,y,s,size,cls,anchor,p){const t=el('text',{x,y,'font-size':size,class:cls||''},p);if(anchor)t.setAttribute('text-anchor',anchor);t.textContent=T(s);return t}
@@ -40,8 +38,6 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);return s}
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-function vmark(x,y,h,p){const w=h*66/14,g=el('g',{class:'vwm'},p);
-  [['l','black'],['d','white']].forEach(([k,c])=>el('image',{href:ROOT+'assets/brand/vast-wordmark-'+c+'.svg',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm-'+k},g));return g}
 let L=null,E,S,step=0,T0=0,raf=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(cls){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(cls||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
@@ -53,14 +49,14 @@ function layout(mobile){
   if(!mobile)return {W:960,H:506,mobile:false,f:{lbl:20,sm:17,cap:18},pw:20,ph:15,dr:7,sp:300,cap:{x:944,y:14},bot:{x:480,y:482},
     cl:{A:{x:40,y:24,w:210,h:44},O:{x:375,y:24,w:210,h:44},B:{x:710,y:24,w:210,h:44}},
     vip:{A:{x:80,y:100,w:130,h:32},B:{x:750,y:100,w:130,h:32}},busY:154,
-    cn:[110,280,680,850].map(x=>({x:x-75,y:176,w:150,h:42})),grpPad:10,logoDy:22,
+    cn:[110,280,680,850].map(x=>({x:x-75,y:176,w:150,h:42})),grpPad:10,
     fabY:262,fab:[35,925],store:{x:30,y:290,w:900,h:154},storeLbl:{x:46,y:306},audY:322,
     fold:{A:{x:60,y:334,w:270,h:96},D:{x:380,y:334,w:200,h:96},B:{x:630,y:334,w:270,h:96}},hdDy:18,ibDy:30,item:{dy:40,h:40},
     ekm:{x:370,y:456,w:220,h:40},ekmY:476};
   return {W:480,H:480,mobile:true,f:{lbl:17,sm:17,cap:17},pw:16,ph:12,dr:6,sp:220,cap:{x:470,y:12},bot:{x:240,y:452},
     cl:{A:{x:8,y:26,w:148,h:38},O:{x:166,y:26,w:148,h:38},B:{x:324,y:26,w:148,h:38}},
     vip:{A:{x:27,y:94,w:110,h:28},B:{x:343,y:94,w:110,h:28}},busY:138,
-    cn:[62,174,306,418].map(x=>({x:x-50,y:152,w:100,h:36})),grpPad:6,logoDy:16,
+    cn:[62,174,306,418].map(x=>({x:x-50,y:152,w:100,h:36})),grpPad:6,
     fabY:226,fab:[8,472],store:{x:8,y:244,w:464,h:164},storeLbl:{x:20,y:258},audY:272,
     fold:{A:{x:16,y:284,w:148,h:110},D:{x:174,y:284,w:132,h:110},B:{x:316,y:284,w:148,h:110}},hdDy:16,ibDy:30,item:{dy:42,h:38},
     ekm:{x:150,y:422,w:180,h:34},ekmY:439};
@@ -96,11 +92,8 @@ function build(){
   const cx=L.cn.map(r=>C(r).x);
   E.busA=poly([P(cx[0],L.busY),P(cx[1],L.busY)],'',g);E.busM=poly([P(cx[1],L.busY),P(cx[2],L.busY)],'',g);E.busB=poly([P(cx[2],L.busY),P(cx[3],L.busY)],'',g);
   E.grp=[[0,1],[2,3]].map(([a,b])=>{const p=L.grpPad,r={x:L.cn[a].x-p,y:L.cn[a].y-p,w:L.cn[b].x+L.cn[b].w-L.cn[a].x+2*p,h:L.cn[a].h+2*p};return box(r,grp('3 4',g),'box grpf',12)});
-  /* 字标：桌面版紧跟第一台 CNode 的名字；手机版放不下，放在它下方左侧做小铭牌 */
   E.cn=L.cn.map((r,i)=>{const b=box(r,g,'box',8);
-    if(i===0&&!L.mobile){const lw=T('CNode 1').length*f.lbl*0.6,h=12,w=h*66/14,gap=7,x0=C(r).x-(lw+gap+w)/2;tx(x0+lw,C(r).y,'CNode 1',f.lbl,'lbl b7','end',g);vmark(x0+lw+gap,C(r).y,h,g)}
-    else tx(C(r).x,C(r).y,'CNode '+(i+1),f.lbl,'lbl b7','middle',g);return b});
-  if(L.mobile)vmark(L.cn[0].x+2,L.cn[0].y+L.cn[0].h+L.logoDy,11,grp(null,g));
+    tx(C(r).x,C(r).y,'CNode '+(i+1),f.lbl,'lbl b7','middle',g);return b});
   /* VIP 池与客户端 */
   E.vip={};['A','B'].forEach(k=>{const r=L.vip[k];poly([P(C(L.cl[k]).x,L.cl[k].y+L.cl[k].h),P(C(r).x,r.y)],'',g);poly([P(C(r).x,r.y+r.h),P(C(r).x,L.busY)],'',g);
     E.vip[k]=box(r,g,'box vipc',r.h/2);tx(C(r).x,C(r).y,'VIP 池 '+k,f.sm,'st slate-t','middle',g)});

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>集群验收与老化测试 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明组合部件检查、持续压力和代表性作业，按交付条件判断集群覆盖与稳定性。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-burnin.css?v=05528533">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-burnin">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-burnin">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Cluster Acceptance and Burn-In">集群验收与老化测试</h1>
+        <p class="meta"><span data-en="6 steps · Cluster Handover, Sustained Load, Acceptance Evidence">6 步 · 集群交付、持续负载、验收证据</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/administration-guide-dgx-superpod/latest/system-health.html&quot;&gt;NVIDIA SuperPOD System Health and Validation Tools&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/administration-guide-dgx-superpod/latest/system-health.html">NVIDIA SuperPOD 集群健康检查与验证工具</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/administration-guide-dgx-superpod/latest/monitoring-cluster.html&quot;&gt;NVIDIA Cluster Monitoring&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/administration-guide-dgx-superpod/latest/monitoring-cluster.html">NVIDIA 集群监控方法</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/storage&quot;&gt;MLCommons Storage Workload Definitions&lt;/a&gt;"><a href="https://github.com/mlcommons/storage">MLCommons Storage 工作负载定义</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/wilicc/gpu-burn&quot;&gt;GPU Burn Project Documentation&lt;/a&gt;"><a href="https://github.com/wilicc/gpu-burn">GPU Burn 项目文档</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/wilicc/gpu-burn/commit/0d19c94dcb2e9b6858b7586a4c327674cd67113b&quot;&gt;GPU Burn Public Revision&lt;/a&gt;"><a href="https://github.com/wilicc/gpu-burn/commit/0d19c94dcb2e9b6858b7586a4c327674cd67113b">GPU Burn 公开修订记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-burnin.js?v=12b5a488"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-burnin",
+ "ar": [
+  2.360248447204969,
+  0.8571428571428571
+ ],
+ "steps": [
+  {
+   "t": [
+    "验收条件和老化窗口",
+    "Acceptance Criteria and the Burn-In Window"
+   ],
+   "d": [
+    "验收按约定条件判断是否交付，老化测试观察持续施压期间的稳定性。",
+    "Acceptance assesses handover criteria, and burn-in observes stability under sustained stress."
+   ],
+   "b": [
+    [
+     "<p>验收是一组针对交付范围的检查。老化测试在指定时间内维持负载，观察短时检查可能看不到的故障、重置或降频。两者都记录设备范围、软件版本和测试窗口，结论分别反映门槛与稳定性。</p>"
+    ],
+    [
+     "<p>Acceptance consists of checks against the agreed handover scope. Burn-in sustains a load for a defined interval to expose faults, resets, or throttling that brief checks can miss. Both record device coverage, software versions, and the run window. Their conclusions address criteria and stability respectively.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "先建立可复测基线",
+    "Establishing a Repeatable Baseline"
+   ],
+   "d": [
+    "清点节点、GPU、网络端口和存储路径后，按子系统建立基线。",
+    "The baseline inventories nodes, GPUs, network ports, and storage paths before subsystem checks."
+   ],
+   "b": [
+    [
+     "<p>硬件标识、拓扑、驱动和固件版本构成运行基线。单节点可用 GPU 诊断和显存拷贝测试覆盖局部路径，点到点 RDMA 测试用于定位选定端口之间的链路。测试之外的节点和接口单列为覆盖缺口。</p>"
+    ],
+    [
+     "<p>Hardware identifiers, topology, drivers, and firmware form the run baseline. Local GPU diagnostics and memory copy tests cover node-level paths, while point-to-point RDMA tests isolate paths between selected ports. Nodes and interfaces outside those checks remain coverage gaps.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "施加持续负载并观察趋势",
+    "Sustaining Load and Watching Trends"
+   ],
+   "d": [
+    "持续负载期间记录温度、时钟、功耗和错误事件，以时间对齐变化。",
+    "Temperature, clock, power, and fault events are recorded against the same stress interval."
+   ],
+   "b": [
+    [
+     "<p>GPU Burn 是一个公开的 CUDA GPU 压力工具示例。工具的 TIME 参数定义施压时长，-i 选择单一设备。多节点分批运行可以观察同条件下的节点差异。温度、时钟与错误日志应能追溯到同一时间窗口，便于判断偶发事件与负载的关系。</p>"
+    ],
+    [
+     "<p>GPU Burn is a public example of a CUDA GPU stress tool. The TIME argument sets the stress duration, and -i selects a single device. Running across nodes in batches can reveal differences under the same conditions. Temperature, clocks, and fault logs are aligned to the load interval to help interpret intermittent events.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "跨节点与存储联合验证",
+    "Exercising Nodes and Storage Together"
+   ],
+   "d": [
+    "跨节点集合通信和代表性 I/O 作业补齐局部压力测试的覆盖。",
+    "Cross-node collectives and representative I/O extend coverage beyond local stress tests."
+   ],
+   "b": [
+    [
+     "<p>NCCL Tests 可单独测量跨节点集合通信。存储基准可按训练数据装载的访问模式产生负载。代表性作业再按交付范围组合计算、网络和数据读取，检验并发使用时的表现，子系统记录用于定位异常。</p>"
+    ],
+    [
+     "<p>NCCL Tests can exercise cross-node collectives on their own. A storage benchmark can reproduce elements of training data access. A representative job then couples compute, network, and data reads for the handover scope. Subsystem results help localize irregularities under concurrent use.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "对照条件并复测",
+    "Checking Criteria and Retesting"
+   ],
+   "d": [
+    "逐项核对门槛、覆盖和错误事件，修复后的复测使用同一口径。",
+    "Criteria, coverage, and fault events are checked individually, and retests use the same basis after remediation."
+   ],
+   "b": [
+    [
+     "<p>验收记录关联测试版本、设备清单、负载和观察时长。未执行或被中断的项目记录为覆盖缺口。异常需保留日志，明确受影响的部件和时间段。修复后采用相同用例与配置复测，便于对照改善是否来自修复。</p>"
+    ],
+    [
+     "<p>Each acceptance record carries the test version, inventory, load, and observation period. Tests that were skipped or interrupted remain coverage gaps. Fault logs retain the affected components and time window. Retesting with the same case and configuration supports comparison after remediation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "工具版本与结论范围",
+    "Tool Revisions and Scope of the Decision"
+   ],
+   "d": [
+    "验收流程由交付要求定义，工具版本和公开修订用于固定证据。",
+    "Handover requirements define acceptance, and tool versions pin the evidence."
+   ],
+   "b": [
+    [
+     "<p>截至 2026-11-23，集群验收与老化测试属于通用流程，无统一的公开版本或固定合格时长。示例工具 GPU Burn 的公开仓库未列版本发布，主分支公开修订 0d19c94 日期为 2026-10-02（UTC）。结论随环境、覆盖和事先约定的指标交付。</p>"
+    ],
+    [
+     "<p>As of 2026-11-23, cluster acceptance and burn-in are general practices without a common public release or universal passing duration. The public GPU Burn repository does not publish releases. Its public main development branch revision 0d19c94 is dated 2026-10-02 UTC. The handover decision is tied to the tested environment, coverage, and agreed metrics.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

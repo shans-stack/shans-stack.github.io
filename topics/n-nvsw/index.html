@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA NVLink Switch：从链路到 GPU 互联域 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVLink Switch 如何转发 GPU 流量、构成互联域，以及交换芯片在底板和整柜中的安装位置。" data-description-en="Five steps explain how NVLink Switch forwards GPU traffic, forms a fabric, and fits into baseboards and racks..">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-nvsw.css?v=437b51d9">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-nvsw">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-nvsw">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA NVLink Switch: From Links to a GPU Fabric">NVIDIA NVLink Switch：从链路到 GPU 互联域</h1>
+        <p class="meta"><span data-en="5 steps · NVLink, NVSwitch, NVL72">5 步 · NVLink、NVSwitch、NVL72</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/nvlink/&quot;&gt;NVIDIA NVLink and NVLink Switch&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/nvlink/">NVIDIA NVLink 与 NVLink Switch</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/hgx-platforms/fabric-manager-user-guide/index.html&quot;&gt;NVIDIA Fabric Manager User Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/hgx-platforms/fabric-manager-user-guide/index.html">NVIDIA Fabric Manager 用户指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html&quot;&gt;NVIDIA DGX Vera Rubin NVL72 Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">NVIDIA DGX Vera Rubin NVL72 硬件指南</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;NVIDIA GB300 NVL72&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">NVIDIA GB300 NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/&quot;&gt;NVIDIA Vera Rubin NVL72&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/">NVIDIA Vera Rubin NVL72 产品页</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-nvsw.js?v=f0671e55"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-nvsw",
+  "ar": [
+    2.392638036809816,
+    0.9836065573770492
+  ],
+  "steps": [
+    {
+      "t": [
+        "GPU 链路接入交换芯片",
+        "Connecting GPU Links to a Switch Chip"
+      ],
+      "d": [
+        "用于 NVLink 互联的交换芯片，使同一 NVLink 域内的多颗 GPU 可彼此通信。",
+        "A switch chip for NVLink that lets multiple GPUs communicate within the same NVLink domain."
+      ],
+      "b": [
+        [
+          "<p>NVLink 是 NVIDIA 的高速芯片互联。NVLink Switch（也称 NVSwitch）是实现 NVLink 交换的专用芯片。每颗 GPU 的链路可以接到交换芯片，由交换芯片将请求送到目标 GPU，从而让多对 GPU 使用同一个交换网络。</p>"
+        ],
+        [
+          "<p>NVLink is NVIDIA’s high-speed chip interconnect. NVLink Switch, also called NVSwitch, is a dedicated chip that switches NVLink traffic. A GPU can attach its links to the switch, which forwards requests to their destination so multiple GPU pairs can use the same fabric.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "一个 NVLink 域的边界",
+        "The Boundary of an NVLink Domain"
+      ],
+      "d": [
+        "域内 GPU 可通过交换网络互相访问，跨出这个域时可改走集群网络。",
+        "GPUs within a domain can reach one another through the fabric, while traffic beyond the domain can use the cluster network."
+      ],
+      "b": [
+        [
+          "<p>NVLink 域指通过系统的 NVLink 交换网络可彼此通信的 GPU 集合。例如计算分布在不同 GPU 上时，某一对 GPU 的数据可以通过交换芯片传送。这段路径由 GPU 和交换网络处理。通过网卡发往另一柜的流量则属于集群网络，采用 InfiniBand 或以太网等互联。</p>"
+        ],
+        [
+          "<p>An NVLink domain is a set of GPUs that can communicate over a system’s NVLink switching fabric. When computation is split across GPUs, for example, data can move between two GPUs through the switch. The GPUs and switching fabric handle this path. Traffic sent through a network adapter to another rack uses the cluster network, such as InfiniBand or Ethernet.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "HGX GPU 底板上的交换芯片",
+        "Switch Chips on an HGX GPU Baseboard"
+      ],
+      "d": [
+        "在 HGX H100 或 HGX B200 中，NVSwitch 与 GPU 安装在同一块底板上。",
+        "In HGX H100 or HGX B200, the NVSwitch chips and GPUs occupy the same baseboard."
+      ],
+      "b": [
+        [
+          "<p>在 HGX H100 八 GPU 底板上，GPU 接到第三代 NVSwitch，链路使用第四代 NVLink。HGX B200 八 GPU 底板改用基于第五代 NVLink 的第四代 NVSwitch。交换芯片与链路分别编号，因此这里的两组代数各自描述一种硬件或协议。</p>"
+        ],
+        [
+          "<p>On the eight-GPU HGX H100 baseboard, GPUs attach to third-generation NVSwitch chips over fourth-generation NVLink. The eight-GPU HGX B200 baseboard uses fourth-generation NVSwitch chips based on fifth-generation NVLink. Switch chips and links have separate generation numbering.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "NVL72 中的交换托盘",
+        "Switch Trays in NVL72"
+      ],
+      "d": [
+        "在 NVL72 整柜中，多颗交换芯片装在独立托盘里，经背部铜缆连接不同计算托盘的 GPU。",
+        "In an NVL72 rack, separate trays house multiple switch chips and connect GPUs on different compute trays through the rear copper interconnect."
+      ],
+      "b": [
+        [
+          "<p>在 DGX Vera Rubin NVL72 中，计算托盘承载 Rubin GPU，交换托盘承载 NVSwitch 芯片以及管理部件，背部无源铜缆提供连接。交换芯片、交换托盘和整套机柜交换网络分别对应芯片、可安装部件和系统三个层级。该型号的 72 颗 GPU 构成一个域。</p>"
+        ],
+        [
+          "<p>In DGX Vera Rubin NVL72, compute trays carry Rubin GPUs, and switch trays carry NVSwitch chips and management components. A passive copper interconnect at the rear joins the trays. A switch chip, a switch tray, and the rack-wide fabric represent different levels of integration. The 72 GPUs in this system form one domain.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "GPU 互联的三代实现",
+        "Three Generations of GPU Interconnect"
+      ],
+      "d": [
+        "Hopper 使用第四代 NVLink，Blackwell 和 Blackwell Ultra 使用第五代，Rubin 使用第六代。",
+        "Hopper uses fourth-generation NVLink, Blackwell and Blackwell Ultra use the fifth, and Rubin uses the sixth."
+      ],
+      "b": [
+        [
+          "<p>NVLink Switch 与各代系统的 GPU 链路配套。GB200 和 GB300 NVL72 都使用第五代 NVLink。Vera Rubin NVL72 保留 72 GPU 的域规模，并改用第六代 NVLink。NVL72 中的数字描述域内 GPU 数，系统的互联代际由具体 GPU 与交换配置决定。</p>"
+        ],
+        [
+          "<p>NVLink Switch is matched to the GPU links in each system generation. GB200 and GB300 NVL72 use fifth-generation NVLink. Vera Rubin NVL72 retains the 72-GPU domain size and moves to the sixth generation. The number in NVL72 identifies the GPU count in the domain, while the GPU and switch configuration identifies the interconnect generation.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

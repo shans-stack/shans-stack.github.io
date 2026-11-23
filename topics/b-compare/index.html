@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>结果能不能比 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明基准结果如何按版本、测量条件、场景和质量目标比较。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-compare.css?v=0b24b62f">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-compare">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-compare">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Comparing Results">结果能不能比</h1>
+        <p class="meta"><span data-en="5 steps · Benchmarks, Test Conditions, Reproducibility">5 步 · 基准、测试条件、可复现性</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-parameters&quot;&gt;fio Job Parameters&lt;/a&gt;"><a href="https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-parameters">fio 作业参数</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/inference_policies/blob/master/inference_rules.adoc&quot;&gt;MLPerf Inference Rules&lt;/a&gt;"><a href="https://github.com/mlcommons/inference_policies/blob/master/inference_rules.adoc">MLPerf Inference 规则</a></li>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/benchmarks/inference-datacenter/&quot;&gt;MLPerf Inference Datacenter Scenarios and Metrics&lt;/a&gt;"><a href="https://mlcommons.org/benchmarks/inference-datacenter/">MLPerf Inference Datacenter 场景与指标</a></li>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/2026/09/mlperf-inference-v6-1-results/&quot;&gt;MLPerf Inference v6.1 Announcement&lt;/a&gt;"><a href="https://mlcommons.org/2026/09/mlperf-inference-v6-1-results/">MLPerf Inference v6.1 公告</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-compare.js?v=50d1be3f"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-compare",
+ "ar": [
+  2.6,
+  1.0588235294117647
+ ],
+ "steps": [
+  {
+   "t": [
+    "先确定比较的问题",
+    "Defining the Comparison"
+   ],
+   "d": [
+    "两份结果能说明什么，取决于测试边界和预先定义的变量。",
+    "What two results can establish depends on the test boundary and the variable defined for comparison."
+   ],
+   "b": [
+    [
+     "<p>存储微基准在指定路径发出一组 I/O，端到端基准把更多应用环节计入测量。两者分别回答局部路径与整体任务的性能问题。基准名称、测量边界和计分项先确定比较对象；软件、硬件或配置中有意改变的一项决定结论指向。</p>"
+    ],
+    [
+     "<p>A storage microbenchmark issues I/O on a defined path, while an end-to-end benchmark measures more of the application workflow. These address path-level and whole-task performance, respectively. The benchmark name, measurement boundary, and scoring metric identify what is compared. The software, hardware, or configuration deliberately varied defines what the comparison can address.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "版本、单位与计时",
+    "Version, Units, and Timing"
+   ],
+   "d": [
+    "同名指标需要同一计时范围和聚合口径，数值单位可以另行统一。",
+    "Metrics with the same name need matching timing boundaries and aggregation, while units can be converted separately."
+   ],
+   "b": [
+    [
+     "<p>发布轮次标识一组适用的规则与任务。规则更新可能改变输入或合格门槛。即使版本相同，单客户端与整套系统、均值与 p99、全部运行与稳态窗口也代表不同口径。稳态窗口是运行进入相对稳定状态后取样的一段时间。</p>"
+    ],
+    [
+     "<p>A release round identifies a set of applicable rules and tasks. Rule changes can change inputs or qualification thresholds. Even within one version, one client and a whole system, a mean and p99, or a full run and a steady-state interval represent different measures. A steady-state interval is sampled after the run settles into relatively stable operation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "复现同一负载与条件",
+    "Reproducing the Workload and Conditions"
+   ],
+   "d": [
+    "记录负载配置、数据状态、客户端规模和统计窗口，才能解释剩余差异。",
+    "Recording the workload, data state, client scale, and measurement window makes the remaining differences interpretable."
+   ],
+   "b": [
+    [
+     "<p>存储对照实验一般固定请求大小、顺序或随机模式、读写比例、发起者数量、队列深度和数据集，还要明确缓存状态及写完成的定义。在比较扩展性时，客户端或设备数可以是有意变化的变量，系统总量和每单位结果分别回答不同问题。</p>"
+    ],
+    [
+     "<p>A storage comparison typically holds request size, sequential or random access, mix, issuer count, queue depth, and dataset constant, with cache state and write-completion semantics specified. In a scaling experiment, the client or device count can be the deliberate variable. System totals and per-unit results answer different questions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "场景、组别与合格条件",
+    "Scenarios, Divisions, and Qualification"
+   ],
+   "d": [
+    "同一基准中的场景、组别和质量门槛会限定可比较的结果范围。",
+    "Scenarios, divisions, and quality thresholds define comparable result groups within a benchmark."
+   ],
+   "b": [
+    [
+     "<p>以 MLPerf Inference 为例，Server 场景按规定到达过程提交请求，并按规则应用时延约束；Offline 场景将待处理样本集中交付，衡量批量处理吞吐。组别定义可接受的实现范围，例如 Closed 对模型及前后处理有等价性要求。对照也需匹配任务和对应质量目标。</p>",
+     "<p>截至 2026-11-23，MLPerf Inference Datacenter 与 Edge 的最新公开轮次为 v6.1，于 2026-09-16 公布。</p>"
+    ],
+    [
+     "<p>In MLPerf Inference, Server issues requests using a defined arrival process and applies latency constraints from the rules. Offline delivers the work as a batch and measures processing throughput. Divisions govern permitted implementations. For example, Closed constrains model, pre-processing, and post-processing equivalence. Comparisons also require matching tasks and quality targets.</p>",
+     "<p>As of November 23, 2026, v6.1 was the latest public MLPerf Inference Datacenter and Edge round. It was announced on September 16, 2026.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "把结论限定在证据内",
+    "Keeping Conclusions Within the Evidence"
+   ],
+   "d": [
+    "重复运行可呈现波动；缺失的关键条件会限制结果可回答的问题。",
+    "Repeated runs reveal variation, and missing conditions limit what a result can establish."
+   ],
+   "b": [
+    [
+     "<p>两份记录通过口径核对后，重复运行可以同时报告中心值与波动范围。只有最佳一次、缺少原始配置，或测试边界不明时，结果仍可作为各自环境的观察。仅凭这类数据，无法把差异归因到一个组件，也无法外推到另一个负载。</p>"
+    ],
+    [
+     "<p>Once reporting boundaries align, repeated runs can show a central value alongside run-to-run variation. A best run alone or a result with missing configuration or unclear boundaries can still describe its own environment. That evidence alone cannot attribute the gap to one component or extrapolate to a different workload.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

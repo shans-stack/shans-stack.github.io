@@ -1,0 +1,31 @@
+.n-superpod-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:19px}
+.n-superpod-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-superpod-figure .n-superpod-detail,.n-superpod-figure .n-superpod-caption,.n-superpod-figure .n-superpod-note{font-size:17px;fill:var(--ink2)}
+.n-superpod-figure .n-superpod-label{font-weight:650}
+.n-superpod-figure .n-superpod-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-superpod-figure .n-superpod-primary{stroke:var(--l4)}
+.n-superpod-figure .n-superpod-optional{stroke-dasharray:5 4}
+.n-superpod-figure .n-superpod-active{fill:color-mix(in srgb,var(--l4) 14%,var(--bg));stroke:var(--l4);stroke-width:2}
+.n-superpod-figure .n-superpod-alert,.n-superpod-figure .n-superpod-alert.n-superpod-active{stroke:var(--l1);fill:color-mix(in srgb,var(--l1) 16%,var(--bg))}
+.n-superpod-figure .n-superpod-link{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
+.n-superpod-figure .n-superpod-link.n-superpod-signal{stroke:var(--l5)}
+.n-superpod-figure .n-superpod-link.n-superpod-control{stroke:var(--ink3);stroke-dasharray:5 4}
+.n-superpod-figure .n-superpod-link.n-superpod-fault{stroke:var(--l1);stroke-dasharray:2 7}
+.n-superpod-figure .n-superpod-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.2}
+.n-superpod-figure .n-superpod-packet.n-superpod-control{fill:var(--ink3)}
+.n-superpod-figure .n-superpod-packet.n-superpod-signal{fill:var(--l5)}
+@media(max-width:640px){
+  .n-superpod-figure svg{font-size:17px}
+  .n-superpod-figure .n-superpod-detail,.n-superpod-figure .n-superpod-caption,.n-superpod-figure .n-superpod-note{font-size:16px}
+  body.topic-n-superpod.present .stage{padding:12px;row-gap:10px}
+  body.topic-n-superpod.present .stage .figbox,body.topic-n-superpod.present .stage .cap,body.topic-n-superpod.present .stage .ctl{margin:0}
+  body.topic-n-superpod.present .stage .cap{display:block}
+  body.topic-n-superpod.present .stage h2{font-size:24px}
+  body.topic-n-superpod.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-superpod .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-superpod-figure .n-superpod-packet{display:none}
+}

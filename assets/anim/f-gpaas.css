@@ -1,0 +1,20 @@
+.f-gpaas-diagram {
+  --ok: var(--l5);
+  --alt: var(--l6);
+  display: block;
+  width: 100%;
+  font: 500 17px var(--f);
+}
+.f-gpaas-diagram [data-tone="ok"] { --tone: var(--ok); }
+.f-gpaas-diagram [data-tone="alt"] { --tone: var(--alt); }
+.f-gpaas-card { fill: var(--bg); stroke: var(--tone, var(--rule2)); stroke-width: 1.5; }
+.f-gpaas-node[data-tone] .f-gpaas-card { stroke-width: 2.5; }
+.f-gpaas-line { fill: none; stroke: var(--tone, var(--rule2)); stroke-width: 2; stroke-linejoin: round; }
+.f-gpaas-packet { fill: var(--tone); stroke: var(--bg); stroke-width: 1.2; }
+.f-gpaas-title, .f-gpaas-caption { fill: var(--ink); font-weight: 600; }
+.f-gpaas-title { font-size: 19px; }
+.f-gpaas-detail, .f-gpaas-note { fill: var(--ink2); }
+@media (max-width: 640px) {
+  .f-gpaas-title { font-size: 16.5px; }
+  .f-gpaas-detail, .f-gpaas-caption, .f-gpaas-note { font-size: 16.5px; }
+}

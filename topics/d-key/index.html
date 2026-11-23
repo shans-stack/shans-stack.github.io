@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infinia 键构造：从租户范围到片段定位 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明Infinia 键构造：从租户范围到片段定位。租户标识进入数据键，客户端可用键的哈希定位缓存片段。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-key.css?v=5d29a5b4">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-key">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Infinia Key Construction: From Tenant Scope to Fragment Lookup">Infinia 键构造：从租户范围到片段定位</h1>
+        <p class="meta"><span data-en="5 steps · Data keys, tenant identifiers, hash lookup">5 步 · 数据键、租户标识、哈希定位</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/infinia/&quot;&gt;DDN Infinia Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/infinia/">DDN Infinia 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-multi-tenancy-2024-rebrand.pdf&quot;&gt;DDN Technical Brief · Tenant Identifiers and Hierarchy&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-multi-tenancy-2024-rebrand.pdf">DDN 技术简报 · 租户标识与层级</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/&quot;&gt;DDN Technical Blog · Infinia’s Distributed Engine&lt;/a&gt;"><a href="https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/">DDN 技术博客 · Infinia 的分布式引擎</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/&quot;&gt;DDN Technical Blog · The Data Path from Checkpoint to First Token&lt;/a&gt;"><a href="https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/">DDN 技术博客 · 从检查点到首个 Token 的数据路径</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-key.js?v=7e4ab16f"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-key",
+ "ar": [
+  960/416,
+  400/400
+ ],
+ "steps": [
+  {
+   "t": [
+    "键为数据提供逻辑标识",
+    "A Key Gives Data a Logical Identifier"
+   ],
+   "d": [
+    "键标识键值引擎中要查找的记录。",
+    "A key identifies the record to look up in the key-value engine."
+   ],
+   "b": [
+    [
+     "<p>应用通过其数据接口引用对象、文件或缓存块。Infinia 的原生键值引擎用键标识底层记录。图中的短标签用来区分记录及其标识。</p>"
+    ],
+    [
+     "<p>Applications refer to objects, files, or cache blocks through their respective interfaces. Infinia’s native key-value engine identifies underlying records by key. The diagram uses short labels to distinguish records from their identifiers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "租户标识进入键",
+    "The Tenant Identifier Is Part of the Key"
+   ],
+   "d": [
+    "同一局部标识可在不同租户范围内指向不同记录。",
+    "The same local identifier can refer to different records in separate tenant scopes."
+   ],
+   "b": [
+    [
+     "<p>DDN 公开说明，Infinia 的键包含租户标识。租户标识限定记录所属的逻辑范围。图中 A 和 B 的局部标识均为 K，两个完整键仍各自指向本租户的记录。</p>"
+    ],
+    [
+     "<p>DDN states that Infinia keys include the tenant identifier. The identifier establishes the logical scope for the record. In the diagram, tenants A and B use the same local identifier K, and the resulting keys refer to tenant-specific records.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "租户范围可以分层",
+    "Tenant Scopes Can Be Hierarchical"
+   ],
+   "d": [
+    "租户下可划分子租户，子租户下可配置数据集。",
+    "A tenant can contain subtenants, and a subtenant can contain datasets."
+   ],
+   "b": [
+    [
+     "<p>键空间是系统管理的键的集合。Infinia 公开的多租户架构采用分层键空间，支持给子租户分配资源，再把资源分配给数据集。这个层次描述资源与数据归属。</p>"
+    ],
+    [
+     "<p>A keyspace is the set of keys managed by the system. Infinia’s published multi-tenant architecture uses a hierarchical keyspace. Resources can be assigned to subtenants and then to datasets. The hierarchy describes ownership of resources and data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "键的哈希用于片段定位",
+    "Key Hashes Help Locate Fragments"
+   ],
+   "d": [
+    "在 DDN 的推理缓存示例中，键的哈希用于查找分布式数据片段。",
+    "In DDN’s inference cache example, a key hash is used to locate distributed fragments."
+   ],
+   "b": [
+    [
+     "<p>哈希函数从键生成固定形式的摘要。Infinia 的公开说明以 KV Cache 为例：客户端根据键的哈希查找片段的位置，再向相应节点请求数据。</p>"
+    ],
+    [
+     "<p>A hash function derives a fixed-format digest from a key. DDN uses KV cache reads as an example: a client uses the key hash to locate fragments and requests data from the corresponding nodes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "定位后并行读取",
+    "Parallel Fetch After Lookup"
+   ],
+   "d": [
+    "客户端同时向目标节点请求片段，汇集一次读取所需的数据。",
+    "The client requests fragments from the target nodes concurrently and collects the data needed for the read."
+   ],
+   "b": [
+    [
+     "<p>完成位置查找后，每个请求可发往对应节点。不同节点上的片段可以独立传输。图中只有本次读取所需的片段参与返回。</p>"
+    ],
+    [
+     "<p>After resolving locations, the client can send each request to the corresponding node. Fragments on separate nodes can travel independently. The diagram shows only the fragments needed for the read returning to the client.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

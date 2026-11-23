@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPC-DS：决策支持系统性能 · Shan's Stack</title>
+<meta name="description" content="分 6 步解释 TPC-DS 的零售数据模型、执行阶段、综合查询指标及 TPCx-AI 的测量范围。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-tpcds.css?v=817f7ae2">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-tpcds">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-tpcds">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="TPC-DS: Decision Support System Performance">TPC-DS：决策支持系统性能</h1>
+        <p class="meta"><span data-en="6 steps · SQL, scale factor, query streams, data maintenance">6 步 · SQL、比例因子、并发查询、数据维护</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://tpc.org/TPC_Documents_Current_Versions/current_specifications5.asp&quot;&gt;TPC Current Specifications&lt;/a&gt;"><a href="https://tpc.org/TPC_Documents_Current_Versions/current_specifications5.asp">TPC 现行规范目录</a></li>
+      <li data-en="&lt;a href=&quot;https://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-DS_v4.0.0.pdf&quot;&gt;TPC-DS 4.0.0 Specification, §1, §3–5, §7, §11&lt;/a&gt;"><a href="https://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-DS_v4.0.0.pdf">TPC-DS 4.0.0 规范，§1、§3–5、§7、§11</a></li>
+      <li data-en="&lt;a href=&quot;https://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPCx-AI_v2.0.0.pdf&quot;&gt;TPCx-AI 2.0.0 Specification, Revision History, §0, §7&lt;/a&gt;"><a href="https://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPCx-AI_v2.0.0.pdf">TPCx-AI 2.0.0 规范，修订记录、§0、§7</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-tpcds.js?v=65ec368e"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-tpcds",
+ "ar": [
+  2.5641025641025643,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "零售决策支持负载",
+    "A Retail Decision Support Workload"
+   ],
+   "d": [
+    "TPC-DS 用多渠道零售数据、分析查询与维护任务测量决策支持系统。",
+    "TPC-DS measures decision support systems with multichannel retail data, analytical queries, and data maintenance."
+   ],
+   "b": [
+    [
+     "<p>数据模型覆盖门店、网页和目录销售，以及退货、商品等业务数据。分析 SQL 组合筛选、连接和聚合，模拟数据仓库查询。</p>",
+     "<p>截至 2026-11-23，现行规范为 4.0.0，封面日期为 2024 年 11 月，修订记录日期为 2024-11-21。</p>"
+    ],
+    [
+     "<p>The data model covers store, web, and catalog sales, along with returns, items, and other business data. Analytical SQL combines filters, joins, and aggregations to model data warehouse queries.</p>",
+     "<p>As of 2026-11-23, the current specification is 4.0.0. The cover is dated November 2024, and the revision history gives 2024-11-21.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "比例因子与查询生成",
+    "Scale Factor and Query Generation"
+   ],
+   "d": [
+    "比例因子决定输入数据规模，官方工具各自生成数据与 SQL。",
+    "The scale factor determines input scale. Official tools generate data and SQL separately."
+   ],
+   "b": [
+    [
+     "<p>比例因子（SF）是规范定义的数据规模参数。 <code>dsdgen</code> 生成基础和刷新数据；<code>dsqgen</code> 根据 99 个查询模板产生可执行 SQL，并为各查询流生成顺序和参数。</p>",
+     "<p>正式测试用资格数据库和参考答案验证查询输出。涉及方言差异的修改有规范边界。</p>"
+    ],
+    [
+     "<p>The scale factor (SF) is the specification's dataset size parameter. <code>dsdgen</code> generates base and refresh data. <code>dsqgen</code> emits executable SQL from 99 query templates with ordering and parameters for each stream.</p>",
+     "<p>The formal test validates query outputs against reference answers on a qualification database. The specification limits dialect changes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "单流与并发查询",
+    "Single-Stream and Concurrent Queries"
+   ],
+   "d": [
+    "加载之后运行单查询流的 Power 测试，以及多查询流的 Throughput 测试。",
+    "The load is followed by a single-stream Power test and multi-stream Throughput tests."
+   ],
+   "b": [
+    [
+     "<p>查询流是一组按指定次序执行的 SQL。Power 测试在单个流中逐条执行。Throughput 测试并发执行多个流，每个流有自己的查询顺序，流数受所选数据规模对应的规则约束。</p>",
+     "<p>阶段耗时由测试驱动记录，反映系统在两类调度条件下的性能。</p>"
+    ],
+    [
+     "<p>A query stream is a sequence of SQL statements in a defined order. The Power test runs one stream sequentially. Throughput runs several streams concurrently, each with its own query order, under stream-count rules for the selected data scale.</p>",
+     "<p>The test driver records phase times under both scheduling conditions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "刷新阶段",
+    "Refresh Phases"
+   ],
+   "d": [
+    "两轮 Throughput 测试各自紧接一轮数据维护，刷新按规定数据集和顺序执行。",
+    "Each of the two Throughput tests is followed by data maintenance with prescribed refresh datasets and ordering."
+   ],
+   "b": [
+    [
+     "<p>维护阶段将规定的新增和删除等变更应用到零售表。每个刷新批次使用自己的刷新数据，批次之间不重叠，维护阶段与查询分开执行。</p>",
+     "<p>完整的测试序列覆盖加载、单流、并发和维护，能同时观察查询和数据更新所需的时间。</p>"
+    ],
+    [
+     "<p>Maintenance applies prescribed changes such as insertions and deletions to retail tables. Each refresh run uses its own refresh data, refresh runs do not overlap, and the maintenance phases are separate from queries.</p>",
+     "<p>The complete sequence covers loading, single-stream queries, concurrency, and maintenance, allowing their times to be observed together.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "综合查询指标",
+    "Composite Query Metric"
+   ],
+   "d": [
+    "QphDS@SF 汇总加载、单流、并发和维护，并随数据规模披露。",
+    "QphDS@SF combines load, single-stream, concurrency, and maintenance timings and is reported with the data scale."
+   ],
+   "b": [
+    [
+     "<p>QphDS@SF 是特定比例因子下的综合查询性能指标。单条 SQL 耗时来自相应明细。只运行模板子集、跳过维护或采用别的数据比例，得到的是另一项测量。</p>",
+     "<p>正式结果按审计与披露要求逐项发布。比较时需对齐规范版本和比例因子，并读出查询流与系统配置。</p>"
+    ],
+    [
+     "<p>QphDS@SF is a composite query performance metric at a specified scale factor. Individual SQL runtimes come from the underlying timings. A subset of the templates, a run without maintenance, or a different data scale yields a different measurement.</p>",
+     "<p>Formal results are released individually under audit and disclosure requirements. Comparisons align the specification and scale factor and account for query streams and system configuration.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "TPCx-AI 的测量范围",
+    "What TPCx-AI Measures"
+   ],
+   "d": [
+    "TPC-DS 衡量 SQL 决策支持，TPCx-AI 衡量端到端机器学习流水线。",
+    "TPC-DS measures SQL decision support. TPCx-AI measures end-to-end machine learning pipelines."
+   ],
+   "b": [
+    [
+     "<p>TPCx-AI 是 TPC 的端到端机器学习流水线基准，规范版本为 2.0.0（2024-08-20）。它用生成的数据和规定用例考察数据加载、预处理、模型训练和推理服务，并校验预测准确性。TPC-DS 的工作负载由分析 SQL 和数据维护组成，TPCx-AI 的测量边界延伸到模型训练和模型使用。</p>"
+    ],
+    [
+     "<p>TPCx-AI is TPC's end-to-end machine learning pipeline benchmark, specified in version 2.0.0 (2024-08-20). It uses generated data and defined use cases to exercise loading, preprocessing, model training, and inference serving, with prediction accuracy checked. TPC-DS exercises analytical SQL and data maintenance. TPCx-AI extends the measurement to training and using models.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

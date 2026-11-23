@@ -1,0 +1,30 @@
+.n-rubin-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:17px}
+.n-rubin-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-rubin-figure .n-rubin-start{text-anchor:start}
+.n-rubin-figure .n-rubin-heading{font-size:21px;font-weight:650}
+.n-rubin-figure .n-rubin-small,.n-rubin-figure .n-rubin-note{fill:var(--ink2);font-size:16px}
+.n-rubin-figure .n-rubin-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-rubin-figure .n-rubin-quiet{stroke-dasharray:4 3}
+.n-rubin-figure .n-rubin-boundary{fill:none;stroke:var(--rule2);stroke-dasharray:5 4}
+.n-rubin-figure .n-rubin-wire,.n-rubin-figure .n-rubin-callout{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-rubin-figure .n-rubin-directed{stroke:var(--l4)}
+.n-rubin-figure .n-rubin-secondary-wire{stroke-dasharray:3 4}
+.n-rubin-figure .n-rubin-callout{stroke:var(--rule2);stroke-width:1.1}
+.n-rubin-figure .n-rubin-packet{fill:var(--l4);stroke:var(--surface)}
+.n-rubin-figure .n-rubin-origin{fill:var(--bg);stroke:var(--l4);stroke-width:1.5}
+.n-rubin-figure .n-rubin-tray{fill:var(--rule);stroke:var(--rule2);stroke-width:.8}
+.n-rubin-figure .n-rubin-utility{fill:var(--blk)}
+.n-rubin-figure .n-rubin-coolant{fill:none;stroke:var(--l6);stroke-width:2}
+.n-rubin-figure .n-rubin-switch-tray{fill:color-mix(in srgb,var(--l4) 23%,var(--bg));stroke:var(--l4)}
+.n-rubin-figure .n-rubin-active{fill:color-mix(in srgb,var(--l4) 19%,var(--bg));stroke:var(--l4);stroke-width:1.9}
+@media(max-width:640px){
+  .n-rubin-figure svg{font-size:16px}
+  .n-rubin-figure .n-rubin-heading{font-size:18px}
+  .n-rubin-figure .n-rubin-small,.n-rubin-figure .n-rubin-note{font-size:15px}
+  body.topic-n-rubin.present .stage .figbox,body.topic-n-rubin.present .stage .cap{margin:0}
+  body.topic-n-rubin.present .stage h2{font-size:24px}
+  body.topic-n-rubin.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-rubin .mhost{aspect-ratio:var(--ar)}
+}

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mirantis k0rdent AI：多集群与 AI 服务运营 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明Mirantis 的 Kubernetes 原生 AI 基础设施平台，用可组合模板部署和运行多集群与 AI 服务，并提供租户隔离及用量视图。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-k0rdent.css?v=9d5c6827">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-k0rdent">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-k0rdent">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Mirantis k0rdent AI: Operating Clusters and AI Services">Mirantis k0rdent AI：多集群与 AI 服务运营</h1>
+        <p class="meta"><span data-en="5 steps · Kubernetes, cluster lifecycle, FinOps">5 步 · Kubernetes、集群生命周期、FinOps</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.mirantis.com/k0rdent-AI/latest/&quot;&gt;Mirantis k0rdent AI Documentation Overview&lt;/a&gt;"><a href="https://docs.mirantis.com/k0rdent-AI/latest/">Mirantis k0rdent AI 官方文档概览</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.mirantis.com/k0rdent-enterprise/latest/k0rdent_ai/&quot;&gt;Mirantis k0rdent Enterprise and k0rdent AI&lt;/a&gt;"><a href="https://docs.mirantis.com/k0rdent-enterprise/latest/k0rdent_ai/">Mirantis k0rdent Enterprise 与 k0rdent AI 的关系</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.mirantis.com/k0rdent-enterprise/latest/concepts/k0rdent-architecture/&quot;&gt;Mirantis k0rdent Enterprise Architecture and Templates&lt;/a&gt;"><a href="https://docs.mirantis.com/k0rdent-enterprise/latest/concepts/k0rdent-architecture/">Mirantis k0rdent Enterprise 架构与模板</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.mirantis.com/k0rdent-AI/latest/reference/network-port-requirements/&quot;&gt;Mirantis k0rdent AI Management and Child Cluster Network Reference&lt;/a&gt;"><a href="https://docs.mirantis.com/k0rdent-AI/latest/reference/network-port-requirements/">Mirantis k0rdent AI 管理与子集群网络参考</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-k0rdent.js?v=4f8225c3"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-k0rdent",
+  "ar": [
+    2.75,
+    0.9836065573770492
+  ],
+  "steps": [
+    {
+      "t": [
+        "用模板声明期望状态",
+        "Declaring the Desired State with Templates"
+      ],
+      "d": [
+        "k0rdent AI 用可组合模板分别定义集群与服务，并持续核对实际状态。",
+        "k0rdent AI defines clusters and services through composable templates and continually checks actual state against the declared state."
+      ],
+      "b": [
+        [
+          "<p>Mirantis k0rdent AI 是面向 AI 基础设施运营的 Kubernetes 原生平台，以 Mirantis k0rdent Enterprise 为基础。声明式管理用配置描述期望结果，由控制器观察实际状态并作出调整，使两者一致。这个持续过程称为调谐（reconciliation）。</p>",
+          "<p>集群定义与服务定义可分别复用。平台团队可利用同一套定义在多个集群或站点重复部署，并通过更新配置管理变更。</p>"
+        ],
+        [
+          "<p>Mirantis k0rdent AI is a Kubernetes-native platform for operating AI infrastructure, built on Mirantis k0rdent Enterprise. Declarative management describes the desired outcome in configuration. Controllers observe the actual state and work to bring it into line with the declared state. This continuous process is called reconciliation.</p>",
+          "<p>Cluster and service definitions are reusable independently. Platform teams can repeat deployments across clusters or sites and manage changes by updating the configuration.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "KCM 管理集群生命周期",
+        "KCM Manages the Cluster Lifecycle"
+      ],
+      "d": [
+        "KCM 从管理集群部署并更新运行工作负载的子集群。",
+        "KCM deploys and updates the child clusters that run workloads from a management cluster."
+      ],
+      "b": [
+        [
+          "<p>k0rdent AI Cluster Manager（KCM）负责 Kubernetes 集群的部署、配置和更新。管理集群承载平台的管理组件，子集群为租户提供运行应用与作业的环境。管理集群可以统一管理多个子集群。</p>",
+          "<p>Mirantis 文档列出托管和独立两种子集群控制平面形态。托管形态将控制平面组件运行在宿主集群上，独立形态在子集群自身的节点上运行这些组件。两种形态都保留子集群的 Kubernetes API。</p>"
+        ],
+        [
+          "<p>The k0rdent AI Cluster Manager (KCM) handles Kubernetes cluster deployment, configuration, and updates. The management cluster hosts platform management components, and child clusters provide environments for tenant applications and jobs. One management cluster can manage several child clusters.</p>",
+          "<p>Mirantis documents hosted and standalone child-cluster control planes. A hosted control plane runs its components on a host cluster. A standalone control plane runs them on the child cluster’s own nodes. Both expose a child-cluster Kubernetes API.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "KSM 管理集群内的服务",
+        "KSM Manages Services on the Clusters"
+      ],
+      "d": [
+        "集群就绪后，KSM 将服务部署到目标集群，并管理其后续变更。",
+        "Once clusters are ready, KSM deploys services to the target clusters and manages subsequent changes."
+      ],
+      "b": [
+        [
+          "<p>k0rdent AI State Manager（KSM）负责部署服务及其生命周期。服务模板可以描述需要安装的组件，例如监控服务。相同定义可以应用到多个选定集群，使这些集群使用一致的服务配置。</p>"
+        ],
+        [
+          "<p>The k0rdent AI State Manager (KSM) deploys services and manages their lifecycle. A service template can describe a component to install, such as a monitoring service. The same definition can be applied to several selected clusters so that they share a consistent service configuration.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "GPU 与租户隔离",
+        "GPU Allocation and Tenant Isolation"
+      ],
+      "d": [
+        "平台可承载容器和虚拟机，并在 GPU 分配、虚拟化和网络等层面提供租户隔离能力。",
+        "The platform supports container and virtual-machine workloads, with tenant isolation capabilities across GPU allocation, virtualization, and networking."
+      ],
+      "b": [
+        [
+          "<p>多租户平台为多个组织或团队提供基础设施，同时保持各自的资源和访问边界。Mirantis 将 GPU 分区和拓扑感知调度列为平台能力。GPU 分区将支持的 GPU 划为可分配的实例，拓扑感知调度在放置任务时考虑设备及其连接方式。</p>",
+          "<p>Mirantis 把 GPU 分配、虚拟化和网络都列在硬件辅助隔离的范围内。实际边界由部署时选用的硬件和平台配置决定。</p>"
+        ],
+        [
+          "<p>A multi-tenant platform serves several organizations or teams while maintaining separate resource and access boundaries. Mirantis lists GPU partitioning and topology-aware scheduling as platform capabilities. GPU partitioning divides a supported GPU into allocatable instances. Topology-aware scheduling considers devices and their interconnections when placing workloads.</p>",
+          "<p>Mirantis describes hardware-enforced isolation across GPU allocation, virtualization, and networking. The resulting boundaries depend on the hardware and platform configuration used in the deployment.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "KOF 汇总观测与租户用量",
+        "KOF Aggregates Observability and Tenant Usage"
+      ],
+      "d": [
+        "KOF 将集群观测数据和租户消耗视图集中到同一运营层。",
+        "KOF brings cluster telemetry and tenant consumption views into one operational layer."
+      ],
+      "b": [
+        [
+          "<p>k0rdent AI Observability and FinOps（KOF）负责集群和基础服务监控，以及事件和日志管理。可观测性利用指标、事件和日志帮助定位运行状态。FinOps 在这里指通过用量和成本报告管理基础设施支出。</p>",
+          "<p>多个子集群的观测数据可以汇总，以查看集群健康状态，并按租户查看资源消耗和成本报告。</p>"
+        ],
+        [
+          "<p>The k0rdent AI Observability and FinOps component (KOF) monitors clusters and baseline services and manages events and logs. Observability uses signals such as metrics, events, and logs to understand operating state. Here, FinOps means managing infrastructure spending through consumption and cost reporting.</p>",
+          "<p>Telemetry from child clusters can be aggregated to show cluster health and to report resource consumption and costs by tenant.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

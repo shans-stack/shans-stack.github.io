@@ -1,0 +1,23 @@
+.d-ss9024-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:20px}
+.d-ss9024-figure text{fill:var(--ink);dominant-baseline:central}
+.d-ss9024-figure .name{font-weight:700}
+.d-ss9024-figure .muted{fill:var(--ink2)}
+.d-ss9024-figure .body{fill:var(--surface);stroke:var(--rule2);stroke-width:1.5}
+.d-ss9024-figure .chassis{fill:none;stroke:var(--rule2);stroke-width:1.5}
+.d-ss9024-figure .focus .body{stroke:var(--l4);stroke-width:2}
+.d-ss9024-figure .accent .body{stroke:var(--l5);stroke-width:2}
+.d-ss9024-figure .glyph{fill:none;stroke:var(--l4);stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.d-ss9024-figure .wire{fill:none;stroke:var(--l5);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.d-ss9024-figure .signal .wire{stroke:var(--l4);stroke-dasharray:5 4}
+.d-ss9024-figure .signal path:not(:first-child){stroke-dasharray:none}
+.d-ss9024-figure .idle .wire{stroke:var(--rule2)}
+.d-ss9024-figure .down .wire{stroke:var(--l1);stroke-dasharray:5 5}
+.d-ss9024-figure .packet{fill:var(--l5);stroke:var(--surface);stroke-width:1}
+.d-ss9024-figure .packet.signal{fill:var(--l4)}
+@media (max-width:640px){
+  .d-ss9024-figure svg{font-size:19px}
+  .stage .figbox:has(.d-ss9024-figure){margin-block:8px}
+}
+[data-station="d-ss9024"] .src a{display:inline;padding:0;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:.2em}
+.d-ss9024-figure .failure{fill:var(--ink2)}
+.d-ss9024-figure .failure .body{stroke:var(--l1);stroke-dasharray:5 5}

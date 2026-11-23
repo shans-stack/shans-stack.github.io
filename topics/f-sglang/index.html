@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SGLang：RadixAttention 前缀复用 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 SGLang 如何通过 RadixAttention 索引、匹配和回收前缀缓存。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-sglang.css?v=73273e1f">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-sglang">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-sglang">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="SGLang: Prefix Reuse with RadixAttention">SGLang：RadixAttention 前缀复用</h1>
+        <p class="meta"><span data-en="5 steps · RadixAttention, radix trees, prefix matching">5 步 · RadixAttention、基数树、前缀匹配</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.sglang.io/&quot;&gt;SGLang Documentation&lt;/a&gt;"><a href="https://docs.sglang.io/">SGLang 官方文档</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/html/2312.07104v2#S3&quot;&gt;SGLang Paper · RadixAttention&lt;/a&gt;"><a href="https://arxiv.org/html/2312.07104v2#S3">SGLang 论文 · RadixAttention</a></li>
+      <li data-en="Schematic, not measured.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-sglang.js?v=75806758"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "f-sglang",
+  ar: [900/350,380/420],
+  steps: [
+    {
+      "t": [
+        "处理请求并生成键值",
+        "Processing Requests and Building the KV Cache"
+      ],
+      "d": [
+        "SGLang 运行时执行输入预填充与输出解码，为已处理的 token 生成 KV Cache。",
+        "The SGLang runtime runs input prefill and output decode, building a KV cache for processed tokens."
+      ],
+      "b": [
+        [
+          "<p>预填充（prefill）处理输入 token，解码（decode）逐步生成输出。KV Cache 保留注意力层计算出的键和值，供后续 token 使用。RadixAttention 将已经产生的缓存保留下来，以支持后续请求的前缀匹配。</p>"
+        ],
+        [
+          "<p>Prefill processes input tokens, and decode produces output in successive steps. The KV cache holds the keys and values computed by attention layers for later tokens. RadixAttention retains those cache entries for prefix matching on subsequent requests.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用基数树索引前缀",
+        "Indexing Prefixes with a Radix Tree"
+      ],
+      "d": [
+        "一条树边可以表示多个连续 token，整条树路径对应一段可查找的前缀。",
+        "A tree edge can represent several consecutive tokens, and a path identifies a searchable prefix."
+      ],
+      "b": [
+        [
+          "<p>基数树是一种压缩的前缀树。RadixAttention 将 token 序列映射到对应的缓存张量，也就是模型键和值组成的多维数组。原论文中，树的索引结构保存在 CPU，缓存张量存放在 GPU 的分页内存中。</p>"
+        ],
+        [
+          "<p>A radix tree is a compressed prefix tree. RadixAttention maps token sequences to their cached tensors, the multidimensional arrays of model keys and values. In the original design, the CPU holds the tree index while paged GPU memory holds those tensors.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "在公共前缀处分支",
+        "Branching at a Shared Prefix"
+      ],
+      "d": [
+        "新序列在已有树边中途分叉时，SGLang 在分叉点拆开树边。",
+        "When a sequence diverges partway through an existing edge, SGLang splits the edge at the branch point."
+      ],
+      "b": [
+        [
+          "<p>如果已有序列 A B C，新序列为 A B D，树边可以在 B 处拆分。A B 成为共同路径，C 和 D 分别成为分支。两个分支通过共同路径引用同一段前缀缓存。</p>"
+        ],
+        [
+          "<p>If the tree contains A B C and a new sequence contains A B D, the edge can split after B. A B becomes a shared path, and C and D form separate branches. Both branches reference the same prefix cache through the shared path.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "匹配到分叉点，计算新后缀",
+        "Matching the Prefix and Computing the Suffix"
+      ],
+      "d": [
+        "运行时复用从序列开头连续命中的键值，只对未命中的输入后缀执行预填充。",
+        "The runtime reuses the contiguous prefix match and prefills the unmatched input suffix."
+      ],
+      "b": [
+        [
+          "<p>查找沿树边比较 token，直到无法继续匹配。若请求为 A B E，且树中已有 A B C 和 A B D，A B 的键值可直接使用，E 进入模型计算。因此，重复的系统提示或多轮历史可以减少后续请求的预填充工作。</p>"
+        ],
+        [
+          "<p>Lookup compares tokens along the tree until the path stops matching. For a request A B E with A B C and A B D already cached, the model can reuse the keys and values for A B and compute those for E. Repeated system prompts or multi-turn history can therefore reduce prefill work on later requests.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "回收未被引用的叶节点",
+        "Evicting Unreferenced Leaves"
+      ],
+      "d": [
+        "原论文中的 LRU 策略从最近最少使用、且无运行中请求引用的叶节点回收缓存。",
+        "The paper’s LRU policy evicts the least recently used leaves that no running request references."
+      ],
+      "b": [
+        [
+          "<p>叶节点是没有子节点的树节点。先回收叶节点，可以让其共同祖先继续服务其他分支。运行时用引用计数保护当前批次使用的节点，使历史缓存与活跃请求共用同一显存池。</p>"
+        ],
+        [
+          "<p>A leaf has no child nodes. Evicting leaves first lets their shared ancestors continue to serve other branches. The runtime uses reference counts to protect nodes used by the active batch, so retained cache and running requests share one GPU memory pool.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

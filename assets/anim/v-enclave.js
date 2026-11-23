@@ -4,13 +4,12 @@
      a.show(i) / a.pause() / a.resume() / a.destroy() / a.ratio() / a.step()
    步骤状态归页面管，动画只保留画面里的切换按钮（第 3、5、7 步）。
    宽度 640px 以下换成上中下三层；系统开了「减少动态效果」时每步只画一帧静态结果。
-   文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/v-enclave.css。
-   第 4 到 7 步：「VAST 集群」里的 VAST 用官方字标，硬件框写「CPU + [NVIDIA] GPU」（文件同 assets/brand/）。 */
+   文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/v-enclave.css。 */
 (function(){
 var EN={
  "企业":"Enterprise","运营者的服务器":"Operator's servers","模型厂商":"Model vendor",
  "检索与组装":"Retrieval","企业数据":"Data","主机管理员":"Host admin","证明服务器":"Attestation","钥匙（KMS）":"Keys (KMS)","模型权重":"Weights",
- "集群":"cluster","只存密文":"Ciphertext only","只出站":"Outbound","内存":"Memory",
+ "VAST 集群":"VAST cluster","只存密文":"Ciphertext only","只出站":"Outbound","内存":"Memory",
  "普通容器":"Plain container","机密环境（CVM）":"Confidential VM","内存（加密）":"Encrypted RAM","加密内存":"Encrypted RAM","机密环境（CVM）@m":"CVM",
  "数据不能出门":"Data can't leave","权重不肯交出去":"Won't hand over weights","默认能看内存":"Can read memory",
  "拿到明文":"Gets plaintext","抓不到":"Blocked",
@@ -33,7 +32,6 @@ var EN={
 };
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s,m){return lang()!=='en'?s:m&&EN[s+'@m']!==undefined?EN[s+'@m']:EN[s]!==undefined?EN[s]:s}
-var SYM="<symbol id=\"vast-wm\" viewBox=\"0 0 66 14\"><path d=\"m11.918.916-.783-.375a.919.919 0 0 0-1.23.444l-.22.414L6.235 8.77 2.788 1.4l-.22-.414a.917.917 0 0 0-1.23-.444L.556.916c-.466.219-.69.804-.474 1.273l.195.383 4.689 10.024a1.383 1.383 0 0 0 1.248.797h.042a1.385 1.385 0 0 0 1.248-.797l4.689-10.024.195-.383c.217-.469-.007-1.054-.47-1.273ZM19.311 12.926l.784.375a.918.918 0 0 0 1.23-.444l.22-.414 3.451-7.371 3.448 7.371.22.414a.918.918 0 0 0 1.23.444l.785-.375c.462-.221.687-.804.469-1.271l-.195-.383-4.689-10.024a1.384 1.384 0 0 0-1.248-.797h-.041a1.386 1.386 0 0 0-1.25.797l-4.688 10.024-.195.383c-.219.467.006 1.05.47 1.27ZM47.275 3.212a.918.918 0 0 0 .966-.882l.03-.868c.02-.512-.393-.982-.908-1.006L46.887.45h-5.413c-.03 0-.059 0-.092.004-1.433.095-3.565 1.126-3.565 3.572 0 2.487 2.104 3.599 3.236 3.846l2.823.677c.041.009.082.017.124.023.15.022.896.176.896 1.014 0 .504-.253.801-.754.885h-5.318l-.362.005a.918.918 0 0 0-.966.883l-.03.868c-.02.512.393.982.908 1.006l.45.005h5.413c.043 0 .086 0 .128-.005 1.327-.123 3.301-1.196 3.301-3.647 0-2.539-2.051-3.547-3.195-3.742l-2.787-.668-.039-.008c-.042-.01-1.058-.235-1.058-1.142 0-.606.578-.769.953-.81h5.347l.388-.004ZM66 1.365a.916.916 0 0 0-.938-.914H55.5a.919.919 0 0 0-.938.914v.878c0 .513.427.968.942.976H58.897v9.086a.914.914 0 0 0 .56.864.919.919 0 0 0 .355.073h.879c.512 0 .968-.426.976-.94V3.217H65.06c.515-.007.943-.463.942-.975l-.003-.878Z\"/></symbol><symbol id=\"nv-logo\" viewBox=\"205 513 2090 414\"><path fill=\"#76B900\" d=\"M436.93785,640.78361v-35.49175c3.4459-.24553,6.92613-.42918,10.4726-.54024,97.07249-3.05104,160.75618,83.40761,160.75618,83.40761,0,0-68.78225,95.53503-142.53101,95.53503-10.62215,0-20.12751-1.71234-28.69777-4.58826v-107.62396c37.79122,4.56486,45.3879,21.25692,68.11388,59.12728l50.52954-42.60379s-36.88389-48.37696-99.0625-48.37696c-6.76609,0-13.23133.47815-19.58092,1.15504M436.93785,523.54106v53.0144c3.48438-.27548,6.97313-.49739,10.4726-.62333,134.99401-4.54781,222.93894,110.70911,222.93894,110.70911,0,0-101.01819,122.83652-206.25515,122.83652-9.64223,0-18.67162-.89028-27.15639-2.39142v32.76954c7.25714.92242,14.77052,1.46463,22.61492,1.46463,97.93719,0,168.75864-50.01037,237.34237-109.20595,11.3631,9.10406,57.91698,31.25152,67.49078,40.95975-65.2126,54.58595-217.17638,98.58388-303.32785,98.58388-8.30134,0-16.28653-.50177-24.12021-1.25321v46.05397h372.23407v-392.91789h-372.23407ZM436.93785,779.10599v27.98036c-90.57969-16.14985-115.72071-110.3077-115.72071-110.3077,0,0,43.48994-48.18696,115.72071-55.99504v30.69842c-.05553,0-.09183-.01487-.14102-.01487-37.90229-4.55218-67.51832,30.86283-67.51832,30.86283,0,0,16.59175,59.61825,67.65934,76.776M276.05771,692.6985s53.68509-79.21639,160.88014-87.40665v-28.7364c-118.72891,9.52895-221.54711,110.08578-221.54711,110.08578,0,0,58.23072,168.35047,221.54711,183.76373v-30.54909c-119.84569-15.0781-160.88014-147.15739-160.88014-147.15739Z\"/><path fill=\"#000000\" d=\"M1479.66576,597.78723l.02592,257.90666h72.83585v-257.90223l-72.86177-.00443ZM906.67774,597.43677v258.25712h73.48583v-196.09803l56.92818.01949c18.8585,0,32.28898,4.69251,41.37629,14.3888,11.5213,12.27737,16.22358,32.06825,16.22358,68.28803v113.4017l71.18818-.01297.01297-142.67253c0-101.83834-64.91535-115.57162-128.42042-115.57162h-130.7946M1596.94459,597.79587v257.89802h118.13971c62.94459,0,83.48829-10.46877,105.70657-33.93954,15.70652-16.47653,25.85275-52.64668,25.85275-92.1744,0-36.24991-8.58863-68.59087-23.57472-88.73-26.98413-36.0142-65.86086-43.05408-123.8987-43.05408h-102.22561ZM1669.19603,653.95164h31.31755c45.4339,0,74.81747,20.40298,74.81747,73.34165,0,52.95174-29.38356,73.35472-74.81747,73.35472h-31.31755v-146.69636ZM1374.64705,597.79587l-60.78862,204.3991-58.24896-204.38603-78.62696-.01307,83.18745,257.89802h104.97972l83.84098-257.89802h-74.3436ZM1880.53784,855.69389h72.84869v-257.88495l-72.86597-.01307.01728,257.89802ZM2084.72543,597.88892l-101.70877,257.71614h71.82122l16.09133-45.55054h120.36811l15.23266,45.55054h77.97807l-102.48525-257.73763-97.29737.02149ZM2132.0067,644.90644l44.12286,120.73556h-89.63895l45.51609-120.73556Z\"/></symbol>";
 var uidN=0;
 function mount(host,opts){
 opts=opts||{};
@@ -58,7 +56,7 @@ function layout(mobile){
     L.bx={ret:{x:60,y:104,w:144,h:56},dat:{x:52,y:300,w:160,h:64},con:{x:330,y:80,w:300,h:214},mem:{x:342,y:114,w:276,h:58},
       hw:{x:380,y:212,w:200,h:44},sto:{x:292,y:340,w:176,h:60},adm:{x:486,y:340,w:190,h:60},
       wts:{x:752,y:104,w:160,h:56},srv:{x:752,y:206,w:160,h:56},kms:{x:752,y:304,w:160,h:56}};
-    L.lo={sto:76,srv:40,kms:44,wts:44};
+    L.lo={srv:40,kms:44,wts:44};
     L.pt={datBlk:P(186,332),stoBlk:P(312,370),wtsBlk:P(774,132),kmsKey:P(774,332),
       sD:P(400,132),sK:P(560,132),sW:P(480,132),retC:P(186,132),cp1:P(624,370),cp2:P(656,370),admC:P(606,370),
       gateD:P(264,132),gateW:P(696,132),q:P(480,180),badge:P(752,206)};
@@ -89,7 +87,7 @@ function layout(mobile){
   L.bx={ret:{x:36,y:54,w:150,h:52},dat:{x:286,y:54,w:166,h:52},con:{x:40,y:206,w:360,h:210},mem:{x:52,y:240,w:336,h:56},
     hw:{x:120,y:318,w:200,h:44},sto:{x:28,y:448,w:170,h:56},adm:{x:206,y:448,w:190,h:56},
     srv:{x:204,y:684,w:156,h:52},kms:{x:16,y:684,w:170,h:52},wts:{x:200,y:756,w:200,h:52}};
-  L.lo={dat:44,sto:56,srvDy:-12};
+  L.lo={dat:44,srvDy:-12};
   L.pt={datBlk:P(306,80),stoBlk:P(56,476),wtsBlk:P(370,782),kmsKey:P(168,710),
     sD:P(160,258),sK:P(300,258),sW:P(230,258),retC:P(160,80),cp1:P(348,476),cp2:P(380,476),admC:P(360,476),
     gateD:P(160,154),gateW:P(448,626),q:P(220,330),badge:P(204,684)};
@@ -128,7 +126,6 @@ function build(){
   svg.setAttribute('viewBox',`0 0 ${L.W} ${L.H}`);
   const f=L.f,b=L.bx,t=L.tx;
   const defs=el('defs',{});
-  defs.innerHTML=SYM.replace(/id="([^"]+)"/g,'id="$1-'+uid+'"');
   const pat=el('pattern',{id:'hatch-'+uid,width:7,height:7,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);
   el('rect',{width:7,height:7,class:'hl1'},pat);el('line',{x1:0,y1:0,x2:0,y2:7,class:'hl2'},pat);
 
@@ -160,18 +157,13 @@ function build(){
   const gMem=grp('2 3 4 5 6 7');E.mem=el('rect',{x:b.mem.x,y:b.mem.y,width:b.mem.w,height:b.mem.h,rx:10,class:'mem'},gMem);
   E.memLbl=tx(t.memLbl.x,t.memLbl.y,'内存',f.sm,'ink3-t st',t.memLbl.a,gMem);
   const gHw=grp('4 5 6 7');box(b.hw,'blk',gHw);
-  /* 硬件框写「CPU + [NVIDIA] GPU」：GPU 是 NVIDIA 的机密计算模式。右侧 560 / 300 处有报告和钥匙进出，文字整体靠左 */
-  {const cy=C(b.hw).y,h=11,w=h*2090/414,lx=L.mobile?188:447;
-   tx(lx-6,cy,'CPU +',f.lbl,'lbl','end',gHw);
-   el('rect',{x:(lx-3).toFixed(1),y:(cy-h/2-2.5).toFixed(1),width:(w+6).toFixed(1),height:h+5,rx:2,class:'nvbk'},gHw);
-   el('use',{href:'#nv-logo-'+uid,x:lx.toFixed(1),y:(cy-h/2).toFixed(1),width:w.toFixed(1),height:h,'aria-label':'NVIDIA'},gHw);
-   tx(lx+w+6,cy,'GPU',f.lbl,'lbl','start',gHw);}
+  // 给右侧证明报告与钥匙的路径留出空间。
+  tx(C(b.hw).x-10,C(b.hw).y,'CPU + NVIDIA GPU',f.lbl,'lbl','middle',gHw);
   E.conSt=tx(t.conSt.x,t.conSt.y,'',f.sm,'st',t.conSt.a);
   const gSto=grp('4 5 6 7',null,'6');E.gSto=gSto;E.sto=box(b.sto,'blk',gSto);
-  /* 「VAST 集群」里的 VAST 用字标原件代替 */
-  {const r=b.sto,cy=C(r).y,h=12,w=h*66/14,x=r.x+(L.mobile?62:70);
-   E.stoWm=el('use',{href:'#vast-wm-'+uid,x,y:cy-h/2,width:w.toFixed(1),height:h,class:'vwm','aria-label':'VAST'},gSto);
-   E.stoTx=tx(x+w+6,cy,'集群',f.lbl,'lbl','start',gSto);E.stoX={x,w,min:L.pt.stoBlk.x+L.pw/2+8,max:r.x+r.w-8}}
+  // 标题放在密文传输路径的右侧。
+  const stoLabelX=(L.w.S[0].x+b.sto.x+b.sto.w)/2;
+  tx(stoLabelX,C(b.sto).y,'VAST 集群',f.lbl,'lbl','middle',gSto);
   tx(t.stoCap.x,t.stoCap.y,'只存密文',f.sm,'ink3-t',t.stoCap.a,gSto);
   E.gAdm=grp(ALL,null,'4 6');E.adm=box(b.adm,'blk',E.gAdm);labL(b.adm,'主机管理员',E.gAdm);
   E.admTxt=tx(t.admTxt.x,t.admTxt.y,'',f.sm,'st',t.admTxt.a,E.gAdm);
@@ -387,10 +379,7 @@ function run(){cancelAnimationFrame(raf);if(paused||dead||reduce)return;last=per
 function restart(){cancelAnimationFrame(raf);newSim();applyVis();
   if(reduce){const lim=[2.2,4.8,2.0,9.0,4.6,4.0,4.0][step];for(let t=0;t<lim;t+=1/60)tick(1/60);render();return}
   tick(0);render();run()}
-/* 「VAST 集群」一行：英文「cluster」比「集群」长，放不下时整行往左挪，不出框也不压密文块 */
-function placeSto(){const o=E.stoX;if(!o)return;try{const tw=E.stoTx.getComputedTextLength(),x=Math.max(o.min,Math.min(o.x,o.max-tw-6-o.w));
-  E.stoWm.setAttribute('x',x.toFixed(1));E.stoTx.setAttribute('x',(x+o.w+6).toFixed(1))}catch(e){}}
-function enter(i){step=i;viewManual=false;view=0;placeSto();restart()}
+function enter(i){step=i;viewManual=false;view=0;restart()}
 function label(){svg.setAttribute('aria-label',T('企业、运营者的服务器、模型厂商三方：机密环境如何先验证、后给钥匙'))}
 function rebuild(){L=layout(mq.matches);build();label();if(opts.onLayout)opts.onLayout(L.W/L.H,L.mobile);enter(step)}
 mq.addEventListener('change',rebuild);

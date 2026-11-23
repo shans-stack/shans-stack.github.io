@@ -1,0 +1,35 @@
+.ar-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 500 17px var(--f);
+}
+.ar-scene text { fill: var(--ink); dominant-baseline: central; }
+.ar-scene .ar-note { fill: var(--ink2); font-size: 16px; }
+.ar-scene .ar-heading { font-size: 19px; font-weight: 600; }
+.ar-scene .ar-token { fill: var(--ink); font-size: 16px; font-weight: 700; }
+.ar-link { fill: none; stroke: var(--rule2); stroke-width: 2.2; stroke-linejoin: round; }
+.ar-link.ar-optical { stroke: var(--ink2); stroke-width: 3.2; }
+.ar-link.ar-control { stroke: var(--ink3); stroke-dasharray: 4 5; }
+.ar-link.ar-rose { stroke: var(--l1); }
+.ar-link.ar-sage { stroke: var(--l5); }
+.ar-link.ar-fault { stroke: var(--l1); stroke-dasharray: 4 5; }
+.ar-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.25; }
+.ar-box.ar-idle { stroke-dasharray: 4 4; }
+.ar-box.ar-fault { stroke: var(--l1); stroke-width: 2; }
+.ar-block { fill: var(--ink2); stroke: var(--surface); stroke-width: 1; }
+.ar-block.ar-rose { fill: color-mix(in srgb, var(--l1) 65%, var(--surface)); stroke: var(--l1); }
+.ar-block.ar-sage { fill: color-mix(in srgb, var(--l5) 65%, var(--surface)); stroke: var(--l5); }
+.ar-scene .ar-token { paint-order: stroke; stroke: var(--surface); stroke-width: 2; }
+@media (641px <= width <= 720px) {
+  .topic-ar .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .topic-ar .stage .figbox { margin: 0; }
+  .topic-ar .stage .cap { margin-top: 8px; column-gap: 12px; }
+  .topic-ar .stage h2 { font-size: 24px; line-height: 1.2; }
+  .topic-ar .stage .desc { font-size: 16px; line-height: 1.35; }
+  .ar-scene { font-size: 15px; }
+  .ar-scene .ar-heading { font-size: 17px; }
+  .ar-scene .ar-note, .ar-scene .ar-token { font-size: 14px; }
+}

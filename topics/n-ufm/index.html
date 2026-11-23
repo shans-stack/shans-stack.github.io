@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA UFM：InfiniBand 网络管理与遥测 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明NVIDIA UFM。NVIDIA Unified Fabric Manager，为 Quantum InfiniBand 网络提供管理和实时遥测。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-ufm.css?v=a9d1178a">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-ufm">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-ufm">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA UFM: InfiniBand Fabric Management and Telemetry">NVIDIA UFM：InfiniBand 网络管理与遥测</h1>
+        <p class="meta"><span data-en="5 steps · InfiniBand, Subnet Management, Port Telemetry">5 步 · InfiniBand、子网管理、端口遥测</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/infiniband/ufm/&quot;&gt;Product Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/infiniband/ufm/">NVIDIA UFM · 产品说明</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking/display/nvidia-ufm-enterprise-user-manual-v6-24-2.pdf&quot;&gt;User Manual&lt;/a&gt;"><a href="https://docs.nvidia.com/networking/display/nvidia-ufm-enterprise-user-manual-v6-24-2.pdf">UFM Enterprise 6.24.2 · 用户手册</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/mission-control/docs/systems-administration-guide/2.0.0/high-speed-fabric-management.html&quot;&gt;High-Speed Fabric Management&lt;/a&gt;"><a href="https://docs.nvidia.com/mission-control/docs/systems-administration-guide/2.0.0/high-speed-fabric-management.html">Mission Control · 高速网络管理</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dsx/ncp/part-2-software-components/nvidia-software-for-infrastructure-as-a-service&quot;&gt;Infrastructure Software&lt;/a&gt;"><a href="https://docs.nvidia.com/dsx/ncp/part-2-software-components/nvidia-software-for-infrastructure-as-a-service">NVIDIA NCP · 基础设施软件</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-ufm.js?v=064053f4"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-ufm",
+ "ar": [
+  2.191780821917808,
+  0.8490566037735849
+ ],
+ "steps": [
+  {
+   "t": [
+    "管理整个 InfiniBand 网络",
+    "Managing an InfiniBand Fabric"
+   ],
+   "d": [
+    "UFM 将 InfiniBand 交换机和端口的状态集中到同一个管理平台。",
+    "UFM brings the state of InfiniBand switches and ports into one management platform."
+   ],
+   "b": [
+    [
+     "<p>InfiniBand fabric 是由适配器、交换机和互连链路组成的网络。NVIDIA Unified Fabric Manager（UFM）为横向扩展的计算集群提供 fabric 级视图，以关联同一网络内的设备、链路和运行状态。</p>"
+    ],
+    [
+     "<p>An InfiniBand fabric is a network of adapters, switches, and links. NVIDIA Unified Fabric Manager (UFM) provides a fabric-wide view for scale-out compute clusters, bringing devices, links, and operating state into context.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "子网管理与数据转发",
+    "Subnet Management and Data Forwarding"
+   ],
+   "d": [
+    "UFM Enterprise 可通过 OpenSM 管理 InfiniBand 子网，交换机在数据路径上转发流量。",
+    "UFM Enterprise can manage the InfiniBand subnet through OpenSM while switches forward traffic on the data path."
+   ],
+   "b": [
+    [
+     "<p>子网管理器负责发现子网拓扑并配置转发。OpenSM 是 UFM Enterprise 可使用的子网管理组件。子网完成配置后，主机之间的通信沿交换机数据路径传输。</p>"
+    ],
+    [
+     "<p>The subnet manager discovers subnet topology and configures forwarding. OpenSM is a subnet management component available in UFM Enterprise. Once the subnet is configured, host-to-host communication travels through the switches on the data path.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "端口遥测与拓扑定位",
+    "Correlating Port Telemetry with Topology"
+   ],
+   "d": [
+    "UFM 将端口状态、流量和错误纳入同一 InfiniBand 网络视图。",
+    "UFM shows port state, traffic, and errors in the context of the InfiniBand fabric."
+   ],
+   "b": [
+    [
+     "<p>遥测是设备自动采集并上报的运行数据。UFM 的端口视图列出链路速率、宽度和状态，网络仪表板汇总流量、错误和事件。端口及其拓扑位置为解释计数变化提供上下文。</p>"
+    ],
+    [
+     "<p>Telemetry is operational data collected and reported by devices. The UFM port view lists link speed, width, and state, while the fabric dashboard summarizes traffic, errors, and events. The port and its topology position provide context for changes in counters.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "告警与故障排查",
+    "Alerts and Troubleshooting"
+   ],
+   "d": [
+    "告警标出发生异常的端口，拓扑帮助确定受影响的链路。",
+    "An alert identifies an affected port, and topology helps locate the associated link."
+   ],
+   "b": [
+    [
+     "<p>在端口链路中断的示例里，告警指向对应设备和端口。链路两端的状态及相关错误记录有助于缩小故障范围，具体根因仍需结合设备和链路证据确认。</p>"
+    ],
+    [
+     "<p>In a link-down example, the alert identifies the device and port. State at both ends of the link and associated error records help narrow the investigation. Establishing the cause requires evidence from the devices and link.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Telemetry 与 Enterprise 的分工",
+    "Roles of Telemetry and Enterprise"
+   ],
+   "d": [
+    "UFM Telemetry 提供网络观测与校验，UFM Enterprise 在此基础上提供更完整的网络管理。",
+    "UFM Telemetry provides network visibility and validation. UFM Enterprise adds broader fabric management."
+   ],
+   "b": [
+    [
+     "<p>UFM Telemetry 关注网络运行条件和性能数据。UFM Enterprise 将遥测与增强的监控及管理功能结合。管理和观测使用同一网络的运行信息，但承担不同的运维职责。</p>"
+    ],
+    [
+     "<p>UFM Telemetry focuses on network conditions and performance data. UFM Enterprise combines telemetry with enhanced monitoring and management. Both use operational information from the fabric and serve distinct operational roles.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

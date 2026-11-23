@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-se.css，全部限定在 .ssa-v-se 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg（浅色）与 vast-wordmark-white.svg（深色），不内嵌。 */
+   样式在 assets/anim/v-se.css，全部限定在 .ssa-v-se 容器之内。 */
 (function(){
 var EN={"客户端":"Client","NVMe-oF 网络":"NVMe-oF network","DBox 1":"DBox 1","DBox 2":"DBox 2","SCM":"SCM","大容量闪存":"High-capacity flash","节点 1":"Node 1","节点 2":"Node 2","节点 3":"Node 3",
 "已挂载":"Drives mounted","每台 CNode 开机都挂上每一块盘":"Every CNode mounts every drive at start-up",
@@ -57,13 +56,6 @@ function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a==null?1:a;o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=o.a}
 /* 沿线走：t 在 [t0, t0+dur] 内沿 pts 走，之后 fo 秒内淡出；返回进度（之前 -1，淡出时 1.5） */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
-/* VAST 字标：引用 assets/brand 原件。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const R=window.SS_ROOT||'';
-  const g=el('g',{class:'vwm','aria-label':'VAST'},p),a={x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h};
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-black.svg',class:'vwm-l'},a),g);
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-white.svg',class:'vwm-d'},a),g);return g}
-/* 部件名 + VAST 字标排成一行：文字从 x 起（左对齐），字标紧跟在文字后面。返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h){const t=tx(x,y,s,fs,cls,'start',p);let w;try{w=t.getComputedTextLength()}catch(e){w=0}if(!w)w=fs*0.62*T(s).length;const m=vmark(x+w+Math.round(fs*0.35),y,h,p,'start');return {t,m}}
 function xmark(c,a,b,p){const g=el('g',{class:'xm'},p);line(P(c.x-b,c.y-a),P(c.x+b,c.y+a),'xmark',g);line(P(c.x-b,c.y+a),P(c.x+b,c.y-a),'xmark',g);return g}
 const dur=pts=>plen(pts)/L.sp;
 const SCENE={
@@ -116,12 +108,11 @@ const SCENE={
    const ly=D.y+D.lblDy;tx((drx[0]+drx[1])/2,ly,'SCM',f.sm,'ochre-t b7','middle',gD);tx((drx[2]+drx[7])/2,ly,'大容量闪存',f.sm,'ink3-t','middle',gD);
    const S0=L.stat;E.stat.push(S0.below?tx(c,D.y+D.h+S0.dy,'',f.sm,'st','middle',gD):tx(r.x+r.w+S0.dx,r.y+S0.dy,'',f.sm,'st','end',gD));
   });
-  /* CNode：名字 + VAST 字标（只标第一台），可加一行小字 */
+  /* CNode 可加一行小字 */
   E.cn=[];E.cnG=[];E.cnSub=[];
-  xs.forEach((x,i)=>{const r={x:x-L.cn.w/2,y:nTop,w:L.cn.w,h:L.cn.h};E.cn.push(box(r,gD));
+  xs.forEach(x=>{const r={x:x-L.cn.w/2,y:nTop,w:L.cn.w,h:L.cn.h};E.cn.push(box(r,gD));
    const g=el('g',{},gD);E.cnG.push(g);
-   if(i===0){const w0=f.lbl*3.1,w1=(M?11:14)*66/14,gap=M?6:8,x0=x-(w0+gap+w1)/2;vlabel(x0,ncy,'CNode',f.lbl,'lbl b7',g,M?11:14)}
-   else tx(x,ncy,'CNode',f.lbl,'lbl b7','middle',g);
+   tx(x,ncy,'CNode',f.lbl,'lbl b7','middle',g);
    E.cnSub.push(tx(x,ncy+14,'',f.sm,'st','middle',gD))});
   E.xCN=xs.map(x=>{const g=xmark(P(x,ncy),L.cn.h*0.3,L.cn.w*0.16,gD);g.style.opacity=0;return g});
   /* CNode 之间的询问路线（第 4、5 步）：从上方绕过中间那台 */

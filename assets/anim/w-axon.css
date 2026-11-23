@@ -1,0 +1,25 @@
+.w-axon-scene{display:block;width:100%;height:auto;overflow:hidden;font:500 17px var(--f)}
+.w-axon-scene text{fill:var(--ink);dominant-baseline:central}
+.w-axon-scene .w-axon-title{font-size:19px;font-weight:700}
+.w-axon-scene .w-axon-row,.w-axon-scene .w-axon-annotation{fill:var(--ink2)}
+.w-axon-scene .w-axon-note{fill:var(--ink3)}
+.w-axon-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.2}
+.w-axon-key .w-axon-card,.w-axon-a .w-axon-card{stroke:var(--l6);stroke-width:1.8}
+.w-axon-b .w-axon-card{stroke:var(--l4);stroke-width:1.8}
+.w-axon-off .w-axon-card{stroke-dasharray:5 5}
+.w-axon-route{fill:none;stroke:var(--l6);stroke-width:2;stroke-linejoin:round}
+.w-axon-route.w-axon-signal{stroke:var(--l4);stroke-dasharray:5 3}
+.w-axon-route.w-axon-b,.w-axon-route.w-axon-meta{stroke:var(--l4)}
+.w-axon-route.w-axon-idle{stroke:var(--rule2);stroke-dasharray:5 5}
+.w-axon-scene .w-axon-route-label{fill:var(--ink2);paint-order:stroke;stroke:var(--diagram-bg,var(--surface));stroke-width:5;stroke-linejoin:round}
+.present .w-axon-scene{--diagram-bg:var(--bg)}
+.w-axon-packet,.w-axon-mark{fill:var(--l6)}
+.w-axon-packet{stroke:var(--surface);stroke-width:1}
+.w-axon-packet.w-axon-signal,.w-axon-packet.w-axon-b,.w-axon-packet.w-axon-meta,.w-axon-mark.w-axon-b{fill:var(--l4)}
+.w-axon-mark.w-axon-p{fill:var(--l2)}
+@media(max-width:640px){
+  .w-axon-scene{font-size:15px}
+  .w-axon-scene .w-axon-title{font-size:16px}
+}
+.w-axon-route.w-axon-parity{stroke:var(--l2)}
+.w-axon-packet.w-axon-parity{fill:var(--l2)}

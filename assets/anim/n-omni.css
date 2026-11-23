@@ -1,0 +1,31 @@
+.n-omni-diagram { display: block; width: 100%; height: auto; font-family: var(--f); }
+.n-omni-diagram text { fill: var(--ink); }
+.n-omni-diagram .name { font-weight: 600; }
+.n-omni-diagram .sub, .n-omni-diagram .note { fill: var(--ink2); }
+.n-omni-diagram .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.4; }
+.n-omni-diagram .artifact .panel { fill: none; stroke-dasharray: 4 3; }
+.n-omni-diagram .idle .panel { stroke-dasharray: 4 4; }
+.n-omni-diagram .idle .name { fill: var(--ink2); }
+.n-omni-diagram .node.arrived .panel, .n-omni-diagram .good .panel { stroke: var(--l5); }
+.n-omni-diagram .node.blocked .panel { stroke: var(--l1); }
+.n-omni-diagram .route { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
+.n-omni-diagram .route.control:not(.arrow) { stroke-dasharray: 5 3; }
+.n-omni-diagram .route.active { stroke: var(--l4); }
+.n-omni-diagram .route.ok, .n-omni-diagram .route.ok.active { stroke: var(--l5); }
+.n-omni-diagram .route.stop, .n-omni-diagram .route.stop.active { stroke: var(--l1); }
+.n-omni-diagram .packet { fill: var(--l4); }
+.n-omni-diagram .packet.ok { fill: var(--l5); }
+.n-omni-diagram .packet.stop { fill: var(--l1); }
+.n-omni-diagram .route, .n-omni-diagram .packet { pointer-events: none; }
+[data-station="n-omni"] .src a { display: inline; padding: 0; font-size: inherit; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-n-omni .stage .figbox { margin-block: 8px; }
+  .topic-n-omni .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-omni .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-omni .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-omni .stage .ctl { gap: 8px; margin-top: 10px; }
+}
+.n-omni-diagram .picture { fill: none; stroke: var(--l4); stroke-width: 1.5; stroke-linejoin: round; }
+.n-omni-diagram .picture .floor { stroke: var(--rule2); }
+.n-omni-diagram .crate-shape { fill: var(--bg); }
+.n-omni-diagram .picture .boundary { stroke: var(--l5); stroke-dasharray: 3 2; }

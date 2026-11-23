@@ -1,0 +1,29 @@
+.n-dgx-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:17px}
+.n-dgx-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:550}
+.n-dgx-figure .n-dgx-sub,.n-dgx-figure .n-dgx-note{fill:var(--ink2);font-size:15px;font-weight:450}
+.n-dgx-figure .n-dgx-frame-label{text-anchor:start}
+.n-dgx-figure .n-dgx-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.4}
+.n-dgx-figure .n-dgx-frame{fill:none;stroke:var(--rule2);stroke-width:1.4;stroke-dasharray:5 4}
+.n-dgx-figure .n-dgx-accent{stroke:var(--lc);stroke-width:1.8}
+.n-dgx-figure .n-dgx-active{fill:color-mix(in srgb,var(--lc) 16%,var(--bg));stroke:var(--lc);stroke-width:2.2}
+.n-dgx-figure .n-dgx-muted{fill:var(--surface);stroke-dasharray:4 4}
+.n-dgx-figure .n-dgx-panel.n-dgx-busy{fill:color-mix(in srgb,var(--l1) 10%,var(--bg));stroke:var(--l1)}
+.n-dgx-figure .n-dgx-link{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-dgx-figure .n-dgx-link.n-dgx-ref,.n-dgx-figure .n-dgx-link.n-dgx-telemetry{stroke-dasharray:4 4}
+.n-dgx-figure .n-dgx-link.n-dgx-data,.n-dgx-figure .n-dgx-link.n-dgx-result{stroke:var(--l5)}
+.n-dgx-figure .n-dgx-link.n-dgx-busy{stroke:var(--l1);stroke-dasharray:4 4}
+.n-dgx-figure .n-dgx-chip{fill:var(--l5);stroke:var(--bg);stroke-width:1}
+.n-dgx-figure .n-dgx-chip.n-dgx-result{fill:var(--lc)}
+.n-dgx-figure .n-dgx-chip.n-dgx-durable,.n-dgx-figure .n-dgx-chip.n-dgx-telemetry{fill:var(--ink3)}
+@media(max-width:640px){
+  .n-dgx-figure svg{font-size:15px}
+  .n-dgx-figure .n-dgx-sub,.n-dgx-figure .n-dgx-note{font-size:13px}
+  body.topic-n-dgx.present .stage{padding:12px;row-gap:12px}
+  body.topic-n-dgx.present .stage .figbox,body.topic-n-dgx.present .stage .cap,body.topic-n-dgx.present .stage .ctl{margin:0}
+  body.topic-n-dgx.present .stage .cap{display:block}
+  body.topic-n-dgx.present .stage h2{font-size:24px}
+  body.topic-n-dgx.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-dgx .mhost{aspect-ratio:var(--ar)}
+}

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自助门户 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明自助门户如何从获准的服务目录交付集群、虚拟机、AI 工作区、模型端点和 AI 应用。" data-description-en="Six steps explain how a self-service portal delivers clusters, virtual machines, AI workspaces, model endpoints, and AI applications from an approved catalog.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-portal.css?v=e14a576a">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-portal">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-portal">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Self-Service Portal">自助门户</h1>
+        <p class="meta"><span data-en="6 steps · Service Catalog, Provisioning">6 步 · 服务目录、资源开通</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://rafay.co/solutions/self-service&quot;&gt;Rafay · Self-Service Compute and Developer Hub&lt;/a&gt;"><a href="https://rafay.co/solutions/self-service">Rafay · 自助计算与 Developer Hub</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-GPU-PaaS-Deployment-Guide.pdf&quot;&gt;Rafay · GPU PaaS Deployment Guide&lt;/a&gt;"><a href="https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-GPU-PaaS-Deployment-Guide.pdf">Rafay · GPU PaaS 部署指南</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-Environment-Manager-Developer-Guide.pdf&quot;&gt;Rafay · Environment Manager Developer Guide&lt;/a&gt;"><a href="https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-Environment-Manager-Developer-Guide.pdf">Rafay · Environment Manager 开发指南</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/architecture/&quot;&gt;Kubernetes · Cluster Architecture&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/architecture/">Kubernetes · 集群架构</a></li>
+      <li data-en="&lt;a href=&quot;https://developers.redhat.com/articles/2025/04/14/how-developer-hub-and-openshift-ai-work-openshift&quot;&gt;Red Hat · Developer Hub and OpenShift AI&lt;/a&gt;"><a href="https://developers.redhat.com/articles/2025/04/14/how-developer-hub-and-openshift-ai-work-openshift">Red Hat · Developer Hub 与 OpenShift AI</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/ai-and-cloud-native-blog/delivering-nvidia-rag-blueprints-as-a-self-service-gpu-service&quot;&gt;Rafay · Delivering NVIDIA RAG Blueprints as a Self-Service GPU Service&lt;/a&gt;"><a href="https://rafay.co/ai-and-cloud-native-blog/delivering-nvidia-rag-blueprints-as-a-self-service-gpu-service">Rafay · 通过自助目录交付 NVIDIA RAG Blueprint</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-portal.js?v=55f0d3a4"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-portal",
+  "ar": [920/310, 356/430],
+  "steps": [
+    {
+      "t": [
+        "从目录条目到交付请求",
+        "From Catalog Entry to Delivery Request"
+      ],
+      "d": [
+        "租户从获准的目录选择规格，平台按模板开通并报告进度。",
+        "Tenants select an approved offering, and the platform provisions it from a template and reports progress."
+      ],
+      "b": [
+        [
+          "<p>租户是平台按组织或团队划定的使用单位。服务目录列出当前租户可以申请的交付对象和可选规格。环境模板定义所需资源、默认配置与开通步骤。网页和程序接口（API）可以是同一开通流程的两个入口。</p>",
+          "<p>提交申请后，平台按规则确认权限和配额，再执行开通步骤。门户可显示创建进度，并在交付完成后提供对应的连接或使用入口。Rafay 的自助计算方案为这类门户和 API 提供了一个实例。</p>"
+        ],
+        [
+          "<p>A tenant is a platform account scope for an organization or team. The service catalog lists the offerings and configurations available to that tenant. An environment template defines the resources, defaults, and provisioning steps. A web portal and an application programming interface (API) can expose the same provisioning workflow.</p>",
+          "<p>After submission, the platform checks permissions and quotas, then runs the provisioning steps. The portal can display progress and provide an access point when the resource is ready. Rafay’s self-service compute offering illustrates this pattern.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "集群交付",
+        "Cluster Delivery"
+      ],
+      "d": [
+        "集群条目交付可运行容器工作负载的 Kubernetes 环境。",
+        "A cluster offering delivers a Kubernetes environment for container workloads."
+      ],
+      "b": [
+        [
+          "<p>Kubernetes 集群由管理容器工作负载的控制平面和运行容器的工作节点组成。租户可从目录选择节点规格等开放参数，平台按模板准备集群，交付 Kubernetes API 的访问入口。集群开通后，租户可以在权限范围内部署自己的工作负载。</p>"
+        ],
+        [
+          "<p>A Kubernetes cluster consists of a control plane that manages container workloads and worker nodes that run them. The tenant selects exposed parameters such as the worker configuration. The platform provisions the cluster from a template and provides access to the Kubernetes API. The tenant can then deploy workloads within the granted permissions.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "虚拟机交付",
+        "Virtual Machine Delivery"
+      ],
+      "d": [
+        "虚拟机条目交付带操作系统的计算实例，可按规格附带 GPU。",
+        "A virtual machine offering delivers an instance with an operating system and optional GPU resources."
+      ],
+      "b": [
+        [
+          "<p>虚拟机（VM）是在物理主机上运行的独立操作系统实例。目录规格可定义 CPU、内存、磁盘、网络和可用的 GPU 配置。开通后可通过系统允许的方式登录，例如通过远程登录协议 SSH 连接 Linux 虚拟机。Rafay 的 GPU 平台即服务（GPU PaaS）部署指南将虚拟机与 Kubernetes 集群列为不同的交付选项。</p>"
+        ],
+        [
+          "<p>A virtual machine (VM) is an operating system instance running on a physical host. A catalog configuration can specify CPU, memory, disk, network, and available GPU options. Once provisioned, the tenant can sign in using the configured access method, such as Secure Shell (SSH) for a Linux VM. Rafay’s GPU platform-as-a-service (GPU PaaS) deployment guide lists VMs and Kubernetes clusters as separate offerings.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "AI 工作区交付",
+        "AI Workspace Delivery"
+      ],
+      "d": [
+        "工作区条目交付可进入的开发环境，包含工具、依赖及分配的计算资源。",
+        "A workspace offering delivers an interactive development environment with tools, dependencies, and allocated compute."
+      ],
+      "b": [
+        [
+          "<p>AI 工作区为模型开发提供可交互的运行环境，例如可在浏览器打开的 Jupyter 笔记本。模板可固定工具和依赖版本，并配置计算资源及持久存储。交付给租户的是可开始实验的工作区入口。Red Hat OpenShift AI 的 Workbench 使用选定的软件镜像提供笔记本与开发工具。</p>"
+        ],
+        [
+          "<p>An AI workspace provides an interactive environment for model development, such as a Jupyter notebook available in a browser. A template can pin tool and dependency versions and configure compute and persistent storage. The tenant receives an entry point for running experiments. Red Hat OpenShift AI Workbenches use a selected software image to provide a notebook and development tools.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "推理环境与模型端点",
+        "Inference Environments and Model Endpoints"
+      ],
+      "d": [
+        "推理环境运行模型，交付给应用的是可调用的 API 端点。",
+        "The inference environment runs the model and exposes an API endpoint to applications."
+      ],
+      "b": [
+        [
+          "<p>推理环境把模型文件、运行模型的软件和所需计算资源组成一个可部署的服务。运行环境加载模型后，应用通过端点发送推理请求。端点是服务接收请求的 API 地址。Red Hat OpenShift AI 的部署流程在仪表板上提供已部署模型的推理端点。</p>"
+        ],
+        [
+          "<p>An inference environment combines model files, the software that runs the model, and the required compute into a deployable service. After the runtime loads the model, applications send inference requests to an endpoint, the API address that receives those calls. Red Hat OpenShift AI’s deployment workflow exposes the deployed model’s inference endpoint in its dashboard.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "AI 应用交付",
+        "AI Application Delivery"
+      ],
+      "d": [
+        "应用条目把推理和其他组件部署成可使用的应用，提供应用界面或 API。",
+        "An application offering deploys inference and other components together and provides an application interface or API."
+      ],
+      "b": [
+        [
+          "<p>检索增强生成（RAG）应用会先从指定资料中检索相关内容，再把结果交给模型作为生成答案的依据。应用模板可把文档导入、检索和模型调用连成一套工作流程，交付的是这套流程的使用入口。以 Rafay 的自助目录为例，开通 NVIDIA RAG Blueprint 后，租户会收到应用入口。</p>"
+        ],
+        [
+          "<p>A retrieval-augmented generation (RAG) application retrieves relevant material from a defined collection and supplies it to the model as context for an answer. An application template can connect document ingestion, retrieval, and model calls in one workflow. The service exposes an interface to that workflow. Rafay’s self-service catalog, for example, returns an application endpoint after deploying the NVIDIA RAG Blueprint.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name=description]');
+  description.content = english ? description.dataset.descriptionEn : "分 6 步说明自助门户如何从获准的服务目录交付集群、虚拟机、AI 工作区、模型端点和 AI 应用。";
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -70,6 +70,33 @@ kbd{font:500 12px var(--f);border:1px solid var(--rule2);border-radius:2px;paddi
 .sec .bd ul{padding-left:1.2em}
 .sec .bd li{margin-top:6px}
 .sec .bd b{color:var(--ink);font-weight:600}
+.gen-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.sec .gen-tabs{max-width:680px;margin-inline:auto}
+.gen-tabs button{min-height:44px;padding:0 12px;border:1px solid var(--rule2);border-radius:2px;background:transparent;color:var(--ink2);font:500 14px var(--f);cursor:pointer}
+.gen-tabs button:hover{border-color:var(--ink)}
+.gen-tabs button[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sec .bd a.gen-source,.rel .src a.gen-source{text-decoration:underline;text-underline-offset:3px}
+.rel .src a.gen-source{display:inline;padding:0;font-size:inherit}
+.gen-figure{max-width:760px;margin:0 auto;padding:clamp(12px,3vw,32px);font-size:clamp(13px,1.4vw,18px);line-height:1.4}
+@media (prefers-reduced-motion:no-preference){
+  .gen-figure{animation:gen-appear .18s ease-out}
+  @keyframes gen-appear{from{opacity:.55}to{opacity:1}}
+}
+.gen-figure ul{display:flex;flex-wrap:wrap;gap:1px;margin:0;padding:1px;list-style:none;background:var(--rule2);border-radius:4px}
+.gen-figure li{flex:1 1 150px;min-width:0;display:grid;align-content:start;gap:5px;padding:clamp(9px,1.4vw,18px);background:var(--surface);border-top:3px solid var(--rule2)}
+.gen-figure b{color:var(--ink);font-weight:600}
+.gen-figure span,.gen-figure figcaption{color:var(--ink2)}
+.gen-figure figcaption{margin-top:10px;font-size:.9em}
+.gen-present{width:min(100%,820px);max-height:100%;overflow:auto}
+.gen-present .gen-figure{padding-block:0}
+.stage:has(.gen-tabs) .figbox{margin-block:0}
+@media (max-width:640px){
+  .gen-figure li{flex-basis:124px}
+  .gen-figure figcaption{font-size:12px}
+  .stage:has(.gen-tabs) .cap{display:block;margin-top:8px}
+  .stage:has(.gen-tabs) h2{font-size:24px}
+  .stage:has(.gen-tabs) .desc{font-size:16px;line-height:1.4}
+}
 .rel{max-width:960px;margin-left:auto;margin-right:auto}
 
 @media (max-width:720px){
@@ -148,3 +175,13 @@ a.wl:hover{text-decoration-thickness:2.5px}
 .wlcard.term-card{pointer-events:auto;max-height:calc(100dvh - 32px);overflow:auto}
 .term-card a{display:block;width:fit-content;margin-top:6px;text-decoration:underline;text-underline-offset:3px}
 .wlcard.term-tap{position:fixed;left:16px!important;right:16px;top:auto!important;bottom:calc(16px + env(safe-area-inset-bottom));width:auto!important;max-width:340px;margin-inline:auto}
+/* 顶栏「专题」下拉（与 site.css 同一份） */
+.navdd{position:relative}
+.navdd .ddb{display:flex;align-items:center;gap:6px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink2);background:none;border:0;cursor:pointer;white-space:nowrap}
+.navdd .ddb:hover,.navdd .ddb[aria-expanded=true]{color:var(--ink)}
+.navdd .ddb svg{width:10px;height:6px}
+.navdd .ddm{position:absolute;top:100%;left:0;z-index:60;min-width:150px;padding:6px 0;background:var(--surface);border:1px solid var(--rule2)}
+.navdd .ddm a{display:block;padding:8px 16px;font-size:15px;color:var(--ink2);white-space:nowrap}
+.navdd .ddm a:hover{color:var(--ink);background:var(--bg)}
+.navdd .ddm a[aria-current]{color:var(--ink);font-weight:600}
+@media (max-width:720px){.navdd .ddb{padding:10px 6px;font-size:14px}.navdd .ddm{left:auto;right:0}}

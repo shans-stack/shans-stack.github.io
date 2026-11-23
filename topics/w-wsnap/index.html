@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA 可写快照 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA 如何从只读快照创建可写克隆、如何保留原始版本，以及如何另存只读快照。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-wsnap.css?v=6662fcd3">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-wsnap">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language" data-noconv>
+      <button type="button" data-lang-set="zh" data-en="SC" aria-label="简体中文" data-en-label="Simplified Chinese" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" data-en="TC" aria-label="繁體中文" data-en-label="Traditional Chinese" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" aria-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-wsnap">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA Writable Snapshots">WEKA 可写快照</h1>
+        <p class="meta"><span data-en="5 steps · Snapshot Clones, Read-Only Snapshots, Snap-to-Object">5 步 · 快照克隆、只读快照、Snap-to-Object</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshots&quot;&gt;WEKA Docs · Snapshots&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshots">WEKA 文档 · 快照</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots#duplicate-a-snapshot&quot;&gt;WEKA Docs · Duplicate a Snapshot in the GUI&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots#duplicate-a-snapshot">WEKA 文档 · 在图形界面复制快照</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots-1&quot;&gt;WEKA Docs · Manage Snapshots Using the CLI&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshots/snapshots-1">WEKA 文档 · 用命令行管理快照</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj&quot;&gt;WEKA Docs · Snap-to-Object&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj">WEKA 文档 · Snap-to-Object</a></li>
+      <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-wsnap.js?v=b09f6659"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "w-wsnap",
+  ar: [820/276, 360/394],
+  steps: [
+    {
+      t: ["从只读时间点开始", "Start with a Read-Only Point in Time"],
+      d: ["WEKA 文件系统快照默认只读，保留创建时的文件系统状态。", "A WEKA filesystem snapshot is read-only by default and preserves the filesystem state at capture time."],
+      b: [["<p>文件系统快照是某一时间点的文件系统视图。活动文件系统可以继续接收写入，只读快照仍保留捕获时的内容。这份固定状态可以作为克隆的起点。</p>"], ["<p>A filesystem snapshot is a view of the filesystem at a particular time. The live filesystem can continue receiving writes while the read-only snapshot preserves the captured contents. That fixed state can serve as the starting point for a clone.</p>"]]
+    },
+    {
+      t: ["从只读源创建可写克隆", "Create a Writable Clone from the Read-Only Source"],
+      d: ["复制只读快照并将新快照设为可写，原快照仍保持只读。", "Duplicating a read-only snapshot with writability enabled leaves the source read-only."],
+      b: [["<p>可写克隆是在同一文件系统中从指定源快照派生的另一份快照，创建时看到的内容与源快照一致。WEKA 图形界面的 Duplicate Snapshot 操作预填源文件系统和源快照，并为新快照提供可写设置。</p>"], ["<p>A writable clone is a separate snapshot derived from a specified source snapshot in the same filesystem. Its initial contents match the source. In the WEKA GUI, Duplicate Snapshot preselects the source filesystem and snapshot and offers a writable setting for the new snapshot.</p>"]]
+    },
+    {
+      t: ["在克隆中修改文件", "Modify Files in the Clone"],
+      d: ["测试写入可以改变克隆中的文件，原快照继续保存初始版本。", "Test writes can change files in the clone while the source snapshot keeps the original version."],
+      b: [["<p>克隆有自己的访问点，即挂载文件系统中 <code>.snapshots</code> 下用于访问该快照的目录。测试任务可以在此修改文件。例如，克隆里的示例文件从 A 版变为 B 版时，原只读快照里仍可读取 A 版。</p>"], ["<p>The clone has its own access point, a directory under <code>.snapshots</code> in the mounted filesystem. A test workload can edit files there. As an example, changing a file from version A to version B in the clone leaves version A readable in the source snapshot.</p>"]]
+    },
+    {
+      t: ["可写状态无法逆转", "Writability Is One-Way"],
+      d: ["同一份可写快照无法改回只读。", "An existing writable snapshot cannot be changed back to read-only."],
+      b: [["<p>可写快照可以继续接收修改。WEKA 的快照更新操作支持修改名称和访问点。需要固定当前内容时，可以从可写快照另建一个只读时间点。</p>"], ["<p>A writable snapshot can continue accepting changes. WEKA's snapshot update operation can change the name and access point. A separate read-only snapshot can capture the current contents at a fixed point in time.</p>"]]
+    },
+    {
+      t: ["另存新的只读快照", "Capture a New Read-Only Snapshot"],
+      d: ["从可写克隆另建只读快照后，新快照可通过 Snap-to-Object 上传。", "A new read-only snapshot taken from the writable clone can be uploaded through Snap-to-Object."],
+      b: [["<p>以可写克隆为源创建只读快照，可以将测试后的文件状态固定在新的时间点。可写克隆可以继续修改。Snap-to-Object 将只读快照上传到配置好的对象存储，可写克隆本身无法通过该功能上传。</p>"], ["<p>Taking a new read-only snapshot of the writable clone preserves the post-test file state at a new point in time. The clone remains writable. Snap-to-Object can upload the read-only snapshot to configured object storage. The writable clone itself is ineligible for that upload.</p>"]]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

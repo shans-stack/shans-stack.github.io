@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPECstorage AI_IMAGE：图像训练的存储 I/O · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 AI_IMAGE 的负载生成、加压过程、峰值 JOBS 与总体响应时间。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-specsto.css?v=fb233731">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-specsto">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-specsto">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="SPECstorage AI_IMAGE: Storage I/O for Image Training">SPECstorage AI_IMAGE：图像训练的存储 I/O</h1>
+        <p class="meta"><span data-en="5 steps · Storage I/O, JOBS, ORT">5 步 · 存储 I/O、JOBS、ORT</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://open.spec.org/storage2020/index.html&quot;&gt;Current SPECstorage Solution 2020 Version&lt;/a&gt;"><a href="https://open.spec.org/storage2020/index.html">SPECstorage Solution 2020 当前版本</a></li>
+      <li data-en="&lt;a href=&quot;https://www.spec.org/notes/2020/news20201215/&quot;&gt;SPEC Suite Launch Announcement&lt;/a&gt;"><a href="https://www.spec.org/notes/2020/news20201215/">SPEC 套件首发公告</a></li>
+      <li data-en="&lt;a href=&quot;https://open.spec.org/storage2020/whatsnewv101/&quot;&gt;v1.0.1 Release Notes&lt;/a&gt;"><a href="https://open.spec.org/storage2020/whatsnewv101/">v1.0.1 发行说明</a></li>
+      <li data-en="&lt;a href=&quot;https://open.spec.org/storage2020/docs/usersguide.pdf&quot;&gt;SPEC User’s Guide, §6.4 AI_IMAGE&lt;/a&gt;"><a href="https://open.spec.org/storage2020/docs/usersguide.pdf">SPEC 用户指南，§6.4 AI_IMAGE</a></li>
+      <li data-en="&lt;a href=&quot;https://open.spec.org/storage2020/docs/runrules.pdf&quot;&gt;SPEC Run and Reporting Rules, §2.3 and §5&lt;/a&gt;"><a href="https://open.spec.org/storage2020/docs/runrules.pdf">SPEC 运行与报告规则，§2.3、§5</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-specsto.js?v=083f091d"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-specsto",
+ "ar": [
+  2.318840579710145,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "图像处理环境中的存储 I/O",
+    "Storage I/O in Image Processing"
+   ],
+   "d": [
+    "AI_IMAGE 用负载生成器模拟图像数据准备和训练阶段的文件操作。",
+    "AI_IMAGE uses load generators to emulate file operations from image preparation and training."
+   ],
+   "b": [
+    [
+     "<p>SPEC 从图像处理环境的 I/O 轨迹提炼出文件操作组合。负载生成器向被测存储系统发出请求，并记录存储响应。模型计算在测试范围之外，因此该成绩用于描述存储系统。</p>",
+     "<p>截至 2026-11-23，SPEC 将 SPECstorage Solution 2020 v1.0.1 列为当前版本。套件首发于 2020-12-15，v1.0.1 的公开发行说明未标注发布日期。</p>"
+    ],
+    [
+     "<p>SPEC derived a mix of file operations from I/O traces of image-processing workloads. Load generators send requests to the storage system under test and measure its responses. Model computation falls outside that measurement boundary.</p>",
+     "<p>As of November 23, 2026, SPEC lists SPECstorage Solution 2020 v1.0.1 as current. The suite debuted on December 15, 2020. SPEC’s public notes for v1.0.1 are undated.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "一个 JOB 的组成",
+    "What Makes Up One JOB"
+   ],
+   "d": [
+    "一个 JOB 组合小图像文件摄取、记录生成、训练读取和检查点 I/O。",
+    "One JOB combines small-image ingestion, record creation, training reads, and checkpoint I/O."
+   ],
+   "b": [
+    [
+     "<p>摄取阶段访问小图像文件，记录生成阶段模拟创建 TensorFlow 使用的数据记录。训练读取阶段模拟读取这些记录，检查点阶段模拟保存训练状态所需的 I/O。检查点发生频率低，单次测试中可能不出现。</p>",
+     "<p>JOBS 是规范定义的负载单位。负载生成器以规定的操作组合和速率施压，因此 JOBS 表示施加的工作负载规模。</p>"
+    ],
+    [
+     "<p>Ingestion accesses small image files, and the preparation component emulates creating TensorFlow records. The training component reads those records. The checkpoint component emulates I/O to save training state. Checkpoint operations are infrequent and may be absent from a given run.</p>",
+     "<p>JOBS is the workload unit defined by the rules. Each unit specifies a mix and rate of operations, so JOBS describes the amount of load applied.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "逐档加压",
+    "Stepping Through Load Levels"
+   ],
+   "d": [
+    "SM2020 协调客户端，按配置逐档提高 JOBS 并测量响应。",
+    "SM2020 coordinates the clients and measures responses at successive JOBS levels."
+   ],
+   "b": [
+    [
+     "<p>SM2020 是套件的运行管理器。配置指定负载生成客户端、存储路径、初始负载（LOAD）、每档增量（INCR_LOAD）和档位数（NUM_RUNS）。客户端需要有足够的内存和到存储的连接能力，存储也需容纳该负载所需的数据集。</p>",
+     "<p>各档按规则运行并验证。测试记录请求负载、实际达成的操作速率和响应时间，形成负载与响应曲线。协议和系统配置随结果披露。</p>"
+    ],
+    [
+     "<p>SM2020, the suite’s run manager, takes the load-generator clients, target paths, initial load (LOAD), increment (INCR_LOAD), and number of points (NUM_RUNS). Clients need enough memory and connectivity to drive the workload, and storage must hold the required test data.</p>",
+     "<p>Each point is run and validated under the rules. The requested load, achieved operation rate, and response times provide the load and response curve. The disclosure includes the protocol and system configuration.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "峰值 JOBS 与总体响应时间",
+    "Peak JOBS and Overall Response Time"
+   ],
+   "d": [
+    "成绩并列报告曲线最右侧的 JOBS 和全负载范围的 ORT。",
+    "The result pairs JOBS at the rightmost measured point with ORT across the tested range."
+   ],
+   "b": [
+    [
+     "<p>总体响应时间（Overall Response Time，ORT）是将实测响应曲线下的面积除以峰值吞吐量所得的指标。计算只使用实测点，结果以毫秒表示。曲线在各负载档位上的响应时间还可单独查看。</p>"
+    ],
+    [
+     "<p>Overall Response Time (ORT) divides the area under the measured response curve by peak throughput. It uses only measured points and is reported in milliseconds. The individual points also show response time at each load level.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "同工作负载下解读成绩",
+    "Comparing Like Workloads"
+   ],
+   "d": [
+    "AI_IMAGE 成绩的适用范围由工作负载、存储路径和披露的配置决定。",
+    "The AI_IMAGE workload, storage path, and disclosed configuration define the scope of the result."
+   ],
+   "b": [
+    [
+     "<p>只有同一 SPECstorage 工作负载的分数可直接比较。协议、客户端数量和后端配置会随提交变化，也应结合关注的负载档位检查响应时间。ORT 汇总整段曲线，无法给出峰值档位延迟或慢请求的尾延迟。</p>"
+    ],
+    [
+     "<p>Direct score comparisons apply within the same SPECstorage workload. Protocol, client count, and storage configuration can vary by submission. Response time at the relevant load point can help interpret the result. ORT summarizes the curve and cannot provide peak-point latency or tail latency for slow operations.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

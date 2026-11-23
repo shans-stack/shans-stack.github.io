@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>访问与配额策略 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明如何集中定义访问与配额策略，在申请和变更时执行授权、配额和准入检查。" data-description-en="Six steps explain how access and quota policies are defined centrally and enforced through authorization, quota, and admission checks on resource requests and changes.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-policy.css?v=c826c0c7">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-policy">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-policy">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Access and Quota Policy">访问与配额策略</h1>
+        <p class="meta"><span data-en="6 steps · Authorization, Quotas, Admission">6 步 · 授权、配额、准入</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/run-ai/multi-tenant/documentation/development/service-reference&quot;&gt;NVIDIA Run:ai · Multi-Tenant Service Reference&lt;/a&gt;"><a href="https://docs.nvidia.com/run-ai/multi-tenant/documentation/development/service-reference">NVIDIA Run:ai · 多租户服务参考</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/reference/access-authn-authz/rbac/&quot;&gt;Kubernetes · Role-Based Access Control&lt;/a&gt;"><a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">Kubernetes · 基于角色的访问控制</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/policy/resource-quotas/&quot;&gt;Kubernetes · Resource Quotas&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">Kubernetes · 资源配额</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/&quot;&gt;Kubernetes · Admission Control&lt;/a&gt;"><a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/">Kubernetes · 准入控制</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/&quot;&gt;Kubernetes · Auditing&lt;/a&gt;"><a href="https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/">Kubernetes · 审计</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-policy.js?v=8f099315"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-policy",
+  "ar": [920/310, 356/430],
+  "steps": [
+    {
+      "t": [
+        "集中定义，分处执行",
+        "Central Policy Definition and Local Enforcement"
+      ],
+      "d": [
+        "平台统一管理规则，再把适用的策略交给负责资源的控制平面执行。",
+        "The platform manages rules centrally and distributes effective policy to the control planes that manage the resources."
+      ],
+      "b": [
+        [
+          "<p>策略可按租户、项目和运行环境适用。定义处维护授权范围、用量约束与部署条件，控制平面负责管理资源并检查实际提交的请求。集中维护让不同环境可以采用一致的规则，也可以根据各自范围应用不同策略。NVIDIA Run:ai 的多租户版会计算适用的工作负载策略，并同步到集群代理。</p>"
+        ],
+        [
+          "<p>Policies can apply to a tenant, project, or runtime environment. The central service maintains access scope, usage constraints, and deployment requirements. The control plane manages resources and checks the requests submitted to it. Central management lets environments use common rules and apply different policies by scope. NVIDIA Run:ai’s multi-tenant edition computes the effective workload policy and synchronizes it to cluster agents.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "授权检查操作范围",
+        "Authorization Checks the Action and Scope"
+      ],
+      "d": [
+        "授权依据调用者的身份、动作和目标范围决定是否允许操作。",
+        "Authorization decides whether a caller may perform the requested action on the target resource."
+      ],
+      "b": [
+        [
+          "<p>认证确认调用者身份，授权检查该身份是否有权对目标对象执行请求的动作。基于角色的访问控制（RBAC）用角色列出允许的动作和对象类型，再把角色绑定给特定范围内的用户、组或服务账号。以 Kubernetes 为例，项目的服务账号可以获准在指定命名空间创建工作负载，跨命名空间的操作需要相应范围的授权。</p>"
+        ],
+        [
+          "<p>Authentication confirms the caller’s identity. Authorization checks whether that identity can perform the requested action on the target. In role-based access control (RBAC), a role lists permitted actions and resource types. A binding grants the role to users, groups, or service accounts within a defined scope. In Kubernetes, a project’s service account can be permitted to create workloads in one namespace. Operations in a different namespace require permissions scoped to that namespace.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "配额检查资源用量",
+        "Quota Checks Resource Usage"
+      ],
+      "d": [
+        "配额按管理范围累计用量，检查新建或变更是否会超过所设约束。",
+        "Quotas track usage within a scope and check whether a creation or update would exceed its constraint."
+      ],
+      "b": [
+        [
+          "<p>硬配额为命名空间、项目或租户设定总量上限。以 Kubernetes 的 ResourceQuota 为例，创建或更新对象将导致命名空间超过限制时，API 服务会拒绝请求。通过配额只说明用量符合约束，实际可否运行还由调度器依据节点容量和放置条件决定。</p>"
+        ],
+        [
+          "<p>A hard quota caps aggregate usage in a namespace, project, or tenant. For example, Kubernetes ResourceQuota rejects a creation or update that would exceed a namespace’s limit. Passing a quota check establishes that usage is within the constraint. The scheduler still determines whether a workload can run, based on node capacity and placement requirements.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "准入检查部署配置",
+        "Admission Checks Deployment Configuration"
+      ],
+      "d": [
+        "准入检查提交的配置是否满足部署规则，例如容器的安全要求。",
+        "Admission checks whether the submitted configuration meets deployment rules, such as container security requirements."
+      ],
+      "b": [
+        [
+          "<p>准入是已认证、已授权的请求在写入资源前接受的检查。在 Kubernetes 中，准入控制器可以补入默认值，再由验证阶段决定是否允许写入。部署规则例如可要求容器符合指定的安全标准。配额检查在 Kubernetes 中也由准入机制执行。</p>"
+        ],
+        [
+          "<p>Admission evaluates an authenticated and authorized request before the resource is persisted. In Kubernetes, admission controllers can supply defaults, and validation then determines whether the resource can be written. A deployment rule can require containers to meet a defined security standard. Kubernetes also enforces resource quotas through admission.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "申请与变更都经过检查",
+        "Checks on Creation and Change"
+      ],
+      "d": [
+        "门户和 API 发起的资源申请及后续变更，进入同一套适用的控制检查。",
+        "Creation and update requests from the portal or API enter the same applicable checks."
+      ],
+      "b": [
+        [
+          "<p>目录可以先按租户显示获准项目。提交创建或更新时，负责资源的接口依据当时的身份、用量与配置执行规则。扩大部署规模时，由扩容产生的新资源请求也可能触发配额检查。通过检查后，资源才进入后续开通或调度。</p>"
+        ],
+        [
+          "<p>The catalog can filter offerings by tenant access. When a create or update request reaches the resource API, the system applies the rules to the current identity, usage, and requested configuration. Scaling out a deployment can trigger quota checks on the additional resources it requests. A resource advances to provisioning or scheduling after it passes the applicable checks.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "拒绝反馈与审计",
+        "Rejection Feedback and Auditing"
+      ],
+      "d": [
+        "拒绝原因帮助定位所触发的规则，审计记录保留操作轨迹。",
+        "Rejection details identify the rule involved, and audit records preserve a trail of the operation."
+      ],
+      "b": [
+        [
+          "<p>拒绝时，平台可将权限不足、超出配额或配置校验失败的原因反馈给请求方。Kubernetes 的 ResourceQuota 违规响应会说明触发的限制。启用审计后，平台还可按审计策略记录调用者、请求动作及处理结果，为后续检查提供依据。</p>"
+        ],
+        [
+          "<p>When rejecting a request, the platform can return a reason such as insufficient permissions, exceeded quota, or invalid configuration. Kubernetes ResourceQuota violation responses identify the constraint involved. When auditing is configured, the platform can record the caller, action, and result according to the audit policy for later review.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name=description]');
+  description.content = english ? description.dataset.descriptionEn : "分 6 步说明如何集中定义访问与配额策略，在申请和变更时执行授权、配额和准入检查。";
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

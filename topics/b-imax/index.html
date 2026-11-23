@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InferenceX（原 InferenceMAX） · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 InferenceX 的公开运行、固定序列和多轮工作负载，以及吞吐与交互速度的边界。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-imax.css?v=088ceb88">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-imax">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-imax">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="InferenceX (Formerly InferenceMAX)">InferenceX（原 InferenceMAX）</h1>
+        <p class="meta"><span data-en="6 steps · continuous benchmarking, concurrency sweeps, AgentX">6 步 · 持续基准、并发扫描、AgentX</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/SemiAnalysisAI/InferenceX&quot;&gt;InferenceX Repository and Workflows&lt;/a&gt;"><a href="https://github.com/SemiAnalysisAI/InferenceX">InferenceX 官方基准仓库和运行工作流</a></li>
+      <li data-en="&lt;a href=&quot;https://newsletter.semianalysis.com/p/agentx-inferencexv3-does-cuda-moat&quot;&gt;InferenceX v3 and AgentX 1.0 Announcement&lt;/a&gt;"><a href="https://newsletter.semianalysis.com/p/agentx-inferencexv3-does-cuda-moat">InferenceX v3 与 AgentX 1.0 公告</a></li>
+      <li data-en="&lt;a href=&quot;https://inferencex.semianalysis.com/blog/inferencex-v2-nvidia-blackwell-vs-amd-vs-hopper&quot;&gt;InferenceX v2 Rename and Methodology&lt;/a&gt;"><a href="https://inferencex.semianalysis.com/blog/inferencex-v2-nvidia-blackwell-vs-amd-vs-hopper">InferenceX v2 更名和方法说明</a></li>
+      <li data-en="&lt;a href=&quot;https://inferencex.semianalysis.com/blog/agentic-benchmark-agent-benchmark-guide&quot;&gt;AgentX Replay Methodology&lt;/a&gt;"><a href="https://inferencex.semianalysis.com/blog/agentic-benchmark-agent-benchmark-guide">AgentX 重放方法</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-imax.js?v=aac914d7"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-imax",
+ "ar": [
+  2.2222222222222223,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "持续运行的推理基准",
+    "Continuous Inference Benchmarking"
+   ],
+   "d": [
+    "InferenceX 将模型、运行框架和硬件组成可复查的配置，并公开各次运行结果。",
+    "InferenceX combines models, serving frameworks, and hardware into auditable configurations with public run results."
+   ],
+   "b": [
+    [
+     "<p>InferenceMAX 是 SemiAnalysis 持续推理基准的原名，后更名为 InferenceX。它按配置更新持续运行，结果绑定具体的运行记录。框架升级后，历史点与新点对应不同的软件版本。</p>",
+     "<p>截至 2026-11-23，最近一次可核对的整代公告为 InferenceX v3，发布于 2026-08-24。v3 在固定序列场景之外加入了 AgentX 1.0。持续更新的数据点另有自己的运行日期。</p>"
+    ],
+    [
+     "<p>InferenceMAX was the original name of SemiAnalysis's continuous benchmark, now called InferenceX. Runs are refreshed as configurations change, with results linked to individual runs. Points before and after a framework update represent different software versions.</p>",
+     "<p>As of November 23, 2026, the latest verified major announcement is InferenceX v3, published on August 24, 2026. It added AgentX 1.0 alongside the fixed-sequence scenarios. Continuously updated data points have their own run dates.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "固定序列与运行配方",
+    "Fixed Sequences and Run Recipes"
+   ],
+   "d": [
+    "固定序列场景规定输入和输出长度，并在多个并发档位运行同一配方。",
+    "Fixed-sequence scenarios specify input and output lengths and run a given recipe at multiple concurrency levels."
+   ],
+   "b": [
+    [
+     "<p>一份配方记录模型、框架、数值精度与并行方式。输入长度主要影响读取与处理提示词的预填充阶段，输出长度改变逐步生成的解码工作量。两者都属于比较结果时的工作负载条件。</p>"
+    ],
+    [
+     "<p>A recipe records the model, framework, numeric precision, and parallelism. Input length primarily shapes prefill, which processes the prompt. Output length changes the amount of decoding, which generates the response token by token. Both lengths are part of the workload definition.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "AgentX 重放多轮会话",
+    "AgentX Replays Multi-Turn Sessions"
+   ],
+   "d": [
+    "AgentX 保留会话的共享前缀、轮次间隔和子会话分支，以重放推理流量。",
+    "AgentX replays inference traffic with shared prefixes, inter-turn delays, and subagent branches."
+   ],
+   "b": [
+    [
+     "<p>多轮会话把对话历史带入后续请求，前缀缓存可复用相同开头的中间状态。AgentX 用合成内容保留轨迹的长度、时间和分支结构，并按活动会话数调负载。一个会话可以同时发起多个请求，因此会话并发与请求并发是两个口径。</p>"
+    ],
+    [
+     "<p>Later turns carry conversation history. A prefix cache can reuse intermediate state for the shared beginning. AgentX uses synthetic content while preserving trace lengths, timing, and branches, and varies load by the number of live sessions. A session can issue multiple requests at once, so session concurrency and request concurrency are distinct.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "每个并发档位对应一个点",
+    "One Point per Concurrency Setting"
+   ],
+   "d": [
+    "同一个运行点同时报告系统的单位芯片吞吐和用户侧的 Token 输出速度。",
+    "Each operating point pairs throughput per chip with token delivery speed per user."
+   ],
+   "b": [
+    [
+     "<p>单位芯片吞吐把指定口径的 Token 速率除以加速器数量。交互速度以每用户每秒 Token 表示，常用口径近似为 Token 间时延的倒数。两轴的分母与含义不同，首 Token 时延仍单独报告。</p>"
+    ],
+    [
+     "<p>Throughput per chip divides a specified token rate by the accelerator count. Interactivity is measured in tokens per second per user, commonly approximated by the inverse of inter-token latency. The axes have different denominators, and time to first token is still reported separately.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "吞吐与交互速度的前沿",
+    "The Throughput–Interactivity Frontier"
+   ],
+   "d": [
+    "前沿上的点无法在保持一项指标的同时提高另一项。",
+    "The frontier consists of points for which no alternative improves one metric without reducing the other."
+   ],
+   "b": [
+    [
+     "<p>若另一个点在两项指标上都不差、且至少一项更好，原点就被支配。相同工作负载下，可以在给定交互速度和首 Token 时延目标后比较可用吞吐。前沿表示观测过的取舍。</p>"
+    ],
+    [
+     "<p>A point is dominated when another matches or improves both metrics and improves at least one. For a matched workload, an interactivity target and a first-token latency target give throughput comparisons an operating context. The frontier describes the trade-offs observed in the runs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从图点追到运行记录",
+    "Tracing a Chart Point to Its Run"
+   ],
+   "d": [
+    "图中的点可追到运行配方和工作流，比较时受模型、精度、流量和版本约束。",
+    "Chart points trace back to their recipes and workflows, with comparability bounded by model, precision, traffic, and version."
+   ],
+   "b": [
+    [
+     "<p>公开仓库保存运行脚本，工作流关联日志和产物。不同序列长度、精度或版本可能移动前沿。AgentX 重放衡量服务行为，代码任务的解决质量需要另外的评估。</p>"
+    ],
+    [
+     "<p>The public repository contains run recipes, and workflows link to logs and artifacts. Sequence lengths, precision, and versions can shift the frontier. AgentX replay measures serving behavior. Whether the underlying coding task was solved is a separate evaluation.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

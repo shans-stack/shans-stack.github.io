@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infinia 键值底座：数据、元数据与布局 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明Infinia 键值底座：数据、元数据与布局。将键值、数据与元数据的读取以及分布式布局放在同一个存储引擎中。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-kvcore.css?v=2ac404d6">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-kvcore">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Infinia’s Key-Value Engine: Data, Metadata, and Layout">Infinia 键值底座：数据、元数据与布局</h1>
+        <p class="meta"><span data-en="5 steps · Key-value storage, metadata, layout mapping">5 步 · 键值存储、元数据、布局映射</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/infinia/&quot;&gt;DDN Infinia Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/infinia/">DDN Infinia 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/&quot;&gt;DDN Technical Blog · Infinia’s Distributed Engine&lt;/a&gt;"><a href="https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/">DDN 技术博客 · Infinia 的分布式引擎</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/&quot;&gt;DDN Technical Blog · The Data Path from Checkpoint to First Token&lt;/a&gt;"><a href="https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/">DDN 技术博客 · 从检查点到首个 Token 的数据路径</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-kvcore.js?v=c9976281"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-kvcore",
+ "ar": [
+  960/416,
+  400/400
+ ],
+ "steps": [
+  {
+   "t": [
+    "键标识记录，值保存内容",
+    "Keys Identify Records and Values Hold Content"
+   ],
+   "d": [
+    "键值引擎根据键找到对应记录，并返回值。",
+    "The key-value engine finds the record identified by a key and returns its value."
+   ],
+   "b": [
+    [
+     "<p>键是用于查找的标识，值是与该标识关联的数据。Infinia 把键值引擎作为底层存储机制。对象、文件和推理缓存各有自己的接口，底层读写由键值引擎承载。</p>"
+    ],
+    [
+     "<p>A key is a lookup identifier, and a value is the data associated with it. Infinia uses a key-value engine as its storage foundation. Objects, files, and inference cache have their own interfaces backed by the engine.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "数据与元数据同处一个引擎",
+    "Data and Metadata in One Engine"
+   ],
+   "d": [
+    "在 DDN 公开的推理缓存读取路径中，客户端可从同一节点取得数据及其元数据。",
+    "In DDN’s published inference cache read path, the client can fetch data and metadata from the same node."
+   ],
+   "b": [
+    [
+     "<p>元数据描述记录的属性或管理信息。DDN 将数据与元数据放在同一分布式引擎，公开的 KV Cache 读取示例中，两者可从同一节点返回，避免为元数据单独访问另一台服务器。</p>"
+    ],
+    [
+     "<p>Metadata describes a record or provides information needed to manage it. Infinia keeps both in its distributed engine. In DDN’s published KV cache read example, both can come back from one node, avoiding a separate server lookup for metadata.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "日志结构组织写入",
+    "Log-Structured Writes"
+   ],
+   "d": [
+    "日志结构按写入顺序记录新数据，分布式键值引擎再提供按键查找。",
+    "A log-structured design records new data in write order while the engine provides lookup by key."
+   ],
+   "b": [
+    [
+     "<p>DDN 将 Infinia 描述为日志结构的键值引擎。日志结构的示意写法是将新记录追加到日志；引擎仍以键提供定位，调用方读取的是键对应的记录。</p>"
+    ],
+    [
+     "<p>DDN describes Infinia as a log-structured key-value engine. In a schematic log-structured write, a new record is appended to the log. The caller still looks up the associated record by key.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "逻辑布局与物理位置",
+    "Logical Layout and Physical Placement"
+   ],
+   "d": [
+    "布局间接映射将数据的逻辑标识与当前物理位置分开。",
+    "Layout indirection separates a logical data identifier from its current physical location."
+   ],
+   "b": [
+    [
+     "<p>布局间接映射是在逻辑数据标识与物理存放位置之间保留映射。Infinia 使用这种设计处理分布式布局。应用仍以逻辑标识访问记录，位置由存储引擎解析。</p>"
+    ],
+    [
+     "<p>Layout indirection maintains a mapping between logical data identifiers and physical locations. Infinia uses this design in its distributed layout. Applications continue to address records logically, and the storage engine resolves their placement.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按片段发起并行读取",
+    "Parallel Reads Across Fragments"
+   ],
+   "d": [
+    "客户端可根据键的哈希定位缓存片段，并发起并行读取。",
+    "The client can locate cache fragments using a hash of the key and read them in parallel."
+   ],
+   "b": [
+    [
+     "<p>哈希函数将键转换成可用于查找的摘要。DDN 以推理缓存读取为例，说明客户端可以根据键的哈希定位分布在多个节点上的片段，并同时请求这些片段。逻辑键负责标识记录，布局负责确定访问位置。</p>"
+    ],
+    [
+     "<p>A hash function derives a lookup digest from a key. DDN uses inference cache reads to illustrate how a client can locate fragments on multiple nodes using the key’s hash and request them concurrently. The logical key identifies the record, and the layout determines where to read it.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

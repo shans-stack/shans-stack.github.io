@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mooncake Store：分布式 KV Cache 与传输 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Mooncake 如何在分离的推理阶段之间传输和复用 KV Cache。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-mooncake.css?v=c7ea53a9">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-mooncake">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-mooncake">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Mooncake Store: Distributed KV Cache and Transfer">Mooncake Store：分布式 KV Cache 与传输</h1>
+        <p class="meta"><span data-en="5 steps · prefill and decode disaggregation, Mooncake Store, Transfer Engine">5 步 · 预填充与解码分离、Mooncake Store、Transfer Engine</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/html/2407.00079&quot;&gt;Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving&lt;/a&gt;"><a href="https://arxiv.org/html/2407.00079">Mooncake 架构论文</a></li>
+      <li data-en="&lt;a href=&quot;https://kvcache-ai.github.io/Mooncake/design/store/mooncake-store.html&quot;&gt;Mooncake Store Design&lt;/a&gt;"><a href="https://kvcache-ai.github.io/Mooncake/design/store/mooncake-store.html">Mooncake Store 设计</a></li>
+      <li data-en="&lt;a href=&quot;https://kvcache-ai.github.io/Mooncake/design/transfer-engine/index.html&quot;&gt;Mooncake Transfer Engine Design&lt;/a&gt;"><a href="https://kvcache-ai.github.io/Mooncake/design/transfer-engine/index.html">Mooncake Transfer Engine 设计</a></li>
+      <li data-en="Schematic, not measured.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-mooncake.js?v=7c6ac498"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "f-mooncake",
+  ar: [900/350,380/420],
+  steps: [
+    {
+      "t": [
+        "分离预填充和解码节点",
+        "Separating Prefill and Decode Nodes"
+      ],
+      "d": [
+        "Mooncake 论文将输入处理与逐步生成交给不同节点，KV Cache 连接两个阶段。",
+        "The Mooncake paper assigns input processing and token generation to separate nodes, connected by the KV cache."
+      ],
+      "b": [
+        [
+          "<p>预填充（prefill）处理输入 token，解码（decode）逐步生成输出。KV Cache 是注意力层为已处理 token 保留的键和值。两个阶段位于不同节点时，解码端需要收到预填充端为该请求准备的键值。</p>"
+        ],
+        [
+          "<p>Prefill processes input tokens, and decode generates output token by token. The KV cache contains keys and values that attention layers retain for processed tokens. When the stages run on separate nodes, the decode side needs the request’s KV data from prefill.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "结合缓存分布和负载调度",
+        "Scheduling with Cache Location and Load"
+      ],
+      "d": [
+        "论文中的 Conductor 根据可复用前缀、节点负载和时延目标分派请求。",
+        "The paper’s Conductor assigns requests based on reusable prefixes, node load, and latency targets."
+      ],
+      "b": [
+        [
+          "<p>Conductor 是论文架构里的全局调度器。选择预填充节点时，已经命中的前缀可以减少需要计算的输入，等待队列则会增加预填充开始前的时间。论文里的首 token 时延目标涵盖这些因素，解码节点也根据负载与生成时延目标选择。</p>"
+        ],
+        [
+          "<p>Conductor is the global scheduler in the paper’s architecture. When selecting a prefill node, a cached prefix shortens the input that needs computation, while the queue adds time before that computation begins. The paper factors both into its time-to-first-token target and selects decode nodes based on load and generation latency targets.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "增量预填充并交接键值",
+        "Prefilling the Suffix and Handing Off KV Data"
+      ],
+      "d": [
+        "预填充节点读取可复用前缀，补算输入后缀，并把键值传给解码节点。",
+        "The prefill node loads the reusable prefix, computes the input suffix, and transfers KV data to the decode node."
+      ],
+      "b": [
+        [
+          "<p>论文把可复用的前缀保存在分布式缓存池。对示例请求，预填充节点先取得前缀键值，再补齐未命中的输入。论文描述的传输路径可按模型层流水交接，部分传输与预填充计算重叠，解码端利用收到的键值继续生成。</p>"
+        ],
+        [
+          "<p>The paper keeps reusable prefixes in a distributed cache pool. For the illustrated request, prefill obtains the prefix KV data and computes the uncached input. The paper’s transfer path can pipeline the handoff by model layer, overlapping some transfer with prefill computation. The decode side continues generation using the received KV data.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Mooncake Store 管理分布式缓存",
+        "Managing Distributed Cache with Mooncake Store"
+      ],
+      "d": [
+        "Mooncake Store 的 Master Service 管理对象位置和分配，缓存数据在客户端之间传输。",
+        "Mooncake Store’s Master Service manages object location and allocation, while cache data moves between clients."
+      ],
+      "b": [
+        [
+          "<p>Mooncake Store 是开源的分布式对象缓存组件。提供存储的客户端可以贡献一段内存，读请求由 Master Service 提供对象位置等元数据。元数据描述缓存存在哪里，实际的键值载荷由客户端之间的数据通路传送。</p>"
+        ],
+        [
+          "<p>Mooncake Store is an open-source distributed object cache. A storage-providing client can contribute a memory segment, and readers obtain metadata such as object location from the Master Service. Metadata describes where the cache resides, while the payload travels on a client-to-client data path.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Transfer Engine 执行跨节点传输",
+        "Moving Data Between Nodes with the Transfer Engine"
+      ],
+      "d": [
+        "Transfer Engine 提供批量传输接口，可用于 Mooncake Store 的数据路径或推理阶段之间的键值交接。",
+        "The Transfer Engine provides a batched transfer interface for the Mooncake Store data path or KV handoffs between inference stages."
+      ],
+      "b": [
+        [
+          "<p>传输端点注册可供访问的内存区间，Transfer Engine 根据选用的传输协议把数据传到目标缓冲区。传输动作由接入方发起，Mooncake Store 的对象定位与上层推理调度有各自的职责。</p>"
+        ],
+        [
+          "<p>Transfer endpoints register memory regions for access, and the Transfer Engine moves data into the destination buffer using the selected transport. The integrating component initiates the transfer. Mooncake Store object lookup and inference scheduling remain separate responsibilities.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

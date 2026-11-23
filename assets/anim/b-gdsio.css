@@ -1,0 +1,37 @@
+.b-gdsio-scene { display: block; width: 100%; height: auto; }
+
+.b-gdsio-scene text {
+  fill: var(--ink);
+  font: 500 19px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.b-gdsio-scene .b-gdsio-box,
+.b-gdsio-scene .b-gdsio-accent,
+.b-gdsio-scene .b-gdsio-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.4;
+}
+
+.b-gdsio-scene .b-gdsio-accent { stroke: var(--lc); stroke-width: 2; }
+.b-gdsio-scene .b-gdsio-quiet { stroke-dasharray: 4 5; }
+.b-gdsio-scene .b-gdsio-line,
+.b-gdsio-scene .b-gdsio-guide {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-gdsio-scene .b-gdsio-guide { stroke-dasharray: 4 5; }
+.b-gdsio-scene .b-gdsio-note { fill: var(--ink2); }
+.b-gdsio-scene .b-gdsio-signal { fill: var(--lc); }
+
+body.topic-b-gdsio .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-gdsio .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-gdsio.present .stage .figbox { margin-block: 0; }
+  .b-gdsio-scene text { font-size: 17px; }
+}

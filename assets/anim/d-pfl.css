@@ -1,0 +1,20 @@
+.d-pfl svg{display:block;width:100%;font-family:var(--f)}
+.d-pfl text{fill:var(--ink);text-anchor:middle;dominant-baseline:middle;font-size:18px}
+.d-pfl [data-tone=data]{--signal:var(--l6)}
+.d-pfl [data-tone=meta]{--signal:var(--l4)}
+.d-pfl [data-tone=failed]{--signal:var(--l1)}
+.d-pfl [data-tone=idle]{--signal:var(--rule2)}
+.d-pfl .d-pfl-card{fill:color-mix(in srgb,var(--signal) 8%,var(--surface));stroke:var(--signal);stroke-width:1.5}
+.d-pfl .d-pfl-title{font-size:19px;font-weight:650}
+.d-pfl .d-pfl-detail,.d-pfl .d-pfl-note{fill:var(--ink2)}
+.d-pfl .d-pfl-link,.d-pfl .d-pfl-arrow,.d-pfl .d-pfl-boundary{fill:none;stroke:var(--signal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.d-pfl [data-tone=idle] .d-pfl-link,.d-pfl [data-tone=failed] .d-pfl-link{stroke-dasharray:4 5}
+.d-pfl [data-tone=idle] .d-pfl-link{stroke:var(--ink3)}
+.d-pfl .d-pfl-block{fill:var(--signal);stroke:var(--surface);stroke-width:1}
+.d-pfl .d-pfl-token{font-weight:650;fill:#000}
+@media (max-width:640px){
+  .d-pfl text{font-size:15px}
+  .d-pfl .d-pfl-title{font-size:16px}
+}
+@media (641px <= width <= 720px){main[data-station="d-pfl"] .mhost{aspect-ratio:var(--ar)}}
+main[data-station="d-pfl"] .src li a{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:.2em}

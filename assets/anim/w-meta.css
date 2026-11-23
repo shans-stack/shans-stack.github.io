@@ -1,0 +1,31 @@
+.w-meta-scene{display:block;width:100%;height:auto;overflow:hidden;font-family:var(--f)}
+.w-meta-scene text{dominant-baseline:central}
+.w-meta-label{fill:var(--ink);font-size:21px;font-weight:600}
+.w-meta-sub,.w-meta-panel-label,.w-meta-note{fill:var(--ink2);font-size:17px}
+.w-meta-panel-label{font-weight:500}
+.w-meta-note{fill:var(--ink3)}
+.w-meta-box{fill:var(--surface);stroke:var(--rule2);stroke-width:1.25}
+.w-meta-panel{fill:color-mix(in srgb,var(--l4) 5%,var(--surface));stroke:var(--rule);stroke-width:1.2}
+.w-meta-node[data-tone=active] .w-meta-box{fill:color-mix(in srgb,var(--l5) 13%,var(--surface));stroke:var(--l5)}
+.w-meta-node[data-tone=kernel] .w-meta-box{fill:color-mix(in srgb,var(--l4) 12%,var(--surface));stroke:var(--l4)}
+.w-meta-node[data-tone=off] .w-meta-box{fill:var(--bg);stroke-dasharray:4 4}
+.w-meta-node[data-tone=off] text{fill:var(--ink3)}
+.w-meta-track{fill:none;stroke:var(--l5);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.w-meta-track[data-tone=control]{stroke:var(--l4)}
+.w-meta-track[data-tone=signal]{stroke:var(--l3);stroke-dasharray:4 4}
+.w-meta-track[data-tone=quiet]{stroke:var(--rule2);stroke-dasharray:4 5}
+.w-meta-packet{fill:var(--l5);stroke:var(--surface);stroke-width:1}
+.w-meta-packet[data-tone=control]{fill:var(--l4)}
+.w-meta-packet[data-tone=signal]{fill:var(--l3)}
+@media (max-width:640px){
+  .w-meta-label{font-size:16px}
+  .w-meta-sub,.w-meta-panel-label,.w-meta-note{font-size:16px}
+  .w-meta-topic.present .stage{padding:12px 16px}
+  .w-meta-topic.present .stage .figbox{margin:8px 0}
+  .w-meta-topic .stage .cap{column-gap:12px;margin-top:10px}
+  .w-meta-topic .stage .desc{font-size:17px;line-height:1.5}
+  .w-meta-topic .stage .ctl{gap:8px}
+}
+@media (min-width:641px) and (max-width:720px){
+  .w-meta-topic .mhost{aspect-ratio:var(--ar)}
+}

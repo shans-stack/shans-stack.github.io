@@ -1,0 +1,20 @@
+.f-vllm-anim svg { display: block; width: 100%; overflow: hidden; font-family: var(--f); }
+.f-vllm-anim text { dominant-baseline: central; fill: var(--ink); font-size: 19px; }
+.f-vllm-anim .name { font-weight: 700; font-size: 23px; }
+.f-vllm-anim .detail { fill: var(--ink2); font-size: 18px; }
+.f-vllm-anim .node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.f-vllm-anim .node.active { fill: color-mix(in srgb, var(--l5) 10%, var(--surface)); stroke: var(--l5); }
+.f-vllm-anim .node.waiting { stroke: var(--l1); }
+.f-vllm-anim .route { fill: none; stroke: var(--l4); stroke-width: 1.8; stroke-linejoin: round; }
+.f-vllm-anim .route.link { stroke: var(--rule2); }
+.f-vllm-anim .route.copy, .f-vllm-anim .route.batch { stroke: var(--l5); }
+.f-vllm-anim .route.evict { stroke: var(--l1); }
+.f-vllm-anim .route.ref, .f-vllm-anim .route.ref-map, .f-vllm-anim .route.evict { stroke-dasharray: 5 4; }
+.f-vllm-anim .route.arrow { stroke-dasharray: none; }
+.f-vllm-anim .chip { fill: var(--l4); stroke: var(--surface); stroke-width: 1; }
+.f-vllm-anim .chip.copy, .f-vllm-anim .chip.batch { fill: var(--l5); }
+@media (max-width: 640px) {
+  .f-vllm-anim text { font-size: 15px; }
+  .f-vllm-anim .name { font-size: 17px; }
+  .f-vllm-anim .detail { font-size: 14px; }
+}

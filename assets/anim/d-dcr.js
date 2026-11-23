@@ -24,7 +24,6 @@ function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function Lz(zh,en){return lang()==='en'?en:zh}
 /* 估算文字宽度（SVG 单位）：中文按 1 个字号宽，其余按 0.56 个 */
 function tw(s,size){let w=0;for(const ch of String(s))w+=/[⺀-￿]/.test(ch)?1:0.56;return w*size}
-function logoSrc(){const p='assets/brand/ddn-logo-primary-color.svg';return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 
 const ND=10,NR=6,FAIL=1,SPARE=8,LET='ABCDEFGHIJ';
 /* 条带布局（固定种子，满足：一个条带的成员在不同盘上） */
@@ -52,7 +51,7 @@ function layout(m){
     const W=960,H=476,pitch=90,dw=64,x0=(W-(9*pitch+dw))/2;
     return {m,W,H,f:{lbl:20,sm:17,note:16,cell:16,big:34},
       dx:i=>x0+i*pitch+dw/2,dw,dtop:96,dbot:316,row:r=>122+r*34,cw:44,ch:26,stubY:352,
-      bar:{y:398,w:52,h:10},stY:422,sum:{x:W-x0,y:452,a:'end'},grpY:74,leg:{x:x0+80,y:34},lg:{x:x0,h:20,rh:18},quota:{x:W-x0,y:34},
+      bar:{y:398,w:52,h:10},stY:422,sum:{x:W-x0,y:452,a:'end'},grpY:74,leg:{x:x0,y:34},quota:{x:W-x0,y:34},
       prog:{lx:x0,x:x0+96,y:452,w:300,sx:x0+410},pw:30,ph:22,
       race:{T:{ly:66,top:92,h:62,bp:192},R:{ly:262,top:288,h:62,bp:388},note:{y:452},cnt:W-x0,pw:18,ph:14},
       sp:{t:300,d:300,c:170,race:430}};
@@ -60,7 +59,7 @@ function layout(m){
   const W=480,H=420,pitch=46,dw=38,x0=(W-(9*pitch+dw))/2;
   return {m,W,H,f:{lbl:18,sm:17,note:17,cell:17,big:28},
     dx:i=>x0+i*pitch+dw/2,dw,dtop:92,dbot:272,row:r=>110+r*28,cw:30,ch:22,stubY:300,
-    bar:{y:320,w:32,h:8},stY:null,sum:{x:x0,y:350,a:'start'},grpY:72,leg:{x:x0+64,y:30},lg:{x:x0,h:16,rh:15},quota:{x:W-x0,y:30},
+    bar:{y:320,w:32,h:8},stY:null,sum:{x:x0,y:350,a:'start'},grpY:72,leg:{x:x0,y:30},quota:{x:W-x0,y:30},
     prog:{lx:x0,x:x0+96,y:388,w:198,sx:x0+306},pw:24,ph:18,
     race:{T:{ly:62,top:84,h:52,bp:170},R:{ly:226,top:248,h:52,bp:334},note:{y:390},cnt:W-x0,pw:16,ph:12},
     sp:{t:260,d:260,c:150,race:380}};
@@ -71,10 +70,6 @@ function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e
 function tx(x,y,s,size,cls,anchor,p){const t=el('text',{x,y,'font-size':size,class:cls||''},p);if(anchor)t.setAttribute('text-anchor',anchor);t.textContent=T(s);return t}
 function grp(show,p){const g=el('g',{class:'vis'},p);if(show)g.dataset.show=show;return g}
 const ln=(x1,y1,x2,y2,cls,p)=>el('line',{x1,y1,x2,y2,class:'ln '+cls},p);
-/* 官方 DDN logo：h 是高度，宽按原件比例（280:93）；深色模式下垫浅灰底 */
-function brandLogo(x,y,h,p){const w=h*280/93,px=h*0.22,py=h*0.16,g=el('g',{},p);
-  el('rect',{x:x-px,y:y-py,width:w+2*px,height:h+2*py,rx:2,class:'lgbk'},g);
-  const im=el('image',{x,y,width:w,height:h,href:logoSrc()},g);im.setAttribute('aria-label','DDN');return {g,w,h}}
 
 function build(){
   svg.innerHTML='';E={};
@@ -104,9 +99,8 @@ function build(){
   const span=(a,b,s,cls)=>{const x1=L.dx(a)-L.dw/2,x2=L.dx(b)+L.dw/2;ln(x1,L.grpY+12,x2,L.grpY+12,'base q1',gl);tx((x1+x2)/2,L.grpY-4,s,f.lbl,cls,'middle',gl)};
   span(0,3,'A 组','slate-t b7');span(4,7,'B 组','violet-t b7');span(8,9,L.m&&lang()==='en'?'':'热备盘','ink2-t b7');
   if(L.m&&lang()==='en')tx((L.dx(8)+L.dx(9))/2,L.grpY-4,'Spares',f.lbl,'ink2-t b7','middle',gl);
-  // 图例（3、4、6 步）：这一排盘就是 DDN 存储阵列，DDN logo 放在图例行开头；传统 RAID 的 1、2 步不加
+  // 图例（3、4、6 步）
   const lg=grp('3 4 6',host2);
-  brandLogo(L.lg.x,L.leg.y-L.lg.h/2,L.lg.h,lg);
   {const p=L.leg,x1=p.x+L.cw*0.8+8;el('rect',{x:p.x,y:p.y-L.ch/2+2,width:L.cw*0.8,height:L.ch-4,rx:3,class:'cell s'},lg);
    tx(x1,p.y,'= 备用空间',f.note,'ink2-t','start',lg);
    tx(x1+Math.max(L.m?92:100,tw(T('= 备用空间'),f.note)+14),p.y,'字母 = 条带',f.note,'ink2-t','start',lg)}
@@ -129,7 +123,6 @@ function build(){
   [['T','传统 RAID','rose-t'],['R','分簇 RAID','sage-t']].forEach(([k,name,cls])=>{
     const ly=L.race[k],nx=L.dx(0)-L.dw/2;
     tx(nx,ly.ly,name,f.lbl,'lbl b7','start',race);
-    if(k==='R')brandLogo(nx+tw(T(name),f.lbl)*1.04+14,ly.ly-L.lg.rh/2,L.lg.rh,race);   // 只标分簇那一排；传统 RAID 是对照
     ln(L.dx(0),ly.bp,L.dx(ND-1),ly.bp,'base',race);
     E.race['d'+k]=[];
     for(let d=0;d<ND;d++){const x=L.dx(d);ln(x,ly.top+ly.h,x,ly.bp,'base',race);

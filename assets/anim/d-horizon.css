@@ -1,0 +1,19 @@
+.d-horizon-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.d-horizon-card{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:4px 7px;border:1px solid var(--rule2);border-radius:5px;background:var(--surface);color:var(--ink);text-align:center;line-height:1.2}
+.d-horizon-focus{background:color-mix(in srgb,var(--l8) 10%,var(--surface));border-color:var(--l8)}
+.d-horizon-title{font-size:18px;font-weight:600;white-space:nowrap}
+.d-horizon-detail{font-size:15px;color:var(--ink2)}
+.d-horizon-route{fill:none;stroke:var(--l8);stroke-width:1.5;stroke-linejoin:round}
+.d-horizon-secondary{stroke:var(--l6)}
+.d-horizon-return{stroke-dasharray:4 3}
+.d-horizon-arrow,.d-horizon-signal{fill:var(--l8)}
+.d-horizon-alternate{fill:var(--l6)}
+.d-horizon-label,.d-horizon-note{font-size:15px;fill:var(--ink3)}
+@media (641px <= width <= 720px){main[data-station="d-horizon"] .mhost{aspect-ratio:var(--ar)}}
+@media (max-width:640px){
+  body.topic-d-horizon.present .stage .figbox{margin:0}
+  body.topic-d-horizon.present .stage .cap{display:block;margin-top:0}
+  body.topic-d-horizon.present .stage h2{font-size:24px}
+  body.topic-d-horizon.present .stage .desc{font-size:16px;line-height:1.5}
+}

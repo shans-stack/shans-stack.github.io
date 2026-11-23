@@ -9,13 +9,8 @@
 var EN={"客户端": "Client", "SCM 盘 ": "SCM drive ", "两块盘在不同 DBox": "In two DBoxes", "切块 · 缩减": "Reduce", "组宽条带": "Wide stripe", "对齐闪存": "Flash align", "相似性压缩": "Similarity reduction", "攒超宽条带": "Very wide stripes", "按页对齐": "Page-aligned", "做相似性压缩": "Similarity", "攒成超宽条带": "Very wide EC", "按闪存页对齐": "Page-aligned", "回话之后，CNode 在后台做": "After the ACK, CNodes do it in the background", "QLC 闪存": "QLC flash", "保留区": "Reserved", "示意：假如重活在回话之前做": "Schematic: if the heavy work came before the ACK", "示意：假如重活都在回话之前做": "Schematic: if all the heavy work came before the ACK", "示意，不代表实测速度": "Schematic, not measured speed", "换成大块写": "Switch to large writes", "换成小块写": "Switch to small writes", "等待回话": "Waiting for ACK", "已回话": "ACK received", "SCM 占用很高": "SCM usage very high", "SCM 占用升高": "SCM usage rising", "SCM 占用较低": "SCM usage low", "SCM 写缓冲：写入先落 SCM 就回话，重活放到回话之后": "SCM write buffer: a write is acknowledged once it lands on SCM, and the heavy work happens after the ACK"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
-/* VAST 字标（官方黑白两版同一路径，颜色由 CSS 按深浅色切换），全页只放一份 */
-function sprite(){if(document.getElementById('ss-vast-wm'))return;
-  var d=document.createElement('div');d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;width:0;height:0;overflow:hidden';
-  d.innerHTML='<svg width="0" height="0" focusable="false"><symbol id="ss-vast-wm" viewBox="0 0 66 14"><path d="m11.918.916-.783-.375a.919.919 0 0 0-1.23.444l-.22.414L6.235 8.77 2.788 1.4l-.22-.414a.917.917 0 0 0-1.23-.444L.556.916c-.466.219-.69.804-.474 1.273l.195.383 4.689 10.024a1.383 1.383 0 0 0 1.248.797h.042a1.385 1.385 0 0 0 1.248-.797l4.689-10.024.195-.383c.217-.469-.007-1.054-.47-1.273ZM19.311 12.926l.784.375a.918.918 0 0 0 1.23-.444l.22-.414 3.451-7.371 3.448 7.371.22.414a.918.918 0 0 0 1.23.444l.785-.375c.462-.221.687-.804.469-1.271l-.195-.383-4.689-10.024a1.384 1.384 0 0 0-1.248-.797h-.041a1.386 1.386 0 0 0-1.25.797l-4.688 10.024-.195.383c-.219.467.006 1.05.47 1.27ZM47.275 3.212a.918.918 0 0 0 .966-.882l.03-.868c.02-.512-.393-.982-.908-1.006L46.887.45h-5.413c-.03 0-.059 0-.092.004-1.433.095-3.565 1.126-3.565 3.572 0 2.487 2.104 3.599 3.236 3.846l2.823.677c.041.009.082.017.124.023.15.022.896.176.896 1.014 0 .504-.253.801-.754.885h-5.318l-.362.005a.918.918 0 0 0-.966.883l-.03.868c-.02.512.393.982.908 1.006l.45.005h5.413c.043 0 .086 0 .128-.005 1.327-.123 3.301-1.196 3.301-3.647 0-2.539-2.051-3.547-3.195-3.742l-2.787-.668-.039-.008c-.042-.01-1.058-.235-1.058-1.142 0-.606.578-.769.953-.81h5.347l.388-.004ZM66 1.365a.916.916 0 0 0-.938-.914H55.5a.919.919 0 0 0-.938.914v.878c0 .513.427.968.942.976H58.897v9.086a.914.914 0 0 0 .56.864.919.919 0 0 0 .355.073h.879c.512 0 .968-.426.976-.94V3.217H65.06c.515-.007.943-.463.942-.975l-.003-.878Z"/></symbol></svg>';
-  document.body.appendChild(d)}
 function mount(host,opts){
-opts=opts||{};sprite();
+opts=opts||{};
 /* ---------- 通用小引擎：每一步的画面都是「本轮时间 t」的函数 ---------- */
 const NS='http://www.w3.org/2000/svg';
 host.classList.add('v-scm');host.innerHTML='';
@@ -48,10 +43,6 @@ function travel(p,pts,t,t0,v,opt){opt=opt||{};const dur=plen(pts)/v,u=(t-t0)/dur
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return t0+dur}
 const loopFade=(t,per)=>t>per-0.4?clamp((per-t)/0.4,0,1):t<0.35?clamp(t/0.35,0,1):1;
 const H={el,tx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,put,travel,loopFade,alt:()=>tgl};
-/* 厂商 logo：VAST 字标放在部件角上。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;return el('use',{href:'#ss-vast-wm',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm brand-part'},p)}
-/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
-function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.63*s.length;const w=h*66/14,gap=Math.round(fs*0.4),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
 /* SCM 写缓冲：上方 客户端 → CNode → 分叉 → 两块 SCM；下方 后台处理线 三个站 → QLC；CNode 正下方竖线直通 QLC 保留区 */
 
 function makeScene(){
@@ -101,7 +92,6 @@ build(){
   L.lines.forEach(p=>line(p,'base',g));
   E.C=rect(L.C,'blk',g,10);tx(L.C.x+L.C.w/2,L.C.y+L.C.h/2,T('客户端'),f.lbl,'lbl b7','middle',g);
   E.N=rect(L.N,'blk',g,10);tx(L.N.x+L.N.w/2,L.N.y+L.N.h/2,'CNode',f.lbl,'lbl b7','middle',g);
-  /* VAST 字标：只标 CNode 一处；框中线有数据块穿过，放在框左上角外侧（铭牌），五步同一位置 */vmark(L.N.x+2,L.N.y-11,L.mobile?12:10,g,'start');
   E.lv=[L.S1,L.S2].map((S,k)=>{const R=rect(S,'blk',g,10);
     tx(S.x+L.scmLab.dx,S.y+S.h/2,L.mobile?'SCM '+(k+1):T('SCM 盘 ')+(k+1),f.sm,'lbl b7','start',g);
     const lx=S.x+L.lvl.dx;el('rect',{x:lx,y:S.y+S.h/2-6,width:L.lvl.w,height:12,rx:4,class:'track'},g);

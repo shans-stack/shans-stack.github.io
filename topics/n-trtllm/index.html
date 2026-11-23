@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TensorRT-LLM：从生成调度到多 GPU 推理 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 TensorRT-LLM 的请求调度、KV Cache 和多 GPU 推理。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-trtllm.css?v=9f838d8d">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-trtllm">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-trtllm">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="TensorRT-LLM: From Generation Scheduling to Multi-GPU Inference">TensorRT-LLM：从生成调度到多 GPU 推理</h1>
+        <p class="meta"><span data-en="6 steps · in-flight batching, KV cache, tensor parallelism">6 步 · 在途批处理、KV Cache、张量并行</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/tensorrt-llm/&quot;&gt;NVIDIA TensorRT-LLM Documentation&lt;/a&gt;"><a href="https://docs.nvidia.com/tensorrt-llm/">NVIDIA TensorRT-LLM 文档入口</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidia.github.io/TensorRT-LLM/overview.html&quot;&gt;TensorRT-LLM Project Overview&lt;/a&gt;"><a href="https://nvidia.github.io/TensorRT-LLM/overview.html">TensorRT-LLM 官方技术概述</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidia.github.io/TensorRT-LLM/features/paged-attention-ifb-scheduler.html&quot;&gt;TensorRT-LLM: Paged Attention, In-Flight Batching, and Scheduling&lt;/a&gt;"><a href="https://nvidia.github.io/TensorRT-LLM/features/paged-attention-ifb-scheduler.html">TensorRT-LLM：分页注意力、在途批处理与调度</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidia.github.io/TensorRT-LLM/features/kvcache.html&quot;&gt;TensorRT-LLM: KV Cache System&lt;/a&gt;"><a href="https://nvidia.github.io/TensorRT-LLM/features/kvcache.html">TensorRT-LLM：KV Cache 系统</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidia.github.io/TensorRT-LLM/features/parallel-strategy.html&quot;&gt;TensorRT-LLM: Parallelism Strategies&lt;/a&gt;"><a href="https://nvidia.github.io/TensorRT-LLM/features/parallel-strategy.html">TensorRT-LLM：并行策略</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dynamo/latest/knowledge-base/modular-components/backends/tensor-rt-llm/overview&quot;&gt;NVIDIA Dynamo Documentation: TensorRT-LLM Backend&lt;/a&gt;"><a href="https://docs.nvidia.com/dynamo/latest/knowledge-base/modular-components/backends/tensor-rt-llm/overview">Dynamo 文档：TensorRT-LLM 后端</a></li>
+      <li data-en="Animations are schematic and show no measured data.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-trtllm.js?v=45165d91"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-trtllm",
+  "ar": [
+    3.3076923076923075,
+    0.8780487804878049
+  ],
+  "steps": [
+    {
+      "t": [
+        "推理引擎执行模型计算",
+        "The Inference Engine Executes the Model"
+      ],
+      "d": [
+        "TensorRT-LLM 加载模型，在 GPU 上调度生成请求并运行模型计算。",
+        "TensorRT-LLM loads a model, schedules generation requests, and runs model computations on GPUs."
+      ],
+      "b": [
+        [
+          "<p>TensorRT-LLM 是面向 NVIDIA GPU 的开源推理库。Python LLM API 可将提示词交给运行时，运行时负责调度请求、管理生成状态，并调用 GPU 算子执行计算。GPU 算子是执行矩阵乘法、注意力等操作的计算实现。</p>",
+          "<p>模型权重给出计算所需的参数，推理引擎负责执行这些计算。模型输入、并行方式和后端能力共同决定具体运行路径。</p>"
+        ],
+        [
+          "<p>TensorRT-LLM is an open-source inference library for NVIDIA GPUs. Its Python LLM API passes prompts to a runtime that schedules requests, manages generation state, and calls GPU kernels. A kernel implements a computation such as matrix multiplication or attention.</p>",
+          "<p>Model weights supply the parameters for the computation. The inference engine executes it. Model inputs, parallelism, and backend capabilities determine the execution path.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "预填充建立上下文，解码生成输出",
+        "Prefill Builds Context and Decode Generates Output"
+      ],
+      "d": [
+        "预填充处理提示词并建立缓存，解码反复读取和更新缓存来生成后续 token。",
+        "Prefill processes the prompt and builds a cache. Decode repeatedly reads and updates the cache to generate subsequent tokens."
+      ],
+      "b": [
+        [
+          "<p>Token 是模型处理的文本单位。预填充（prefill）计算输入 token 的上下文，保存注意力机制所用的键和值，形成 KV Cache。首个输出 token 可以在预填充完成时生成。</p>",
+          "<p>后续解码（decode）逐轮生成更多 token。每轮利用已经保存的状态，并为新处理的 token 追加缓存。</p>"
+        ],
+        [
+          "<p>A token is a unit of text processed by the model. Prefill processes the input tokens and stores the keys and values used by attention in a KV cache. The first output token can be produced when prefill completes.</p>",
+          "<p>In later decode iterations, the model generates more tokens. Each iteration uses the stored state and extends the cache for newly processed tokens.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "在途批处理按迭代更新批次",
+        "In-Flight Batching Updates the Batch Each Iteration"
+      ],
+      "d": [
+        "同一轮可包含既有请求的解码和新请求的预填充，已完成的请求让出后续批次位置。",
+        "One iteration can combine decode work for an active request and prefill for a new request. Completed requests free batch slots."
+      ],
+      "b": [
+        [
+          "<p>批处理把多个请求合在一次模型执行中。在途批处理（in-flight batching）允许每轮重新组成批次。运行时按请求状态与本轮容纳的请求和 token 数量安排工作。</p>",
+          "<p>某个请求结束后，其他请求继续生成，新请求可在资源允许时进入后续迭代。图示用 A、B、C 表示三个请求的进出顺序。</p>"
+        ],
+        [
+          "<p>Batching combines several requests into a single model execution. In-flight batching can rebuild the batch for each iteration. The runtime schedules work using request state and the iteration's limits on requests and tokens.</p>",
+          "<p>When one request finishes, others keep generating and a new request can join a later iteration if resources allow. The diagram uses A, B, and C to show the order in which requests enter and leave.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "按块管理 KV Cache 并复用前缀",
+        "Managing KV Cache in Blocks and Reusing Prefixes"
+      ],
+      "d": [
+        "相同前缀命中已缓存的块时，后来的请求可复用前缀状态，只计算尚未缓存的部分。",
+        "When a matching prefix hits cached blocks, a later request can reuse that state and compute the uncached portion."
+      ],
+      "b": [
+        [
+          "<p>分页 KV Cache 将序列的键值状态放在由运行时管理的块里。请求变长时，运行时可继续分配新的块。启用前缀复用后，运行时可查找与新请求开头匹配的已缓存块。</p>",
+          "<p>例如，两个请求共享同一段固定提示词。缓存中的匹配块可以被两个请求引用，各请求的后缀仍分别处理。缓存块被回收后，相应前缀再次出现时需重新计算。</p>"
+        ],
+        [
+          "<p>A paged KV cache stores sequence state in blocks managed by the runtime. As a request grows, the runtime can allocate more blocks. With prefix reuse enabled, the runtime can look up cached blocks matching the beginning of a new request.</p>",
+          "<p>For example, two requests may begin with the same fixed prompt. They can reference matching blocks, while their suffixes are processed separately. If those blocks have been evicted, the prefix must be computed again.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "张量并行切分同一层的权重",
+        "Tensor Parallelism Shards Weights Within a Layer"
+      ],
+      "d": [
+        "张量并行把同一层的部分权重交给不同 GPU，各卡处理相同输入并交换中间结果。",
+        "Tensor parallelism shards weights within a layer. GPUs process the same input and communicate intermediate results."
+      ],
+      "b": [
+        [
+          "<p>张量是多维数值数组。张量并行（tensor parallelism）把模型层中的权重矩阵切成多份。各 GPU 用其所持分片对同一输入执行局部计算，再通过 GPU 间通信合并结果。</p>",
+          "<p>这样可以把层权重分布到多颗 GPU，每轮也会增加分片间的通信。运行配置取决于模型的并行支持、显存和 GPU 互联。</p>"
+        ],
+        [
+          "<p>A tensor is a multidimensional array of numbers. Tensor parallelism splits a layer's weight matrices into shards. Each GPU performs a local computation using its own shard and the same input, then the GPUs communicate to combine the results.</p>",
+          "<p>This distributes the layer weights across GPUs and adds communication between the shards. The configuration depends on the model's parallelism support, available memory, and GPU interconnects.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "在分布式服务中充当推理后端",
+        "Acting as a Backend in Distributed Serving"
+      ],
+      "d": [
+        "接入 Dynamo 时，TensorRT-LLM 执行模型计算，Dynamo 负责把请求交给相应的后端实例。",
+        "In a Dynamo deployment, TensorRT-LLM runs model computations and Dynamo routes requests to backend instances."
+      ],
+      "b": [
+        [
+          "<p>前几步描述的是一个推理实例内部的调度和计算。Dynamo 将 TensorRT-LLM 作为后端使用时，前端与路由层负责接收请求和选择实例，实例内部的引擎继续负责批处理、缓存与计算。</p>",
+          "<p>在分离式配置中，预填充和解码可由不同后端工作实例承担。路由层选择服务实例，模型执行仍由相应引擎完成。</p>"
+        ],
+        [
+          "<p>The previous steps describe scheduling and computation inside an inference instance. When Dynamo uses TensorRT-LLM as a backend, the frontend and router receive requests and select an instance. The engine inside the instance still handles batching, caching, and computation.</p>",
+          "<p>In a disaggregated configuration, separate backend workers can handle prefill and decode. The routing layer selects the service instances, while their engines execute the model.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

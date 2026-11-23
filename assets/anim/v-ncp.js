@@ -5,15 +5,13 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-ncp.css，全部限定在 .ssa-v-ncp 容器之内。
-   厂商字标引用 assets/brand/ 里的原件（<image>，浅色用黑字、深色用白字），不内嵌。 */
+   样式在 assets/anim/v-ncp.css，全部限定在 .ssa-v-ncp 容器之内。 */
 (function(){
 var EN={"扩容": "Expand", "VAST 的 NVIDIA NCP 高性能存储参考设计：NVL72 机柜、SN5600 / SN5610 叶交换机、CNode 与 DBox，按 GPU 规模配带宽，三个 VLAN，多租户网络隔离，NVIDIA 验证": "VAST's NVIDIA NCP high-performance storage reference design: NVL72 racks, SN5600 / SN5610 leaf switches, CNodes and DBoxes, bandwidth by GPU count, three VLANs, multi-tenant network isolation and NVIDIA validation", "GPU 机柜": "GPU racks", "NVL72": "NVL72", "SN5600 / SN5610 叶交换机": "SN5600 / SN5610 leaf switches", "CNode": "CNode", "DBox": "DBox", "新设备": "New node", "读带宽": "Read", "写带宽": "Write", "GPU 数": "GPUs", "读 ": "Read ", "写 ": "Write ", "写带宽是读带宽的一半": "Write is half of read", "6 台 CNode、4 台 DBox，占叶交换机 14 个 400GbE 端口": "6 CNodes and 4 DBoxes use 14 leaf-switch 400GbE ports", "6 台 CNode、4 台 DBox": "6 CNodes, 4 DBoxes", "CNode 占 6 个端口（12 条 200GbE），DBox 占 8 个（16 条 200GbE）": "CNodes use 6 ports (12 × 200GbE); DBoxes use 8 (16 × 200GbE)", "客户端访问、集群内部、发现与扩容各走一个 VLAN": "Client access, internal traffic, and discovery and expansion each use their own VLAN", "三类流量，三个 VLAN": "Three kinds of traffic, three VLANs", "VLAN 号均为参考设计中的默认值": "VLAN numbers are the reference design's defaults", "VLAN 号为默认值": "Default VLAN numbers", "VLAN 100 · 客户端访问 VIP": "VLAN 100 · client VIPs", "VLAN 69 · CNode 到 DBox": "VLAN 69 · CNode to DBox", "VLAN 10 · 发现与扩容": "VLAN 10 · discovery, expansion", "租户 A · GPU 主机": "Tenant A · GPU hosts", "租户 B · GPU 主机": "Tenant B · GPU hosts", "集群": "Cluster", "密钥 A · 配额 · QoS": "Key A · quota · QoS", "密钥 B · 配额 · QoS": "Key B · quota · QoS", "VIP 池（共享）": "Shared VIP pool", "按来源 IP 放行": "Gated by source IP", "VIP 池 A": "VIP pool A", "VIP 池 B": "VIP pool B", "VLAN / VRF": "VLAN / VRF", "换成共享 VIP 池": "Switch to a shared pool", "共享 VIP 池": "shared VIP pool", "切换对比，当前 ": "Switch comparison, now showing ", "共享 VIP 池：按来源 IP 区分租户，适合大规模": "Shared VIP pool: tenants told apart by source IP, suited to large scale", "共享 VIP 池，按来源 IP 区分": "Shared pool, by source IP", "示意，不代表实测数字": "Schematic, not measured", "VAST 存储经叶交换机接入 NVL72 系统": "The leaf fabric connects VAST storage to NVL72 systems.", "叶交换机连接 NVL72 与 VAST 存储": "Leaf fabric connects NVL72 to storage", "表列各档的写带宽为读带宽的一半": "At each listed scale, write bandwidth is half of read.", "VAST NCP HPS 参考设计 · 表 1 · 2026 年 6 月": "VAST NCP HPS reference design · Table 1 · June 2026", "VAST NCP 参考设计 · 表 1 · 2026 年 6 月": "VAST NCP design · Table 1 · June 2026", "400GbE 端口 · CNode 6 · DBox 8": "400GbE ports · CNodes 6 · DBoxes 8", "专用 VIP 池可配合 VRF 或 VLAN 隔离": "Dedicated VIP pools can use VRF or VLAN isolation.", "专用 VIP 池 · VRF / VLAN 隔离": "Dedicated VIP pools · VRF / VLAN", "专用 VIP 池": "dedicated VIP pools", "换成专用 VIP 池": "Switch to dedicated pools", "验证项目：部件失效": "Validation: component failure", "验证项目：在线扩容": "Validation: online expansion", "NVIDIA 基准套件 · VAST 5.4": "NVIDIA benchmarks · VAST 5.4"};
 var ENM={"新设备": "Node", "SN5600 / SN5610 叶交换机": "SN5600 / SN5610 leaf", "VLAN 10 · 发现与扩容": "VLAN 10 · expansion", "按来源 IP 放行": "By source IP"};
 var ARIA="VAST 的 NVIDIA NCP 高性能存储参考设计：NVL72 机柜、SN5600 / SN5610 叶交换机、CNode 与 DBox，按 GPU 规模配带宽，三个 VLAN，多租户网络隔离，NVIDIA 验证";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-v-ncp');host.innerHTML='';
@@ -40,15 +38,6 @@ function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-p
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function rev(pts){return pts.slice().reverse()}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-/* 文字宽度估计（中文按一字宽，西文按 0.6 字宽） */
-function tw(s,fs){s=T(s);let w=0;for(const ch of s)w+=/[⺀-￿]/.test(ch)?fs:fs*0.6;return w}
-/* VAST 字标：(x,y) 为字标竖直中线上的锚点，h 为高度；浅色黑字、深色白字，两张图由 CSS 切换 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'vwm','aria-label':'VAST'},p);
-  ['black','white'].forEach((c,i)=>el('image',{href:asset('assets/brand/vast-wordmark-'+c+'.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:i?'vwm-d':'vwm-l'},g));return g}
-/* NVIDIA 横版 logo（裁边版，宽高比 2090:414）；深色模式垫浅灰底 */
-function nvmark(x,y,h,p,anchor){const w=h*2090/414;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'nvm','aria-label':'NVIDIA'},p);
-  el('rect',{x:(x-h*0.25).toFixed(1),y:(y-h/2-h*0.2).toFixed(1),width:(w+h*0.5).toFixed(1),height:(h*1.4).toFixed(1),rx:2,class:'nvbk'},g);
-  el('image',{href:asset('assets/brand/nvidia-logo-horz-trim.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h},g);return g}
 let L=null,E,S,step=0,T0=0,raf=0,last=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(c){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function dot(c){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
@@ -69,7 +58,7 @@ const SCENE={
    return {W:960,H:396,mobile:false,f:{lbl:20,sm:17,cap:18},pw:22,ph:16,dr:7,sp:300,
     rowLbl:{x:16,y:52},rack:{w:96,y:30,h:46,gi:[0,1,2,3,4]},cn:{x0:170,w:84,st:108,y:110,h:42,lk:[28,56]},
     sw:{x:170,w:760,y:194,h:34},db:{x0:170,w:140,st:160,y:270,h:44,lk:[22,54,86,118]},nw:{x:810,w:120},
-    lg:{x:170,y:100,h:13},nvh:12,cap:{x:480,y:358},note:{x:480,y:383},
+    cap:{x:480,y:358},note:{x:480,y:383},
     B5:{x0:180,st:114,bw:28,base:290,hmax:196,lab:314,leg:{x:180,y:36},ax:{x:150,y:314}},
     C5:{tA:{x:40,y:60},tB:{x:40,y:236},tw:200,th:56,pS:{x:390,y:148},pA:{x:390,y:60},pB:{x:390,y:236},pw:180,ph:56,
      cl:{x:660,y:24,w:280,h:290},fA:{x:690,y:66},fB:{x:690,y:206},fw:220,fh:70,tgl:{x:480,y:322}}};
@@ -77,7 +66,7 @@ const SCENE={
   return {W:480,H:470,mobile:true,f:{lbl:18,sm:18,cap:18},pw:18,ph:14,dr:6,sp:200,
    rowLbl:{x:32,y:14},rack:{w:120,y:28,h:44,gi:[0,2,4]},cn:{x0:23,w:64,st:74,y:110,h:40,lk:[20,44]},
    sw:{x:12,w:456,y:190,h:32},db:{x0:12,w:86,st:96,y:262,h:44,lk:[12,32,54,74]},nw:{x:398,w:70},
-   lg:{x:23,y:99,h:11},nvh:11,cap:{x:240,y:432},note:{x:240,y:456},
+   cap:{x:240,y:432},note:{x:240,y:456},
    B5:{x0:46,st:64,bw:18,base:330,hmax:220,lab:352,leg:{x:24,y:30},ax:null},
    C5:{tA:{x:12,y:20},tB:{x:252,y:20},tw:216,th:52,pS:{x:150,y:130},pA:{x:12,y:130},pB:{x:252,y:130},pw:180,ph:56,
     cl:{x:12,y:236,w:456,h:136},fA:{x:24,y:270},fB:{x:264,y:270},fw:192,fh:62,tgl:{x:240,y:396}}};
@@ -88,9 +77,7 @@ const SCENE={
   const gA=grp('1 3 4 6');
   const cn=L.cn,db=L.db,sw=L.sw,swc=sw.y+sw.h/2;E.swc=swc;
   const gc=[];for(let i=0;i<5;i++)gc.push(cn.x0+i*cn.st+cn.w+(cn.st-cn.w)/2);E.gc=gc;
-  /* 行标题：GPU 机柜 + NVIDIA 字标 */
   tx(L.rowLbl.x,L.mobile?L.rowLbl.y:L.rack.y+L.rack.h/2,'GPU 机柜',f.lbl,'lbl b7','start',gA);
-  nvmark(L.rowLbl.x+tw('GPU 机柜',f.lbl)+10,L.mobile?L.rowLbl.y:L.rack.y+L.rack.h/2,L.nvh,gA,'start');
   const rack={x:gc[0]-L.rack.w/2,y:L.rack.y,w:gc[4]-gc[0]+L.rack.w,h:L.rack.h};
   E.rack=L.rack.gi.map(i=>{line(P(gc[i],rack.y+rack.h),P(gc[i],sw.y),'',gA);return {cx:gc[i],r:rack}});
   E.gpu=box(rack,gA,'box',8);
@@ -104,7 +91,6 @@ const SCENE={
    const b=box(r,gA,'box',8);tx(r.x+r.w/2,r.y+r.h/2,'CNode',f.sm,'lbl b7','middle',gA);
    const x=el('g',{},gA);const a=r.h*0.36,cx=r.x+r.w/2,cy=r.y+r.h/2;line(P(cx-a,cy-a),P(cx+a,cy+a),'',x).setAttribute('class','xmark');line(P(cx-a,cy+a),P(cx+a,cy-a),'',x).setAttribute('class','xmark');x.style.opacity=0;
    E.cn.push({r,b,lk,x})}
-  vmark(L.lg.x,L.lg.y,L.lg.h,gA,'start');
   /* DBox */
   E.db=[];for(let j=0;j<4;j++){const r={x:db.x0+j*db.st,y:db.y,w:db.w,h:db.h};
    const lk=db.lk.map(dx=>line(P(r.x+dx,sw.y+sw.h),P(r.x+dx,r.y),'',gLk));
@@ -129,7 +115,7 @@ const SCENE={
   const bx=(p,w,h,t1,t2,c,g)=>{const r={x:p.x,y:p.y,w,h};const b=box(r,g,'box '+(c||''),10);const a=tx(r.x+r.w/2,r.y+r.h/2-(t2?10:0),t1,f.sm,'lbl b7','middle',g);const s=t2?tx(r.x+r.w/2,r.y+r.h/2+12,t2,f.sm-1,'ink3-t','middle',g):null;return {r,b,a,s}};
   E.Q.tA=bx(Q.tA,Q.tw,Q.th,'租户 A · GPU 主机','','tA',gC);E.Q.tB=bx(Q.tB,Q.tw,Q.th,'租户 B · GPU 主机','','tB',gC);
   box(Q.cl,gC,'box soft',16);
-  const ct=L.mobile?[Q.cl.x+14,Q.cl.y+Q.cl.h-16]:[Q.cl.x+16,Q.cl.y+24];tx(ct[0],ct[1],'集群',f.lbl,'lbl b7','start',gC);vmark(ct[0]+tw('集群',f.lbl)+10,ct[1],L.lg.h,gC,'start');
+  const ct=L.mobile?[Q.cl.x+14,Q.cl.y+Q.cl.h-16]:[Q.cl.x+16,Q.cl.y+24];tx(ct[0],ct[1],'集群',f.lbl,'lbl b7','start',gC);
   E.Q.fA=bx(Q.fA,Q.fw,Q.fh,'/tenant-a','密钥 A · 配额 · QoS','tA',gC);E.Q.fB=bx(Q.fB,Q.fw,Q.fh,'/tenant-b','密钥 B · 配额 · QoS','tB',gC);
   const gS=grp('5',gC),gT=grp('5',gC);E.Q.gS=gS;E.Q.gT=gT;
   E.Q.pS=bx(Q.pS,Q.pw,Q.ph,'VIP 池（共享）','按来源 IP 放行','',gS);

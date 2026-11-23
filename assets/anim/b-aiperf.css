@@ -1,0 +1,41 @@
+.b-aiperf-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  --diagram-rule: var(--ink3);
+  --diagram-accent: var(--lc, var(--l4));
+}
+
+.b-aiperf-diagram text {
+  fill: var(--ink);
+  font: 500 21px var(--f);
+  dominant-baseline: central;
+}
+
+.b-aiperf-diagram .b-aiperf-note,
+.b-aiperf-diagram .b-aiperf-muted { fill: var(--ink2); font-size: 17px; }
+.b-aiperf-diagram .b-aiperf-rule { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; }
+.b-aiperf-diagram .b-aiperf-guide { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.b-aiperf-diagram .b-aiperf-node { fill: var(--surface); stroke: var(--diagram-rule); stroke-width: 1.4; }
+.b-aiperf-diagram .b-aiperf-active { fill: var(--diagram-accent); }
+.b-aiperf-diagram .b-aiperf-pass { fill: var(--l5); }
+.b-aiperf-diagram .b-aiperf-warn { fill: var(--l1); }
+.b-aiperf-diagram .b-aiperf-quiet { fill: var(--blk); }
+.b-aiperf-diagram .b-aiperf-active-line,
+.b-aiperf-diagram .b-aiperf-pass-line,
+.b-aiperf-diagram .b-aiperf-warn-line,
+.b-aiperf-diagram .b-aiperf-quiet-line { fill: none; stroke-width: 3; stroke-linecap: round; }
+.b-aiperf-diagram .b-aiperf-active-line { stroke: var(--diagram-accent); }
+.b-aiperf-diagram .b-aiperf-pass-line { stroke: var(--l5); }
+.b-aiperf-diagram .b-aiperf-warn-line { stroke: var(--l1); }
+.b-aiperf-diagram .b-aiperf-quiet-line { stroke: var(--blk); }
+
+body.topic-b-aiperf .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-aiperf .mhost { aspect-ratio: var(--arm); }
+  .b-aiperf-diagram text { font-size: 16px; }
+  .b-aiperf-diagram .b-aiperf-note,
+  .b-aiperf-diagram .b-aiperf-muted { font-size: 16px; }
+}

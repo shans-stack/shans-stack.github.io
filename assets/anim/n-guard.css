@@ -1,0 +1,27 @@
+.n-guard-diagram { display: block; width: 100%; height: auto; font-family: var(--f); }
+.n-guard-diagram text { fill: var(--ink); }
+.n-guard-diagram .name { font-weight: 600; }
+.n-guard-diagram .sub, .n-guard-diagram .note { fill: var(--ink2); }
+.n-guard-diagram .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.4; }
+.n-guard-diagram .artifact .panel { fill: none; stroke-dasharray: 4 3; }
+.n-guard-diagram .idle .panel { stroke-dasharray: 4 4; }
+.n-guard-diagram .idle .name { fill: var(--ink2); }
+.n-guard-diagram .node.arrived .panel, .n-guard-diagram .good .panel { stroke: var(--l5); }
+.n-guard-diagram .node.blocked .panel { stroke: var(--l1); }
+.n-guard-diagram .route { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
+.n-guard-diagram .route.control:not(.arrow) { stroke-dasharray: 5 3; }
+.n-guard-diagram .route.active { stroke: var(--l4); }
+.n-guard-diagram .route.ok, .n-guard-diagram .route.ok.active { stroke: var(--l5); }
+.n-guard-diagram .route.stop, .n-guard-diagram .route.stop.active { stroke: var(--l1); }
+.n-guard-diagram .packet { fill: var(--l4); }
+.n-guard-diagram .packet.ok { fill: var(--l5); }
+.n-guard-diagram .packet.stop { fill: var(--l1); }
+.n-guard-diagram .route, .n-guard-diagram .packet { pointer-events: none; }
+[data-station="n-guard"] .src a { display: inline; padding: 0; font-size: inherit; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-n-guard .stage .figbox { margin-block: 8px; }
+  .topic-n-guard .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-guard .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-guard .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-guard .stage .ctl { gap: 8px; margin-top: 10px; }
+}

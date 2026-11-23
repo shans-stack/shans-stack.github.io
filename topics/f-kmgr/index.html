@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>集群生命周期 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明如何创建或纳管 Kubernetes 集群，以及如何配置、扩缩容、升级和退役。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-kmgr.css?v=784f407e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-kmgr">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-kmgr">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Cluster Lifecycle">集群生命周期</h1>
+        <p class="meta"><span data-en="6 steps · Kubernetes, control plane">6 步 · Kubernetes、控制平面</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/architecture/controller/&quot;&gt;Kubernetes · Controllers&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/architecture/controller/">Kubernetes · 控制器</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/&quot;&gt;Kubernetes · Schedule GPUs&lt;/a&gt;"><a href="https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/">Kubernetes · 调度 GPU</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/cluster-administration/node-autoscaling/&quot;&gt;Kubernetes · Node Autoscaling&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/cluster-administration/node-autoscaling/">Kubernetes · 节点自动扩缩容</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/&quot;&gt;Kubernetes · Safely Drain a Node&lt;/a&gt;"><a href="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/">Kubernetes · 安全排空节点</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/&quot;&gt;Kubernetes · Upgrading kubeadm Clusters&lt;/a&gt;"><a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">Kubernetes · kubeadm 集群升级</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.rafay.co/usecases/k8s-lifecycle/std-clusters/&quot;&gt;Rafay · Standardized Cluster Builds and Management&lt;/a&gt;"><a href="https://docs.rafay.co/usecases/k8s-lifecycle/std-clusters/">Rafay · 标准集群建设与管理</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.rafay.co/learn/quickstart/basics/cleanup/&quot;&gt;Rafay · Imported Cluster Cleanup&lt;/a&gt;"><a href="https://docs.rafay.co/learn/quickstart/basics/cleanup/">Rafay · 导入集群清理</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.rafay.co/learn/quickstart/eks/clusterlifecycle/deprovision/&quot;&gt;Rafay · Deprovision an EKS Cluster&lt;/a&gt;"><a href="https://docs.rafay.co/learn/quickstart/eks/clusterlifecycle/deprovision/">Rafay · EKS 集群退役</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/dgx-software.html&quot;&gt;NVIDIA · DGX GB200 SuperPOD Software&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/dgx-software.html">NVIDIA · DGX GB200 SuperPOD 软件</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-kmgr.js?v=3cefab74"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "f-kmgr",
+ "ar": [880/330, 1],
+ "steps": [
+  {
+   "t": [
+    "定义集群的期望状态",
+    "Define the Desired Cluster State"
+   ],
+   "d": [
+    "管理 Kubernetes 集群的创建或纳管、配置、扩缩容、升级和退役。",
+    "Manages Kubernetes clusters through creation or import, configuration, scaling, upgrade and retirement."
+   ],
+   "b": [
+    [
+     "<p>集群由控制平面与运行工作负载的节点组成。集群管理层可把版本、节点池和基础组件记录为期望状态，即集群应达到的配置。控制器读取实际状态，执行授权的变更，并回报处理结果。节点池是一组按硬件或管理用途归类的节点。</p>"
+    ],
+    [
+     "<p>A cluster consists of a control plane and nodes that run workloads. The management layer can record the version, node pools, and base components as the desired state, the configuration the cluster should reach. Controllers read the observed state, apply authorized changes, and report the result. A node pool groups nodes by hardware or operational purpose.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "创建或纳管集群",
+    "Create or Import a Cluster"
+   ],
+   "d": [
+    "创建路径部署新集群，纳管路径把已有集群接入管理面。",
+    "Creation provisions a new cluster, while import connects an existing cluster to the management plane."
+   ],
+   "b": [
+    [
+     "<p>新建时，平台或基础设施提供方部署控制平面和节点。纳管时，平台通过授权连接识别已有集群，并取得相应的观测与操作权限。具体权限决定平台能管理哪些基础设施操作。Rafay 的集群管理文档分别描述了集群创建与导入路径。</p>"
+    ],
+    [
+     "<p>For a new cluster, the platform or infrastructure provider provisions the control plane and nodes. For an existing cluster, an authorized connection identifies the cluster and grants the corresponding visibility and management capabilities. The permissions determine which infrastructure operations the platform can manage. Rafay documents separate provisioning and import paths.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "应用集群基线",
+    "Apply a Cluster Baseline"
+   ],
+   "d": [
+    "新建或纳管后，可通过配置基线管理网络、存储和 GPU 设备支持。",
+    "After creation or import, a baseline can manage networking, storage, and GPU device support."
+   ],
+   "b": [
+    [
+     "<p>基线是一套预期的公共组件及配置。对采用 Kubernetes 设备插件的部署，GPU 节点需要相应驱动和设备插件，集群才能公布可调度的 GPU 资源。配置落地后，控制器继续比对实际状态与期望状态。两者之间的偏差称为配置漂移。</p>"
+    ],
+    [
+     "<p>A baseline defines the expected shared components and settings. In deployments using Kubernetes device plugins, GPU nodes need the corresponding drivers and device plugins before the cluster can advertise schedulable GPU resources. Controllers continue comparing observed and desired state after applying configuration. A difference between them is called configuration drift.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "扩缩节点池",
+    "Scale Node Pools"
+   ],
+   "d": [
+    "扩容将可用节点加入集群，缩容则把选定节点上的工作负载有序迁出后回收容量。",
+    "Scaling up joins usable nodes to the cluster. An orderly scale-down moves workloads off selected nodes before reclaiming capacity."
+   ],
+   "b": [
+    [
+     "<p>扩容后的节点经过注册并达到可用状态后才进入新的放置候选范围。计划缩容通常先停止向待移除节点放置新工作负载，再排空可迁出的 Pod。Pod 是 Kubernetes 放置和运行容器的基本单位。节点自动扩缩容也要考虑工作负载能否在其余节点运行。</p>"
+    ],
+    [
+     "<p>New nodes become placement candidates after registering and becoming available. A planned scale-down typically stops new placements on the selected node and drains evictable Pods. A Pod is the basic unit Kubernetes places to run containers. Node autoscaling also evaluates whether workloads can run on the remaining nodes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "分批升级并检查健康",
+    "Stage Upgrades and Verify Health"
+   ],
+   "d": [
+    "控制平面和节点依据各组件的兼容要求分批升级，每批完成后检查健康状态。",
+    "The control plane and nodes are upgraded in stages within component compatibility requirements, with health checked after each stage."
+   ],
+   "b": [
+    [
+     "<p>升级需要考虑控制平面、节点软件和集群插件的版本兼容性。以 Kubernetes 的 kubeadm 流程为例，先处理控制平面，再分批升级工作节点。节点维护时可先排空工作负载，升级并验证后再恢复调度。</p>",
+     "<p>NVIDIA Mission Control 是运维平台的一例。在 NVIDIA DGX GB200 SuperPOD 参考架构中，它配合 NVIDIA Base Command Manager 执行部署与运营，并提供系统健康监控、诊断和恢复能力。</p>"
+    ],
+    [
+     "<p>An upgrade must account for compatibility across the control plane, node software, and cluster add-ons. In the Kubernetes kubeadm workflow, control-plane upgrades precede the staged worker upgrades. During maintenance, a node can be drained, upgraded, and verified before it is made schedulable again.</p>",
+     "<p>NVIDIA Mission Control is one example of an operations platform. In the NVIDIA DGX GB200 SuperPOD reference architecture, it works with NVIDIA Base Command Manager on deployment and operations and provides system health monitoring, diagnostics, and recovery capabilities.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "迁出工作负载并退役",
+    "Migrate Workloads and Retire the Cluster"
+   ],
+   "d": [
+    "退役先处理工作负载和持久数据，再按管理归属解除纳管或释放集群资源。",
+    "Retirement addresses workloads and persistent data before disconnecting management or releasing cluster resources according to ownership."
+   ],
+   "b": [
+    [
+     "<p>整集群退出服务时，仍需保留的工作负载和数据先转移或备份。管理平台按资源归属处理集群、底层资源和管理连接。以 Rafay 的公开入门流程为例，移除已导入集群的管理关系可保留原集群，退役由平台创建的 EKS 集群则走另一个资源回收流程。</p>"
+    ],
+    [
+     "<p>When the entire cluster leaves service, workloads and data that must be kept are migrated or backed up first. The management platform handles the cluster, infrastructure, and management connection according to resource ownership. In Rafay’s public quickstarts, removing an imported cluster from management can leave it running, while deprovisioning an EKS cluster created through the platform follows a separate reclamation workflow.</p>"
+    ]
+   ]
+  }
+ ]
+};
+document.addEventListener('ss-lang', ({detail}) => {
+  const en = detail === 'en';
+  document.querySelector('meta[name=description]').content = ["分 6 步说明如何创建或纳管 Kubernetes 集群，以及如何配置、扩缩容、升级和退役。","Six steps on creating or importing Kubernetes clusters, configuring and scaling them, staging upgrades, and retiring clusters."][en ? 1 : 0];
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DDN Horizon：AI 云服务编排 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明DDN 的 AI 云服务编排平台，提供资源自助开通、多租户治理以及用量跟踪和计费。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-horizon.css?v=3f1c2c4a">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-d-horizon">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-horizon">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DDN Horizon: Orchestration for AI Cloud Services">DDN Horizon：AI 云服务编排</h1>
+        <p class="meta"><span data-en="5 steps · AI cloud, self-service delivery, multi-tenancy">5 步 · AI 云、自助交付、多租户</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/horizon/&quot;&gt;DDN Horizon Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/horizon/">DDN Horizon 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/press-releases/ddn-unveils-ddn-horizon-to-turn-ai-infrastructure-into-revenue-ready-ai-as-a-service-platforms/&quot;&gt;DDN Horizon Launch Announcement&lt;/a&gt;"><a href="https://www.ddn.com/press-releases/ddn-unveils-ddn-horizon-to-turn-ai-infrastructure-into-revenue-ready-ai-as-a-service-platforms/">DDN Horizon 发布公告</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/how-to-turn-gpus-into-revenue-generating-ai-services/&quot;&gt;DDN Blog · Horizon and the Data Platform&lt;/a&gt;"><a href="https://www.ddn.com/blog/how-to-turn-gpus-into-revenue-generating-ai-services/">DDN 官方博客：Horizon 与数据平台</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/press-release/rafay-systems-and-datadirect-networks-partner-to-power-next-generation-ai-factories&quot;&gt;Rafay · Rafay Systems and DataDirect Networks Announce Collaboration (2026-03-19)&lt;/a&gt;"><a href="https://rafay.co/press-release/rafay-systems-and-datadirect-networks-partner-to-power-next-generation-ai-factories">Rafay · Rafay Systems 与 DDN 宣布合作（2026-03-19）</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-horizon.js?v=019e2138"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "d-horizon",
+  "ar": [
+    2.75,
+    0.9836065573770492
+  ],
+  "steps": [
+    {
+      "t": [
+        "基础设施之上的控制平面",
+        "A Control Plane for AI Infrastructure"
+      ],
+      "d": [
+        "Horizon 将 GPU、存储和网络资源编排成可交付的 AI 云服务。",
+        "Horizon orchestrates GPU, storage, and networking resources for delivery as AI cloud services."
+      ],
+      "b": [
+        [
+          "<p>DDN Horizon 是 DDN Data Intelligence Platform 的控制平面。控制平面负责开通、配置和管理服务，底层计算与数据系统负责实际执行任务和读写数据。DDN 将 Infinia 和 EXAScaler 列为这套平台的底层数据系统。</p>",
+          "<p>DDN 的产品页列出本地及气隙部署。气隙是与外部网络隔离的运行环境，可用于有数据驻留或网络隔离要求的场景。</p>"
+        ],
+        [
+          "<p>DDN Horizon is the control plane of the DDN Data Intelligence Platform. A control plane provisions, configures, and manages services. The underlying compute and data systems execute workloads and handle data reads and writes. DDN lists Infinia and EXAScaler as data systems underlying the platform.</p>",
+          "<p>DDN lists on-premises and air-gapped deployment options. An air-gapped environment is isolated from external networks and can serve deployments with data residency or network isolation requirements.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从目录自助开通",
+        "Self-Service Provisioning from the Catalog"
+      ],
+      "d": [
+        "租户可从 Horizon 的自助目录开通基础资源或直接获取 AI 运行环境。",
+        "Tenants can provision infrastructure or launch AI environments from Horizon’s self-service catalog."
+      ],
+      "b": [
+        [
+          "<p>Horizon 将底层能力组织成可申请的服务条目。计算和存储条目可分配 GPU 或开通存储，开发条目可交付带 GPU 的 Notebook。Notebook 是可在交互界面中编写和运行代码的工作环境。</p>",
+          "<p>目录将服务选择与资源配置衔接起来。租户申请的是所需资源或环境，平台按服务配置执行开通。</p>"
+        ],
+        [
+          "<p>Horizon organizes infrastructure capabilities into requestable services. Compute and storage entries can allocate GPUs or provision storage. Development entries can deliver a GPU-backed notebook, an interactive environment for writing and running code.</p>",
+          "<p>The catalog connects service selection to resource configuration. A tenant requests a resource or environment, and the platform provisions it according to the service configuration.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "租户范围内的资源治理",
+        "Governance Within Tenant Boundaries"
+      ],
+      "d": [
+        "Horizon 将租户开通、资源模板和策略执行纳入统一的管理流程。",
+        "Horizon brings tenant onboarding, resource templates, and policy enforcement into one management workflow."
+      ],
+      "b": [
+        [
+          "<p>租户是平台分配资源并实施访问策略的组织或团队范围。多个租户通过同一平台申请服务时，Horizon 提供租户隔离与策略执行。运营方集中管理租户与资源模板，租户在各自的授权范围内使用服务。</p>"
+        ],
+        [
+          "<p>A tenant is an organizational or team boundary for resource allocation and access policy. Horizon provides tenant isolation and policy enforcement when multiple tenants request services through the same platform. Operators manage tenants and resource templates centrally, while tenants consume services within their assigned scope.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "编排训练与推理服务",
+        "Orchestrating Training and Inference Services"
+      ],
+      "d": [
+        "同一控制平面管理训练与检查点，并可从目录部署 NVIDIA NIM 推理端点。",
+        "The same control plane manages training and checkpoints and can deploy NVIDIA NIM inference endpoints from the catalog."
+      ],
+      "b": [
+        [
+          "<p>自助开通之后，Horizon 的管理范围还包括训练、检查点、推理与部署。检查点是保存的训练状态，可用于恢复训练。推理端点则是应用调用已部署模型的接口。</p>",
+          "<p>DDN 的产品页以 NVIDIA NIM 为目录交付的实例。NIM 将模型推理封装为可部署的服务，Horizon 负责从目录发起端点部署。</p>"
+        ],
+        [
+          "<p>After initial provisioning, Horizon also manages training, checkpointing, inference, and deployment. A checkpoint saves training state so that training can resume. An inference endpoint is the interface through which applications call a deployed model.</p>",
+          "<p>DDN lists NVIDIA NIM as a catalog example. NIM packages model inference as a deployable service, and Horizon initiates endpoint deployment from the catalog.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从用量记录到成本分摊",
+        "From Usage Records to Cost Allocation"
+      ],
+      "d": [
+        "Horizon 将用量跟踪、成本分摊和计费纳入租户运营。",
+        "Horizon brings usage tracking, chargeback, and billing into tenant operations."
+      ],
+      "b": [
+        [
+          "<p>服务交付后，运营方可以追踪资源用量，例如各租户使用的计算资源。成本分摊（chargeback）是将共享资源的成本归属到消耗这些资源的团队或租户。DDN 将用量跟踪、成本分摊和计费列为 Horizon 的运营功能。</p>","<p>DDN 与 Rafay Systems 于 2026 年 3 月 19 日宣布合作，面向企业和 neocloud 运营方部署和运营大规模 AI 环境。</p>"
+        ],
+        [
+          "<p>After service delivery, operators can track resource usage, such as compute consumption across tenants. Chargeback assigns the costs of shared resources to the teams or tenants that consumed them. DDN lists usage tracking, chargeback, and billing as Horizon operations features.</p>","<p>DDN and Rafay Systems announced a collaboration on March 19, 2026, aimed at helping enterprises and neocloud providers deploy and run large-scale AI environments.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

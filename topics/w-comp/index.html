@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Composable Clusters：共享基础设施上的独立集群 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA 的Composable Clusters。WEKA Operator 为每个租户部署独立集群，资源可按集群划分，支持的配置也可通过 SSD Proxy 共享物理 NVMe 盘。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-comp.css?v=7836e131">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-comp">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-comp">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Composable Clusters: Independent Clusters on Shared Infrastructure">Composable Clusters：共享基础设施上的独立集群</h1>
+        <p class="meta"><span data-en="5 steps · multi-tenancy, resource allocation, Kubernetes">5 步 · 多租户、资源分配、Kubernetes</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/kubernetes/composable-clusters-for-multi-tenancy-in-kubernetes&quot;&gt;WEKA · Composable Clusters for Multi-Tenancy in Kubernetes&lt;/a&gt;"><a href="https://docs.weka.io/kubernetes/composable-clusters-for-multi-tenancy-in-kubernetes">WEKA · Kubernetes 多租户可组合集群</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/kubernetes/weka-operator-deployments/cloud-deployment-manager-kubernetes-deployment-types/deploy-composable-clusters-on-kubernetes-using-the-cdm&quot;&gt;WEKA · Deploy Composable Clusters Using CDM&lt;/a&gt;"><a href="https://docs.weka.io/kubernetes/weka-operator-deployments/cloud-deployment-manager-kubernetes-deployment-types/deploy-composable-clusters-on-kubernetes-using-the-cdm">WEKA · 用 CDM 部署可组合集群</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/resources/technical-brief/neuralmesh-multitenancy&quot;&gt;WEKA · NeuralMesh Multitenancy Technical Brief&lt;/a&gt;"><a href="https://www.weka.io/resources/technical-brief/neuralmesh-multitenancy">WEKA · NeuralMesh 多租户技术简报</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-comp.js?v=a7ad03dc"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-comp",
+ "ar": [
+  2.8213166144200628,
+  0.8275862068965517
+ ],
+ "steps": [
+  {
+   "t": [
+    "每个租户对应一套集群",
+    "Give Each Tenant Its Own Cluster"
+   ],
+   "d": [
+    "多套 WekaCluster 由同一个 Operator 管理，每套 WekaCluster 对应一个独立后端。",
+    "A single Operator manages multiple WekaCluster resources, each representing a separate backend."
+   ],
+   "b": [
+    [
+     "<p>可组合集群把同一批基础设施组织成多套 WEKA 集群。租户通常代表一个需要独立配置和运维边界的使用方。每个租户有自己的 WekaCluster，可为不同租户分别声明各自的资源与服务。</p>",
+     "<p>WEKA 的原生多租户以单集群内的租户、网络空间和服务质量策略建立逻辑隔离。可组合集群在集群这一层划出边界，因此两种方式的配置对象不同。</p>"
+    ],
+    [
+     "<p>Composable Clusters organize a shared infrastructure fleet into multiple WEKA clusters. A tenant typically represents a group that needs its own configuration and operational boundary. Each tenant has a WekaCluster with its own resources and services.</p>",
+     "<p>WEKA native multi-tenancy uses tenants, network spaces, and quality-of-service policies to create logical boundaries within one cluster. Composable Clusters establish a boundary at the cluster level, so the two models configure different objects.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按集群划分专用资源",
+    "Partition Dedicated Resources by Cluster"
+   ],
+   "d": [
+    "专用资源模式按租户分配主机、盘、CPU 核和内存。",
+    "The dedicated-resource model assigns hosts, drives, CPU cores, and memory by tenant."
+   ],
+   "b": [
+    [
+     "<p>在专用资源模式中，Operator 根据声明的资源配置把后端放到匹配的节点上，并为每套集群分配独立的资源集合。这套集合可以包含主机、盘、CPU 核和内存。</p>",
+     "<p>每套集群按自己的配置运行。专用资源的边界由实际的资源分配形成。</p>"
+    ],
+    [
+     "<p>In the dedicated-resource model, the Operator places backend components on matching nodes and allocates a separate resource set to each cluster. The set can include hosts, drives, CPU cores, and memory.</p>",
+     "<p>Each cluster runs with its own configuration. Its dedicated-resource boundary comes from the resources actually assigned to it.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用 SSD Proxy 共享物理盘",
+    "Share Physical Drives with SSD Proxy"
+   ],
+   "d": [
+    "SSD Proxy 配置让独立集群使用同一批 NVMe 盘中分别划出的容量单元。",
+    "An SSD Proxy configuration lets separate clusters use distinct capacity units from the same physical NVMe drives."
+   ],
+   "b": [
+    [
+     "<p>支持 SSD Proxy 的部署可将一块物理 NVMe 盘划为多个逻辑分配单元，每套集群获得自己的容量分配。这使配置的粒度可以小于整块盘。</p>",
+     "<p>租户仍各有独立 WekaCluster，共享发生在底层介质。整盘专用与共享盘是不同的资源布局。</p>"
+    ],
+    [
+     "<p>Deployments that support SSD Proxy can divide a physical NVMe drive into logical allocation units. Each cluster receives its own capacity allocation, which can be smaller than an entire drive.</p>",
+     "<p>Each tenant still has a separate WekaCluster. Sharing occurs at the physical media layer. Whole-drive assignment and shared drives are different resource layouts.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "分别定义每个租户的服务",
+    "Define Each Tenant's Services Separately"
+   ],
+   "d": [
+    "每套集群独立配置容量、协议和网络，共用部署层的 Operator。",
+    "Each cluster has its own capacity, protocol and network settings, and the deployment shares an Operator."
+   ],
+   "b": [
+    [
+     "<p>共享盘部署可以复用发现和登记物理盘的策略，租户级配置则分别指定集群容量、开放的协议和数据网络接口。共享配置集中管理底层资源，租户配置定义各自对外提供的存储服务。</p>"
+    ],
+    [
+     "<p>A shared-drive deployment can reuse the policy for discovering and registering physical drives. Each tenant's configuration specifies its cluster capacity, enabled protocols, and data interfaces. Shared settings manage the underlying resources, while tenant settings define the storage services each cluster exposes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按集群管理后续变更",
+    "Manage Changes at the Cluster Level"
+   ],
+   "d": [
+    "变更请求指向目标 WekaCluster，Operator 根据该资源执行对应的生命周期操作。",
+    "A change targets a specific WekaCluster, and the Operator manages the corresponding lifecycle operation."
+   ],
+   "b": [
+    [
+     "<p>新建集群和调整已有集群通过 Kubernetes 资源表达。以扩展为例，Operator 依据目标集群配置调配资源，其他租户仍有各自的集群定义。</p>",
+     "<p>即使多套集群共用同一个 Operator，集群对象仍然是区分部署与后续运维的基本边界。</p>"
+    ],
+    [
+     "<p>Kubernetes resources describe new clusters and changes to existing clusters. During expansion, for example, the Operator allocates resources according to the target cluster's configuration. Other tenants retain their own cluster definitions.</p>",
+     "<p>Even with a common Operator, the cluster resource remains the unit that identifies a deployment and its lifecycle operations.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

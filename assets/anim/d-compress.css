@@ -1,0 +1,20 @@
+.d-compress svg{display:block;width:100%;font-family:var(--f)}
+.d-compress text{fill:var(--ink);text-anchor:middle;dominant-baseline:middle;font-size:18px}
+.d-compress [data-tone=data]{--signal:var(--l6)}
+.d-compress [data-tone=meta]{--signal:var(--l4)}
+.d-compress [data-tone=failed]{--signal:var(--l1)}
+.d-compress [data-tone=idle]{--signal:var(--rule2)}
+.d-compress .d-compress-card{fill:color-mix(in srgb,var(--signal) 8%,var(--surface));stroke:var(--signal);stroke-width:1.5}
+.d-compress .d-compress-title{font-size:19px;font-weight:650}
+.d-compress .d-compress-detail,.d-compress .d-compress-note{fill:var(--ink2)}
+.d-compress .d-compress-link,.d-compress .d-compress-arrow,.d-compress .d-compress-boundary{fill:none;stroke:var(--signal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.d-compress [data-tone=idle] .d-compress-link,.d-compress [data-tone=failed] .d-compress-link{stroke-dasharray:4 5}
+.d-compress [data-tone=idle] .d-compress-link{stroke:var(--ink3)}
+.d-compress .d-compress-block{fill:var(--signal);stroke:var(--surface);stroke-width:1}
+.d-compress .d-compress-token{font-weight:650;fill:#000}
+@media (max-width:640px){
+  .d-compress text{font-size:15px}
+  .d-compress .d-compress-title{font-size:16px}
+}
+@media (641px <= width <= 720px){main[data-station="d-compress"] .mhost{aspect-ratio:var(--ar)}}
+main[data-station="d-compress"] .src li a{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:.2em}

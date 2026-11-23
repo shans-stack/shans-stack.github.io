@@ -5,23 +5,15 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-dbox.css，全部限定在 .ssa-v-dbox 容器之内。
-   VAST 字标取自 assets/brand/vast-wordmark-*.svg（路径原样内嵌为 symbol，浅色纯黑、深色纯白）。 */
+   样式在 assets/anim/v-dbox.css，全部限定在 .ssa-v-dbox 容器之内。 */
 (function(){
 var EN={"NVMe-oF 网络": "NVMe-oF network", "PCIe 交换芯片": "PCIe switch", "PCIe 交换": "PCIe switch", "只转发": "Forward only", "归 DNode A": "Owned by DNode A", "归 DNode B": "Owned by DNode B", "改归 DNode A": "Moved to DNode A", "改归 DNode B": "Moved to DNode B", "改接中": "Remapping", "一条条带：每一片落在不同的盘上": "One stripe: every piece on a different drive", "少量 SCM 盘做写缓冲，大量 QLC 盘长期存数据": "A few SCM drives buffer writes; many QLC drives hold the data long term", "CNode 里计算，DNode 只转发": "CNodes compute; DNodes only forward", "两个 DNode 同时在线": "Both DNodes online", "DNode B 在线": "DNode B online", "DNode B 下线，通道改接到 DNode A": "DNode B offline; its lanes move to DNode A", "全部盘经 DNode A 照常读写": "Every drive still served through DNode A", "DNode 坏：盘一块不少": "A DNode fails: no drive is lost", "盘坏：只少这一块": "A drive fails: only that drive is lost", "CNode 切片、算校验（赭黄边），每片放一块盘": "The CNode slices the data and adds parity (ochre edge), one piece per drive", "八片落在八块不同的盘上": "Eight pieces on eight different drives", "坏一块盘：这条条带只少一片": "One drive fails: the stripe loses one piece", "VAST DBox：两个 DNode 经 PCIe 交换芯片各管一半盘，一个坏了另一个接管，一次故障最多带走一块盘": "VAST DBox: two DNodes each serve half the drives through a PCIe switch; if one fails the other takes over, and one fault takes out at most one drive"};
 var ENM={"少量 SCM 盘做写缓冲，大量 QLC 盘长期存数据": "Few SCM drives buffer writes; QLC holds the data", "CNode 切片、算校验（赭黄边），每片放一块盘": "Slices + parity (ochre), one per drive"};
 var ARIA="VAST DBox：两个 DNode 经 PCIe 交换芯片各管一半盘，一个坏了另一个接管，一次故障最多带走一块盘";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function sprite(){
-  if(document.getElementById('ssa-vast-wm'))return;
-  var d=document.createElementNS(NS,'svg');d.setAttribute('width','0');d.setAttribute('height','0');d.setAttribute('aria-hidden','true');d.setAttribute('focusable','false');d.style.position='absolute';
-  d.innerHTML='<symbol id="ssa-vast-wm" viewBox="0 0 66 14"><path d="m11.918.916-.783-.375a.919.919 0 0 0-1.23.444l-.22.414L6.235 8.77 2.788 1.4l-.22-.414a.917.917 0 0 0-1.23-.444L.556.916c-.466.219-.69.804-.474 1.273l.195.383 4.689 10.024a1.383 1.383 0 0 0 1.248.797h.042a1.385 1.385 0 0 0 1.248-.797l4.689-10.024.195-.383c.217-.469-.007-1.054-.47-1.273ZM19.311 12.926l.784.375a.918.918 0 0 0 1.23-.444l.22-.414 3.451-7.371 3.448 7.371.22.414a.918.918 0 0 0 1.23.444l.785-.375c.462-.221.687-.804.469-1.271l-.195-.383-4.689-10.024a1.384 1.384 0 0 0-1.248-.797h-.041a1.386 1.386 0 0 0-1.25.797l-4.688 10.024-.195.383c-.219.467.006 1.05.47 1.27ZM47.275 3.212a.918.918 0 0 0 .966-.882l.03-.868c.02-.512-.393-.982-.908-1.006L46.887.45h-5.413c-.03 0-.059 0-.092.004-1.433.095-3.565 1.126-3.565 3.572 0 2.487 2.104 3.599 3.236 3.846l2.823.677c.041.009.082.017.124.023.15.022.896.176.896 1.014 0 .504-.253.801-.754.885h-5.318l-.362.005a.918.918 0 0 0-.966.883l-.03.868c-.02.512.393.982.908 1.006l.45.005h5.413c.043 0 .086 0 .128-.005 1.327-.123 3.301-1.196 3.301-3.647 0-2.539-2.051-3.547-3.195-3.742l-2.787-.668-.039-.008c-.042-.01-1.058-.235-1.058-1.142 0-.606.578-.769.953-.81h5.347l.388-.004ZM66 1.365a.916.916 0 0 0-.938-.914H55.5a.919.919 0 0 0-.938.914v.878c0 .513.427.968.942.976H58.897v9.086a.914.914 0 0 0 .56.864.919.919 0 0 0 .355.073h.879c.512 0 .968-.426.976-.94V3.217H65.06c.515-.007.943-.463.942-.975l-.003-.878Z"/></symbol>';
-  document.body.appendChild(d);
-}
 function mount(host,opts){
 opts=opts||{};
-sprite();
 host.classList.add('ssa-v-dbox');host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','ssa-scene');svg.setAttribute('role','img');host.appendChild(svg);
 const tgl=document.createElement('button');tgl.className='tgl';tgl.type='button';tgl.hidden=true;host.appendChild(tgl);
@@ -53,10 +45,6 @@ function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a==null?1:a;o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=o.a}
 function cls(o,c,on){o.el.classList.toggle(c,!!on)}
 /* ---------- 场景（画面内容与原动画稿一致） ---------- */
-/* 厂商 logo：VAST 字标放在部件角上。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;return el('use',{href:'#ssa-vast-wm',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm brand-part'},p)}
-/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
-function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.63*s.length;const w=h*66/14,gap=Math.round(fs*0.4),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
 /* DBox：两个 DNode、PCIe 交换芯片、一次故障最多带走一块盘 */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const SCENE={
@@ -69,7 +57,7 @@ const SCENE={
    sw:{x:140,y:250,w:570,h:40},swLbl:{x:722,y:270,a:'start',s:'PCIe 交换芯片'},
    dr:{x0:150,w:46,gap:10,y:336,h:64},halfY:424,cap:{x:480,y:474},
    ov:{cn:{cx:480,y:16,w:200,h:56},netY:110,boxes:[100,500],bw:360,by:150,bh:200,dnW:120,dnH:38,dnDy:24,barDy:92,drW:34,drGap:10,drDy:110,drH:62,lblY:406}};
-  return {W:480,H:466,mobile:true,f:{lbl:18,sm:16,cap:17},pw:20,ph:15,dr:6,sp:210,
+  return {W:480,H:466,mobile:true,f:{lbl:18,sm:17,cap:17},pw:20,ph:15,dr:6,sp:210,
    cn:{cxs:[82,240,398],w:130,h:44,y:10},netY:80,netX:[8,472],netLbl:{x:161,y:67,a:'middle'},
    db:{x:8,y:100,w:464,h:296},ttl:{x:20,y:118},
    dn:{cxs:[135,345],w:130,h:46,y:132},
@@ -88,7 +76,6 @@ const SCENE={
   tx(L.netLbl.x,L.netLbl.y,'NVMe-oF 网络',f.sm,'ink3-t',L.netLbl.a,g);
   E.cnB=E.cn.map(r=>{const b=box(r,g);tx(r.x+r.w/2,r.y+r.h/2,'CNode',f.lbl,'lbl b7','middle',g);return b});
   box({x:L.db.x,y:L.db.y,w:L.db.w,h:L.db.h},g,'box soft',16);tx(L.ttl.x,L.ttl.y,'DBox',f.sm,'ttl','start',g);
-  /* VAST 字标：紧跟在「DBox」标题后面同一行 */vmark(L.ttl.x+f.sm*2.5+(L.mobile?5:9),L.ttl.y,12,g,'start');
   const sw=L.sw;E.sw=box({x:sw.x,y:sw.y,w:sw.w,h:sw.h},g,'box',8);tx(L.swLbl.x,L.swLbl.y,L.swLbl.s,f.sm,'ink2-t',L.swLbl.a,g);
   E.dn=L.dn.cxs.map(x=>({x:x-L.dn.w/2,y:L.dn.y,w:L.dn.w,h:L.dn.h}));
   E.dnV=[];E.dnS=[];E.dnB=[];E.dnT=[];E.dnSub=[];E.dnX=[];
@@ -110,7 +97,6 @@ const SCENE={
   box(oc,go);tx(O.cn.cx,oc.y+oc.h/2,'CNode',f.lbl,'lbl b7','middle',go);
   E.oDn=[];E.oDr=[];E.oDrx=[];E.oBar=[];
   O.boxes.forEach((bx,b)=>{const r={x:bx,y:O.by,w:O.bw,h:O.bh};box(r,go,'box soft',14);tx(r.x+(L.mobile?10:14),r.y+(L.mobile?15:20),'DBox',f.sm,'ttl','start',go);
-   /* 第 6 步：只标左边那台，紧跟「DBox」标题 */if(b===0)vmark(r.x+(L.mobile?10:14)+f.sm*2.5+9,r.y+(L.mobile?15:20),12,go,'start');
    const cx=r.x+r.w/2+(L.mobile?20:0),dn={x:cx-O.dnW/2,y:r.y+O.dnDy,w:O.dnW,h:O.dnH};E.oDn.push(dn);
    line(P(cx,O.netY),P(cx,dn.y),'',go);const barY=r.y+O.barDy;line(P(cx,dn.y+dn.h),P(cx,barY),'',go);
    const tot=8*O.drW+7*O.drGap,xs=[];for(let k=0;k<8;k++)xs.push(r.x+(r.w-tot)/2+O.drW/2+k*(O.drW+O.drGap));
@@ -237,5 +223,154 @@ host.__anim=ctrl;
 return ctrl;
 }
 window.SSAnim=window.SSAnim||{};
-window.SSAnim['v-dbox']={steps:6,mount:mount};
+window.SSAnim['v-dbox']={steps:7,mount:mount, figures: {
+ "ceres-v2": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "1U · 2 × DTray",
+    "1U · 2 × DTray"
+   ]
+  ],
+  [
+   [
+    "每托盘",
+    "Per Tray"
+   ],
+   [
+    "1 × BlueField-3",
+    "1 × BlueField-3"
+   ]
+  ],
+  [
+   [
+    "数据盘位",
+    "Drive Positions"
+   ],
+   [
+    "22 × E1.L + 8 × U.2 SCM",
+    "22 × E1.L + 8 × U.2 SCM"
+   ]
+  ],
+  [
+   [
+    "对外端口",
+    "Fabric Ports"
+   ],
+   [
+    "4 × 200GbE / IB",
+    "4 × 200GbE / IB"
+   ]
+  ]
+ ],
+ "ceres-v1": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "1U · 2 × DTray",
+    "1U · 2 × DTray"
+   ]
+  ],
+  [
+   [
+    "每托盘",
+    "Per Tray"
+   ],
+   [
+    "2 × BlueField BF1600",
+    "2 × BlueField BF1600"
+   ]
+  ],
+  [
+   [
+    "数据盘位",
+    "Drive Positions"
+   ],
+   [
+    "22 × E1.L + 8 × U.2 SCM",
+    "22 × E1.L + 8 × U.2 SCM"
+   ]
+  ],
+  [
+   [
+    "对外端口",
+    "Fabric Ports"
+   ],
+   [
+    "8 × 100GbE / EDR",
+    "8 × 100GbE / EDR"
+   ]
+  ]
+ ],
+ "mavericks-mlk": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "2U · 2 × DNode",
+    "2U · 2 × DNode"
+   ]
+  ],
+  [
+   [
+    "每节点",
+    "Per Node"
+   ],
+   [
+    "EPYC 7313P · ConnectX-6",
+    "EPYC 7313P · ConnectX-6"
+   ]
+  ],
+  [
+   [
+    "数据盘位",
+    "Drive Positions"
+   ],
+   [
+    "44 × U.2 SSD + 12 × SCM",
+    "44 × U.2 SSD + 12 × SCM"
+   ]
+  ]
+ ],
+ "mavericks": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "2U · 2 × DNode",
+    "2U · 2 × DNode"
+   ]
+  ],
+  [
+   [
+    "每节点",
+    "Per Node"
+   ],
+   [
+    "2 × Broadwell · ConnectX-5",
+    "2 × Broadwell · ConnectX-5"
+   ]
+  ],
+  [
+   [
+    "数据盘位",
+    "Drive Positions"
+   ],
+   [
+    "44 × U.2 SSD + 12 × SCM",
+    "44 × U.2 SSD + 12 × SCM"
+   ]
+  ]
+ ]
+}};
 })();

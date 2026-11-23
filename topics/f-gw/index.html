@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>推理网关 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明网关如何接收推理请求、执行准入策略、选择模型后端并在后端不可用时切换。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-gw.css?v=1d42d052">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-gw">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-gw">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Inference Gateway">推理网关</h1>
+        <p class="meta"><span data-en="5 steps · API entry, admission, backend failover">5 步 · API 入口、准入、后端故障转移</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://gateway-api-inference-extension.sigs.k8s.io/#request-flow&quot;&gt;Kubernetes Gateway API Inference Extension · Request Flow&lt;/a&gt;"><a href="https://gateway-api-inference-extension.sigs.k8s.io/#request-flow">Kubernetes Gateway API Inference Extension：请求路径</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/blog/2025/06/05/introducing-gateway-api-inference-extension/&quot;&gt;Kubernetes Blog · Introducing Gateway API Inference Extension&lt;/a&gt;"><a href="https://kubernetes.io/blog/2025/06/05/introducing-gateway-api-inference-extension/">Kubernetes 官方博客：推理扩展介绍</a></li>
+      <li data-en="&lt;a href=&quot;https://gateway.envoyproxy.io/latest/tasks/security/jwt-authentication/&quot;&gt;Envoy Gateway · JWT Authentication&lt;/a&gt;"><a href="https://gateway.envoyproxy.io/latest/tasks/security/jwt-authentication/">Envoy Gateway：身份验证</a></li>
+      <li data-en="&lt;a href=&quot;https://gateway.envoyproxy.io/community/design/rate-limit/&quot;&gt;Envoy Gateway · Rate Limit Design&lt;/a&gt;"><a href="https://gateway.envoyproxy.io/community/design/rate-limit/">Envoy Gateway：限流设计</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/press-release/rafay-adds-token-router-capabilities-to-token-factory-putting-frontier-and-open-source-models-under-one-spending-policy-with-granular-token-budgets&quot;&gt;Rafay · Token Router and Token Budgets Announcement (November 5, 2026)&lt;/a&gt;"><a href="https://rafay.co/press-release/rafay-adds-token-router-capabilities-to-token-factory-putting-frontier-and-open-source-models-under-one-spending-policy-with-granular-token-budgets">Rafay：Token Router 与 Token Budgets 公告（2026-11-05）</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-gw.js?v=124f9cff"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "f-gw",
+ "ar": [
+  2.5360230547550433,
+  0.9717514124293786
+ ],
+ "steps": [
+  {
+   "t": [
+    "统一 API 入口",
+    "A Single API Entry Point"
+   ],
+   "d": [
+    "应用向固定的推理 API 发送请求，网关在入口接收并转发。",
+    "The application calls a stable inference API, and the gateway receives and forwards the request."
+   ],
+   "b": [
+    [
+     "<p>推理端点是接收模型请求的网络接口。推理网关位于应用和模型端点之间，将应用调用的地址与后端部署的地址解耦。请求经网关转发，模型由后端运行，生成结果沿返回路径交给应用。</p>"
+    ],
+    [
+     "<p>An inference endpoint is a network interface that accepts requests for a model. An inference gateway sits between applications and model endpoints and decouples the client-facing API address from backend deployment addresses. The gateway forwards requests, and the backend runs the model and returns the generated result to the application through the gateway.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "检查调用身份和流量",
+    "Identity and Traffic Checks"
+   ],
+   "d": [
+    "网关在转发前验证调用身份，并按访问和流量策略决定是否放行。",
+    "Before forwarding, the gateway verifies caller identity and applies access and traffic policies."
+   ],
+   "b": [
+    [
+     "<p>统一入口使平台能在请求到达模型前执行策略。身份验证确认调用方是谁，访问策略决定该身份可以访问哪些路由或模型，限流限制某个时间窗口内可接受的请求量。网关在入口拒绝未获准的调用，后端因此只接收通过这层检查的请求。</p>"
+    ],
+    [
+     "<p>A single entry point lets the platform enforce policies before traffic reaches the models. Authentication establishes who is calling, access rules define which routes or models that identity can use, and rate limits cap the accepted request volume over a time window. The gateway rejects disallowed calls at the entry point, so backends receive only requests that pass these checks.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "为请求选择模型后端",
+    "Model Backend Selection"
+   ],
+   "d": [
+    "通过检查的请求按模型标识和路由策略找到目标后端。",
+    "Accepted requests are mapped to a backend using the model identifier and routing policy."
+   ],
+   "b": [
+    [
+     "<p>模型标识是应用在请求中指定的模型名称或服务别名。网关可让路由规则读取该标识，把请求映射到提供相应模型的后端或后端池。后端池是一组能够承接同一服务的端点，应用可以继续使用同一网关地址，而平台可以在该地址背后管理多个模型服务。</p>"
+    ],
+    [
+     "<p>A model identifier is the model name or service alias specified by the application. A gateway can use routing rules that read that identifier and map the request to a backend or pool serving the model. A backend pool is a group of endpoints that can serve the same service. This arrangement lets applications keep one gateway address while the platform manages multiple model services behind it.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "网关与端点选择器的交接",
+    "The Handoff to Endpoint Selection"
+   ],
+   "d": [
+    "Kubernetes 的推理网关扩展将后端池选择与池内端点选择拆成两个环节。",
+    "The Kubernetes inference extension separates selection of a backend pool from selection of an endpoint within it."
+   ],
+   "b": [
+    [
+     "<p>Kubernetes Gateway API Inference Extension 用 <code>HTTPRoute</code> 把 HTTP 请求映射到 <code>InferencePool</code>，即一组运行模型服务的端点。选定池后，网关把请求信息交给该池的端点选择器（Endpoint Picker，EPP）。EPP 返回所选端点，网关再把实际推理请求转发到那里。选择器的算法可以独立于入口路由配置。</p>"
+    ],
+    [
+     "<p>Kubernetes Gateway API Inference Extension uses <code>HTTPRoute</code> to direct HTTP requests to an <code>InferencePool</code>, a group of endpoints running a model server. After selecting the pool, the gateway sends request information to its Endpoint Picker (EPP). The EPP returns the selected endpoint, and the gateway forwards the inference request there. The picker algorithm can be configured independently of the entry routing rules.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按健康状态切换后端",
+    "Health-Based Backend Failover"
+   ],
+   "d": [
+    "当首选后端不可用时，策略可把新请求转发到健康的备用后端。",
+    "When the preferred backend is unavailable, policy can direct new requests to a healthy alternative."
+   ],
+   "b": [
+    [
+     "<p>后端故障转移是按预设顺序把流量转给可用目标。Rafay 在 2026 年 11 月 5 日公告的 Token Router 可在同一入口下接入集群内模型和外部模型端点，并按已配置的优先级与健康状态选择目标。当高优先级组无可用后端时，路由到下一组。该公告还说明，Rafay 的 Token Budgets 可在请求准入前执行预算策略。</p>"
+    ],
+    [
+     "<p>Backend failover redirects traffic to an available target in a configured order. Rafay&#x27;s Token Router, announced on November 5, 2026, can serve in-cluster models and external model endpoints behind one entry point and choose among them using configured priorities and health. If the higher-priority group has no available backend, the next group receives traffic. The announcement also describes Rafay Token Budgets applying budget policy before admission.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

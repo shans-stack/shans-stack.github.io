@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuralMesh 的用户态 I/O · Shan's Stack</title>
+<meta name="description" content="分 5 步说明原生 POSIX 请求经 Linux VFS 进入 WEKA 前端，用户态服务处理后续文件系统 I/O。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-user.css?v=d579d334">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="w-user-topic">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-user">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="User-Space I/O in NeuralMesh">NeuralMesh 的用户态 I/O</h1>
+        <p class="meta"><span data-en="5 steps · POSIX, Linux containers, device paths">5 步 · POSIX、Linux 容器、设备路径</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf&quot;&gt;WEKA · NeuralMesh Architecture White Paper, Pages 8–11 and 20&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf">WEKA · NeuralMesh 架构白皮书，第 8 至 11、20 页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/networking-in-wekaio&quot;&gt;WEKA Documentation · Networking&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/networking-in-wekaio">WEKA 文档 · 网络</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/about&quot;&gt;WEKA Documentation · Introduction to NeuralMesh&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/about">WEKA 文档 · NeuralMesh 简介</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-user.js?v=f856cd95"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-user",
+ "ar": [
+  2.2564102564102564,
+  0.7307692307692307
+ ],
+ "steps": [
+  {
+   "t": [
+    "POSIX 请求进入内核",
+    "POSIX Entry into the Kernel"
+   ],
+   "d": [
+    "应用的原生文件调用先进入 Linux 虚拟文件系统，再交给 WEKA 内核驱动。",
+    "Native file calls enter the Linux Virtual File System before reaching the WEKA kernel driver."
+   ],
+   "b": [
+    [
+     "<p>POSIX 定义应用常用的文件操作接口。虚拟文件系统（VFS）是 Linux 内核中为不同文件系统提供统一入口的一层。原生挂载的 WekaFS 通过 WEKA 驱动接入这一层。</p>"
+    ],
+    [
+     "<p>POSIX defines common file operations used by applications. The Virtual File System (VFS) is the Linux kernel layer that provides a common entry point for file systems. A native WekaFS mount connects to that layer through the WEKA driver.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "请求交给用户态前端",
+    "Handoff to the User-Space Frontend"
+   ],
+   "d": [
+    "WEKA 内核驱动把请求交给客户端前端，前端在 Linux 容器的用户空间运行。",
+    "The WEKA kernel driver hands requests to the client frontend, which runs in user space in a Linux container."
+   ],
+   "b": [
+    [
+     "<p>用户态是进程运行在内核之外的执行环境。前端接收来自驱动的请求，并与处理文件系统逻辑和物理存储的服务通信。</p>"
+    ],
+    [
+     "<p>User space is the execution environment outside the kernel. The frontend receives requests from the driver and communicates with services that handle file system logic and physical storage.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "DPDK 接管网络收发",
+    "Network I/O Through DPDK"
+   ],
+   "d": [
+    "使用 DPDK 时，前端经用户态网络库访问网卡队列，绕过常规 Linux 网络协议栈。",
+    "With DPDK, the frontend uses a user-space library to access NIC queues and bypass the regular Linux network stack."
+   ],
+   "b": [
+    [
+     "<p>DPDK 是一套数据包处理库和驱动。网卡队列组织网络发送和接收工作，用户态服务可通过 DPDK 直接处理队列。在客户端的内核 UDP 模式下，网络收发仍走 Linux 网络栈。</p>"
+    ],
+    [
+     "<p>DPDK is a set of libraries and drivers for packet processing. NIC queues organize transmit and receive work, and a user-space service can access them through DPDK. In client kernel UDP mode, network I/O still goes through the Linux stack.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "计算服务与盘服务",
+    "Compute and Drive Services"
+   ],
+   "d": [
+    "后端计算服务处理文件系统元数据与布局，盘服务负责访问物理 NVMe SSD。",
+    "Backend Compute services handle file system metadata and placement, while Drive services access physical NVMe SSDs."
+   ],
+   "b": [
+    [
+     "<p>计算和盘服务也在用户空间运行。计算服务可向多个盘服务发出读取工作。盘服务管理相应 SSD 的 I/O，NVMe 是这些 SSD 使用的存储接口。</p>"
+    ],
+    [
+     "<p>Compute and Drive services also run in user space. Compute services can issue reads to multiple Drive services. Each Drive service manages I/O to its SSDs, which use the NVMe storage interface.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "结果返回应用",
+    "Returning Results to the Application"
+   ],
+   "d": [
+    "读取结果汇入客户端前端，再经 WEKA 驱动和 VFS 返回给应用。",
+    "Read results return to the client frontend and reach the application through the WEKA driver and VFS."
+   ],
+   "b": [
+    [
+     "<p>一次原生读请求涵盖应用的内核文件接口，以及用户态执行的集群服务和设备访问。VFS 出现在请求和响应的应用边界，支持 DPDK 的数据网络在该边界之外运行。</p>"
+    ],
+    [
+     "<p>A native read involves both the application’s kernel file interface and the cluster services and device access running in user space. VFS sits at the application boundary for requests and responses. The DPDK data network operates beyond that boundary.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

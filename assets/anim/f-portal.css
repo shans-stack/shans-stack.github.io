@@ -1,0 +1,23 @@
+.f-portal-figure {
+  display: block;
+  width: 100%;
+  text-anchor: middle;
+  font: 500 16px var(--f);
+}
+.f-portal-figure [data-tone="normal"] { --edge: var(--l4); }
+.f-portal-figure [data-tone="allowed"] { --edge: var(--l5); }
+.f-portal-figure [data-tone="denied"] { --edge: var(--l1); }
+.f-portal-box { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; }
+.f-portal-figure [data-node][data-active="true"] .f-portal-box { stroke: var(--edge); stroke-width: 2; }
+.f-portal-title { fill: var(--ink); font-size: 18px; font-weight: 600; }
+.f-portal-detail, .f-portal-note { fill: var(--ink2); }
+.f-portal-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linejoin: round; }
+.f-portal-figure [data-active="true"] .f-portal-wire { stroke: var(--edge); stroke-width: 2; }
+.f-portal-packet { fill: var(--edge); stroke: var(--bg); stroke-width: 1; }
+.topic-f-portal .mhost { aspect-ratio: var(--ar); }
+.topic-f-portal .src a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-f-portal .mhost { aspect-ratio: var(--arm); }
+  .topic-f-portal .stage .figbox { margin-block: 8px; }
+  .f-portal-title { font-size: 17px; }
+}

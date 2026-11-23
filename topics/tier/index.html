@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>冷热分层：按访问需求放置数据 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明存储分层如何选择数据位置、执行迁移，以及冷数据如何恢复访问。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/tier.css?v=e12ab837">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="tier">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Hot and Cold Tiering: Placing Data by Access Needs">冷热分层：按访问需求放置数据</h1>
+        <p class="meta"><span data-en="6 steps · Access frequency, lifecycle, archive">6 步 · 访问频率、生命周期、归档</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview&quot;&gt;Azure Blob Access Tiers and Retrieval&lt;/a&gt;"><a href="https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview">Azure Blob 访问层与读取条件</a></li>
+      <li data-en="&lt;a href=&quot;https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/ArchivalStorage.html&quot;&gt;Apache HDFS Media Policies and Migration&lt;/a&gt;"><a href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/ArchivalStorage.html">Apache HDFS 介质策略与数据迁移</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html&quot;&gt;Amazon S3 Lifecycle Transitions&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html">Amazon S3 生命周期转换</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html&quot;&gt;Amazon S3 Access-Based Tiering&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html">Amazon S3 按访问分层</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html&quot;&gt;Amazon S3 Archive Restore&lt;/a&gt;"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html">Amazon S3 归档恢复</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/tier.js?v=f7bb6791"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "tier",
+ "ar": [
+  2.5714285714285716,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "访问频率与取回时限",
+    "Access Frequency and Retrieval Deadlines"
+   ],
+   "d": [
+    "访问频率和可接受的取回等待时间共同决定数据适合放在哪一层。",
+    "Access frequency and acceptable retrieval delay together determine which tier suits the data."
+   ],
+   "b": [
+    [
+     "<p>热数据是当前频繁访问的数据，例如本轮训练反复读取的样本。较少访问的数据可放在冷层，但仍需满足取回时限。例如，用于近期恢复的检查点可能很少读取，却仍需随时可读。</p>"
+    ],
+    [
+     "<p>Hot data is accessed frequently, such as samples repeatedly read by an active training run. Data accessed less often can sit in a colder tier if that tier meets the retrieval deadline. For example, a checkpoint kept for near-term recovery may be rarely read yet still need to be available immediately.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "介质与访问层",
+    "Storage Media and Access Tiers"
+   ],
+   "d": [
+    "文件系统可按介质放置数据，对象存储也可用存储类别定义访问条件。",
+    "File systems can place data by media type, and object stores can define access conditions through storage classes."
+   ],
+   "b": [
+    [
+     "<p>介质分层按物理设备类型放置数据。例如，HDFS 存储策略可将数据块的副本放在 SSD 或指定的归档介质上。对象存储的访问层则由服务定义，规定对象是否可在线读取、是否需先恢复，以及相应的计费条件。同为在线层的类别可以有相同的取回时延。</p>"
+    ],
+    [
+     "<p>Media tiering places data on specific device types. For example, HDFS storage policies can place block replicas on SSDs or designated archival media. Object storage access tiers are defined by the service. They specify whether an object is readable online, whether restoration is required, and the associated billing terms. Online classes can share the same retrieval latency.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用规则判断何时下沉",
+    "Using Rules to Trigger Transitions"
+   ],
+   "d": [
+    "分层策略可按对象年龄或实际访问情况判断迁移时机。",
+    "A tiering policy can trigger a transition based on object age or observed access."
+   ],
+   "b": [
+    [
+     "<p>生命周期规则是一组在满足条件时对对象执行的操作。按年龄触发时，系统使用创建以来的时间。另一种做法是观察对象多久未被访问，用持续不活跃作为降层信号。Amazon S3 的 Lifecycle 和 Intelligent-Tiering 分别提供了这两类机制的例子。</p>"
+    ],
+    [
+     "<p>A lifecycle rule is a set of actions applied to objects when conditions are met. An age-based rule can use time since object creation. Another approach monitors time since access and uses sustained inactivity as a signal to move data down. Amazon S3 Lifecycle and Intelligent-Tiering are examples of these two mechanisms.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "迁移数据并维持逻辑标识",
+    "Moving Data While Keeping Its Identity"
+   ],
+   "d": [
+    "分层可以改变数据所在介质或访问类别，同时保留原有的文件路径或对象键。",
+    "A transition can change the data’s medium or access class while retaining its file path or object key."
+   ],
+   "b": [
+    [
+     "<p>以 HDFS 为例，存储策略指定数据块副本应在哪类介质上，Mover 检查现有副本的位置，并迁移不符合策略的副本。对象键是对象在桶内的名称；S3 生命周期转换可改变现有对象的存储类别。迁移时机与完成时机由实现和策略决定。</p>"
+    ],
+    [
+     "<p>In HDFS, a storage policy specifies the media for block replicas. The Mover checks current replica placement and moves replicas that do not match the policy. An object key names an object within its bucket. An S3 lifecycle transition can change the storage class of an existing object. Migration timing and completion depend on the implementation and policy.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "在线读取与归档恢复",
+    "Online Reads and Archive Restore"
+   ],
+   "d": [
+    "在线冷层可以直接读，离线归档层要先恢复到可读状态。",
+    "An online cold tier serves reads directly, while an offline archive tier requires restoration first."
+   ],
+   "b": [
+    [
+     "<p>在线冷层可支持即时读取，即使存放的是很少访问的数据。离线归档的主要差别是读取前多了恢复步骤。以部分 Amazon S3 归档类别为例，恢复会创建有期限的可读副本，归档对象本身仍保留。</p>"
+    ],
+    [
+     "<p>An online cold tier can serve reads immediately, even for data rarely used. Offline archive adds a restore step before a read can proceed. For some Amazon S3 archive classes, a restore makes a temporary readable copy available while the archived object remains in place.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用工作负载检验分层策略",
+    "Checking a Tiering Policy Against the Workload"
+   ],
+   "d": [
+    "分层决策要同时核对保留时长、取回时限和重新访问的可能性。",
+    "A tiering decision accounts for retention time, retrieval deadlines, and the likelihood of renewed access."
+   ],
+   "b": [
+    [
+     "<p>同一批数据何时转冷，取决于后续任务何时可能再次读取它。工作集如果重新变活跃，支持按访问自动分层的服务可把符合条件的在线对象升回频繁访问层。对于长期保留的数据，还应考虑最短存储期限、取回及迁移产生的费用项。</p>"
+    ],
+    [
+     "<p>When a dataset cools depends on when later jobs may read it again. If the working set becomes active again, access-based services can promote eligible online objects back to a frequent-access tier. Long-term retention also involves minimum storage durations and any retrieval or transition charges.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

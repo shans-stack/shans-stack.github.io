@@ -1,0 +1,53 @@
+.f-obs-diagram {
+  display: block;
+  width: 100%;
+  font: 500 17px var(--f);
+  --signal: var(--l4);
+}
+.f-obs-diagram [data-tone="good"] { --signal: var(--l5); }
+.f-obs-diagram [data-tone="warn"] { --signal: var(--l1); }
+.f-obs-diagram [data-tone="accent"] { --signal: var(--l6); }
+.f-obs-diagram [data-tone="off"] { --signal: var(--rule2); }
+.f-obs-route, .f-obs-trace {
+  stroke: var(--signal);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.f-obs-route[data-tone="off"] { stroke-dasharray: 4 5; }
+.f-obs-packet, .f-obs-arrow { fill: var(--signal); }
+.f-obs-packet { stroke: var(--surface); stroke-width: 1.2; }
+.f-obs-box {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.3;
+}
+.f-obs-card[data-tone="good"] .f-obs-box,
+.f-obs-card[data-tone="warn"] .f-obs-box {
+  fill: color-mix(in srgb, var(--signal) 12%, var(--surface));
+  stroke: var(--signal);
+}
+.f-obs-card[data-tone="off"] .f-obs-box { stroke-dasharray: 4 4; }
+.f-obs-card[data-arrived] .f-obs-box { stroke: var(--signal); stroke-width: 2; }
+.f-obs-label { fill: var(--ink); font-size: 20px; font-weight: 600; }
+.f-obs-detail, .f-obs-note { fill: var(--ink2); }
+.f-obs-note { fill: var(--ink3); }
+.topic-f-obs .src li a {
+  display: inline;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.topic-f-obs .mhost { aspect-ratio: 880 / 330; }
+@media (max-width: 640px) {
+  .f-obs-diagram { font-size: 14px; }
+  .f-obs-label { font-size: 15px; }
+  .topic-f-obs .mhost { aspect-ratio: 1; }
+  .topic-f-obs .stage .figbox { margin-block: 8px; }
+}
+
+.f-obs-window { fill: color-mix(in srgb, var(--l1) 15%, transparent); }
+.f-obs-axis, .f-obs-cursor { stroke: var(--rule2); }
+.f-obs-cursor { stroke: var(--ink3); stroke-dasharray: 3 4; }
+.f-obs-threshold { stroke: var(--l1); stroke-dasharray: 5 4; }

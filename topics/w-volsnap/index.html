@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA 卷快照与克隆 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA CSI 可从卷快照创建新的可写卷或直接克隆源卷，底层行为取决于卷类型。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-volsnap.css?v=b4f2b48e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-volsnap">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-volsnap">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA Volume Snapshots and Clones">WEKA 卷快照与克隆</h1>
+        <p class="meta"><span data-en="5 steps · Kubernetes, CSI, Persistent Volumes">5 步 · Kubernetes、CSI、持久卷</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin&quot;&gt;WEKA Docs · CSI Plugin&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin">WEKA 文档 · CSI 插件</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/weka/csi-wekafs/blob/main/docs/usage.md&quot;&gt;WEKA CSI Project · Volume Types and Usage&lt;/a&gt;"><a href="https://github.com/weka/csi-wekafs/blob/main/docs/usage.md">WEKA CSI 项目 · 卷类型与使用说明</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/weka/csi-wekafs/blob/main/examples/dynamic_filesystem/README.md&quot;&gt;WEKA CSI Project · Filesystem-Backed Volume Example&lt;/a&gt;"><a href="https://github.com/weka/csi-wekafs/blob/main/examples/dynamic_filesystem/README.md">WEKA CSI 项目 · 文件系统卷实例</a></li>
+      <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-volsnap.js?v=b9af449c"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "w-volsnap",
+  ar: [848/324, 370/430],
+  steps: [
+    {
+      t: ["卷与底层存储", "Volumes and Their Backing Storage"],
+      d: ["Kubernetes 持久卷经 WEKA CSI 对接目录、可写快照或整个文件系统。", "WEKA CSI maps Kubernetes persistent volumes to directories, writable snapshots, or entire filesystems."],
+      b: [["\u003cp>持久卷（PV）是 Kubernetes 提供给工作负载的持久存储资源，持久卷声明（PVC）是对该资源的请求。CSI（容器存储接口）把请求交给存储插件处理。WEKA CSI 可以将目录、可写快照或整个 WEKA 文件系统呈现为卷。底层类型也决定了快照的范围。\u003c/p>"], ["\u003cp>A persistent volume (PV) is a Kubernetes storage resource for workloads. A persistent volume claim (PVC) requests that resource. CSI, the Container Storage Interface, passes the request to a storage plugin. WEKA CSI can present a directory, a writable snapshot, or an entire filesystem as a volume. The backing type also determines the scope of a snapshot.\u003c/p>"]]
+    },
+    {
+      t: ["捕获卷的时间点", "Capture a Volume at a Point in Time"],
+      d: ["文件系统卷的 VolumeSnapshot 对应只读的 WEKA 文件系统快照。", "A VolumeSnapshot of a filesystem-backed volume maps to a read-only WEKA filesystem snapshot."],
+      b: [["\u003cp>VolumeSnapshot 是 Kubernetes 表示卷在某个时间点状态的资源。以整个文件系统为底层时，WEKA CSI 创建该文件系统的只读快照。源卷继续服务，快照保留捕获时的状态。\u003c/p>"], ["\u003cp>A VolumeSnapshot is the Kubernetes resource that represents a volume at a point in time. For a filesystem-backed volume, WEKA CSI creates a read-only snapshot of that filesystem. The source volume continues serving its workload while the snapshot preserves the captured state.\u003c/p>"]]
+    },
+    {
+      t: ["从快照创建可写卷", "Restore into a Writable Volume"],
+      d: ["以 VolumeSnapshot 为来源的新 PVC 对应一份新的可写快照。", "A new PVC sourced from the VolumeSnapshot is backed by a new writable snapshot."],
+      b: [["\u003cp>从文件系统卷的快照创建新卷时，WEKA CSI 派生一个可写快照作为底层。新卷继承捕获时的数据，可以单独挂载和修改，原来的只读快照仍保留。\u003c/p>"], ["\u003cp>When a new volume is created from a snapshot of a filesystem-backed volume, WEKA CSI derives a writable snapshot as its backing storage. The new volume starts with the captured data and can be mounted and modified separately. The read-only snapshot remains available.\u003c/p>"]]
+    },
+    {
+      t: ["直接克隆源卷", "Clone the Source Volume Directly"],
+      d: ["新 PVC 也可以直接引用源 PVC，以克隆时的状态为起点。", "A new PVC can reference the source PVC directly and start with its state at clone time."],
+      b: [["\u003cp>在 WEKA 的文件系统卷示例中，直接克隆同样生成以可写快照为底层的新卷。从快照恢复使用先前保存的状态，直接克隆捕获源卷在克隆时的状态。源卷期间若有写入，两条路径得到的新卷内容可以不同。\u003c/p>"], ["\u003cp>In WEKA's filesystem-backed volume example, a direct clone also produces a new volume backed by a writable snapshot. A restore uses the previously saved state. A direct clone captures the source at clone time. Writes to the source in the interval can cause the resulting volumes to differ.\u003c/p>"]]
+    },
+    {
+      t: ["目录卷的快照范围", "Snapshot Scope for Directory-Backed Volumes"],
+      d: ["启用目录卷快照后，WEKA 捕获包含该目录的整个文件系统。", "When snapshots are enabled for a directory-backed volume, WEKA captures the entire filesystem that contains it."],
+      b: [["\u003cp>多个目录卷可以位于同一个 WEKA 文件系统。目录卷的 CSI 快照默认禁用。启用后，底层快照范围是整个文件系统，所需空间也受同一文件系统中其他目录卷的变更影响。\u003c/p>"], ["\u003cp>Multiple directory-backed volumes can share one WEKA filesystem. CSI snapshots of these volumes are disabled by default. When enabled, the underlying snapshot covers the entire filesystem, so changes in other directory-backed volumes on that filesystem can affect space usage.\u003c/p>"]]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

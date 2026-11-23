@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成窄版排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-rack.css，全部限定在 .ssa-v-rack 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg 与 -white.svg（浅色用黑、深色用白），不内嵌。 */
+   样式在 assets/anim/v-rack.css，全部限定在 .ssa-v-rack 容器之内。 */
 (function(){
 var EN={"交换机 1":"Switch 1","交换机 2":"Switch 2","CBox":"CBox","CNode":"CNode","DBox":"DBox","U1":"U1","CNode 1":"CNode 1","CNode 2":"CNode 2","DBox 1":"DBox 1","DBox 2":"DBox 2",
 "柜顶：一对交换机":"Top of rack: a switch pair","CBox：一个机箱 4 个 CNode":"CBox: one chassis, 4 CNodes","DBox：全闪存储箱":"DBox: all-flash enclosure","U1：最下面的位置":"U1: the lowest position",
@@ -29,7 +28,6 @@ host.classList.add('ssa-v-rack');host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','ssa-scene');svg.setAttribute('role','img');host.appendChild(svg);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mq=matchMedia('(max-width: 640px)');
-const ROOT=window.SS_ROOT||'';
 function T(s){if(lang()!=='en')return s;if(L&&L.mobile&&ENM[s]!==undefined)return ENM[s];return EN[s]!==undefined?EN[s]:s}
 function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
 function tx(x,y,s,size,cls,anchor,p){const t=el('text',{x,y,'font-size':size,class:cls||''},p);if(anchor)t.setAttribute('text-anchor',anchor);t.textContent=T(s);return t}
@@ -44,10 +42,6 @@ function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-p
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function rev(pts){return pts.slice().reverse()}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-function vmark(x,y,h,p){const w=h*66/14,g=el('g',{class:'vwm'},p);
-  [['l','black'],['d','white']].forEach(([k,c])=>el('image',{href:ROOT+'assets/brand/vast-wordmark-'+c+'.svg',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm-'+k},g));return g}
-/* 部件名 + 字标一行，整体居中 */
-function vpair(cx,cy,s,fs,h,p){const lw=T(s).length*fs*0.6,w=h*66/14,gap=fs*0.35,x0=cx-(lw+gap+w)/2;tx(x0+lw,cy,s,fs,'lbl b7','end',p);vmark(x0+lw+gap,cy,h,p)}
 let L=null,E,S,step=0,T0=0,raf=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(cls){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(cls||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
@@ -84,7 +78,7 @@ function build(){
   E.A.sw=A.sw.map((r,i)=>{const b=box(r,gA,'box',4);tx(C(r).x,C(r).y,'交换机 '+(i+1),f.sm,'lbl','middle',gA);return b});
   E.A.cb=A.cb.map(r=>{const g=el('g',{},gA),b=box(r,g,'box',6),n=4,pad=6,w=(r.w-pad*(n+1))/n;
     for(let k=0;k<n;k++){const c=R(r.x+pad+k*(w+pad),r.y+pad,w,r.h-2*pad);box(c,g,'box cell',4);tx(C(c).x,C(c).y,'CNode',f.sm,'lbl','middle',g)}return b});
-  E.A.db=A.db.map((r,i)=>{const b=box(r,gA,'box',6);if(i===0)vpair(C(r).x,C(r).y,'DBox',f.lbl,L.mobile?11:12,gA);else tx(C(r).x,C(r).y,'DBox',f.lbl,'lbl b7','middle',gA);return b});
+  E.A.db=A.db.map(r=>{const b=box(r,gA,'box',6);tx(C(r).x,C(r).y,'DBox',f.lbl,'lbl b7','middle',gA);return b});
   tx(A.u1.x,A.u1.y,'U1',f.sm,'ink3-t','end',gA);
   E.A.call=[];if(A.call)A.call.forEach(c=>{const g=el('g',{class:'call'},gA);poly([P(A.rack.x+A.rack.w,c.y),P(A.callX-8,c.y)],'thin',g);tx(A.callX,c.y,c.s,f.sm,'st slate-t','start',g);E.A.call.push(g)});
   /* 场景二：一组设备的四张网 */
@@ -107,7 +101,7 @@ function build(){
   /* 另一套客户网络（第 5 步） */
   const gX=grp('5',gB),ex=B.extra,c1=B.dev[0];E.B.exL=poly([P(B.extraX,ex.y+ex.h),P(B.extraX,C(c1).y),P(c1.x,C(c1).y)],'',gX);
   box(ex,gX,'box',10);tx(C(ex).x,C(ex).y,'另一套客户网络',f.sm,'lbl','middle',gX);
-  E.B.dev=B.dev.map((r,d)=>{const b=box(r,gB,'box',8);if(d===2)vpair(C(r).x,C(r).y,'DBox 1',f.lbl,L.mobile?9:11,gB);else tx(C(r).x,C(r).y,['CNode 1','CNode 2','DBox 1','DBox 2'][d],f.lbl,'lbl b7','middle',gB);return b});
+  E.B.dev=B.dev.map((r,d)=>{const b=box(r,gB,'box',8);tx(C(r).x,C(r).y,['CNode 1','CNode 2','DBox 1','DBox 2'][d],f.lbl,'lbl b7','middle',gB);return b});
   const xm=(c,a,p)=>{const g2=el('g',{class:'xm'},p);poly([P(c.x-a,c.y-a),P(c.x+a,c.y+a)],'xmark',g2);poly([P(c.x-a,c.y+a),P(c.x+a,c.y-a)],'xmark',g2);return g2};
   E.B.x1=xm(P(B.sw[0].x+14,swc[0].y),7,gB);
   /* 场景三：多个机柜，叶脊网络 */
@@ -120,7 +114,7 @@ function build(){
     const devs=Cc.dev.map((d,di)=>{const r=R(rk.x+Cc.devDx[0],rk.y+d.dy,Cc.devDx[1]-Cc.devDx[0],d.h);
       [0,1].forEach(s=>{const rx=rk.x+Cc.rail[s];poly([P(s?r.x+r.w:r.x,C(r).y),P(rx,C(r).y),P(rx,lv[s].y+lv[s].h)],'thin',gC)});return r});
     lv.forEach((lr,li)=>{box(lr,gC,'box',5);tx(C(lr).x,C(lr).y,'叶 '+(li+1),f.sm,'lbl','middle',gC)});
-    devs.forEach((r,di)=>{box(r,gC,'box',6);if(ri===0&&di===1)vpair(C(r).x,C(r).y,'DBox',f.sm,L.mobile?9:11,gC);else tx(C(r).x,C(r).y,Cc.dev[di].s,f.sm,'lbl b7','middle',gC)});
+    devs.forEach((r,di)=>{box(r,gC,'box',6);tx(C(r).x,C(r).y,Cc.dev[di].s,f.sm,'lbl b7','middle',gC)});
     E.C.leaf.push(lv);E.C.dev.push(devs)});
   E.C.sp=Cc.sp.map((r,i)=>{const b=box(r,gC,'box',6);tx(C(r).x,C(r).y,'脊 '+(i+1),f.sm,'lbl b7','middle',gC);return b});
   E.cap=tx(L.cap.x,L.cap.y,'',f.cap,'st','middle');

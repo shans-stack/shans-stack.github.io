@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-econ.css，全部限定在 .ssa-v-econ 容器之内。
-   VAST 字标引用 assets/brand/vast-wordmark-black.svg 与 vast-wordmark-white.svg 原件（浅色、深色各一）。 */
+   样式在 assets/anim/v-econ.css，全部限定在 .ssa-v-econ 容器之内。 */
 (function(){
 var ID='v-econ';
 var EN={
@@ -33,7 +32,7 @@ var EN={
 var ENM={};
 var ARIA="全闪存：有效容量、写入磨损和成本口径";
 function makeScene(H){
-const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,put,hide,run,loopFade,vlabel,vmark}=H;
+const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,put,hide,run,loopFade}=H;
 const SCENE={
  still:[4,4,8.5,5,8,8.2],
  layout(m){
@@ -86,7 +85,7 @@ const SCENE={
   {const s=L.s3,g=grp('3');E.s3=[];
    s.lanes.forEach((y,k)=>{const src={x:s.src.x,y:y-s.src.h/2,w:s.src.w,h:s.src.h},ssd={x:s.ssd.x,y:y-s.ssd.h/2,w:s.ssd.w,h:s.ssd.h};
     const ly=y-s.ssd.h/2-(M?30:30);
-    if(k)vlabel(s.src.x,ly,'经 SCM：整页写入',f.lbl,'lbl b7',g,M?12:14);else tx(s.src.x,ly,'直接写：4 KB 小写入',f.lbl,'lbl b7','start',g);
+    tx(s.src.x,ly,k?'经 SCM：整页写入':'直接写：4 KB 小写入',f.lbl,'lbl b7','start',g);
     rect(src,'box',g);tx(C(src).x,y,'写入',f.sm,'lbl','middle',g);
     let scm=null;
     if(k){scm={x:s.scm.x,y:y-s.scm.h/2,w:s.scm.w,h:s.scm.h};line([P(src.x+src.w,y),P(scm.x,y)],'',g);line([P(scm.x+scm.w,y),P(ssd.x,y)],'',g);rect(scm,'box on',g);tx(C(scm).x,scm.y-14,'SCM',f.sm,'lbl b7','middle',g)}
@@ -109,7 +108,7 @@ const SCENE={
    const rows=[['8+2 纠删码','8 份数据 + 2 份校验',0.2,'校验占 20%'],['146+4 条带','146 份数据 + 4 份校验',4/150,'校验约占 2.7%']];
    rows.forEach((r,i)=>{const y=s.ys[i];
     const ty=s.stack?y-s.bh/2-38:y-12,sy=s.stack?y-s.bh/2-14:y+14;
-    if(i===1)vlabel(lx,ty,r[0],f.lbl,'lbl b7',g,M?12:14);else tx(lx,ty,r[0],f.lbl,'lbl b7','start',g);
+    tx(lx,ty,r[0],f.lbl,'lbl b7','start',g);
     tx(lx,sy,r[1],f.sm,'ink3-t','start',g);
     el('rect',{x:s.bx,y:y-s.bh/2,width:s.bw,height:s.bh,rx:4,class:'track'},g);
     const u=el('rect',{x:s.bx,y:y-s.bh/2,width:0,height:s.bh,rx:4,class:'fill'},g);
@@ -121,7 +120,7 @@ const SCENE={
    rect(s.src,'box soft',g,12);tx(s.src.x+12,s.src.y-16,'写入的数据',f.sm,'ttl','start',g);
    rect(s.dst,'box soft',g,12);tx(s.dst.x+12,s.dst.y-16,'闪存实际占用',f.sm,'ttl','start',g);
    rect(s.box,'box on',g,12);
-   if(M)vlabel(s.box.x+10,s.box.y-16,'数据缩减',f.sm,'ttl',g,12);else vlabel(s.box.x,s.box.y-16,'数据缩减',f.sm,'ttl',g,13);
+   tx(s.box.x+(M?10:0),s.box.y-16,'数据缩减',f.sm,'ttl','start',g);
    const cy=C(s.box).y;
    if(!M){line([P(s.src.x+s.src.w,cy),P(s.box.x,cy)],'',g);line([P(s.box.x+s.box.w,cy),P(s.dst.x,cy)],'',g)}
    else{line([P(C(s.src).x,s.src.y+s.src.h),P(C(s.src).x,cy),P(s.box.x,cy)],'',g);line([P(s.box.x+s.box.w,cy),P(C(s.dst).x,cy),P(C(s.dst).x,s.dst.y+s.dst.h)],'',g)}
@@ -196,7 +195,6 @@ return SCENE;
 
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-'+ID);host.innerHTML='';
@@ -235,17 +233,7 @@ function run(p,pts,t,t0,dur,opt){opt=opt||{};const u=(t-t0)/dur;
   if(u<=1){put(p,along(pts,sm(u)),1);return u}
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return 1.5}
 const loopFade=(u,per)=>u>per-0.45?clamp((per-u)/0.45,0,1):u<0.35?clamp(u/0.35,0,1):1;
-/* VAST 字标：引用 assets/brand 原件，浅色用黑字版、深色用白字版（CSS 切换）。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;
-  const g=el('g',{class:'vwm'},p);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-black.svg'),class:'vwm-l','aria-label':'VAST'},g);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-white.svg'),class:'vwm-d','aria-hidden':'true'},g);
-  return g}
-/* 部件名 + VAST 字标排成一行：名字右端在 x（anchor end），字标紧跟其后；返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h,anchor){const t=tx(x,y,s,fs,cls,anchor||'start',p);let w=0;try{w=t.getComputedTextLength()}catch(e){}
-  if(!w)w=estW(T(s),fs);const a=anchor||'start';const x1=a==='start'?x+w:a==='middle'?x+w/2:x;const m=vmark(x1+Math.round(fs*0.4),y,h||Math.round(fs*0.72),p,'start');return {t,m}}
-function estW(s,fs){let w=0;for(const ch of s)w+=/[\u2e80-\uffff]/.test(ch)?fs:fs*0.56;return w}
-const H={estW,el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,vmark,vlabel,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
+const H={el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
 const SCENE=makeScene(H);
 /* ---------- 引擎 ---------- */
 function applyVis(){

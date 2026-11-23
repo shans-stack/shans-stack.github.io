@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLPerf Storage：AI 工作负载的存储性能 · Shan's Stack</title>
+<meta name="description" content="分 6 步解释 MLPerf Storage 的训练读取、检查点、KV Cache 和向量数据库负载及各自的指标。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-mlperf.css?v=522e23e6">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-mlperf">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-mlperf">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="MLPerf Storage: Storage Performance for AI Workloads">MLPerf Storage：AI 工作负载的存储性能</h1>
+        <p class="meta"><span data-en="6 steps · training I/O, checkpoints, KV cache, vector search">6 步 · 训练 I/O、检查点、KV Cache、向量检索</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/2026/09/mlperf-storage-v3-0-results/&quot;&gt;MLCommons: v3.0 Round Announcement&lt;/a&gt;"><a href="https://mlcommons.org/2026/09/mlperf-storage-v3-0-results/">MLCommons：v3.0 公开轮次公告</a></li>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/benchmarks/storage/&quot;&gt;MLCommons: Workloads and Result Columns&lt;/a&gt;"><a href="https://mlcommons.org/benchmarks/storage/">MLCommons：工作负载和结果字段</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/storage/blob/v3.0/docs/QUICK_START.md&quot;&gt;v3.0 Run Guide&lt;/a&gt;"><a href="https://github.com/mlcommons/storage/blob/v3.0/docs/QUICK_START.md">v3.0 运行指南</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/storage/releases/tag/v3.0&quot;&gt;v3.0 Code Release&lt;/a&gt;"><a href="https://github.com/mlcommons/storage/releases/tag/v3.0">v3.0 代码发布</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-mlperf.js?v=d47aaeba"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-mlperf",
+ "ar": [
+  2.5641025641025643,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "四类 AI 存储负载",
+    "Four AI Storage Workloads"
+   ],
+   "d": [
+    "套件分别测量训练读取、检查点、KV Cache 卸载和向量数据库负载。",
+    "The suite measures training reads, checkpointing, KV cache offload, and vector database workloads separately."
+   ],
+   "b": [
+    [
+     "<p>MLCommons 为每项负载定义运行与报告规则。训练和检查点分别测量加载输入数据和保存或恢复训练状态。KV Cache 与向量数据库对应推理系统中不同的存储路径。</p>",
+     "<p>截至 2026-11-23，最新公开轮次为 v3.0，于 2026-09-01 公布。v3.0 代码于 2026-09-17 发布。</p>"
+    ],
+    [
+     "<p>MLCommons defines execution and reporting rules for each workload. Training and checkpointing exercise input data loading and training-state save or restore. The KV cache and vector database workloads represent different storage paths in inference systems.</p>",
+     "<p>As of 2026-11-23, v3.0 is the latest public round, announced on 2026-09-01. The v3.0 code was released on 2026-09-17.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "训练读取与模拟加速器",
+    "Training Reads and Simulated Accelerators"
+   ],
+   "d": [
+    "DLIO 驱动真实数据读取，用等待模拟每批计算，并以模拟加速器利用率约束有效运行。",
+    "DLIO drives real data reads, emulates batch computation with a timed wait, and validates runs against simulated accelerator utilization."
+   ],
+   "b": [
+    [
+     "<p>测试先生成符合所选负载的数据集，再运行配置的客户端与模拟加速器。DLIO 即深度学习 I/O 工作负载生成器。客户端实际读取训练样本，按规定批次节奏用等待代替模型计算。</p>",
+     "<p>读成绩时同时看模拟加速器数量和总读取带宽。加速器类型、数据集大小、客户端布置与利用率门槛定义比较条件。</p>"
+    ],
+    [
+     "<p>The run first generates the dataset for the selected workload, then starts the configured clients and simulated accelerators. DLIO is a deep learning I/O workload generator. Clients read real training samples and use a timed wait for the prescribed batch compute time.</p>",
+     "<p>Read the simulated accelerator count alongside aggregate read bandwidth. Accelerator type, dataset size, client placement, and the utilization threshold define the comparison.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "检查点保存与恢复",
+    "Checkpoint Save and Restore"
+   ],
+   "d": [
+    "检查点测试分别计量写出和恢复训练状态的时间。",
+    "The checkpoint workload times saving and restoring training state separately."
+   ],
+   "b": [
+    [
+     "<p>检查点是训练中可用于恢复的模型及相关状态快照。测试将检查点写入所选文件或对象路径，再按工作负载的规则读取恢复。</p>",
+     "<p>结果随状态大小、并行写入配置及接口变化。保存时间与恢复时间对应不同操作。</p>"
+    ],
+    [
+     "<p>A checkpoint is a snapshot of the model and associated state that training can use to resume. The workload writes it to the selected file or object path and reads it back according to the workload rules.</p>",
+     "<p>Results depend on state size, parallel writer configuration, and the interface. Save and restore times describe different operations.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "KV Cache 卸载",
+    "KV Cache Offload"
+   ],
+   "d": [
+    "KV Cache 负载测量会话缓存状态写入与重新载入时的存储表现。",
+    "The KV cache workload measures storage behavior when session state is written and reloaded."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 缓存先前 Token 的注意力键和值，供后续推理复用。负载模拟会话对缓存层的读写，考察缓存数据在内存与存储间卸载和恢复的开销。</p>",
+     "<p>缓存层配置和会话负载影响存储访问比例。缓存操作延迟描述这条数据路径，推理服务的端到端体验还包含排队与模型执行。</p>"
+    ],
+    [
+     "<p>The KV cache holds attention keys and values for previous tokens so later inference can reuse them. The workload simulates session reads and writes to cache tiers and measures movement between memory and storage.</p>",
+     "<p>Tier configuration and session load determine the share of accesses that reach storage. Cache operation latency describes this path. End-to-end serving also includes queueing and model execution.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "向量索引与查询",
+    "Vector Indexes and Queries"
+   ],
+   "d": [
+    "向量数据库负载构建索引并运行相似度检索，结合查询速率、尾延迟和召回率读结果。",
+    "The vector database workload builds an index and runs similarity search. Query rate, tail latency, and recall belong together."
+   ],
+   "b": [
+    [
+     "<p>索引组织向量以缩小检索范围。近似检索的召回率衡量结果找回真实近邻的比例，可随搜索参数变化。p99 延迟是约 99% 请求的耗时上界。</p>",
+     "<p>只有在数据规模、索引类型和召回率相近时，查询速率与尾延迟才可直接对照。</p>"
+    ],
+    [
+     "<p>An index organizes vectors to narrow a search. Recall measures the share of true nearest neighbors returned by approximate search and can vary with search settings. The p99 latency is the time at or below which about 99% of requests complete.</p>",
+     "<p>Query rate and tail latency are directly comparable when dataset scale, index type, and recall are aligned.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "对齐负载与访问接口",
+    "Matching Workloads and Interfaces"
+   ],
+   "d": [
+    "四项负载各有计量方式，比较同一负载时还需对齐访问接口和约束。",
+    "Each workload has its own metrics. Comparisons within a workload also depend on the access interface and constraints."
+   ],
+   "b": [
+    [
+     "<p>v3.0 在文件访问接口之外，为训练、检查点和部分向量数据库测试增加了 S3 对象访问。一次运行的公开记录由版本、负载、客户端和存储配置等共同定义。</p>",
+     "<p>训练读带宽、检查点时间、缓存操作延迟和向量查询速率分别回答不同问题。</p>"
+    ],
+    [
+     "<p>In addition to file access, v3.0 supports S3 object access for training, checkpointing, and some vector database tests. A published run is defined by its version, workload, clients, storage configuration, and other test settings.</p>",
+     "<p>Training read bandwidth, checkpoint time, cache operation latency, and vector query rate answer different questions.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lustre 对象存储服务器（OSS） · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Lustre 对象存储服务器（OSS）。OSS 为客户端处理对象读写，文件内容保存在其提供的 OST 卷上。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-oss.css?v=eb5f09ba">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-oss">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Lustre Object Storage Server (OSS)">Lustre 对象存储服务器（OSS）</h1>
+        <p class="meta"><span data-en="5 steps · File Data, Objects, OST">5 步 · 文件数据、对象、OST</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/lustre-file-system-exascaler/&quot;&gt;DDN EXAScaler Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/lustre-file-system-exascaler/">DDN EXAScaler 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Object_Storage_Service_%28OSS%29&quot;&gt;Lustre Wiki: Object Storage Service&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Object_Storage_Service_%28OSS%29">Lustre 官方文档：对象存储服务</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Architecture_for_Admins&quot;&gt;Lustre Wiki: Architecture and Data Flow&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Architecture_for_Admins">Lustre 官方文档：架构与数据流</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-oss.js?v=1da68744"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-oss",
+ "ar": [
+  3.52,
+  1.1842105263157894
+ ],
+ "steps": [
+  {
+   "t": [
+    "OSS 提供服务，OST 保存对象",
+    "How the OSS and OST Work Together"
+   ],
+   "d": [
+    "OSS 接收客户端的数据请求，并访问其提供的 OST。",
+    "The OSS receives client data requests and accesses the OSTs it serves."
+   ],
+   "b": [
+    [
+     "<p>在 EXAScaler 所用的 Lustre 架构中，对象存储服务器（Object Storage Server，OSS）为客户端处理文件数据读写。对象存储目标卷（Object Storage Target，OST）是保存文件数据对象的持久化存储卷。一台 OSS 可以提供多个 OST。</p>"
+    ],
+    [
+     "<p>In the Lustre architecture used by EXAScaler, an object storage server (OSS) handles client reads and writes of file data. An object storage target (OST) is a persistent volume that holds file data objects. One OSS can serve multiple OSTs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "文件布局指向数据对象",
+    "How a File Layout Identifies Its Objects"
+   ],
+   "d": [
+    "元数据服务器返回文件布局，其中记录文件数据对应的对象及其所在 OST。",
+    "The metadata server returns a file layout that identifies its data objects and their OSTs."
+   ],
+   "b": [
+    [
+     "<p>这里的对象是 Lustre 内部保存文件字节的单元。一个文件可对应一个或多个对象。当布局包含多个对象时，元数据服务器（Metadata Server，MDS）提供的布局使客户端能够确定每段数据的目标。</p>"
+    ],
+    [
+     "<p>An object is a unit Lustre uses internally to hold file bytes. A file may use one or several objects. When the layout includes several objects, the layout supplied by the metadata server (MDS) lets the client identify the target for each range of data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "顺序数据块轮流写入对象",
+    "Round-Robin Striping Across Objects"
+   ],
+   "d": [
+    "在一个条带化布局中，连续数据块按布局依次分配给不同 OST 上的对象。",
+    "In a striped layout, successive chunks are assigned in turn to objects on different OSTs."
+   ],
+   "b": [
+    [
+     "<p>条带大小是轮换到下一个对象前所写入的数据块大小。以双对象布局为例，首块和第三块写入对象 A，第二块和第四块写入对象 B。两个对象各自保存在对应的 OST 上。</p>"
+    ],
+    [
+     "<p>Stripe size is the amount of data assigned before the layout advances to the next object. In an illustrative layout with two objects, the first and third chunks go to object A, and the second and fourth go to object B. Each object resides on its corresponding OST.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "客户端可并行请求多台 OSS",
+    "Parallel Requests to Multiple OSS Nodes"
+   ],
+   "d": [
+    "当所需数据跨多台 OSS 时，客户端可向这些服务器并发发出读请求。",
+    "When the requested ranges span multiple OSS nodes, the client can issue concurrent reads to them."
+   ],
+   "b": [
+    [
+     "<p>客户端根据布局拆分读请求，再将返回的数据按文件偏移组织成应用所请求的字节范围。文件偏移是字节在逻辑文件中的位置。当不同 OST 由不同 OSS 提供时，对应数据可由各台 OSS 同时传输。</p>"
+    ],
+    [
+     "<p>The client splits a read according to the layout and assembles the returned data by file offset, the byte position in the logical file. When separate OSS nodes serve the relevant OSTs, those servers can transfer their data concurrently.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "目标卷与服务器决定可用的并行路径",
+    "How Targets and Servers Shape I/O Parallelism"
+   ],
+   "d": [
+    "多个 OST 可以共享一台 OSS；条带跨不同 OSS 时，请求才会使用多台服务器。",
+    "Multiple OSTs can share one OSS. Requests use multiple servers when the stripes span separate OSS nodes."
+   ],
+   "b": [
+    [
+     "<p>对象布局决定哪些 OST 参与一次读写，OST 的部署决定这些请求由哪些 OSS 处理。两个对象分别位于同一台 OSS 的两个 OST 时，请求都经这台服务器。容量与可用数据路径因此需要结合目标卷和服务节点来看。</p>"
+    ],
+    [
+     "<p>The object layout determines which OSTs take part in a read or write, and their placement determines which OSS nodes handle those requests. When two objects reside on different OSTs served by the same OSS, both requests go through that server. Capacity and available data paths depend on both the targets and the server topology.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

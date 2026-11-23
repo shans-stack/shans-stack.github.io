@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA Operator：在 Kubernetes 上管理存储集群 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA 的Operator。WEKA Operator 根据 Kubernetes 自定义资源部署和管理 NeuralMesh 后端及客户端。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-op.css?v=6d2cdfd6">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-op">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-op">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA Operator: Managing Storage Clusters on Kubernetes">WEKA Operator：在 Kubernetes 上管理存储集群</h1>
+        <p class="meta"><span data-en="5 steps · Kubernetes, declarative management, CSI">5 步 · Kubernetes、声明式管理、CSI</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/kubernetes/weka-operator-deployments/weka-operator-architecture-overview&quot;&gt;WEKA · Operator Architecture Overview&lt;/a&gt;"><a href="https://docs.weka.io/kubernetes/weka-operator-deployments/weka-operator-architecture-overview">WEKA · Operator 架构概览</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/kubernetes/weka-operator-deployments&quot;&gt;WEKA · Operator Deployments&lt;/a&gt;"><a href="https://docs.weka.io/kubernetes/weka-operator-deployments">WEKA · Operator 部署</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/kubernetes/weka-operator-deployments/wekacluster-and-wekacontainer-lifecycle&quot;&gt;WEKA · WekaCluster and WekaContainer Lifecycle&lt;/a&gt;"><a href="https://docs.weka.io/kubernetes/weka-operator-deployments/wekacluster-and-wekacontainer-lifecycle">WEKA · WekaCluster 与 WekaContainer 生命周期</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-op.js?v=e195ae1c"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-op",
+ "ar": [
+  2.8213166144200628,
+  0.8275862068965517
+ ],
+ "steps": [
+  {
+   "t": [
+    "声明集群的目标状态",
+    "Declare the Desired Cluster State"
+   ],
+   "d": [
+    "Kubernetes 自定义资源记录目标配置，WEKA Operator 持续对照实际状态。",
+    "Kubernetes custom resources describe the desired configuration, and the WEKA Operator checks it against the running state."
+   ],
+   "b": [
+    [
+     "<p>自定义资源定义（CRD）把 WEKA 的资源类型加入 Kubernetes API。提交这一类型的资源实例，即自定义资源（CR），就可以声明要运行的存储组件及其配置。</p>",
+     "<p>Operator 是持续运行的 Kubernetes 控制器。它按目标配置创建和管理组件。反复检查并处理状态差异的过程称为调谐（reconciliation）。</p>"
+    ],
+    [
+     "<p>A custom resource definition (CRD) adds a WEKA resource type to the Kubernetes API. An instance of that type, called a custom resource (CR), declares the storage components and their intended configuration.</p>",
+     "<p>The Operator is a Kubernetes controller that runs continuously. It creates and manages components according to the desired configuration. The ongoing process of checking and acting on differences is called reconciliation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用 WekaCluster 描述后端",
+    "Define the Backend with WekaCluster"
+   ],
+   "d": [
+    "WekaCluster 描述后端资源，Operator 按配置在指定节点部署计算和驱动器组件。",
+    "WekaCluster defines the backend, and the Operator deploys compute and drive components on the designated nodes."
+   ],
+   "b": [
+    [
+     "<p>WekaCluster 指定后端的资源需求及部署范围。计算组件负责存储处理和集群逻辑，驱动器组件管理分配给 WEKA 的盘。协议组件只在配置相应服务后创建。</p>",
+     "<p>Operator 为每个组件创建 WekaContainer，再据此创建运行 WEKA 进程的 Pod。Pod 是 Kubernetes 调度和运行容器的基本单位。</p>"
+    ],
+    [
+     "<p>WekaCluster specifies the backend's resource requirements and placement. Compute components handle storage operations and cluster logic, while drive components manage the drives assigned to WEKA. Protocol components are created when their services are configured.</p>",
+     "<p>The Operator creates a WekaContainer for each component, then creates the Pod that runs the WEKA process. A Pod is the basic unit Kubernetes schedules to run containers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用 WekaClient 连接应用节点",
+    "Connect Application Nodes with WekaClient"
+   ],
+   "d": [
+    "WekaClient 在指定的 Kubernetes 节点启动客户端，客户端可以连接集群内外的 WEKA 后端。",
+    "WekaClient places clients on designated Kubernetes nodes, where they can reach a WEKA backend inside or outside Kubernetes."
+   ],
+   "b": [
+    [
+     "<p>WekaClient 可通过节点选择器匹配应用节点，每个匹配节点运行一个客户端 Pod。客户端负责建立到后端的数据连接。</p>",
+     "<p>完整部署由 Kubernetes 管理后端和客户端。仅客户端部署则保留外部的 WEKA 后端，由 Kubernetes 管理应用侧的客户端。</p>"
+    ],
+    [
+     "<p>WekaClient can use a node selector to match application nodes, with one client Pod on each selected node. The client establishes the data connection to the backend.</p>",
+     "<p>In a full deployment, Kubernetes manages both backend and client components. In a client-only deployment, the WEKA backend stays outside Kubernetes, which manages the clients on the application side.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "把持久卷交给应用",
+    "Provide Persistent Volumes to Applications"
+   ],
+   "d": [
+    "WEKA CSI 插件处理持久卷请求，节点上的 WEKA 客户端提供文件系统访问。",
+    "The WEKA CSI plugin handles persistent volume requests, and the node-local WEKA client provides filesystem access."
+   ],
+   "b": [
+    [
+     "<p>容器存储接口（CSI）是 Kubernetes 与存储驱动之间的接口。应用通过持久卷声明申请存储，CSI 插件按 StorageClass 定义的规则配发或挂载存储。StorageClass 描述可用的存储类型和配发方式。</p>",
+     "<p>Operator 可以随 WekaClient 管理 CSI 插件的生命周期。卷挂载后，应用的文件 I/O 由节点上的 WEKA 客户端发往后端。</p>"
+    ],
+    [
+     "<p>The Container Storage Interface (CSI) is the interface between Kubernetes and a storage driver. An application requests storage through a PersistentVolumeClaim. The CSI plugin provisions or mounts storage according to the StorageClass, which describes the storage type and provisioning policy.</p>",
+     "<p>The Operator can manage the CSI plugin as part of WekaClient. Once the volume is mounted, application file I/O reaches the backend through the WEKA client on the node.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "观察运行状态与组件恢复",
+    "Observe Health and Component Recovery"
+   ],
+   "d": [
+    "WekaCluster 汇总后端状态。符合替换条件时，Operator 依据仍存在的资源重建 Pod。",
+    "WekaCluster summarizes backend status, and the Operator can replace a Pod from a resource that still exists."
+   ],
+   "b": [
+    [
+     "<p>集群级状态和单个 WekaContainer 的状态反映不同层级。所需后端组件进入 Running 后，集群才进入 Ready，表示已可提供 I/O。</p>",
+     "<p>Pod 结束且相应 WekaContainer 仍存在时，Operator 可以创建替换 Pod。资源的持久身份与 Pod 的运行状态分开管理，具有节点绑定的组件保留原有节点约束。</p>"
+    ],
+    [
+     "<p>Cluster status and individual WekaContainer status describe different layers. The cluster reaches Ready after its required backend components reach Running, indicating that it can serve I/O.</p>",
+     "<p>When a Pod terminates and the corresponding WekaContainer still exists, the Operator can create a replacement Pod. The persistent identity is managed separately from the Pod's running state, and node-bound components retain their placement constraints.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

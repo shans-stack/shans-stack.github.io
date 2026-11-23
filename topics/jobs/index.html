@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>作业调度：从资源申请到节点放置 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明集群如何接收作业、匹配资源、安排启动时间，并区分 Slurm 与 Kubernetes 的调度职责。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/jobs.css?v=6a677241">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="jobs">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Job Scheduling: From Resource Requests to Node Placement">作业调度：从资源申请到节点放置</h1>
+        <p class="meta"><span data-en="6 steps · GPUs, queues, resource allocation">6 步 · GPU、队列、资源分配</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://slurm.schedmd.com/overview.html&quot;&gt;Slurm Workload Manager Overview&lt;/a&gt;"><a href="https://slurm.schedmd.com/overview.html">Slurm 工作负载管理概览</a></li>
+      <li data-en="&lt;a href=&quot;https://slurm.schedmd.com/sched_config.html&quot;&gt;Slurm Scheduling and Backfill&lt;/a&gt;"><a href="https://slurm.schedmd.com/sched_config.html">Slurm 调度与回填</a></li>
+      <li data-en="&lt;a href=&quot;https://slurm.schedmd.com/job_reason_codes.html&quot;&gt;Slurm Job Reason Codes&lt;/a&gt;"><a href="https://slurm.schedmd.com/job_reason_codes.html">Slurm 作业等待原因</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/&quot;&gt;Kubernetes GPU Scheduling&lt;/a&gt;"><a href="https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/">Kubernetes GPU 调度</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/&quot;&gt;Kubernetes Scheduler&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/">Kubernetes 调度器</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/workloads/controllers/job/&quot;&gt;Kubernetes Job Controller&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/workloads/controllers/job/">Kubernetes Job 控制器</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/workloads/pods/&quot;&gt;Kubernetes Pods&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/workloads/pods/">Kubernetes Pod</a></li>
+      <li data-en="&lt;a href=&quot;https://kueue.sigs.k8s.io/docs/overview/&quot;&gt;Kueue Overview&lt;/a&gt;"><a href="https://kueue.sigs.k8s.io/docs/overview/">Kueue 的职责</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/jobs.js?v=9216aeab"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "jobs",
+ "ar": [
+  2.5714285714285716,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "提交作业",
+    "Submitting a Job"
+   ],
+   "d": [
+    "作业描述要运行的程序及其资源需求，提交后由集群决定何时运行。",
+    "A job describes a program and its resource needs, and the cluster decides when it can run."
+   ],
+   "b": [
+    [
+     "<p>批处理作业是一项有明确结束条件的计算任务，例如一次模型训练或离线推理。作业描述包括程序及其资源需求，例如 GPU 数量、CPU 和内存。Slurm 作业还可声明运行时间上限，为调度器安排后续作业提供依据。</p>"
+    ],
+    [
+     "<p>A batch job is a task with a defined completion condition, such as a training run or offline inference task. Its specification describes the program and its resource needs, such as GPU count, CPU, and memory. A Slurm job can also declare a time limit that helps the scheduler plan future job starts.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "匹配可用资源",
+    "Matching Available Resources"
+   ],
+   "d": [
+    "调度器根据资源需求和放置约束筛选节点，找不到可行位置时继续等待。",
+    "The scheduler filters nodes against resource needs and placement constraints, and the workload waits if no placement fits."
+   ],
+   "b": [
+    [
+     "<p>资源总量充足时，仍可能找不到满足条件的节点。例如，一个执行单元要求同一节点上的两块 GPU，两台各有一块空闲 GPU 的节点就不符合要求。GPU 类型或节点标签也可以进一步限定候选位置。</p>"
+    ],
+    [
+     "<p>Even when the cluster has enough resources in total, no eligible node may have the required combination. If one execution unit needs two GPUs on the same node, two nodes with one free GPU each cannot meet that request. GPU type or node labels can narrow the eligible set further.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用优先级处理竞争",
+    "Resolving Contention with Priority"
+   ],
+   "d": [
+    "多个作业争用同一组资源时，优先级影响先考虑哪个作业。",
+    "When jobs compete for the same resources, priority influences which job is considered first."
+   ],
+   "b": [
+    [
+     "<p>优先级是调度器处理等待作业的顺序依据之一。以 Slurm 为例，作业可能因优先级或资源不足而等待。即使先考虑的作业优先级较高，启动也仍取决于所需资源和其他约束是否满足。</p>"
+    ],
+    [
+     "<p>Priority is one input to the order in which a scheduler considers waiting jobs. In Slurm, for example, a job may wait because of priority or because resources are unavailable. A job considered first can start only when its resource requirements and other constraints are met.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用回填利用空档",
+    "Using Backfill to Fill Gaps"
+   ],
+   "d": [
+    "Slurm 可以让较短的低优先级作业先运行，条件是它不会推迟高优先级作业的预计启动时间。",
+    "Slurm can start a short, lower-priority job early if its run fits before the expected start of a higher-priority job."
+   ],
+   "b": [
+    [
+     "<p>回填是在现有作业与预计分配之间寻找可用的时间和资源。例如，一组 GPU 中还有部分空闲，等待中的大作业要等到其余 GPU 释放。只使用空闲部分的短作业可在这段空档内运行，前提是其运行时间上限落在该空档内。</p>"
+    ],
+    [
+     "<p>Backfill finds usable time and resources around running jobs and planned allocations. For example, some GPUs may be free while a larger waiting job needs those GPUs plus others still in use. A short job can run on the idle GPUs if its time limit fits inside that gap.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Kubernetes 按 Pod 放置",
+    "Kubernetes Places Pods"
+   ],
+   "d": [
+    "Job 控制器管理任务完成条件，调度器为待调度的 Pod 选择节点。",
+    "The Job controller manages completion, and the scheduler selects nodes for Pods awaiting placement."
+   ],
+   "b": [
+    [
+     "<p>Pod 是 Kubernetes 的基本调度单元，封装一个或多个共用运行环境的容器。用于批任务的 Job 控制器创建 Pod 并跟踪成功完成次数。默认调度器为尚未绑定节点的 Pod 筛选可行节点、对候选节点打分，并将 Pod 绑定到选中的节点。</p>"
+    ],
+    [
+     "<p>A Pod is Kubernetes’ basic scheduling unit and groups one or more containers in a shared execution environment. The batch Job controller creates Pods and tracks successful completions. The default scheduler filters feasible nodes for an unbound Pod, scores the candidates, and binds the Pod to a selected node.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "批队列与节点放置",
+    "Batch Admission and Node Placement"
+   ],
+   "d": [
+    "批队列可先判断作业能否按配额启动，节点调度再为执行单元选择位置。",
+    "A batch queue can admit a job according to quota before node scheduling places its execution units."
+   ],
+   "b": [
+    [
+     "<p>配额是队列可使用的资源额度。在 Kubernetes 中，Kueue 等批队列组件可根据配额决定何时准入工作负载。准入后，Pod 到节点的放置仍由调度器执行。Slurm 则在同一工作负载管理系统中维护等待队列，并为作业分配一组计算节点。</p>"
+    ],
+    [
+     "<p>A quota is the resource budget available to a queue. In Kubernetes, a batch queueing component such as Kueue can decide when to admit a workload based on quota. The scheduler still handles placement of Pods after admission. Slurm manages its pending queue and allocates compute nodes to jobs within the same workload management system.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

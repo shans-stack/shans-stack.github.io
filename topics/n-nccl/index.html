@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCCL：用集合通信连接多 GPU · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NCCL 如何组织多 GPU 的通信器、集合操作、底层传输与 CUDA 流。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-nccl.css?v=75bc0527">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-nccl">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-nccl">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NCCL: Connecting Multiple GPUs with Collective Communication">NCCL：用集合通信连接多 GPU</h1>
+        <p class="meta"><span data-en="5 steps · collectives, All-Reduce, topology">5 步 · 集合通信、All-Reduce、拓扑</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/nccl&quot;&gt;NCCL Developer Overview&lt;/a&gt;"><a href="https://developer.nvidia.com/nccl">NCCL 开发者页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuda/gpudirect-rdma/index.html&quot;&gt;GPUDirect RDMA Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/cuda/gpudirect-rdma/index.html">GPUDirect RDMA 官方指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/index.html&quot;&gt;NCCL User Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/index.html">NCCL 用户指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/communicators.html&quot;&gt;NCCL: Creating a Communicator&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/communicators.html">NCCL：创建通信器</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html&quot;&gt;NCCL: Collective Operations&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html">NCCL：集合操作</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/streams.html&quot;&gt;NCCL: CUDA Stream Semantics&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/streams.html">NCCL：CUDA 流语义</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/massively-scale-deep-learning-training-nccl-2-4/&quot;&gt;NVIDIA Technical Blog: NCCL Ring and Tree Algorithms&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/massively-scale-deep-learning-training-nccl-2-4/">NVIDIA 技术博客：NCCL 环形和树形算法</a></li>
+      <li data-en="The animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-nccl.js?v=942407ed"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-nccl",
+ "ar": [
+  2.6470588235294117,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "通信器定义参与的 GPU",
+    "A Communicator Defines the Participating GPUs"
+   ],
+   "d": [
+    "NCCL 为通信器内每个 CUDA 设备分配唯一的 rank，集合操作由对应的 rank 共同发起。",
+    "NCCL assigns a unique rank to each CUDA device in a communicator, and the corresponding ranks jointly issue a collective."
+   ],
+   "b": [
+    [
+     "<p>NCCL 是 NVIDIA Collective Communication Library。集合通信（collective communication）是由一组参与者共同执行的数据交换操作。通信器（communicator）定义这一组设备，rank 是设备在组内的编号。</p>",
+     "<p>同一集合操作需要各 rank 使用一致的元素计数和数据类型。NCCL 可以在单台主机内运行，也可以连接多台主机上的 GPU。</p>"
+    ],
+    [
+     "<p>NCCL is the NVIDIA Collective Communication Library. A collective is a data exchange carried out by a group of participants. A communicator defines the group of devices, and a rank is a device’s number within that group.</p>",
+     "<p>All ranks in a collective use a matching element count and data type. NCCL supports GPUs within a single host and across multiple hosts.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "All-Reduce 让每张卡拿到同一个结果",
+    "All-Reduce Gives Every GPU the Same Result"
+   ],
+   "d": [
+    "All-Reduce 对各 rank 的同一位置做归约，并把完整结果传给所有 rank。",
+    "All-Reduce combines values at matching positions across ranks and delivers the complete result to every rank."
+   ],
+   "b": [
+    [
+     "<p>归约（reduction）按某项规则汇总多个值，例如对同一位置求和。数据并行训练中，各 GPU 先计算本地梯度，再可用求和 All-Reduce 得到相同的全局梯度和。</p>",
+     "<p>若训练需要平均值，应用可再按参与规模缩放求和结果。梯度归约和模型参数更新是训练流程中的两个操作。</p>"
+    ],
+    [
+     "<p>A reduction combines values with an operation such as summing the elements at the same position. In data-parallel training, each GPU computes local gradients, and a sum All-Reduce can give every GPU the same global gradient sum.</p>",
+     "<p>If training calls for the mean, the application can scale the sum by the number of participants. Gradient reduction and parameter updates are separate operations in the training workflow.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "先归约分片，再收集完整结果",
+    "Reduce the Shards, Then Gather the Full Result"
+   ],
+   "d": [
+    "Reduce-Scatter 让各 rank 保留不同的归约分片，All-Gather 再把分片互相复制。",
+    "Reduce-Scatter leaves a different reduced shard on each rank, and All-Gather copies those shards to every rank."
+   ],
+   "b": [
+    [
+     "<p>若把张量按位置切成分片，Reduce-Scatter 完成跨 rank 归约后，将不同分片交给不同 rank。All-Gather 再将这些片段按 rank 次序拼成完整结果，交给每个 rank。</p>",
+     "<p>两者组合与 All-Reduce 的结果等价。这说明了数据如何分段处理。NCCL 也有环形和树形算法，实际传输顺序随任务和拓扑而变。</p>"
+    ],
+    [
+     "<p>When a tensor is split by position, Reduce-Scatter reduces across ranks and assigns a different result shard to each rank. All-Gather assembles those shards in rank order and gives every rank a complete result.</p>",
+     "<p>Together, the two operations produce the equivalent of an All-Reduce. This illustrates how the data can be processed in parts. NCCL also provides ring and tree algorithms, and the actual transfer order depends on the operation and topology.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "节点内外使用合适的互联",
+    "NCCL Uses Available Links Within and Across Nodes"
+   ],
+   "d": [
+    "节点内可利用 NVLink 或 PCIe，跨节点可利用 InfiniBand、RoCE 或 IP 网络传输。",
+    "Transfers can use NVLink or PCIe within a node and InfiniBand, RoCE, or IP networking between nodes."
+   ],
+   "b": [
+    [
+     "<p>NVLink 是 GPU 高速互联，PCIe 是服务器内部的设备互联。跨主机时，数据经过网卡和网络。若平台、网卡和软件配置支持 GPUDirect RDMA，网卡可以直接访问 GPU 显存。</p>",
+     "<p>NCCL 会利用可用的拓扑和传输能力。通信器中的 rank 与集合操作的语义保持一致，底层使用的链路可以不同。</p>"
+    ],
+    [
+     "<p>NVLink is a high-speed GPU interconnect, and PCIe connects devices within a server. Traffic between hosts passes through network adapters and the fabric. Where the platform, adapter, and software support GPUDirect RDMA, the adapter can access GPU memory directly.</p>",
+     "<p>NCCL uses the available topology and transports. Communicator ranks and collective semantics stay the same across different underlying links.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "CUDA 流连接计算和通信",
+    "CUDA Streams Connect Compute and Communication"
+   ],
+   "d": [
+    "NCCL 把集合操作提交到 CUDA 流，依赖该结果的 GPU 工作在通信完成后执行。",
+    "NCCL enqueues a collective on a CUDA stream, and dependent GPU work executes after communication completes."
+   ],
+   "b": [
+    [
+     "<p>CUDA 流是一列按提交顺序执行的 GPU 操作。同一流可以先产生梯度、再提交 NCCL 归约，随后执行使用归约结果的工作。</p>",
+     "<p>采用主机 API 时，NCCL 调用成功返回表示操作已提交。应用可通过 CUDA 流同步或事件判断结果何时可用，跨流使用还需要显式依赖。</p>"
+    ],
+    [
+     "<p>A CUDA stream is a sequence of GPU operations that execute in submission order. The same stream can compute gradients, enqueue an NCCL reduction, and then run work that consumes the reduced result.</p>",
+     "<p>With the host API, a successful NCCL call return indicates that the operation has been enqueued. The application can use CUDA stream synchronization or events to establish when the result is ready. A consumer on a different stream needs an explicit dependency.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+.n-cpo-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:18px}
+.n-cpo-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-cpo-figure .n-cpo-start{text-anchor:start}
+.n-cpo-figure .n-cpo-heading{font-size:21px;font-weight:650}
+.n-cpo-figure .n-cpo-secondary,.n-cpo-figure .n-cpo-note{fill:var(--ink2);font-size:17px}
+.n-cpo-figure .n-cpo-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-cpo-figure .n-cpo-boundary{fill:none;stroke-dasharray:6 5}
+.n-cpo-figure .n-cpo-accent,.n-cpo-figure .n-cpo-active{stroke:var(--l4);stroke-width:2}
+.n-cpo-figure .n-cpo-active{fill:color-mix(in srgb,var(--l4) 13%,var(--bg))}
+.n-cpo-figure .n-cpo-link{fill:none;stroke:var(--ink3);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.n-cpo-figure .n-cpo-link.n-cpo-electrical{stroke:var(--l2)}
+.n-cpo-figure .n-cpo-link.n-cpo-optical{stroke:var(--l5)}
+.n-cpo-figure .n-cpo-link.n-cpo-network{stroke:var(--l4)}
+.n-cpo-figure .n-cpo-link.n-cpo-dashed{stroke-dasharray:5 5}
+.n-cpo-figure .n-cpo-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.5}
+.n-cpo-figure .n-cpo-packet.n-cpo-electrical{fill:var(--l2)}
+.n-cpo-figure .n-cpo-packet.n-cpo-optical{fill:var(--l5)}
+@media(max-width:640px){
+  .n-cpo-figure svg{font-size:15px}
+  .n-cpo-figure .n-cpo-heading{font-size:17px}
+  .n-cpo-figure .n-cpo-secondary,.n-cpo-figure .n-cpo-note{font-size:14px}
+}
+.n-cpo-figure .n-cpo-link.n-cpo-active{stroke-width:4}
+@media(max-width:640px){
+  body.topic-n-cpo.present .stage{padding:12px;row-gap:12px}
+  body.topic-n-cpo.present .stage .figbox{margin:0}
+  body.topic-n-cpo.present .stage .cap{display:block;margin:0}
+  body.topic-n-cpo.present .stage h2{font-size:24px}
+  body.topic-n-cpo.present .stage .desc{font-size:17px;line-height:1.5}
+  body.topic-n-cpo.present .stage .ctl{margin:0}
+}
+@media(640px < width <=720px){
+  body.topic-n-cpo .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-cpo-figure .n-cpo-packet{display:none}
+}

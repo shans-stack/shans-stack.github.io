@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HPCG：稀疏求解与集群性能 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 HPCG 的稀疏问题、进程通信、运行参数、计分和结果读法。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-hpcg.css?v=b003dffb">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-hpcg">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="HPCG: Sparse Solvers and Cluster Performance">HPCG：稀疏求解与集群性能</h1>
+        <p class="meta"><span data-en="6 steps · Cluster Benchmark, Sparse Iteration, MPI">6 步 · 集群基准、稀疏迭代、MPI</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.hpcg-benchmark.org/&quot;&gt;HPCG Benchmark · Method and Kernels&lt;/a&gt;"><a href="https://www.hpcg-benchmark.org/">HPCG Benchmark · 方法与计算内核</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/hpcg-benchmark/hpcg/tree/HPCG-release-3-1-0&quot;&gt;HPCG · 3.1 Reference Implementation and Valid Runs&lt;/a&gt;"><a href="https://github.com/hpcg-benchmark/hpcg/tree/HPCG-release-3-1-0">HPCG · 3.1 参考实现和有效运行条件</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/hpcg-benchmark/hpcg/HPCG-release-3-1-0/INSTALL&quot;&gt;HPCG · Build and Runtime Parameters&lt;/a&gt;"><a href="https://raw.githubusercontent.com/hpcg-benchmark/hpcg/HPCG-release-3-1-0/INSTALL">HPCG · 编译和运行参数</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/hpcg-benchmark/hpcg/blob/HPCG-release-3-1-0/src/GenerateProblem_ref.cpp&quot;&gt;HPCG · 3D Grid and Problem Generation&lt;/a&gt;"><a href="https://github.com/hpcg-benchmark/hpcg/blob/HPCG-release-3-1-0/src/GenerateProblem_ref.cpp">HPCG · 三维网格的问题生成</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/hpcg-benchmark/hpcg/HPCG-release-3-1-0/src/ComputeSPMV_ref.cpp&quot;&gt;HPCG · Sparse Matrix-Vector Multiply and Halo Exchange&lt;/a&gt;"><a href="https://raw.githubusercontent.com/hpcg-benchmark/hpcg/HPCG-release-3-1-0/src/ComputeSPMV_ref.cpp">HPCG · 稀疏矩阵向量乘法及边界交换</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/hpcg-benchmark/hpcg/blob/HPCG-release-3-1-0/src/ComputeDotProduct_ref.cpp&quot;&gt;HPCG · Dot Product and MPI All-Reduce&lt;/a&gt;"><a href="https://github.com/hpcg-benchmark/hpcg/blob/HPCG-release-3-1-0/src/ComputeDotProduct_ref.cpp">HPCG · 点积与 MPI 全归约</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/hpcg-benchmark/hpcg/HPCG-release-3-1-0/src/ReportResults.cpp&quot;&gt;HPCG · 3.1 Reference Scoring&lt;/a&gt;"><a href="https://raw.githubusercontent.com/hpcg-benchmark/hpcg/HPCG-release-3-1-0/src/ReportResults.cpp">HPCG · 3.1 参考评分实现</a></li>
+      <li data-en="&lt;a href=&quot;https://www.top500.org/lists/hpcg/&quot;&gt;TOP500 · HPCG List Archive&lt;/a&gt;"><a href="https://www.top500.org/lists/hpcg/">TOP500 · HPCG 榜单档案</a></li>
+      <li data-en="&lt;a href=&quot;https://netlib.org/benchmark/hpl/&quot;&gt;Netlib · HPL Reference Documentation&lt;/a&gt;"><a href="https://netlib.org/benchmark/hpl/">Netlib · HPL 官方说明</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-hpcg.js?v=4f23991b"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "b-hpcg",
+  ar: [860/392, 400/472],
+  steps: [
+  {
+    "t": [
+      "从三维网格生成稀疏问题",
+      "Building a Sparse Problem from a 3D Grid"
+    ],
+    "d": [
+      "HPCG 以三维网格生成稀疏线性方程组，再用共轭梯度迭代求解。",
+      "HPCG builds a sparse linear system from a 3D grid and solves it with conjugate gradient iterations."
+    ],
+    "b": [
+      [
+        "<p>HPCG 全称为 High Performance Conjugate Gradient。共轭梯度是一种反复修正解的迭代方法。参考程序让每个网格点只与自身及附近的点耦合。对应的矩阵行只含少量非零项，形成稀疏矩阵。</p>",
+        "<p>一次求解反复执行稀疏矩阵向量乘法、向量更新、点积和多重网格预处理。多重网格预处理在粗细不同的网格上计算修正，帮助迭代收敛。</p>"
+      ],
+      [
+        "<p>HPCG stands for High Performance Conjugate Gradient. Conjugate gradient is an iterative method that repeatedly refines the solution. The reference program couples each point only to itself and nearby grid points. Each corresponding matrix row has few nonzero entries, forming a sparse matrix.</p>",
+        "<p>A solve repeatedly uses sparse matrix-vector multiplication, vector updates, dot products, and multigrid preconditioning. The preconditioner computes corrections on grids of different resolutions to help the iterations converge.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "相邻进程交换边界值",
+      "Exchanging Boundary Values between Neighbors"
+    ],
+    "d": [
+      "每个进程读取本地稀疏行，跨分区的向量值由相邻进程通过边界交换提供。",
+      "Each process reads its own sparse rows and gets vector values across partition boundaries from neighboring processes."
+    ],
+    "b": [
+      [
+        "<p>MPI 是分布式进程交换消息的接口。HPCG 将网格分给多个 MPI 进程，各进程用秩（rank）编号。稀疏矩阵向量乘法按非零项记录的索引读取向量值。</p>",
+        "<p>当索引指向邻居拥有的点时，所需值通过边界交换（halo exchange）复制到本地。这一步结合本地内存读取与相邻进程间通信。</p>"
+      ],
+      [
+        "<p>MPI is an interface for exchanging messages between distributed processes. HPCG partitions the grid among MPI processes, each identified by a rank. Sparse matrix-vector multiplication reads vector values using the indices stored with the matrix’s nonzero entries.</p>",
+        "<p>When an index points to a value owned by a neighbor, a halo exchange copies the required value into local memory. This step combines local memory reads with communication between neighbors.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "全局点积汇总所有进程",
+      "Combining All Ranks in a Global Dot Product"
+    ],
+    "d": [
+      "各进程先计算局部点积，再由全归约把总和值交还给所有参与进程。",
+      "Each rank computes a local dot product, then an all-reduce returns the sum to every participating rank."
+    ],
+    "b": [
+      [
+        "<p>点积将两组向量中对应元素相乘再求和。全归约（all-reduce）把各进程的局部和合并，并将同一个结果送回所有参与进程。迭代依赖该值来计算后续更新。</p>",
+        "<p>边界交换涉及相邻进程。全局点积涉及求解使用的所有进程。两类通信与预处理、向量更新一起影响每轮迭代的完成时间。</p>"
+      ],
+      [
+        "<p>A dot product sums the products of corresponding vector entries. An all-reduce combines each rank’s local sum and returns the same total to all participating ranks. The algorithm uses that value to compute subsequent updates.</p>",
+        "<p>Halo exchange involves neighboring ranks. A global dot product involves every rank in the solve. Both communication patterns affect iteration time along with preconditioning and vector updates.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "配置网格、进程和计时",
+      "Setting the Grid, Process Count, and Runtime"
+    ],
+    "d": [
+      "本地网格尺寸、MPI 进程数和计时时长共同定义一次运行。",
+      "The local grid dimensions, MPI process count, and timed duration define a run."
+    ],
+    "b": [
+      [
+        "<p>参考实现编译生成 <code>xhpcg</code>。分布式运行使用 MPI 启动器，<code>--nx</code>、<code>--ny</code>、<code>--nz</code> 指定本地三维网格尺寸，<code>--rt</code> 设置计时时长。OpenMP 可用于进程内线程并行。</p>",
+        "<p>一般正式运行要求输出中的计时时长至少 1,800 秒，工作集占至少四分之一的主内存，以避免不具代表性的缓存驻留。官方参考说明另列少数已投产平台经确认可用的 Quick Path 例外。</p>"
+      ],
+      [
+        "<p>The reference implementation builds the <code>xhpcg</code> executable. Distributed runs use an MPI launcher. <code>--nx</code>, <code>--ny</code>, and <code>--nz</code> set the local 3D grid dimensions, while <code>--rt</code> sets the timed duration. OpenMP can provide threading within each process.</p>",
+        "<p>A standard official run requires at least 1,800 seconds of reported timed execution and a working set that uses at least one-quarter of main memory to avoid unrepresentative cache residency. The official reference documents a Quick Path exception for certain systems already in production, subject to confirmation.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "按最终评分读结果",
+      "Reading the Final Rating"
+    ],
+    "d": [
+      "通过校验后，最终评分按 GFLOP/s 报告，并计入收敛、问题构建与优化开销。",
+      "After validation, the final rating reports GFLOP/s and accounts for convergence, problem setup, and optimization overhead."
+    ],
+    "b": [
+      [
+        "<p>GFLOP/s 表示每秒十亿次浮点运算。参考报告分别列出各计算内核的原始速率、总速率、校验和最终评分。最终评分按参考迭代次数折算运算量，并按规则将问题构建和数据结构优化开销分摊到计时中。</p>",
+        "<p>结果是否可用于正式提交，还取决于运行时长、问题规模等条件。单项内核的速率可用于分析耗时来源，最终评分用于描述这次完整的基准运行。</p>"
+      ],
+      [
+        "<p>GFLOP/s denotes billions of floating-point operations per second. The reference report gives raw kernel rates, totals, validation checks, and the final rating. The final rating bases the operation count on the reference iteration count and amortizes problem setup and data structure optimization in the timing.</p>",
+        "<p>Eligibility for official submission also depends on conditions such as runtime and problem size. Individual kernel rates help explain where time goes. The final rating describes the benchmark run as a whole.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "与 HPL 互补",
+      "How HPCG Complements HPL"
+    ],
+    "d": [
+      "HPCG 测稀疏迭代求解，HPL 测双精度稠密求解，两者覆盖不同的计算与通信负载。",
+      "HPCG measures sparse iterative solves, while HPL measures dense double-precision solves. They exercise different computational and communication workloads."
+    ],
+    "b": [
+      [
+        "<p>截至 2026 年 11 月 23 日，TOP500 档案最新为 2026 年 11 月 17 日公布的第 19 期 HPCG 榜，项目公开参考实现的发布标签为 3.1。榜单期次与实现版本分别记录。</p>",
+        "<p>HPCG 的评分综合了计算、内存访问以及进程间通信。比较两次 HPCG 运行时需要核对问题规模、参与节点和进程配置，才能解释整体吞吐。定位某条链路或某个计算内核的瓶颈，还需要对应的分项测量。</p>"
+      ],
+      [
+        "<p>As of November 23, 2026, the latest HPCG list in the TOP500 archive was its 19th edition, published on November 17, 2026. The project’s tagged reference implementation is version 3.1. The list edition and implementation version are recorded separately.</p>",
+        "<p>An HPCG rating reflects computation, memory access, and communication between processes. Comparisons require checking problem size and participating nodes and ranks to interpret aggregate throughput. Isolating a bottleneck in a link or kernel requires measurements of that component.</p>"
+      ]
+    ]
+  }
+]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

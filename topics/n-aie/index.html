@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA AI Enterprise：从应用开发到生产支持 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA AI Enterprise 的应用软件、GPU 基础设施、发布分支和商业支持范围。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-aie.css?v=99238a1b">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-aie">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language">
+      <button type="button" data-lang-set="zh" lang="zh-Hans" aria-label="简体中文" data-en-label="Simplified Chinese" data-en="ZH" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" lang="zh-Hant" aria-label="繁體中文" data-en-label="Traditional Chinese" data-en="TW" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" lang="en" aria-label="英文" data-en-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-aie">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA AI Enterprise: From Application Development to Production Support">NVIDIA AI Enterprise：从应用开发到生产支持</h1>
+        <p class="meta"><span data-en="5 steps · AI Software, GPU Infrastructure, Release Support">5 步 · AI 软件、GPU 基础设施、版本支持</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/software/latest/overview.html&quot;&gt;NVIDIA AI Enterprise Software Overview&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/software/latest/overview.html">NVIDIA AI Enterprise 软件概览</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/software/latest/application-software.html&quot;&gt;Application Layer Software&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/software/latest/application-software.html">应用层软件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/software/latest/infrastructure-software.html&quot;&gt;Infrastructure Layer Software&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/software/latest/infrastructure-software.html">基础设施层软件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/ai-enterprise/lifecycle/latest/index.html&quot;&gt;NVIDIA AI Enterprise Lifecycle Policy&lt;/a&gt;"><a href="https://docs.nvidia.com/ai-enterprise/lifecycle/latest/index.html">NVIDIA AI Enterprise 生命周期政策</a></li>
+      <li data-en="Animations are schematic and show no measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-aie.js?v=add08967"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-aie",
+  "ar": [
+    2.375,
+    0.88
+  ],
+  "steps": [
+    {
+      "t": [
+        "企业 AI 软件套件",
+        "An Enterprise AI Software Suite"
+      ],
+      "d": [
+        "NVIDIA AI Enterprise 将 AI 应用软件和 GPU 基础设施软件纳入同一个企业支持范围。",
+        "NVIDIA AI Enterprise covers application software and GPU infrastructure software under a single enterprise support offering."
+      ],
+      "b": [
+        [
+          "<p>应用层提供构建和部署模型所需的软件，基础设施层负责让软件获得可用的 GPU 资源。套件包含可按用途组合的组件，企业许可覆盖所列软件及相应的维护更新、安全修补和技术支持。</p>"
+        ],
+        [
+          "<p>The application layer provides software for building and deploying models. The infrastructure layer makes GPU resources available to that software. Teams assemble components for their workload, with maintenance updates, security patches, and technical support covered under the enterprise license.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从开发工具到模型端点",
+        "From Development Tools to Model Endpoints"
+      ],
+      "d": [
+        "NeMo 用于构建和定制模型，NIM 将模型部署为可通过 API 调用的推理服务。",
+        "NeMo helps build and customize models, while NIM deploys models as inference services with API endpoints."
+      ],
+      "b": [
+        [
+          "<p>应用层包含框架、加速库、预训练模型和微服务。NeMo 提供生成式 AI 的开发工具。NIM 微服务封装模型推理所需的运行环境，并暴露应用程序接口（API），让应用可以向部署后的模型提交请求。两者是应用层的不同组件。</p>"
+        ],
+        [
+          "<p>The application layer includes frameworks, accelerated libraries, pretrained models, and microservices. NeMo provides development tools for generative AI. A NIM microservice packages the runtime for model inference and exposes an application programming interface (API) for requests. NeMo and NIM serve distinct roles in the application layer.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "为应用交付 GPU 资源",
+        "Making GPUs Available to Applications"
+      ],
+      "d": [
+        "基础设施层配置 GPU，管理集群资源，并调度应用工作负载。",
+        "The infrastructure layer configures GPUs, manages cluster resources, and schedules application workloads."
+      ],
+      "b": [
+        [
+          "<p>GPU 驱动让操作系统访问加速器。Kubernetes Operator 是在集群中自动维持组件配置的软件控制器，GPU Operator 可管理驱动等组件。NVIDIA Run:ai 可在共享 GPU 集群上分配资源并调度工作负载。这些职责位于之前介绍的应用服务之下。</p>"
+        ],
+        [
+          "<p>GPU drivers give the operating system access to accelerators. A Kubernetes operator is a software controller that keeps cluster components in their configured state. The GPU Operator can manage components such as drivers, while NVIDIA Run:ai can allocate resources and schedule workloads on shared GPU clusters. These functions sit beneath the application services.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "两层有各自的发布节奏",
+        "The Two Layers Have Separate Release Cycles"
+      ],
+      "d": [
+        "应用组件可以按各自的发布分支更新，基础设施组件通过独立的分支维护。",
+        "Application components follow their release branches, while infrastructure components are maintained through a separate branch."
+      ],
+      "b": [
+        [
+          "<p>发布分支是一系列按同一维护规则交付的软件版本。应用层的功能分支、生产分支和长期支持分支分别侧重功能更新、生产稳定性和长期 API 稳定性。基础设施也有自己的版本与支持周期。采用新应用版本时，驱动、Operator 等组件仍需符合兼容性要求。</p>"
+        ],
+        [
+          "<p>A release branch is a series of versions maintained under a common policy. The application layer has Feature, Production, and Long-Term Support branches, emphasizing new features, production stability, and longer-term API stability respectively. Infrastructure has its own versions and support cycles. Drivers, operators, and other components still need to meet compatibility requirements when an application changes versions.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "支持范围落到组件和版本",
+        "Support Depends on the Component and Version"
+      ],
+      "d": [
+        "商业支持对应受支持的组件、版本和部署配置。",
+        "Commercial support applies to covered components, versions, and deployment configurations."
+      ],
+      "b": [
+        [
+          "<p>软件目录列出可用组件，生命周期文档说明分支的维护时段与兼容性。以 NIM 为例，具体镜像由 NGC（NVIDIA 软件目录）分发，使用的软件版本与底层环境共同决定适用的支持范围。开源组件的项目版本与套件内受支持的版本各有发布和维护方式。</p>"
+        ],
+        [
+          "<p>The software catalog lists components, while the lifecycle documentation describes branch maintenance windows and compatibility. For example, NGC, NVIDIA’s software catalog, distributes NIM images. The image version and the environment it runs in determine the applicable support coverage. An open source project and its supported distribution in the suite can follow different release and maintenance processes.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+.f-ws-diagram {
+  display: block;
+  width: 100%;
+  font: 500 22px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.f-ws-diagram [data-tone="signal"] { --tone: var(--l4); }
+.f-ws-diagram [data-tone="policy"] { --tone: var(--l3); }
+.f-ws-diagram [data-tone="ready"] { --tone: var(--l5); }
+.f-ws-diagram [data-tone="attention"] { --tone: var(--l1); }
+.f-ws-card {
+  fill: color-mix(in srgb, var(--tone, var(--bg)) 10%, var(--bg));
+  stroke: var(--tone, var(--rule2));
+  stroke-width: 1.5;
+}
+.f-ws-line {
+  fill: none;
+  stroke: var(--tone, var(--rule2));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.f-ws-line[data-inactive="true"] { stroke: var(--rule2); stroke-dasharray: 5 7; }
+.f-ws-parcel { fill: var(--tone, var(--l4)); }
+.f-ws-packet { fill: var(--tone); stroke: var(--bg); stroke-width: 1.2; }
+.f-ws-title { fill: var(--ink); font-size: 25px; font-weight: 600; }
+.f-ws-detail, .f-ws-note { fill: var(--ink2); }
+.f-ws-note { fill: var(--ink3); font-size: 19px; }
+.topic-f-ws .mhost { aspect-ratio: var(--ar); }
+.topic-f-ws .src a { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 640px) {
+  .f-ws-diagram { font-size: 23px; }
+  .f-ws-title { font-size: 24px; }
+  .f-ws-note { font-size: 22px; }
+  .topic-f-ws .mhost { aspect-ratio: var(--arm); }
+  .topic-f-ws .stage .figbox { margin-block: 4px; }
+}

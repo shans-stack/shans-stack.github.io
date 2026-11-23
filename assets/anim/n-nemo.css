@@ -1,0 +1,61 @@
+.n-nemo-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+  color: var(--ink);
+}
+.n-nemo-scene text { fill: var(--ink); font-size: 18px; }
+.n-nemo-scene .name { font-size: 20px; font-weight: 600; }
+.n-nemo-scene .sub, .n-nemo-scene .note { fill: var(--ink2); font-size: 16px; }
+.n-nemo-scene .caption { font-size: 18px; font-weight: 500; line-height: 1.25; }
+.n-nemo-scene .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; transition: stroke .14s ease; }
+.n-nemo-scene .arrived .panel { stroke: var(--l4); }
+.n-nemo-scene .accepted .panel { stroke: var(--l5); }
+.n-nemo-scene .review .panel { stroke: var(--l1); }
+.n-nemo-scene .idle .panel { stroke-dasharray: 4 3; }
+.n-nemo-scene .idle .name { fill: var(--ink2); }
+.n-nemo-scene .route {
+  --route-color: var(--l4);
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  transition: stroke .14s ease;
+}
+.n-nemo-scene .route.active { stroke: var(--route-color); stroke-width: 1.9; }
+.n-nemo-scene .route.control path:first-child, .n-nemo-scene .route.idle path:first-child { stroke-dasharray: 4 3; }
+.n-nemo-scene .packet { fill: var(--l4); stroke: var(--bg); stroke-width: .75; }
+.n-nemo-scene .route.control { --route-color: var(--l3); }
+.n-nemo-scene .route.ok { --route-color: var(--l5); }
+.n-nemo-scene .route.review { --route-color: var(--l1); }
+.n-nemo-scene .packet.control { fill: var(--l3); }
+.n-nemo-scene .packet.ok { fill: var(--l5); }
+.n-nemo-scene .packet.review { fill: var(--l1); }
+.n-nemo-scene .tile { stroke: var(--l4); stroke-width: 1.5; fill: none; stroke-linejoin: round; }
+.n-nemo-scene .tile.fixed { stroke: var(--ink3); }
+.n-nemo-scene .tile.adapter { stroke: var(--l5); }
+.n-nemo-scene .tile.cache { stroke: var(--l3); }
+.n-nemo-scene .tile.review { stroke: var(--l1); }
+.n-nemo-scene .tile .tile-text { font-size: 14px; fill: var(--ink2); stroke: none; font-weight: 600; }
+.n-nemo-scene .tile .ground { stroke: var(--rule2); }
+.n-nemo-scene .tile .shade { fill: var(--l4); stroke: none; }
+[data-station="n-nemo"] .src a {
+  display: inline;
+  padding: 0;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (641px <= width <= 720px) {
+  .topic-n-nemo .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .n-nemo-scene .name { font-size: 16px; }
+  .n-nemo-scene .caption, .n-nemo-scene .sub, .n-nemo-scene .note { font-size: 15px; }
+  .topic-n-nemo .stage .figbox { margin-block: 6px; }
+  .topic-n-nemo .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-nemo .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-nemo .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-nemo .stage .ctl { gap: 8px; margin-top: 8px; }
+}

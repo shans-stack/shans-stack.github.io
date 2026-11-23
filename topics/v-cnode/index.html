@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CNode：跑全部存储逻辑、自己不存数据的计算节点 · Shan's Stack</title>
-<meta name="description" content="分 6 步说明 VAST 的 CNode：存储逻辑全在它上面跑，自己不存数据也不留缓存，写入落到两块以上 SCM 盘才确认，坏了一台地址漂到别的 CNode。">
+<meta name="description" content="分 7 步说明 VAST CNode 的协议处理、共享介质访问、故障接管和不同平台的硬件配置。">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/palette.css?v=3acdf887">
-<link rel="stylesheet" href="../../assets/brand/brand.css?v=fdd517f2">
-<link rel="stylesheet" href="../../assets/anim/v-cnode.css?v=6f09b6f1">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/v-cnode.css?v=3ab0a2c1">
 <script>window.SS_ROOT='../../';</script>
-<link rel="stylesheet" href="../../assets/topic.css?v=db87ea93">
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
 <body>
 <script src="../../assets/symbols.js?v=01f317a9"></script>
@@ -20,7 +20,7 @@
 <header class="hd"><div class="wrap">
   <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
   <nav class="nav" aria-label="主导航" data-en-label="Main">
-    <a href="../../index.html#map" data-en="Map">线路图</a><a href="../../index.html#topics" data-en="Topics">知识点</a><a href="../../index.html#talks" data-en="Talks">讲稿</a>
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
     <button class="lang" type="button" data-lang-toggle>EN</button>
   </nav>
 </div></header>
@@ -30,7 +30,7 @@
     <div class="crumb" id="crumb"></div>
     <div class="tt">
       <div><h1 data-en="CNode: The Stateless Node That Runs All the Storage Logic">CNode：跑全部存储逻辑、自己不存数据的计算节点</h1>
-        <p class="meta"><span data-en="6 steps · protocols, SCM, virtual IP">6 步 · 协议、SCM、虚拟 IP</span><span id="intalks"></span></p></div>
+        <p class="meta"><span data-en="7 steps · protocols, SCM, virtual IP">7 步 · 协议、SCM、虚拟 IP</span><span id="intalks"></span></p></div>
       <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
         <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
       </div>
@@ -43,8 +43,16 @@
     <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
-      <li data-en="VAST Data, VAST AI Operating System white paper (April 2026): DASE, DataStore write path and protocol chapters.">VAST Data，《VAST AI Operating System》白皮书（2026-04 版）：DASE、DataStore 写路径、协议章节。</li>
-      <li data-en="VAST Data knowledge base (kb.vastdata.com): CNode hardware data sheet and glossary in Getting Started.">VAST Data 官方知识库（kb.vastdata.com）：Getting Started 中的 CNode 硬件数据表与术语表。</li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf&quot;&gt;VAST AI Operating System White Paper&lt;/a&gt;"><a class="gen-source" href="https://assets.ctfassets.net/2f3meiv6rg5s/6lLiTeHJnDlaXR2k8kbvvR/267afb649931f68a8c7cfc6655da53c3/WP-VAST-AI-Operating-System_VAST-Data-2026.pdf">VAST AI Operating System 白皮书</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/hw-ds-cbox&quot;&gt;VAST CBox Hardware Datasheet Directory&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/hw-ds-cbox">VAST CBox 硬件数据表目录</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/smc-6th-generation-cbox-datasheet&quot;&gt;VAST Supermicro Gen 6 CBox Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/smc-6th-generation-cbox-datasheet">VAST Supermicro Gen 6 CBox 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/dell-6th-generation-cbox-datasheet&quot;&gt;VAST Dell Gen 6 CBox Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/dell-6th-generation-cbox-datasheet">VAST Dell Gen 6 CBox 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet&quot;&gt;VAST Supermicro Gen 5 CBox Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet">VAST Supermicro Gen 5 CBox 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/hpe-gen5-cbox-datasheet&quot;&gt;VAST HPE Gen 5 CBox Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/hpe-gen5-cbox-datasheet">VAST HPE Gen 5 CBox 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/hpe-icelake-cbox-datasheet&quot;&gt;VAST HPE Ice Lake CBox Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/hpe-icelake-cbox-datasheet">VAST HPE Ice Lake CBox 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/dell-icelake-cbox-datasheet&quot;&gt;VAST Dell Ice Lake CBox Datasheet&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/dell-icelake-cbox-datasheet">VAST Dell Ice Lake CBox 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/reference/docs/cl-port-diagrams-ethernet&quot;&gt;VAST Cascade Lake CBox Port Diagrams&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/reference/docs/cl-port-diagrams-ethernet">VAST Cascade Lake CBox 端口图</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/docs/vastos-network-configuration-guide&quot;&gt;VastOS Network Configuration Guide&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/docs/vastos-network-configuration-guide">VastOS 网络配置指南</a></li>
       <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -66,13 +74,13 @@
   <span>© 2026 Lin Shan</span>
 </div></footer>
 
-<script src="../../data/lines.js?v=592fc31f"></script>
-<script src="../../data/stations.js?v=78aee762"></script>
-<script src="../../data/maps.js?v=13800c68"></script>
-<script src="../../data/talks.js?v=9c02c723"></script>
-<script src="../../data/vendors.js?v=a0e9392a"></script>
-<script src="../../assets/core.js?v=67905bc1"></script>
-<script src="../../assets/anim/v-cnode.js?v=cfc275d2"></script>
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/v-cnode.js?v=42eeb48e"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-cnode",
@@ -221,10 +229,133 @@ window.SS_TOPIC_CFG={
      "<p>For protocols that keep session state, such as SMB, that state is also stored on shared SCM, so the CNode that takes over can carry on; Windows clients see only a brief pause.</p>"
     ]
    ]
+  },
+  {
+   "t": [
+    "硬件配置",
+    "Hardware Configurations"
+   ],
+   "d": [
+    "Gen 6 的 Supermicro 与 Dell 实例采用 1U 单节点和 AMD EPYC 9555P（Turin）。",
+    "Supermicro and Dell Gen 6 examples pair a single 1U node with AMD EPYC 9555P (Turin)."
+   ],
+   "b": [
+    [
+     "<p>以 Supermicro AS-1115CS-TNR 为例，每台有一颗 EPYC 9555P、384 GB DDR5-6400、一块 NVMe 启动 SSD，以及一块或两块双端口 ConnectX-7。Dell PowerEdge R6715 同样列有单网卡和双网卡版本，内存实际速率以型号数据表为准。</p>",
+     "<p>相对 Gen 5 的 Genoa 参考配置，Gen 6 更新处理器和内存规格，保留 1U 单节点及 ConnectX-7 网络选项。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-6th-generation-cbox-datasheet\">VAST Supermicro Gen 6 CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dell-6th-generation-cbox-datasheet\">VAST Dell Gen 6 CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet\">VAST Supermicro Gen 5 CBox 数据表</a>。</p>"
+    ],
+    [
+     "<p>The Supermicro AS-1115CS-TNR example has one EPYC 9555P, 384 GB of DDR5-6400, an NVMe boot SSD, and one or two dual-port ConnectX-7 adapters. The Dell PowerEdge R6715 also has single- and dual-NIC variants. Operating memory speeds are model-specific.</p>",
+     "<p>Compared with the Gen 5 Genoa reference, Gen 6 updates the CPU and memory specifications and retains the 1U single-node and ConnectX-7 options. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-6th-generation-cbox-datasheet\">VAST Supermicro Gen 6 CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dell-6th-generation-cbox-datasheet\">VAST Dell Gen 6 CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet\">VAST Supermicro Gen 5 CBox Datasheet</a>.</p>"
+    ]
+   ],
+   "tabs": [
+    {
+     "key": "gen6",
+     "t": [
+      "Gen 6",
+      "Gen 6"
+     ],
+     "d": [
+      "Gen 6 的 Supermicro 与 Dell 实例采用 1U 单节点和 AMD EPYC 9555P（Turin）。",
+      "Supermicro and Dell Gen 6 examples pair a single 1U node with AMD EPYC 9555P (Turin)."
+     ],
+     "b": [
+      [
+       "<p>以 Supermicro AS-1115CS-TNR 为例，每台有一颗 EPYC 9555P、384 GB DDR5-6400、一块 NVMe 启动 SSD，以及一块或两块双端口 ConnectX-7。Dell PowerEdge R6715 同样列有单网卡和双网卡版本，内存实际速率以型号数据表为准。</p>",
+       "<p>相对 Gen 5 的 Genoa 参考配置，Gen 6 更新处理器和内存规格，保留 1U 单节点及 ConnectX-7 网络选项。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-6th-generation-cbox-datasheet\">VAST Supermicro Gen 6 CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dell-6th-generation-cbox-datasheet\">VAST Dell Gen 6 CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet\">VAST Supermicro Gen 5 CBox 数据表</a>。</p>"
+      ],
+      [
+       "<p>The Supermicro AS-1115CS-TNR example has one EPYC 9555P, 384 GB of DDR5-6400, an NVMe boot SSD, and one or two dual-port ConnectX-7 adapters. The Dell PowerEdge R6715 also has single- and dual-NIC variants. Operating memory speeds are model-specific.</p>",
+       "<p>Compared with the Gen 5 Genoa reference, Gen 6 updates the CPU and memory specifications and retains the 1U single-node and ConnectX-7 options. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-6th-generation-cbox-datasheet\">VAST Supermicro Gen 6 CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dell-6th-generation-cbox-datasheet\">VAST Dell Gen 6 CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet\">VAST Supermicro Gen 5 CBox Datasheet</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "gen5",
+     "t": [
+      "Gen 5",
+      "Gen 5"
+     ],
+     "d": [
+      "Gen 5 使用 AMD EPYC 9454P（Genoa），公开 CBox 实例为 1U 单节点。",
+      "Gen 5 uses AMD EPYC 9454P (Genoa) in published 1U single-node CBox examples."
+     ],
+     "b": [
+      [
+       "<p>Supermicro 和 HPE 的 Gen 5 数据表列出 384 GB DDR5-4800、启动 SSD，以及一块或两块双端口 ConnectX-7，可接以太网或 InfiniBand。</p>",
+       "<p>与前面的 Ice Lake 四节点实例相比，Gen 5 改成每机箱一台单路 AMD 节点，内存由 DDR4 换到 DDR5。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet\">VAST Supermicro Gen 5 CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/hpe-gen5-cbox-datasheet\">VAST HPE Gen 5 CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/hpe-icelake-cbox-datasheet\">VAST HPE Ice Lake CBox 数据表</a>。</p>"
+      ],
+      [
+       "<p>The Supermicro and HPE Gen 5 sheets list 384 GB DDR5-4800, a boot SSD, and one or two dual-port ConnectX-7 adapters for Ethernet or InfiniBand.</p>",
+       "<p>Compared with the earlier four-node Ice Lake examples, Gen 5 uses one single-socket AMD node per chassis and moves from DDR4 to DDR5. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/smc-gen5-cbox-datasheet\">VAST Supermicro Gen 5 CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/hpe-gen5-cbox-datasheet\">VAST HPE Gen 5 CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/hpe-icelake-cbox-datasheet\">VAST HPE Ice Lake CBox Datasheet</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "ice-lake",
+     "t": [
+      "Ice Lake",
+      "Ice Lake"
+     ],
+     "d": [
+      "Ice Lake 的 Dell 与 HPE 机箱均在 2U 内装四个计算节点。",
+      "Dell and HPE Ice Lake chassis each house four compute nodes in 2U."
+     ],
+     "b": [
+      [
+       "<p>公开数据表中，每个节点有两颗 Intel Xeon Gold 6326 和 256 GB DDR4-3200。HPE 示例使用 SATA 启动 SSD，提供单块或双块 ConnectX-6，或 ConnectX-6 与 ConnectX-7 的组合。</p>",
+       "<p>Ice Lake 保留了 Cascade Lake 端口图中的四节点布局，更新处理器，并在这里列出的 HPE 配置中引入 ConnectX-6 或 ConnectX-7 组合。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/hpe-icelake-cbox-datasheet\">VAST HPE Ice Lake CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dell-icelake-cbox-datasheet\">VAST Dell Ice Lake CBox 数据表</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/cl-port-diagrams-ethernet\">VAST Cascade Lake CBox 端口图</a>。</p>"
+      ],
+      [
+       "<p>Each node in the published sheets has two Intel Xeon Gold 6326 processors and 256 GB of DDR4-3200. The HPE example uses a SATA boot SSD and offers one or two ConnectX-6 adapters, or a ConnectX-6 and ConnectX-7 pair.</p>",
+       "<p>Ice Lake retains the four-node layout shown in the Cascade Lake port diagrams, updates the processor platform, and offers ConnectX-6 or a ConnectX-6/7 combination in the listed HPE configuration. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/hpe-icelake-cbox-datasheet\">VAST HPE Ice Lake CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/dell-icelake-cbox-datasheet\">VAST Dell Ice Lake CBox Datasheet</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/cl-port-diagrams-ethernet\">VAST Cascade Lake CBox Port Diagrams</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "cascade-lake",
+     "t": [
+      "Cascade Lake",
+      "Cascade Lake"
+     ],
+     "d": [
+      "Cascade Lake CBox 端口图显示四个节点，支持单网卡或双网卡布置。",
+      "Cascade Lake CBox port diagrams show four nodes and single- or dual-adapter layouts."
+     ],
+     "b": [
+      [
+       "<p>VAST 的以太网端口图显示单块双端口 ConnectX-5 可承载统一网络。两块 ConnectX-5 或 ConnectX-5 与 ConnectX-6 的组合可分别接内部与客户端网络。较早的 Broadwell 在网络指南中列为单块双端口网卡。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/cl-port-diagrams-ethernet\">VAST Cascade Lake CBox 端口图</a>、<a class=\"gen-source\" href=\"https://docs.vastdata.com/docs/vastos-network-configuration-guide\">VastOS 网络配置指南</a>。</p>"
+      ],
+      [
+       "<p>VAST’s Ethernet diagrams show one dual-port ConnectX-5 for unified networking, or two ConnectX-5 adapters or a ConnectX-5/6 pair for separate internal and client networks. The network guide lists the earlier Broadwell platform with a single dual-port adapter. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/reference/docs/cl-port-diagrams-ethernet\">VAST Cascade Lake CBox Port Diagrams</a>, <a class=\"gen-source\" href=\"https://docs.vastdata.com/docs/vastos-network-configuration-guide\">VastOS Network Configuration Guide</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "broadwell",
+     "t": [
+      "Broadwell",
+      "Broadwell"
+     ],
+     "d": [
+      "VAST 的旧硬件清单列出 Broadwell CNode 和单块双端口网卡。",
+      "VAST’s legacy hardware list identifies the Broadwell CNode with one dual-port network adapter."
+     ],
+     "b": [
+      [
+       "<p>Broadwell 是较早的 Intel 处理器平台。VastOS 网络配置指南将其列为可识别的 CNode，记录了单块双端口网卡配置。公开指南在这一项没有给出 CPU SKU、内存容量或机箱规格。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://docs.vastdata.com/docs/vastos-network-configuration-guide\">VastOS 网络配置指南</a>。</p>"
+      ],
+      [
+       "<p>Broadwell is an earlier Intel processor platform. The VastOS network guide identifies it as a CNode and documents the single dual-port adapter. The guide gives no CPU SKU, memory capacity, or chassis specification for this entry. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://docs.vastdata.com/docs/vastos-network-configuration-guide\">VastOS Network Configuration Guide</a>.</p>"
+      ]
+     ]
+    }
+   ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=81c36bc2"></script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
 </body>
 </html>

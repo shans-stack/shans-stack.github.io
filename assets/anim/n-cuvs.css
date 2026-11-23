@@ -1,0 +1,54 @@
+.n-cuvs-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font-family: var(--f);
+  --data: var(--l5);
+  --control: var(--l4);
+  --miss: var(--l1);
+}
+.n-cuvs-scene text { font-size: 18px; fill: var(--ink); }
+.n-cuvs-scene .n-cuvs-label { font-weight: 600; }
+.n-cuvs-scene .n-cuvs-detail { font-size: 16px; fill: var(--ink2); }
+.n-cuvs-card {
+  fill: var(--surface);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.n-cuvs-active .n-cuvs-card, .n-cuvs-ready .n-cuvs-card {
+  fill: color-mix(in srgb, var(--data) 12%, var(--surface));
+  stroke: var(--data);
+}
+.n-cuvs-idle .n-cuvs-card { stroke-dasharray: 4 4; }
+.n-cuvs-idle .n-cuvs-label { fill: var(--ink2); }
+.n-cuvs-miss .n-cuvs-card { stroke: var(--miss); }
+.n-cuvs-line, .n-cuvs-arrow {
+  fill: none;
+  stroke: var(--data);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.n-cuvs-line.n-cuvs-control { stroke-dasharray: 5 5; }
+.n-cuvs-line.n-cuvs-miss { stroke-dasharray: 2 4; }
+.n-cuvs-line.n-cuvs-control, .n-cuvs-arrow.n-cuvs-control { stroke: var(--control); }
+.n-cuvs-line.n-cuvs-miss, .n-cuvs-arrow.n-cuvs-miss { stroke: var(--miss); }
+.n-cuvs-line.n-cuvs-idle, .n-cuvs-arrow.n-cuvs-idle { stroke: var(--rule2); }
+.n-cuvs-token { fill: var(--data); }
+.n-cuvs-token.n-cuvs-control { fill: var(--control); }
+.n-cuvs-token.n-cuvs-miss { fill: var(--miss); }
+@media (max-width: 640px) {
+  .n-cuvs-scene .n-cuvs-label { font-size: 17px; }
+  .n-cuvs-scene .n-cuvs-detail { font-size: 16px; }
+}
+@media (min-width: 641px) and (max-width: 720px) {
+  .topic-n-cuvs .mhost { aspect-ratio: var(--ar); }
+}
+.n-cuvs-vector { fill: color-mix(in srgb, var(--data) 35%, var(--surface)); stroke: var(--data); }
+.n-cuvs-vertex { fill: var(--surface); stroke: var(--ink3); }
+.n-cuvs-visited { fill: var(--data); stroke: var(--data); }
+.n-cuvs-graph-edge, .n-cuvs-pruned, .n-cuvs-trace { fill: none; stroke-width: 1.6; }
+.n-cuvs-graph-edge { stroke: var(--rule2); }
+.n-cuvs-pruned { stroke: var(--miss); stroke-dasharray: 4 3; }
+.n-cuvs-trace { stroke: var(--data); stroke-width: 2.4; }

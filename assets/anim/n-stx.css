@@ -1,0 +1,29 @@
+.n-stx-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:17px}
+.n-stx-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:550}
+.n-stx-figure .n-stx-sub,.n-stx-figure .n-stx-note{fill:var(--ink2);font-size:15px;font-weight:450}
+.n-stx-figure .n-stx-frame-label{text-anchor:start}
+.n-stx-figure .n-stx-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.4}
+.n-stx-figure .n-stx-frame{fill:none;stroke:var(--rule2);stroke-width:1.4;stroke-dasharray:5 4}
+.n-stx-figure .n-stx-accent{stroke:var(--lc);stroke-width:1.8}
+.n-stx-figure .n-stx-active{fill:color-mix(in srgb,var(--lc) 16%,var(--bg));stroke:var(--lc);stroke-width:2.2}
+.n-stx-figure .n-stx-muted{fill:var(--surface);stroke-dasharray:4 4}
+.n-stx-figure .n-stx-panel.n-stx-busy{fill:color-mix(in srgb,var(--l1) 10%,var(--bg));stroke:var(--l1)}
+.n-stx-figure .n-stx-link{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-stx-figure .n-stx-link.n-stx-ref,.n-stx-figure .n-stx-link.n-stx-telemetry{stroke-dasharray:4 4}
+.n-stx-figure .n-stx-link.n-stx-data,.n-stx-figure .n-stx-link.n-stx-result{stroke:var(--l5)}
+.n-stx-figure .n-stx-link.n-stx-busy{stroke:var(--l1);stroke-dasharray:4 4}
+.n-stx-figure .n-stx-chip{fill:var(--l5);stroke:var(--bg);stroke-width:1}
+.n-stx-figure .n-stx-chip.n-stx-result{fill:var(--lc)}
+.n-stx-figure .n-stx-chip.n-stx-durable,.n-stx-figure .n-stx-chip.n-stx-telemetry{fill:var(--ink3)}
+@media(max-width:640px){
+  .n-stx-figure svg{font-size:15px}
+  .n-stx-figure .n-stx-sub,.n-stx-figure .n-stx-note{font-size:13px}
+  body.topic-n-stx.present .stage{padding:12px;row-gap:12px}
+  body.topic-n-stx.present .stage .figbox,body.topic-n-stx.present .stage .cap,body.topic-n-stx.present .stage .ctl{margin:0}
+  body.topic-n-stx.present .stage .cap{display:block}
+  body.topic-n-stx.present .stage h2{font-size:24px}
+  body.topic-n-stx.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-stx .mhost{aspect-ratio:var(--ar)}
+}

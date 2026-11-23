@@ -1,0 +1,27 @@
+.d-mt-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+  text-anchor: middle;
+}
+.d-mt-scene .d-mt-heading { fill: var(--ink2); font-size: 18px; font-weight: 600; }
+.d-mt-scene .d-mt-label { fill: var(--ink); font-size: 21px; font-weight: 600; }
+.d-mt-scene .d-mt-detail { fill: var(--ink2); font-size: 17px; }
+.d-mt-scene .d-mt-caption { fill: var(--ink3); font-size: 16px; }
+.d-mt-scene .d-mt-wire { fill: none; stroke: var(--rule2); stroke-width: 2; stroke-linejoin: round; }
+.d-mt-scene .d-mt-node { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.5; }
+.d-mt-scene .d-mt-packet { fill: var(--ink2); }
+.d-mt-scene [data-type="allow"] { --d-mt-accent: var(--l5); }
+.d-mt-scene [data-type="stop"] { --d-mt-accent: var(--l1); }
+.d-mt-scene .d-mt-node[data-type="allow"],
+.d-mt-scene .d-mt-node[data-type="stop"] { stroke: var(--d-mt-accent); stroke-width: 2; }
+.d-mt-scene .d-mt-wire[data-type="allow"],
+.d-mt-scene .d-mt-wire[data-type="stop"] { stroke: var(--d-mt-accent); }
+.d-mt-scene .d-mt-wire[data-type="structure"],
+.d-mt-scene .d-mt-wire[data-type="stop"] { stroke-dasharray: 4 4; }
+.d-mt-scene .d-mt-packet[data-type="allow"],
+.d-mt-scene .d-mt-packet[data-type="stop"] { fill: var(--d-mt-accent); }
+@media (max-width: 640px) {
+  .d-mt-scene .d-mt-label { font-size: 18px; }
+}

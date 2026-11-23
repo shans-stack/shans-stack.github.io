@@ -1,0 +1,36 @@
+.ssa-w-s3{--path:var(--l4);--data:var(--l5);--signal:var(--l3);--warn:var(--l1)}
+.ssa-w-s3 svg{display:block;width:100%;height:auto;overflow:visible}
+.ssa-w-s3-body{fill:var(--bg);stroke:var(--rule2);stroke-width:1.2}
+.ssa-w-s3-card[data-tone=store] .ssa-w-s3-body{fill:color-mix(in srgb,var(--data) 8%,var(--bg))}
+.ssa-w-s3-label,.ssa-w-s3-detail,.ssa-w-s3-note{font-family:var(--f);dominant-baseline:central;text-anchor:middle}
+.ssa-w-s3-label{fill:var(--ink);font-size:19px;font-weight:600}
+.ssa-w-s3-detail,.ssa-w-s3-note{fill:var(--ink2);font-size:16px}
+.ssa-w-s3-card[data-state=on] .ssa-w-s3-body{stroke:var(--data);stroke-width:2}
+.ssa-w-s3-card[data-state=on] .ssa-w-s3-detail{fill:var(--ink);font-weight:600}
+.ssa-w-s3-card[data-state=idle] .ssa-w-s3-body{stroke-dasharray:4 4}
+.ssa-w-s3-card[data-state=idle] .ssa-w-s3-label{fill:var(--ink2)}
+.ssa-w-s3-chip{fill:var(--data)}
+.ssa-w-s3-chip[data-color=""]{visibility:hidden}
+.ssa-w-s3-chip[data-color=B]{fill:var(--path)}
+.ssa-w-s3-chip[data-color=R]{fill:var(--warn)}
+.ssa-w-s3-wire{fill:none;stroke:var(--rule2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ssa-w-s3-arrow{fill:var(--rule2)}
+.ssa-w-s3-wire[data-kind=control]{stroke-dasharray:5 4}
+.ssa-w-s3-wire.ssa-w-s3-done{stroke:var(--data)}
+.ssa-w-s3-arrow.ssa-w-s3-done,.ssa-w-s3-packet{fill:var(--data)}
+.ssa-w-s3-wire.ssa-w-s3-done[data-kind=control]{stroke:var(--path)}
+.ssa-w-s3-arrow.ssa-w-s3-done[data-kind=control],.ssa-w-s3-packet[data-kind=control]{fill:var(--path)}
+.ssa-w-s3-wire.ssa-w-s3-done[data-kind=signal]{stroke:var(--signal)}
+.ssa-w-s3-arrow.ssa-w-s3-done[data-kind=signal],.ssa-w-s3-packet[data-kind=signal]{fill:var(--signal)}
+@media(min-width:641px) and (max-width:720px){
+  .topic-w-s3 .mhost{aspect-ratio:var(--ar)}
+}
+@media(max-width:640px){
+  .ssa-w-s3-label{font-size:16px}
+  .ssa-w-s3-detail,.ssa-w-s3-note{font-size:15px}
+  .topic-w-s3.present .stage .figbox{margin:0}
+  .topic-w-s3.present .stage .cap{grid-template-columns:1fr;gap:4px;margin-top:8px}
+  .topic-w-s3.present .stage .cnt{grid-row:auto;font-size:14px;line-height:1.2}
+  .topic-w-s3.present .stage h2{font-size:24px;line-height:1.25}
+  .topic-w-s3.present .stage .desc{font-size:17px;line-height:1.45}
+}

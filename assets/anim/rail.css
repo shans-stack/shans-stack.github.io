@@ -1,0 +1,35 @@
+.rail-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 500 17px var(--f);
+}
+.rail-scene text { fill: var(--ink); dominant-baseline: central; }
+.rail-scene .rail-note { fill: var(--ink2); font-size: 16px; }
+.rail-scene .rail-heading { font-size: 19px; font-weight: 600; }
+.rail-scene .rail-token { fill: var(--ink); font-size: 16px; font-weight: 700; }
+.rail-link { fill: none; stroke: var(--rule2); stroke-width: 2.2; stroke-linejoin: round; }
+.rail-link.rail-optical { stroke: var(--ink2); stroke-width: 3.2; }
+.rail-link.rail-control { stroke: var(--ink3); stroke-dasharray: 4 5; }
+.rail-link.rail-rose { stroke: var(--l1); }
+.rail-link.rail-sage { stroke: var(--l5); }
+.rail-link.rail-fault { stroke: var(--l1); stroke-dasharray: 4 5; }
+.rail-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.25; }
+.rail-box.rail-idle { stroke-dasharray: 4 4; }
+.rail-box.rail-fault { stroke: var(--l1); stroke-width: 2; }
+.rail-block { fill: var(--ink2); stroke: var(--surface); stroke-width: 1; }
+.rail-block.rail-rose { fill: color-mix(in srgb, var(--l1) 65%, var(--surface)); stroke: var(--l1); }
+.rail-block.rail-sage { fill: color-mix(in srgb, var(--l5) 65%, var(--surface)); stroke: var(--l5); }
+.rail-scene .rail-token { paint-order: stroke; stroke: var(--surface); stroke-width: 2; }
+@media (641px <= width <= 720px) {
+  .topic-rail .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .topic-rail .stage .figbox { margin: 0; }
+  .topic-rail .stage .cap { margin-top: 8px; column-gap: 12px; }
+  .topic-rail .stage h2 { font-size: 24px; line-height: 1.2; }
+  .topic-rail .stage .desc { font-size: 16px; line-height: 1.35; }
+  .rail-scene { font-size: 15px; }
+  .rail-scene .rail-heading { font-size: 17px; }
+  .rail-scene .rail-note, .rail-scene .rail-token { font-size: 14px; }
+}

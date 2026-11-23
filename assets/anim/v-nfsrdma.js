@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-nfsrdma.css，全部限定在 .ssa-v-nfsrdma 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg（浅色）与 vast-wordmark-white.svg（深色），不内嵌。 */
+   样式在 assets/anim/v-nfsrdma.css，全部限定在 .ssa-v-nfsrdma 容器之内。 */
 (function(){
 var EN={"客户端":"Client","应用内存":"App memory","内核缓冲区":"Kernel","网卡":"NIC","CPU":"CPU","CPU 复制":"CPU copy","不经过":"Bypassed","复制数据":"Copying data","处理请求":"Handles RPCs","占用很高":"Very busy","占用较低":"Light load","TCP":"TCP","RDMA":"RDMA",
 "TCP 数据经过两端内核网络栈":"TCP data passes through the kernel stack at both ends",
@@ -58,13 +57,6 @@ function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a==null?1:a;o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=o.a}
 /* 沿线走：t 在 [t0, t0+dur] 内沿 pts 走，之后 fo 秒内淡出；返回进度（之前 -1，淡出时 1.5） */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
-/* VAST 字标：引用 assets/brand 原件。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const R=window.SS_ROOT||'';
-  const g=el('g',{class:'vwm','aria-label':'VAST'},p),a={x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h};
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-black.svg',class:'vwm-l'},a),g);
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-white.svg',class:'vwm-d'},a),g);return g}
-/* 部件名 + VAST 字标排成一行：文字从 x 起（左对齐），字标紧跟在文字后面。返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h){const t=tx(x,y,s,fs,cls,'start',p);let w;try{w=t.getComputedTextLength()}catch(e){w=0}if(!w)w=fs*0.62*T(s).length;const m=vmark(x+w+Math.round(fs*0.35),y,h,p,'start');return {t,m}}
 function xmark(c,a,b,p){const g=el('g',{class:'xm'},p);line(P(c.x-b,c.y-a),P(c.x+b,c.y+a),'xmark',g);line(P(c.x-b,c.y+a),P(c.x+b,c.y-a),'xmark',g);return g}
 const dur=pts=>plen(pts)/L.sp;
 const SCENE={
@@ -96,7 +88,7 @@ const SCENE={
   /* ===== 第 1–3 步：客户端与 CNode 两侧的内存、内核、网卡 ===== */
   const g=grp('1 2 3');E.side={};
   box(L.FL,g,'box soft',16);box(L.FR,g,'box soft',16);
-  tx(SS.ttlL.x,SS.ttlL.y,'客户端',f.sm,'ttl','start',g);vlabel(SS.ttlR.x,SS.ttlR.y,'CNode',f.sm,'ttl',g,M?11:12);
+  tx(SS.ttlL.x,SS.ttlL.y,'客户端',f.sm,'ttl','start',g);tx(SS.ttlR.x,SS.ttlR.y,'CNode',f.sm,'ttl','start',g);
   ['L','R'].forEach(sd=>{const Z=SS[sd],o={};E.side[sd]=o;const ac=C(Z.app),kc=C(Z.kern),nc=C(Z.nic);
    /* 竖线：TCP 经内核、RDMA 绕过内核 */
    const up=!M||sd==='L';
@@ -128,8 +120,7 @@ const SCENE={
    line(P(cl.x+cl.w,cy),P(cn.x,cy),j?'ok':'',g4);
    if(!j)o.chips=R.chips.map(x=>{const r={x:x-R.chipW/2,y:cy-R.chipH/2,w:R.chipW,h:R.chipH};const b=box(r,g4,'box hot',8);tx(x,cy-R.chipH/2-16,'内核 · 复制',f.sm,'rose-t','middle',g4);return {x,b}});
    box(cl,g4);tx(C(cl).x,cl.y+cl.h-16,'客户端',f.sm,'ink3-t','middle',g4);
-   box(cn,g4);if(j===0&&!M)vlabel(cn.x+14,cy,'CNode',f.lbl,'lbl',g4,12);else tx(C(cn).x,cy,'CNode',f.lbl,'lbl','middle',g4);
-   if(j===0&&M)vmark(cn.x+2,top-12,11,g4,'start');
+   box(cn,g4);tx(C(cn).x,cy,'CNode',f.lbl,'lbl','middle',g4);
    const cx=M?R.cnt.x:R.cnt.x,ly=M?cy+R.cnt.dy:cy-20,ny=M?cy+R.cnt.dy+30:cy+18;
    tx(cx,ly,'已送达',f.sm,'ink3-t','middle',g4);o.n=tx(cx,ny,'0',f.big,'num '+(j?'sage-t':'rose-t'),'middle',g4);
    o.qy=cy;o.slot=i=>P(cl.x+cl.w-18-i*(M?18:24),cy+(M?-14:-14));o.exit=P(cl.x+cl.w,cy);o.end=P(cn.x,cy)});
@@ -143,7 +134,7 @@ const SCENE={
   E.net.cl=box(N.cl,g5);tx(clc.x,clc.y,'客户端',f.lbl,'lbl','middle',g5);
   E.net.sw=box(N.sw,g5,'box',10);tx(swc.x,N.sw.y+26,'交换机',f.lbl,'lbl b7','middle',g5);
   const sw4=M?40:32,sg=M?10:8,tot=4*sw4+3*sg;E.net.slots=[0,1,2,3].map(i=>{const x=swc.x-tot/2+i*(sw4+sg);el('rect',{x,y:N.sw.y+N.sw.h-44,width:sw4,height:28,rx:4,class:'chip'},g5);return P(x+sw4/2,N.sw.y+N.sw.h-30)});
-  E.net.cn=box(N.cn,g5);if(!M)vlabel(N.cn.x+22,cnc.y,'CNode',f.lbl,'lbl',g5,12);else{tx(cnc.x,cnc.y,'CNode',f.lbl,'lbl','middle',g5);vmark(N.cn.x+2,N.cn.y-12,11,g5,'start')}
+  E.net.cn=box(N.cn,g5);tx(cnc.x,cnc.y,'CNode',f.lbl,'lbl','middle',g5);
   E.net.pl=tx(N.pause.x,N.pause.y,'',f.sm,'violet-t st',M?'start':'middle',g5);
   E.net.dx=xmark(P(N.drop.x,N.drop.y),12,12,g5);E.net.dx.style.opacity=0;E.net.dl=tx(N.drop.x+(M?0:22),N.drop.y+(M?30:0),'丢帧',f.sm,'rose-t st',M?'middle':'start',g5);
   E.net.st=tx(N.st.x,N.st.y,'',f.sm+1,'st','middle',g5);E.net.cnt=tx(N.cnt.x,N.cnt.y,'',f.sm,'st num',N.cnt.a||'middle',g5);
@@ -156,13 +147,13 @@ const SCENE={
   const sp0=E.stk[0].y,sp3=E.stk[3].y,kc6=C(K.cn);line(P(K.spX,sp0),P(K.spX,sp3),'thin',g6);
   E.stkPath=M?[P(K.spX,sp0),P(K.spX,kc6.y),P(K.cn.x+K.cn.w,kc6.y)]:[P(K.spX,sp0),P(K.spX,kc6.y),P(K.cn.x,kc6.y)];
   E.stkNet=poly(E.stkPath.slice(1),'',g6);if(M)line(P(K.spX,sp3),P(K.spX,kc6.y),'',g6);
-  E.cn6=box(K.cn,g6);if(!M)vlabel(K.cn.x+22,kc6.y,'CNode',f.lbl,'lbl b7',g6,13);else{tx(kc6.x,kc6.y,'CNode',f.lbl,'lbl b7','middle',g6);vmark(K.cn.x+2,K.cn.y-12,11,g6,'start')}
+  E.cn6=box(K.cn,g6);tx(kc6.x,kc6.y,'CNode',f.lbl,'lbl b7','middle',g6);
   tx(M?K.spX-8:(K.spX+K.cn.x)/2,M?kc6.y-14:kc6.y-14,'RDMA',f.sm,'sage-t b7',M?'end':'middle',g6);
   tx(K.cmd.x,K.cmd.y,'mount -o proto=rdma server:/ /mnt',f.sm,'mono ink2-t','middle',g6);
   /* ===== 第 7 步：nconnect 与多路径 ===== */
   const g7=grp('7');const Q=L.mp;E.mpCl=box(Q.cl,g7);const qc=C(Q.cl);tx(qc.x,M?Q.cl.y+30:qc.y-16,'客户端',f.lbl,'lbl b7','middle',g7);tx(qc.x,M?Q.cl.y+60:qc.y+16,'网卡',f.sm,'ink3-t','middle',g7);
-  E.mpCn=(M?Q.cn.cxs:Q.cn.cys).map((c,k)=>{const r=M?{x:c-Q.cn.w/2,y:Q.cn.y,w:Q.cn.w,h:Q.cn.h}:{x:Q.cn.x,y:c-Q.cn.h/2,w:Q.cn.w,h:Q.cn.h};const b=box(r,g7);
-   if(!M&&k===0)vlabel(r.x+18,C(r).y,'CNode',f.lbl,'lbl b7',g7,13);else tx(C(r).x,C(r).y-(M&&k===0?10:0),'CNode',f.lbl,'lbl b7','middle',g7);if(M&&k===0)vmark(C(r).x,C(r).y+16,11,g7,'middle');return {r,b}});
+  E.mpCn=(M?Q.cn.cxs:Q.cn.cys).map(c=>{const r=M?{x:c-Q.cn.w/2,y:Q.cn.y,w:Q.cn.w,h:Q.cn.h}:{x:Q.cn.x,y:c-Q.cn.h/2,w:Q.cn.w,h:Q.cn.h};const b=box(r,g7);
+   tx(C(r).x,C(r).y,'CNode',f.lbl,'lbl b7','middle',g7);return {r,b}});
   E.mpG=el('g',{},g7);E.mpL=tx(Q.lbl.x,Q.lbl.y,'',f.sm+1,'st','middle',g7);
   E.conn=(o,k,o2,bx)=>{const r=E.mpCn[k].r;if(!M){const sy=qc.y+o,ey=C(r).y+o2;return [P(Q.cl.x+Q.cl.w,sy),P(bx,sy),P(bx,ey),P(r.x,ey)]}
    const sx=qc.x+o,ex=C(r).x+o2,by=bx;return [P(sx,Q.cl.y+Q.cl.h),P(sx,by),P(ex,by),P(ex,r.y)]};

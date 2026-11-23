@@ -1,0 +1,20 @@
+.f-bare-diagram {
+  --ok: var(--l5);
+  --alert: var(--l1);
+  display: block;
+  width: 100%;
+  font: 500 17px var(--f);
+}
+.f-bare-diagram [data-tone="ok"] { --tone: var(--ok); }
+.f-bare-diagram [data-tone="alert"] { --tone: var(--alert); }
+.f-bare-card { fill: var(--bg); stroke: var(--tone, var(--rule2)); stroke-width: 1.5; }
+.f-bare-node[data-tone] .f-bare-card { stroke-width: 2.5; }
+.f-bare-line { fill: none; stroke: var(--tone, var(--rule2)); stroke-width: 2; stroke-linejoin: round; }
+.f-bare-packet { fill: var(--tone); stroke: var(--bg); stroke-width: 1.2; }
+.f-bare-title, .f-bare-caption { fill: var(--ink); font-weight: 600; }
+.f-bare-title { font-size: 19px; }
+.f-bare-detail, .f-bare-note { fill: var(--ink2); }
+@media (max-width: 640px) {
+  .f-bare-title { font-size: 16.5px; }
+  .f-bare-detail, .f-bare-caption, .f-bare-note { font-size: 16.5px; }
+}

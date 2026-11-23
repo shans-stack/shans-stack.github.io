@@ -1,0 +1,61 @@
+.n-trtllm-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+  color: var(--ink);
+}
+.n-trtllm-scene text { fill: var(--ink); font-size: 18px; }
+.n-trtllm-scene .name { font-size: 20px; font-weight: 600; }
+.n-trtllm-scene .sub, .n-trtllm-scene .note { fill: var(--ink2); font-size: 16px; }
+.n-trtllm-scene .caption { font-size: 18px; font-weight: 500; line-height: 1.25; }
+.n-trtllm-scene .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; transition: stroke .14s ease; }
+.n-trtllm-scene .arrived .panel { stroke: var(--l4); }
+.n-trtllm-scene .accepted .panel { stroke: var(--l5); }
+.n-trtllm-scene .review .panel { stroke: var(--l1); }
+.n-trtllm-scene .idle .panel { stroke-dasharray: 4 3; }
+.n-trtllm-scene .idle .name { fill: var(--ink2); }
+.n-trtllm-scene .route {
+  --route-color: var(--l4);
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  transition: stroke .14s ease;
+}
+.n-trtllm-scene .route.active { stroke: var(--route-color); stroke-width: 1.9; }
+.n-trtllm-scene .route.control path:first-child, .n-trtllm-scene .route.idle path:first-child { stroke-dasharray: 4 3; }
+.n-trtllm-scene .packet { fill: var(--l4); stroke: var(--bg); stroke-width: .75; }
+.n-trtllm-scene .route.control { --route-color: var(--l3); }
+.n-trtllm-scene .route.ok { --route-color: var(--l5); }
+.n-trtllm-scene .route.review { --route-color: var(--l1); }
+.n-trtllm-scene .packet.control { fill: var(--l3); }
+.n-trtllm-scene .packet.ok { fill: var(--l5); }
+.n-trtllm-scene .packet.review { fill: var(--l1); }
+.n-trtllm-scene .tile { stroke: var(--l4); stroke-width: 1.5; fill: none; stroke-linejoin: round; }
+.n-trtllm-scene .tile.fixed { stroke: var(--ink3); }
+.n-trtllm-scene .tile.adapter { stroke: var(--l5); }
+.n-trtllm-scene .tile.cache { stroke: var(--l3); }
+.n-trtllm-scene .tile.review { stroke: var(--l1); }
+.n-trtllm-scene .tile .tile-text { font-size: 14px; fill: var(--ink2); stroke: none; font-weight: 600; }
+.n-trtllm-scene .tile .ground { stroke: var(--rule2); }
+.n-trtllm-scene .tile .shade { fill: var(--l4); stroke: none; }
+[data-station="n-trtllm"] .src a {
+  display: inline;
+  padding: 0;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (641px <= width <= 720px) {
+  .topic-n-trtllm .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .n-trtllm-scene .name { font-size: 16px; }
+  .n-trtllm-scene .caption, .n-trtllm-scene .sub, .n-trtllm-scene .note { font-size: 15px; }
+  .topic-n-trtllm .stage .figbox { margin-block: 6px; }
+  .topic-n-trtllm .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-trtllm .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-trtllm .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-trtllm .stage .ctl { gap: 8px; margin-top: 8px; }
+}

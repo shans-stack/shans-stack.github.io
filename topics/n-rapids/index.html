@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAPIDS cuDF：GPU 上的表格数据处理 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 RAPIDS cuDF 如何在 GPU 上执行表格运算，以及 pandas 与 Spark 如何接入。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-rapids.css?v=93bdb3bb">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-rapids">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-rapids">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="RAPIDS cuDF: Tabular Data Processing on GPUs">RAPIDS cuDF：GPU 上的表格数据处理</h1>
+        <p class="meta"><span data-en="5 steps · Columnar Data, pandas, Spark">5 步 · 列式数据、pandas、Spark</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cudf/latest/&quot;&gt;NVIDIA cuDF and libcudf Overview&lt;/a&gt;"><a href="https://docs.nvidia.com/cudf/latest/">NVIDIA cuDF 与 libcudf 概览</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cudf/latest/cudf_pandas/how-it-works/&quot;&gt;How cudf.pandas Handles Dispatch and Fallback&lt;/a&gt;"><a href="https://docs.nvidia.com/cudf/latest/cudf_pandas/how-it-works/">cudf.pandas 代理与回退</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidia.github.io/cudf-spark/docs/supported_ops.html&quot;&gt;cuDF for Apache Spark Operator Support&lt;/a&gt;"><a href="https://nvidia.github.io/cudf-spark/docs/supported_ops.html">cuDF for Apache Spark 算子支持</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-rapids.js?v=439e3fb3"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-rapids",
+  "ar": [
+    2.7439024390243905,
+    0.8181818181818182
+  ],
+  "steps": [
+    {
+      "t": [
+        "列式数据进入 GPU",
+        "Bringing Columnar Data to the GPU"
+      ],
+      "d": [
+        "cuDF 将表格表示为一组列，并在 GPU 上执行表格运算。",
+        "cuDF represents a table as a collection of columns and runs tabular operations on the GPU."
+      ],
+      "b": [
+        [
+          "\u003cp>DataFrame 是由带名称的列组成的表格数据结构。cuDF 的底层 C++ 库 libcudf 提供与 Apache Arrow 兼容的列式数据结构，也提供处理这些数据的 GPU 算法。列式布局把同一字段的值放在一起，适合按列组织计算。\u003c/p>"
+        ],
+        [
+          "\u003cp>A DataFrame is a tabular data structure organized into named columns. The underlying C++ library, libcudf, provides Apache Arrow-compatible columnar structures and GPU algorithms that operate on them. A columnar layout groups values of the same field for column-oriented processing.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用分组聚合生成结果表",
+        "Producing a Table with Grouped Aggregation"
+      ],
+      "d": [
+        "GPU 按键将记录分组，并对每组的值求和。",
+        "The GPU groups records by key and sums the values in each group."
+      ],
+      "b": [
+        [
+          "\u003cp>分组键用于判断哪些行属于同一组。以按类别汇总数量为例，cuDF 读取类别列和数量列，为每个类别生成一行汇总结果。输入的明细表与输出的聚合表有不同的粒度。\u003c/p>"
+        ],
+        [
+          "\u003cp>A group key determines which rows belong together. To sum quantities by category, cuDF reads the category and quantity columns and produces one summary row per category. The input describes individual records, while the output describes groups.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "pandas 的加速代理",
+        "The pandas Acceleration Proxy"
+      ],
+      "d": [
+        "`cudf.pandas` 通过代理将可加速的调用交给 cuDF，其余调用由 pandas 处理。",
+        "The `cudf.pandas` proxy routes eligible calls to cuDF and falls back to pandas for other calls."
+      ],
+      "b": [
+        [
+          "\u003cp>代理在 pandas 接口与底层实现之间分派操作。需要回退时，对象可能在 GPU 与 CPU 格式之间转换，后续支持的操作仍可回到 GPU。一次工作流的执行位置随调用和数据而变化。\u003c/p>"
+        ],
+        [
+          "\u003cp>The proxy dispatches calls from the pandas interface to the underlying implementation. On fallback, objects may need conversion between GPU and CPU representations, and later eligible operations can return to the GPU. Execution therefore depends on the calls and data in the workflow.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Spark 的执行计划替换",
+        "Replacing Operators in a Spark Plan"
+      ],
+      "d": [
+        "NVIDIA 的 Spark 插件将符合条件的 SQL 或 DataFrame 物理算子换成 GPU 算子。",
+        "NVIDIA's Spark plug-in replaces eligible physical SQL or DataFrame operators with GPU implementations."
+      ],
+      "b": [
+        [
+          "\u003cp>Spark 的物理计划确定每一步怎样执行。插件根据算子、表达式和数据类型等条件选择可替换的部分，其余部分仍按 Spark 的 CPU 路径执行。这条集成路径针对 Spark 作业，和进程内的 pandas 代理属于不同执行层。\u003c/p>"
+        ],
+        [
+          "\u003cp>A Spark physical plan determines how each operation runs. The plug-in checks conditions such as the operator, expression, and data type to determine which parts can be replaced. The remaining parts use Spark&#x27;s CPU path. This integration operates at the Spark job level, while the pandas proxy dispatches calls within a process.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "CPU 与 GPU 之间的数据边界",
+        "The CPU–GPU Data Boundary"
+      ],
+      "d": [
+        "连续的 GPU 运算可保留设备端数据，CPU 回退处可能需要转换并复制数据。",
+        "Consecutive GPU operations can keep data on the device, while a CPU fallback may require data conversion and copying."
+      ],
+      "b": [
+        [
+          "\u003cp>GPU 执行的收益取决于有多少操作可以在设备上连续运行。切换到 CPU 实现时，相关输入可能需要转成主机端可用的表示；后续 GPU 运算则可能重新将它传入设备。混合路径由实际执行计划或代理分派结果决定。\u003c/p>"
+        ],
+        [
+          "\u003cp>The benefit of GPU execution depends in part on how much work can stay on the device. A CPU implementation may need inputs converted into a host representation, and a later GPU operation may need to move data back. The actual plan or proxy dispatch determines where these boundaries occur.\u003c/p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  if (!controls) return;
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

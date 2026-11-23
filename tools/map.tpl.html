@@ -20,7 +20,7 @@
 <header class="hd"><div class="wrap">
   <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
   <nav class="nav" aria-label="主导航" data-en-label="Main">
-    <a href="../../index.html#map" data-en="Main map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
     <button class="lang" type="button" data-lang-toggle>EN</button>
   </nav>
 </div></header>
@@ -75,7 +75,7 @@
 document.addEventListener('ss-lang',function(){
   var m=SS.mapById['{{ID}}'],n=SS.stationsOf(m.id).length;
   SS.renderMapSwitch(document.getElementById('mswitch'),m.id);
-  document.getElementById('mtitle').textContent=SS.L(m.zh+' 专题图',m.en+' topic map');
+  document.getElementById('mtitle').textContent=SS.L(m.zh+' 专题图',m.en+' Topic Map');
   document.getElementById('mbrand').innerHTML=SS.brandMark(m.brand,'mh-lg');
   SS.renderCols(document.getElementById('cols'),m.id);
 });

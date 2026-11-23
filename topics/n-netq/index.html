@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA NetQ：以太网与 NVLink 的网络可观测性 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明NVIDIA NetQ。监控以太网和 NVLink 网络、采集遥测并协助故障排查的 NVIDIA 网络运维软件。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-netq.css?v=c38bd7eb">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-netq">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-netq">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA NetQ: Network Observability for Ethernet and NVLink">NVIDIA NetQ：以太网与 NVLink 的网络可观测性</h1>
+        <p class="meta"><span data-en="5 steps · Telemetry, Network Validation, NVLink">5 步 · 遥测、网络校验、NVLink</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/Installation-Management/Install-NetQ/Install-NetQ-System/&quot;&gt;Installation Scope&lt;/a&gt;"><a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/Installation-Management/Install-NetQ/Install-NetQ-System/">NetQ 5.3 · 安装范围</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/NetQ-Overview/NetQ-Basics/NetQ-Components/&quot;&gt;Components&lt;/a&gt;"><a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/NetQ-Overview/NetQ-Basics/NetQ-Components/">NetQ 5.3 · 组件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/Validate-Operations/&quot;&gt;Validation Checks&lt;/a&gt;"><a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/Validate-Operations/">NetQ 5.3 · 校验</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/Manage-Events-and-Notifications/Monitor-System-Events/&quot;&gt;Monitor Events&lt;/a&gt;"><a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/Manage-Events-and-Notifications/Monitor-System-Events/">NetQ 5.3 · 事件监控</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/NVLink-Management/&quot;&gt;NVLink Management&lt;/a&gt;"><a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-netq-53/NVLink-Management/">NetQ 5.3 · NVLink 管理</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-netq.js?v=64446dcb"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-netq",
+ "ar": [
+  2.191780821917808,
+  0.8490566037735849
+ ],
+ "steps": [
+  {
+   "t": [
+    "网络监控的两种范围",
+    "Two Network Monitoring Scopes"
+   ],
+   "d": [
+    "NetQ 5.3 支持观察以太网与 NVLink，分别覆盖数据中心网络和 GPU 互联。",
+    "NetQ 5.3 supports observability for Ethernet and NVLink, covering data center networks and GPU interconnects."
+   ],
+   "b": [
+    [
+     "<p>以太网连接主机和交换机。NVLink 是 GPU 间的高速互联。两个网络可以同时出现在一个集群，链路和端口状态分别来自各自的网络。</p>",
+     "<p>截至 2026-11-23，NVIDIA 的 NetQ 5.3 安装文档列出仅以太网、仅 NVLink 的部署，并将两者的联合部署标为 Beta。</p>"
+    ],
+    [
+     "<p>Ethernet connects hosts and switches. NVLink provides a high-speed interconnect between GPUs. A cluster can use both networks, each with its own link and port state.</p>",
+     "<p>As of November 23, 2026, the NVIDIA NetQ 5.3 installation guide lists Ethernet-only and NVLink-only deployments and labels the combined deployment Beta.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从设备采集遥测",
+    "Collecting Telemetry from Devices"
+   ],
+   "d": [
+    "以太网设备上的 NetQ Agent 周期性上报网络状态，发生事件时立即发送事件信息。",
+    "NetQ agents on Ethernet devices report network state periodically and send event information as it occurs."
+   ],
+   "b": [
+    [
+     "<p>遥测是设备自动上报的状态记录。以太网部署中的代理可运行在 Cumulus Linux 交换机和受监控的 Linux 主机上。交换机代理可采集接口、邻居和路由等信息，主机代理还可采集代表主机或容器的网络地址。</p>"
+    ],
+    [
+     "<p>Telemetry is state that devices report automatically. In an Ethernet deployment, agents can run on Cumulus Linux switches and monitored Linux hosts. Switch agents can collect interfaces, neighbors, and routes. Host agents can also report host and container addresses.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "汇聚状态与拓扑",
+    "Correlating State and Topology"
+   ],
+   "d": [
+    "NetQ 平台汇聚多个设备的状态，将指标和事件关联到网络拓扑。",
+    "The NetQ platform aggregates state from multiple devices and correlates metrics and events with network topology."
+   ],
+   "b": [
+    [
+     "<p>拓扑描述网络设备和链路的连接关系。NetQ 核心组件聚合、处理并保存遥测，供界面和命令行查询。集中保存设备记录，使一次查询可以看到相关端口及其邻居状态。</p>"
+    ],
+    [
+     "<p>Topology describes how network devices and links connect. NetQ core components aggregate, process, and store telemetry for the user interface and CLI. A centralized record lets a query bring together the state of related ports and their neighbors.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "校验与运维事件",
+    "Validation and Operations Events"
+   ],
+   "d": [
+    "校验将采集到的状态与预期比较，偏差可产生事件。",
+    "Validation compares observed state with expectations and can generate events when they differ."
+   ],
+   "b": [
+    [
+     "<p>NetQ 的默认校验周期性检查设备、协议或服务是否按预期运行，部分检查也可以按需触发。出现异常时，记录中的时间、设备和事件类型有助于把现象缩小到相关链路或配置。</p>"
+    ],
+    [
+     "<p>Default NetQ validations periodically check whether devices, protocols, or services operate as expected. Some checks can also run on demand. Timestamps, device names, and event types help narrow a symptom to a relevant link or configuration.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "NVLink 域内的可观测性",
+    "Observability Within an NVLink Domain"
+   ],
+   "d": [
+    "NetQ 的 NVLink 功能收集 GPU 互联遥测，呈现同一 NVLink 域中的设备与端口状态。",
+    "NetQ for NVLink collects GPU interconnect telemetry and reports device and port state within an NVLink domain."
+   ],
+   "b": [
+    [
+     "<p>NVLink 域是一组可以通过 NVLink 互联通信的 GPU。NetQ for NVLink 汇聚互联指标，并可通过 Prometheus 指标接口或 gRPC 对外提供。以太网事件与柜内 NVLink 端口异常对应不同的诊断范围。</p>"
+    ],
+    [
+     "<p>An NVLink domain is a set of GPUs that can communicate over NVLink. NetQ for NVLink aggregates fabric metrics and can expose them through a Prometheus endpoint or gRPC. Ethernet events and in-rack NVLink port faults belong to different diagnostic scopes.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

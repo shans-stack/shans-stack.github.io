@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>云上 VAST：部署形态与公有云支持 · Shan's Stack</title>
+<meta name="description" content="分 7 步说明 VAST 云集群与本地部署的区别，以及 AWS、Azure、Google Cloud 和 OCI 的公开支持状态。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/v-cloud.css?v=21a89176">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-v-cloud">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-cloud">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="VAST on Cloud: Deployment Models and Public Cloud Support">云上 VAST：部署形态与公有云支持</h1>
+        <p class="meta"><span data-en="7 steps · public cloud, hybrid deployment, Polaris">7 步 · 公有云、混合部署、Polaris</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.vastdata.com/whitepaper&quot;&gt;VAST AI OS White Paper · VAST on Cloud&lt;/a&gt;"><a href="https://www.vastdata.com/whitepaper">VAST AI OS 白皮书 · VAST on Cloud</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/global-namespace-overview-tg&quot;&gt;VAST Cluster 5.5 Documentation · Global Namespace&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/global-namespace-overview-tg">VAST Cluster 5.5 文档 · 全局命名空间</a></li>
+      <li data-en="&lt;a href=&quot;https://kb.vastdata.com/documentation/docs/vast-polaris-5-4-2-release-notes&quot;&gt;VAST Polaris 5.4.5 Release Notes&lt;/a&gt;"><a href="https://kb.vastdata.com/documentation/docs/vast-polaris-5-4-2-release-notes">VAST Polaris 5.4.5 发布说明</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/vast-cluster-5-5-2-release-notes&quot;&gt;VAST Cluster 5.5.2 Release Notes · Cloud Features&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/vast-cluster-5-5-2-release-notes">VAST Cluster 5.5.2 发布说明 · 云上功能</a></li>
+      <li data-en="&lt;a href=&quot;https://aws.amazon.com/marketplace/pp/prodview-dkg4utu7il7do&quot;&gt;AWS Marketplace · VAST Data Platform&lt;/a&gt;"><a href="https://aws.amazon.com/marketplace/pp/prodview-dkg4utu7il7do">AWS Marketplace · VAST Data Platform</a></li>
+      <li data-en="&lt;a href=&quot;https://aws.amazon.com/marketplace/pp/prodview-4iv2poklx5vrq&quot;&gt;AWS Marketplace · VAST Data AI OS&lt;/a&gt;"><a href="https://aws.amazon.com/marketplace/pp/prodview-4iv2poklx5vrq">AWS Marketplace · VAST Data AI OS</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-3/docs/vast-on-cloud-for-aws&quot;&gt;VAST Documentation · AWS Deployments&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-3/docs/vast-on-cloud-for-aws">VAST 文档 · AWS 部署</a></li>
+      <li data-en="&lt;a href=&quot;https://marketplace.microsoft.com/en-us/product/vastdatainc1766514264563.vast-data?tab=overview&quot;&gt;Microsoft Marketplace · VAST Data AI OS&lt;/a&gt;"><a href="https://marketplace.microsoft.com/en-us/product/vastdatainc1766514264563.vast-data?tab=overview">Microsoft Marketplace · VAST Data AI OS</a></li>
+      <li data-en="&lt;a href=&quot;https://www.vastdata.com/press-releases/vast-and-microsoft-azure-unite-to-advance-agentic-ai&quot;&gt;VAST Announcement · Azure Native ISV Service&lt;/a&gt;"><a href="https://www.vastdata.com/press-releases/vast-and-microsoft-azure-unite-to-advance-agentic-ai">VAST 公告 · Azure Native ISV Service</a></li>
+      <li data-en="&lt;a href=&quot;https://www.vastdata.com/press-releases/vast-data-platform-on-google-cloud&quot;&gt;VAST Announcement · VAST Data Platform on Google Cloud&lt;/a&gt;"><a href="https://www.vastdata.com/press-releases/vast-data-platform-on-google-cloud">VAST 公告 · Google Cloud 上的 VAST Data Platform</a></li>
+      <li data-en="&lt;a href=&quot;https://cloud.google.com/blog/products/compute/ai-infrastructure-at-next26&quot;&gt;Google Cloud Next 2026 · AI Infrastructure Announcement&lt;/a&gt;"><a href="https://cloud.google.com/blog/products/compute/ai-infrastructure-at-next26">Google Cloud Next 2026 · AI 基础设施公告</a></li>
+      <li data-en="&lt;a href=&quot;https://www.vastdata.com/technology/oracle-cloud-infrastructure&quot;&gt;VAST Product Page · Oracle Cloud Infrastructure&lt;/a&gt;"><a href="https://www.vastdata.com/technology/oracle-cloud-infrastructure">VAST 官网 · Oracle Cloud Infrastructure</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/v-cloud.js?v=0897efbf"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "v-cloud",
+  "ar": [
+    2.7,
+    0.9
+  ],
+  "steps": [
+    {
+      "t": [
+        "从机房 EBox 到云实例",
+        "From On-Premises EBoxes to Cloud Instances"
+      ],
+      "d": [
+        "VAST on Cloud 用带本地 NVMe SSD 的云实例承载 VAST 软件，并组成能独立提供数据服务的集群。",
+        "VAST on Cloud runs VAST software on cloud instances with local NVMe SSDs, forming a cluster that can serve data on its own."
+      ],
+      "b": [
+        [
+          "<p>本地 EBox 部署使用带闪存盘的物理服务器，每台可承载 CNode 和 DNode。CNode 处理客户端协议及存储逻辑，DNode 向集群提供访问存储介质的路径。在 VAST 白皮书描述的云上形态中，带本地 NVMe SSD 的云实例承担类似 EBox 的角色，数据与元数据分布在多个实例的 SSD 上。</p>",
+          "<p>客户端请求由云集群提供服务，部署依赖云上支持的实例、可用区与网络。Polaris 是 VAST 的云集群控制平面，负责配置和运行部署。文件读取等数据请求直接到集群的数据接口。</p>"
+        ],
+        [
+          "<p>An on-premises EBox deployment uses physical servers with flash drives. Each can host a CNode, which handles client protocols and storage logic, and a DNode, which gives the cluster access to its storage media. In the cloud architecture described in the VAST white paper, cloud instances with local NVMe SSDs play a role similar to EBoxes, with data and metadata spread across the SSDs of several instances.</p>",
+          "<p>The cloud cluster serves client requests, and deployment depends on supported instance types, availability zones, and networking. Polaris is VAST&#x27;s control plane for provisioning and operating cloud deployments. Data requests such as file reads go directly to the cluster&#x27;s data endpoints.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "云实例的本地盘与持久化",
+        "Instance-Local SSDs and Data Persistence"
+      ],
+      "d": [
+        "云实例换宿主机后可能失去原本地盘，支持持久化模式的部署可将数据写入云对象存储。",
+        "A cloud instance moved to a new host can lose its local disks, while deployments with persistence mode can write data to cloud object storage."
+      ],
+      "b": [
+        [
+          "<p>云实例的本地 NVMe SSD 与宿主机相关联。实例迁移到另一台宿主机重启时，原来的盘可能不可用。云集群把数据条带分布到多个实例上，可应对部分实例失效。整个故障域丢失时，只有本地盘的实例无法提供跨故障域恢复所需的副本。</p>",
+          "<p>VAST 白皮书描述的持久化模式将数据写入云厂商的对象存储，并可从最近的持久化检查点恢复。检查点记录了可恢复的数据状态。实例本地 SSD、对象存储持久化和本地机房的物理盘各有自己的故障边界。</p>"
+        ],
+        [
+          "<p>Instance-local NVMe SSDs are tied to the host. If an instance restarts on a different host, its old drives may be unavailable. The cloud cluster stripes data across instances so it can tolerate some instance failures. Recovery from the loss of an entire failure domain requires a copy beyond its local SSDs.</p>",
+          "<p>In the persistence mode described by VAST, the cluster writes data to the cloud provider&#x27;s object store and can recover from the last persistent checkpoint, a recorded recoverable state. Instance-local SSDs, object-store persistence, and physical disks in a data center have different failure boundaries.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "混合部署与按需读取",
+        "Hybrid Deployment and On-Demand Reads"
+      ],
+      "d": [
+        "云集群可通过 DataSpace 中配置的全局访问路径，按需读取并缓存本地集群的数据。",
+        "A cloud cluster can read and cache on-premises data on demand through a Global Access path configured in DataSpace."
+      ],
+      "b": [
+        [
+          "<p>DataSpace 的全局命名空间能将源集群上的指定目录呈现在另一个 VAST 集群中。后者称为卫星集群。在一种混合部署中，云端应用连到云端卫星。遇到缓存未命中的读取，卫星向本地源集群请求数据，并在云端保留缓存供后续访问。</p>",
+          "<p>这种部署允许云端在源目录尚未整目录同步时开始读取。首次读取仍有跨环境的网络开销。全局访问负责让路径可访问，跨站点持久副本由另配置的复制策略提供。</p>"
+        ],
+        [
+          "<p>The DataSpace global namespace can expose a selected directory from a source cluster on another VAST cluster, called a satellite. In a hybrid deployment, a cloud application connects to the cloud satellite. On a cache miss, the satellite fetches data from the on-premises source cluster and caches it in the cloud for subsequent access.</p>",
+          "<p>This configuration allows cloud reads before the full directory has been synchronized. The first read still incurs a network round trip across environments. Global Access makes the path accessible, and a separately configured replication policy provides a durable copy at another site.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "AWS 上的 Marketplace 与 Polaris",
+        "Marketplace and Polaris on AWS"
+      ],
+      "d": [
+        "截至 2026-11-23，AWS Marketplace 有 VAST 产品条目，VAST 已在 Polaris 5.4.5 文档中列出 AWS 部署。",
+        "As of November 23, 2026, AWS Marketplace lists VAST offerings, and VAST documents AWS deployments in Polaris 5.4.5."
+      ],
+      "b": [
+        [
+          "<p>AWS Marketplace 列有 VAST Data Platform 和 VAST Data AI Operating System。VAST 的 Polaris 5.4.5 发布说明写明，该版本自 2026 年 5 月起可供一般使用，支持在用户 AWS 账户中通过 Polaris 部署 VAST 集群。</p>",
+          "<p>AWS 的虚拟私有云（VPC）承载部署网络。VAST Cluster 5.5.2 发布说明还记载，AWS 部署支持集群休眠，即关闭集群实例并将数据与元数据保留在对象存储中，供符合条件的部署恢复。</p>"
+        ],
+        [
+          "<p>AWS Marketplace lists VAST Data Platform and VAST Data AI Operating System. The VAST Polaris 5.4.5 release notes say the version has been available for general use since May 2026 and supports provisioning a VAST cluster in a user&#x27;s AWS account.</p>",
+          "<p>The AWS virtual private cloud (VPC) hosts the deployment network. The VAST Cluster 5.5.2 release notes also document cluster hibernation on AWS. Hibernation shuts down the cluster instances and keeps data and metadata in object storage for recovery by a deployment that meets the restore requirements.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Azure 上的原生服务与部署",
+        "Native Service and Deployment on Azure"
+      ],
+      "d": [
+        "VAST 于 2025-11-18 宣布 Azure Native ISV Service 可用，截至 2026-11-23 的产品文档还列有 Polaris 部署。",
+        "VAST announced availability through the Azure Native ISV Service on November 18, 2025, and its documentation lists Polaris deployments as of November 23, 2026."
+      ],
+      "b": [
+        [
+          "<p>VAST 的发布公告说明，VAST AI OS 通过 Azure Native ISV Service 提供托管式 Azure 集成。Microsoft Marketplace 的产品页描述软件部署在 Azure Lsv4 实例上，并可通过全局命名空间接入其他 VAST 集群。</p>",
+          "<p>VAST Cluster 5.5.2 发布说明另列出经 Polaris 部署 Azure 云集群，并列有计划内虚拟机维护和集群休眠等支持项。Marketplace 的交付说明与版本支持项分别对应采购入口和集群功能。</p>"
+        ],
+        [
+          "<p>VAST&#x27;s launch announcement describes a managed Azure integration for VAST AI OS through the Azure Native ISV Service. The Microsoft Marketplace listing describes deployment on Azure Lsv4 instances with the option to connect to other VAST clusters through the global namespace.</p>",
+          "<p>The VAST Cluster 5.5.2 release notes separately document Azure cloud cluster deployment through Polaris, including planned VM maintenance and cluster hibernation. The Marketplace listing covers procurement, and the release notes describe cluster capabilities.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Google Cloud 上的独立与混合集群",
+        "Standalone and Hybrid Clusters on Google Cloud"
+      ],
+      "d": [
+        "VAST 于 2024-04-10 宣布 Google Cloud 可用，截至 2026-11-23 的 Polaris 文档也列有集群部署。",
+        "VAST announced Google Cloud availability on April 10, 2024, and Polaris documentation lists cluster deployment as of November 23, 2026."
+      ],
+      "b": [
+        [
+          "<p>VAST 的发布公告描述了两种 Google Cloud 用法。多节点集群可以独立部署，也可以与本地 VAST 集群组成混合部署。VAST Polaris 5.4.5 发布说明明确列出在 Google Cloud 上部署完整集群的支持。</p>",
+          "<p>Google Cloud 在 2026-04-22 的 Next 公告中，将 VAST 列作面向并行文件系统的 Z4M 实例集成示例。该公告给出实例集成的背景，VAST 的发布公告和文档给出产品状态与部署支持。</p>"
+        ],
+        [
+          "<p>VAST&#x27;s announcement describes two ways to use Google Cloud. A multi-node cluster can be deployed on its own or paired with an on-premises VAST cluster in a hybrid deployment. The VAST Polaris 5.4.5 release notes explicitly list support for deploying a full cluster on Google Cloud.</p>",
+          "<p>In its April 22, 2026 Next announcement, Google Cloud named VAST as a parallel file system integration example for Z4M instances. That announcement covers the instance integration. VAST&#x27;s announcement and documentation describe the product status and deployment support.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Oracle Cloud 上的公开部署说明",
+        "Public Deployment Information for Oracle Cloud"
+      ],
+      "d": [
+        "截至 2026-11-23，VAST 官网已描述 OCI 租户内的部署形态，公开资料未明确标注正式可用或预览状态。",
+        "As of November 23, 2026, VAST describes deployment in an OCI tenancy, with no explicit general-availability or preview status in the public sources reviewed."
+      ],
+      "b": [
+        [
+          "<p>OCI（Oracle Cloud Infrastructure）是 Oracle 的公有云。VAST 的 OCI 产品页描述在 OCI 租户内以原生服务形态部署，并可把机房与 OCI 上的 VAST 集群接入同一个全局命名空间。租户是 OCI 中组织和管理云资源的边界。</p>",
+          "<p>截至上述日期，所查公开资料可确认 VAST 官网的部署说明。Oracle 公告、Marketplace 上架、正式可用日期和区域清单尚无可核验出处。</p>"
+        ],
+        [
+          "<p>OCI, or Oracle Cloud Infrastructure, is Oracle&#x27;s public cloud. VAST&#x27;s OCI product page describes a native service deployment within an OCI tenancy and a global namespace spanning on-premises and OCI clusters. A tenancy is the boundary for organizing and managing OCI resources.</p>",
+          "<p>As of the stated date, the public sources reviewed confirm VAST&#x27;s deployment description. An Oracle announcement, Marketplace listing, general-availability date, and list of supported regions remain unverified.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

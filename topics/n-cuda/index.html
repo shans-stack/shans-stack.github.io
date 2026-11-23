@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CUDA：从主机发起到 GPU 并行执行 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 CUDA 核函数、线程网格、共享内存与流如何组织 GPU 执行。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-cuda.css?v=b78cd930">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-cuda">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-cuda">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="CUDA: From Host Launch to Parallel GPU Execution">CUDA：从主机发起到 GPU 并行执行</h1>
+        <p class="meta"><span data-en="5 steps · kernels, thread hierarchy, CUDA streams">5 步 · 核函数、线程层级、CUDA 流</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/cuda&quot;&gt;CUDA Developer Overview&lt;/a&gt;"><a href="https://developer.nvidia.com/cuda">CUDA 开发者页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html&quot;&gt;CUDA Programming Guide: Programming Model&lt;/a&gt;"><a href="https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html">CUDA 编程指南：编程模型</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/asynchronous-execution.html&quot;&gt;CUDA Programming Guide: Asynchronous Execution&lt;/a&gt;"><a href="https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/asynchronous-execution.html">CUDA 编程指南：异步执行</a></li>
+      <li data-en="The animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-cuda.js?v=c215fe00"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-cuda",
+ "ar": [
+  2.6470588235294117,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "主机发起 GPU 工作",
+    "The Host Launches GPU Work"
+   ],
+   "d": [
+    "CPU 上的主机程序发起工作，GPU 上的线程执行核函数。",
+    "A host program on the CPU launches work, and threads on the GPU execute the kernel."
+   ],
+   "b": [
+    [
+     "<p>CUDA 是 NVIDIA GPU 的并行计算平台和编程模型。CPU 侧称为主机（host），GPU 侧称为设备（device）。CUDA 核函数（kernel）是一次启动后由 GPU 线程并行执行的函数。</p>",
+     "<p>CUDA Toolkit 提供编译器、运行时库和开发工具。主机代码通过 CUDA 接口配置和发起工作，核函数在设备上处理数据。</p>"
+    ],
+    [
+     "<p>CUDA is NVIDIA’s parallel computing platform and programming model for NVIDIA GPUs. The CPU side is the host, and the GPU side is the device. A CUDA kernel is a function that GPU threads execute in parallel after a launch.</p>",
+     "<p>The CUDA Toolkit supplies the compiler, runtime library, and development tools. Host code uses CUDA interfaces to configure and launch work, and the kernel processes data on the device.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "一次启动包含一个线程网格",
+    "One Launch Defines a Thread Grid"
+   ],
+   "d": [
+    "网格由线程块组成，线程用块索引和块内索引定位数据。",
+    "A grid consists of thread blocks, and each thread uses its block index and its index within the block to locate data."
+   ],
+   "b": [
+    [
+     "<p>启动核函数时指定网格和线程块的尺寸。网格（grid）是这次启动的全部线程块，线程块（thread block）是一组可协作的线程。向量相加时，核函数可用这两级索引为每个线程分配一个元素。</p>",
+     "<p>两级索引把程序描述的数据划分与具体 GPU 上的执行资源分开。同一个网格可以由具备不同数量执行资源的 GPU 来调度。</p>"
+    ],
+    [
+     "<p>A kernel launch specifies the dimensions of the grid and its thread blocks. The grid includes all the blocks in that launch, and each thread block is a group of threads that can cooperate. In vector addition, the kernel can use the two indices to assign one element to each thread.</p>",
+     "<p>The two-level indexing scheme separates the program’s division of the data from the execution resources on a particular GPU. GPUs with different amounts of execution resources can schedule the same grid.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "GPU 按线程块分配执行资源",
+    "The GPU Schedules Work by Thread Block"
+   ],
+   "d": [
+    "每个线程块在一个流式多处理器上运行，块内线程以 warp 为单位调度。",
+    "Each block runs on one streaming multiprocessor, which schedules threads within the block in groups called warps."
+   ],
+   "b": [
+    [
+     "<p>流式多处理器（Streaming Multiprocessor，SM）是 GPU 内执行线程指令的硬件单元。GPU 将每个块安排到一个 SM，并将块内线程分成 warp。只要资源允许，一个 SM 可以同时驻留多个块。</p>",
+     "<p>常规线程块通常设计为可独立执行。GPU 可以按可用的寄存器、共享内存和线程容量分批安排这些块，图中的块与 SM 对应关系仅用于说明调度。</p>"
+    ],
+    [
+     "<p>A streaming multiprocessor (SM) is a GPU hardware unit that executes thread instructions. The GPU assigns each block to an SM and divides the block’s threads into warps. Multiple blocks can reside on one SM when resources permit.</p>",
+     "<p>Ordinary thread blocks are generally designed to run independently. The GPU can schedule them in waves based on register, shared memory, and thread capacity. The diagram illustrates one possible assignment of blocks to SMs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "线程块用共享内存复用数据",
+    "Threads in a Block Reuse Data Through Shared Memory"
+   ],
+   "d": [
+    "同一线程块的线程可把全局内存中的一块数据复制到共享内存，再共同读取。",
+    "Threads in a block can copy a tile from global memory into shared memory and read it cooperatively."
+   ],
+   "b": [
+    [
+     "<p>全局内存是 GPU 线程均可访问的设备内存。共享内存是块内线程可协作使用的片上存储。核函数可以分批把可复用的数据装入共享内存，再由同一块的多个线程读取。</p>",
+     "<p>线程可用块内同步确保协作装入完成。矩阵分块计算可借此复用同一批输入，减少对全局内存的重复读取。</p>"
+    ],
+    [
+     "<p>Global memory is device memory accessible to GPU threads. Shared memory is on-chip storage that threads in a block can use cooperatively. A kernel can stage reusable data in shared memory so multiple threads in the block can read it.</p>",
+     "<p>An in-block synchronization point can ensure the cooperative load is complete. Tiled matrix computation can reuse the staged input and avoid repeated reads from global memory.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "CUDA 流表达操作顺序",
+    "CUDA Streams Express Operation Order"
+   ],
+   "d": [
+    "同一个流内按提交顺序执行，独立流中的操作可在资源允许时重叠。",
+    "Operations in one stream run in submission order, and work in independent streams can overlap when resources permit."
+   ],
+   "b": [
+    [
+     "<p>CUDA 流（stream）是按顺序执行的操作序列。显式传输的程序可在同一个流内依次提交输入复制、核函数和输出复制，让 GPU 工作在输入可用时执行。</p>",
+     "<p>主机可以异步提交工作。跨流依赖可用 CUDA 事件表达，或在主机上等待指定流完成后再使用结果。</p>"
+    ],
+    [
+     "<p>A CUDA stream is a sequence of operations that execute in order. A program using explicit transfers can enqueue an input copy, a kernel, and an output copy in one stream so the kernel runs when its input is ready.</p>",
+     "<p>The host can submit work asynchronously. CUDA events can express dependencies between streams, and the host can wait for a stream to finish before using its results.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA DiffList 文件系统变更查询 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 DiffList 通过 REST API 分页返回两个文件系统状态之间的变更，无需执行全量文件系统扫描。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-diff.css?v=0052d41f">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-diff">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-diff">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA DiffList for Filesystem Changes">WEKA DiffList 文件系统变更查询</h1>
+        <p class="meta"><span data-en="5 steps · Snapshot Differences, REST API, Pagination">5 步 · 快照差异、REST API、分页</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snapshots#track-filesystem-changes-with-the-difflist-rest-api&quot;&gt;WEKA Docs · DiffList REST API&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snapshots#track-filesystem-changes-with-the-difflist-rest-api">WEKA 文档 · DiffList REST API</a></li>
+      <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-diff.js?v=35a42412"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "w-diff",
+  ar: [848/324, 370/430],
+  steps: [
+    {
+      t: ["选定要比较的两个状态", "Select Two States to Compare"],
+      d: ["DiffList 可以比较两个快照，也可以比较快照与活动文件系统。", "DiffList can compare two snapshots or compare a snapshot with the live filesystem."],
+      b: [["\u003cp>DiffList 是 WEKA 用于查询文件系统状态差异的 REST API，也就是通过 HTTP 调用的程序接口。调用方指定两个状态作为比较端点，服务据此列出变更。两个状态可按任一时间顺序提交。\u003c/p>"], ["\u003cp>DiffList is WEKA's REST API for querying differences between filesystem states. REST APIs expose operations over HTTP. The caller selects two states as comparison endpoints, and the service lists changes between them. The states can be submitted in either chronological order.\u003c/p>"]]
+    },
+    {
+      t: ["识别变化的文件", "Identify Changed Files"],
+      d: ["变更项区分新增、修改和删除，并可带路径等属性。", "Entries distinguish creations, modifications, and deletions and can include attributes such as paths."],
+      b: [["\u003cp>例如较早状态含 A 和 B，较晚状态含修改后的 A 和新增的 C，结果就会列出修改 A、删除 B、新增 C。结果项的操作类型（opType）结合文件或符号链接等对象类型和变更动作。符号链接是指向另一路径的文件系统对象。\u003c/p>"], ["\u003cp>For example, if an earlier state has A and B and a later state has a modified A and a new C, the result lists a modification to A, a deletion of B, and a creation of C. The operation type (opType) combines the kind of object, such as a file or symbolic link, with the change action. A symbolic link points to another filesystem path.\u003c/p>"]]
+    },
+    {
+      t: ["准备查询并取得令牌", "Prepare the Query and Obtain Tokens"],
+      d: ["prepare 请求提交比较端点，由 Data Services 容器返回处理令牌。", "A prepare request sends the endpoints to a Data Services container, which returns processing tokens."],
+      b: [["\u003cp>DiffList 服务运行在已配置且正在运行的 Data Services 容器（dataserv）上。调用方先发送 POST /snapshots/diff/prepare。该请求返回处理令牌，供后续请求标识要读取的结果。\u003c/p>"], ["\u003cp>The DiffList service runs in a configured, active Data Services container (dataserv). The caller first sends POST /snapshots/diff/prepare. The request returns processing tokens that identify the work whose results later requests retrieve.\u003c/p>"]]
+    },
+    {
+      t: ["分页读取结果", "Retrieve Results by Page"],
+      d: ["getResults 使用处理令牌获取分页结果，查询过程支持并行处理。", "getResults uses the processing tokens to return pages of changes, and the workflow supports parallel processing."],
+      b: [["\u003cp>POST /snapshots/diff/getResults 返回变更项列表的一部分。分页把较大的结果拆分为多次响应，调用方可以分批处理这些记录。准备和取结果分开的设计也支持并行处理。\u003c/p>"], ["\u003cp>POST /snapshots/diff/getResults retrieves part of the change list. Pagination breaks a large result set into separate responses so callers can process records in batches. The separate preparation and retrieval stages also support parallel processing.\u003c/p>"]]
+    },
+    {
+      t: ["将变更列表交给下游任务", "Use the Change List in Downstream Jobs"],
+      d: ["备份、审计或数据移动程序可以根据变更列表决定下一步操作。", "Backup, audit, and data-movement tools can use the change list to decide what to do next."],
+      b: [["\u003cp>DiffList 提供的是变更记录。增量备份程序可以用这些记录确定要读取的文件和要处理的删除项，再经备份程序的数据路径传输所需文件。审计程序可以利用变更记录了解两个状态之间的差异。\u003c/p>"], ["\u003cp>DiffList produces records of changes. For example, incremental backup software can use them to select files to read and deletions to handle, then transfer the required files over its data path. Audit tools can use the same records to review what changed between the two states.\u003c/p>"]]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

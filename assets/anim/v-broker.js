@@ -30,18 +30,12 @@
       return node;
     }
 
-    function box(wide, mobile, title, rows, brand) {
+    function box(wide, mobile, title, rows) {
       const [x, y, w] = narrow.matches ? mobile : wide;
       const h = 42 + rows.length * 34;
       const g = el('g', {}, boxes);
       el('rect', { x, y, width: w, height: h, rx: 4, class: 'v-broker-outline' }, g);
-      const heading = label(g, x + 14, y + 22, title, 'v-broker-heading');
-      if (brand) {
-        for (const [theme, file] of [['light', 'black'], ['dark', 'white']]) {
-          el('image', { x: x + 24 + heading.getComputedTextLength(), y: y + 16.5, width: 52, height: 11.03, class: 'v-broker-logo-' + theme,
-            href: window.SS.url('assets/brand/vast-wordmark-' + file + '.svg') }, g);
-        }
-      }
+      label(g, x + 14, y + 22, title, 'v-broker-heading');
       const lines = rows.map((value, i) => {
         const top = y + 42 + i * 34;
         const row = el('g', { class: 'v-broker-row' }, g);
@@ -109,7 +103,7 @@
         ]);
         const node = box([642, 111, 194], [71, 279, 218], 'CNode', [
           ['处理 Kafka 请求', 'Serve Kafka requests']
-        ], true);
+        ]);
 
         flow(link(producer, vip), 0.55, 1.65);
         flow(link(vip, node), 1.75, 2.85);
@@ -123,7 +117,7 @@
         const batch = box([58, 70, 237], [49, 22, 262], ['写入批次', 'Produce batches'], [
           ['事件 A', 'Event A'], ['事件 B', 'Event B'], ['事件 C', 'Event C']
         ]);
-        const topic = box([523, 70, 299], [32, 230, 296], ['主题表', 'Topic table'], ['—', '—', '—'], true);
+        const topic = box([523, 70, 299], [32, 230, 296], ['主题表', 'Topic table'], ['—', '—', '—']);
         const offsets = [
           ['分区 A · 偏移量 12', 'Partition A · offset 12'],
           ['分区 A · 偏移量 14', 'Partition A · offset 14'],
@@ -155,7 +149,7 @@
         ]);
         const topic = box([638, 96, 210], [57, 280, 246], ['主题表', 'Topic table'], [
           ['分区 A', 'Partition A'], ['分区 B', 'Partition B']
-        ], true);
+        ]);
 
         const submit = link(producer, tx, [['right', 59], ['left', 59]], [['bottom', 80], ['top', 80]]);
         const reply = link(tx, producer, [['left', 93], ['right', 93]], [['top', 166], ['bottom', 166]]);
@@ -181,7 +175,7 @@
         const topic = box([66, 78, 257], [38, 40, 284], ['主题表', 'Topic table'], [
           ['分区 A · 已提交事件', 'Partition A · committed'],
           ['分区 B · 已提交事件', 'Partition B · committed']
-        ], true);
+        ]);
         const group = box([510, 78, 304], [38, 224, 284], ['消费组', 'Consumer group'], [
           ['消费者 A · 读取分区 A', 'Consumer A · partition A'],
           ['消费者 B · 读取分区 B', 'Consumer B · partition B']
@@ -206,7 +200,7 @@
         const topic = box([93, 85, 260], [52, 32, 256], ['主题表 · 分区 A', 'Topic · partition A'], [
           ['事件 A · 10:00', 'Event A · 10:00'],
           ['事件 B · 10:05', 'Event B · 10:05']
-        ], true);
+        ]);
         const kafka = box([548, 20, 238], [10, 243, 161], ['Kafka 消费者', 'Kafka consumer'], [
           ['按分区顺序', 'Partition order'], '—', '—'
         ]);

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA Snap-to-Object · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Snap-to-Object 在对象存储中保存完整的可恢复快照，并可复用目标桶中已有的数据。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-s2o.css?v=462f4c5c">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-s2o">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-s2o">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA Snap-to-Object">WEKA Snap-to-Object</h1>
+        <p class="meta"><span data-en="5 steps · Object Storage, Backup, Disaster Recovery">5 步 · 对象存储、备份、容灾</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj&quot;&gt;WEKA Docs · Snap-to-Object&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj">WEKA 文档 · Snap-to-Object</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj-1&quot;&gt;WEKA Docs · Manage Snap-to-Object (CLI)&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj-1">WEKA 文档 · 管理 Snap-to-Object（CLI）</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj&quot;&gt;WEKA Docs · Manage Snap-to-Object (GUI)&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj/snap-to-obj">WEKA 文档 · 管理 Snap-to-Object（GUI）</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/data-storage&quot;&gt;WEKA Docs · Data Lifecycle&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/data-storage">WEKA 文档 · 数据生命周期</a></li>
+      <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-s2o.js?v=b44d308b"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "w-s2o",
+  ar: [848/324, 370/430],
+  steps: [
+    {
+      t: ["选定只读快照", "Select a Read-Only Snapshot"],
+      d: ["Snap-to-Object 以只读文件系统快照为源，保存该时间点的数据和元数据。", "Snap-to-Object starts with a read-only filesystem snapshot and preserves its data and metadata."],
+      b: [["\u003cp>只读快照提供固定的时间点状态。元数据描述文件名、目录及其组织方式，恢复时与文件内容一起重建该状态。Snap-to-Object 不上传可写快照，因为其内容仍可变化。\u003c/p>"], ["\u003cp>A read-only snapshot provides a fixed point-in-time state. Metadata describes names, directories, and how they are organized. Recovery uses it together with file contents to reconstruct that state. Snap-to-Object does not upload writable snapshots because their contents can still change.\u003c/p>"]]
+    },
+    {
+      t: ["将快照写入对象存储", "Store the Snapshot in Object Storage"],
+      d: ["WEKA 上传快照元数据和目标桶缺少的数据，可复用已在桶中的对象。", "WEKA uploads snapshot metadata and missing data and can reuse objects already in the target bucket."],
+      b: [["\u003cp>对象桶是对象存储中用于归集对象的容器。上传完成后，对象存储包含恢复该快照所需的数据和元数据。启用对象分层的文件系统可以复用已存在的对象，桶中已有的数据可以直接用于恢复点。\u003c/p>"], ["\u003cp>A bucket is a container for objects in an object store. After the upload, the object store holds the data and metadata needed to recover the snapshot. A filesystem with object tiering can reuse existing objects as part of that recovery point.\u003c/p>"]]
+    },
+    {
+      t: ["用定位符标识恢复点", "Identify the Recovery Point with a Locator"],
+      d: ["上传后的快照通过定位符与目标桶中的内容关联。", "The uploaded snapshot has a locator that identifies it in the target bucket."],
+      b: [["\u003cp>定位符（locator）是恢复流程使用的快照引用。创建恢复文件系统时，目标 WEKA 集群需要能访问相关对象存储，并通过定位符选中对应的恢复点。\u003c/p>"], ["\u003cp>A locator is the snapshot reference used during recovery. To create a recovered filesystem, the destination WEKA cluster needs access to the associated object store and uses the locator to select the recovery point.\u003c/p>"]]
+    },
+    {
+      t: ["从对象快照重建文件系统", "Recreate the Filesystem from an Object Snapshot"],
+      d: ["可在源集群或符合版本条件的另一套 WEKA 集群上从已上传快照重建文件系统。", "The uploaded snapshot can recreate a filesystem on the source cluster or another WEKA cluster running a compatible version."],
+      b: [["\u003cp>WEKA 支持在相同或更高版本的集群上恢复。仅在远端桶中保存的快照有单独的恢复流程。新建文件系统可能继续读取桶中继承的对象。原文件系统的配额不会随快照恢复到新文件系统。WEKA 不支持从恢复集群自身承载的对象存储恢复。\u003c/p>"], ["\u003cp>WEKA supports recovery on a cluster running the same or a later version. A snapshot available only in a remote bucket follows a separate recovery workflow. The new filesystem can continue to read inherited objects in the bucket. Source filesystem quotas are not carried over to the new filesystem. WEKA does not support restoring from an object store hosted inside the restoring cluster.\u003c/p>"]]
+    },
+    {
+      t: ["区分快照备份与日常分层", "Snapshot Backup and Routine Tiering"],
+      d: ["Snap-to-Object 保存指定恢复点，日常分层管理活动文件的数据放置。", "Snap-to-Object preserves a selected recovery point. Routine tiering manages where live file data resides."],
+      b: [["\u003cp>分层按策略在 SSD 与对象存储间管理数据，文件仍可通过同一命名空间访问。Snap-to-Object 则以选定的只读快照为单位保存可恢复状态。两种机制可以使用同一对象存储。\u003c/p>"], ["\u003cp>Tiering manages data placement across SSDs and object storage according to policy. The files remain accessible through the same namespace. Snap-to-Object preserves the recoverable state of a selected read-only snapshot. Both mechanisms can use the same object store.\u003c/p>"]]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

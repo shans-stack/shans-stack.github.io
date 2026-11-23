@@ -76,6 +76,12 @@ document.addEventListener('DOMContentLoaded',function(){
     if(/\/glossary\/(?:index\.html)?$/.test(location.pathname))a.setAttribute('aria-current','page');
     g.before(a);
   }
+  /* 统一顶栏：所有页面都是「总图 · 专题 · 术语表」，旧页面里的「线路图 / 知识点 / 讲稿」在这里换掉 */
+  (function(){var nav=document.querySelector('.nav');if(!nav)return;var as=[].slice.call(nav.querySelectorAll(':scope > a')).filter(function(x){return /index\.html#|^#/.test(x.getAttribute('href')||'')});
+    if(!as.length)return;var base=(as[0].getAttribute('href')||'').replace(/#.*$/,'');
+    var map=document.createElement('a');map.href=base+'#map';map.textContent='总图';map.dataset.en='Main Map';
+    var top=document.createElement('a');top.href=base+'#maps';top.textContent='专题';top.dataset.en='Topics';
+    as[0].before(map,top);as.forEach(function(x){x.remove()})})();
   /* 顶栏「专题」做成下拉菜单：列出各专题图，任何页面都能一步跳过去 */
   var tp=[].slice.call(document.querySelectorAll('.nav a')).filter(function(x){return /#maps$/.test(x.getAttribute('href')||'')})[0];
   if(tp&&SS.maps){
@@ -152,18 +158,26 @@ SS.brandMark=function(bid,cls){var b=SS.brands&&SS.brands[bid];if(!b)return '';
   return '<span class="lg lg-'+bid+(b.backing?' bk':'')+(b.dark?' dk':'')+(cls?' '+cls:'')+'" role="img" aria-label="'+SS.esc(b.name)+'">'+
     '<img class="lg-l" src="'+SS.url(b.src)+'" alt="">'+(b.dark?'<img class="lg-d" src="'+SS.url(b.dark)+'" alt="">':'')+'</span>'};
 /* 按线路列知识点（首页与专题图共用）：做完的站深色、可点，后面写步数；没做完的浅灰、不可点；不挂标签、不画分隔线。
-   换乘站只放进一条线：primary 表里指定的那条，没指定就放第一条。 */
-SS.renderCols=function(el,mapId,primary){if(!el)return;var L=SS.L,m=SS.mapById[mapId];primary=primary||{};
+   换乘站只放进一条线：地图的 place 表（data/maps.js）指定的那条；没指定时，停在产品线（硬件、软件产品）上的放产品线，否则放第一条。 */
+SS.renderCols=function(el,mapId,primary){if(!el)return;var L=SS.L,m=SS.mapById[mapId];primary=Object.assign({},m.place||{},primary||{});
   function item(id){var s=SS.stations[id];
     if(s.st==='live')return '<li><a href="'+SS.stationHref(id,mapId)+'"><span class="n">'+SS.esc(SS.title(id))+'</span>'+(s.steps?'<span class="m">'+s.steps+L(' 步',' steps')+'</span>':'')+'</a></li>';
     return '<li class="wip"><span class="n">'+SS.esc(SS.title(id))+'</span></li>'}
-  el.innerHTML=m.lines.map(function(lid){
-    var ids=SS.onLine(lid,mapId).filter(function(id){var ls=SS.linesIn(id,mapId);return ls.length===1||primary[id]===lid||(!primary[id]&&ls[0]===lid)});
+  /* 虚线支线不单列一节：它的站跟在分出它的那条线后面 */
+  function parentOf(lid){var b=SS.line[lid].branch;if(!b||!SS.stations[b])return null;return SS.linesIn(b,mapId)[0]}
+  el.innerHTML=m.lines.filter(function(lid){return !SS.line[lid].branch}).map(function(lid){
+    var kids=m.lines.filter(function(x){return parentOf(x)===lid});
+    var ids=SS.onLine(lid,mapId).filter(function(id){var ls=SS.linesIn(id,mapId);if(ls.length===1)return true;if(primary[id])return primary[id]===lid;var pl=ls.filter(function(x){return SS.line[x].prod});return (pl.length?pl[0]:ls[0])===lid});
+    kids.forEach(function(x){SS.onLine(x,mapId).forEach(function(id){if(ids.indexOf(id)<0)ids.push(id)})});
+    var body=ids.map(item).join('');
+    /* 这一节的站都归到了别的节时，列出它们并注明在哪一节，免得出现空节 */
+    if(!ids.length)body=SS.onLine(lid,mapId).map(function(id){var to=null;m.lines.forEach(function(x){if(!to&&x!==lid&&SS.onLine(x,mapId).indexOf(id)>=0)to=x});
+      return '<li class="see"><a href="#ln-'+(to||lid)+'"><span class="n">'+SS.esc(SS.title(id))+'</span><span class="m">'+L('见「','See “')+SS.esc(SS.lineName(to||lid))+L('」','”')+'</span></a></li>'}).join('');
     return '<div class="col" id="ln-'+lid+'" style="--lc:'+SS.lc(lid)+'"><h3>'+SS.sym(lid)+'<span>'+SS.esc(SS.lineName(lid))+'</span></h3><p class="d">'+SS.esc(SS.T(SS.line[lid].d))+'</p><ul>'+
-      ids.map(item).join('')+'</ul></div>'}).join('')};
+      body+'</ul></div>'}).join('')};
 /* 专题图页头的切换条：总图 · VAST · DDN · …，当前这张加粗不链接，点别的直接跳过去 */
 SS.renderMapSwitch=function(el,cur){if(!el)return;
-  el.innerHTML=SS.maps.filter(function(m){return m.st==='live'&&m.href}).map(function(m){var nm=m.kind==='main'?SS.L('总图','Main map'):SS.L(m.zh,m.en);
+  el.innerHTML=SS.maps.filter(function(m){return m.st==='live'&&m.href}).map(function(m){var nm=m.kind==='main'?SS.L('总图','Main Map'):SS.L(m.zh,m.en);
     return m.id===cur?'<b aria-current="page">'+SS.esc(nm)+'</b>':'<a href="'+SS.url(m.href)+(m.kind==='main'?'#map':'')+'">'+SS.esc(nm)+'</a>'}).join('<span class="sep" aria-hidden="true">·</span>')};
 SS.esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 SS.zhNum=function(n){var d='零一二三四五六七八九';if(n<10)return d[n];if(n<20)return '十'+(n%10?d[n%10]:'');return d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:'')};

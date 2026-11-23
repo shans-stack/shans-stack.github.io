@@ -1,0 +1,35 @@
+.b-nccltest svg{display:block;width:100%;height:auto;overflow:hidden;font:500 16.5px var(--f);fill:var(--ink);font-variant-numeric:tabular-nums}
+.b-nccltest text{dominant-baseline:middle}
+.b-nccltest .strong{font-weight:700}
+.b-nccltest .column,.b-nccltest .caption,.b-nccltest .secondary-text{fill:var(--ink2)}
+.b-nccltest .caption{fill:var(--ink3)}
+.b-nccltest .card{fill:var(--bg);stroke:var(--rule2)}
+.b-nccltest .row{fill:var(--bg)}
+.b-nccltest .good{fill:color-mix(in srgb,var(--l5) 17%,var(--surface))}
+.b-nccltest .warn{fill:color-mix(in srgb,var(--l1) 19%,var(--surface))}
+.b-nccltest .muted{fill:transparent;stroke:var(--rule2);stroke-dasharray:4 4}
+.b-nccltest .connection,.b-nccltest .rule,.b-nccltest .trace,.b-nccltest .cursor{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.b-nccltest .connection{stroke:var(--l4);stroke-width:1.8}
+.b-nccltest .connection.secondary{stroke:var(--l3)}
+.b-nccltest .rule{stroke:var(--rule2)}
+.b-nccltest .packet{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+.b-nccltest .packet.secondary{fill:var(--l3)}
+.b-nccltest .emphasis{fill:var(--lc,var(--l4))}
+.b-nccltest .warn-mark{fill:var(--l1);stroke:var(--ink);stroke-width:1}
+.b-nccltest .warn-text,.b-nccltest .result-text{font-weight:700}
+.b-nccltest .tile{stroke:var(--rule2)}
+.b-nccltest .tile-0{fill:color-mix(in srgb,var(--l4) 33%,var(--surface))}
+.b-nccltest .tile-1{fill:color-mix(in srgb,var(--l5) 34%,var(--surface))}
+.b-nccltest .tile-2{fill:color-mix(in srgb,var(--l3) 36%,var(--surface))}
+.b-nccltest .tile-3{fill:color-mix(in srgb,var(--l2) 30%,var(--surface))}
+.b-nccltest .trace{stroke:var(--l4);stroke-width:2}
+.b-nccltest .cursor{stroke:var(--ink2);stroke-dasharray:3 4}
+body.topic-b-nccltest .rel .src li a{overflow-wrap:anywhere}
+@media(max-width:640px){
+  body.topic-b-nccltest.present .stage{padding:12px}
+  body.topic-b-nccltest.present .stage .figbox{margin-block:6px}
+  body.topic-b-nccltest.present .stage .cap{margin-top:8px}
+  body.topic-b-nccltest.present .stage .desc{font-size:17px;line-height:1.45}
+  body.topic-b-nccltest.present .stage h2{font-size:25px}
+  .b-nccltest svg{font-size:14.5px}
+}

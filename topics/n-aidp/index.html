@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA AI Data Platform：从企业存储到检索上下文 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps trace how enterprise data is ingested, indexed, and retrieved for RAG and agents." content="分 5 步说明企业数据的接入、索引和检索如何为 RAG 与智能体提供上下文。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-aidp.css?v=5c3fab8a">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-aidp">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-aidp">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA AI Data Platform: From Enterprise Storage to Retrieval Context">NVIDIA AI Data Platform：从企业存储到检索上下文</h1>
+        <p class="meta"><span data-en="5 steps · enterprise storage, RAG, agents">5 步 · 企业存储、RAG、智能体</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/ai-data-platform/&quot;&gt;NVIDIA AI Data Platform Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/ai-data-platform/">NVIDIA AI Data Platform 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-and-storage-industry-leaders-unveil-new-class-of-enterprise-infrastructure-for-the-age-of-ai&quot;&gt;NVIDIA Reference Design Announcement (March 18, 2025)&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-and-storage-industry-leaders-unveil-new-class-of-enterprise-infrastructure-for-the-age-of-ai">NVIDIA 参考设计发布公告（2025-03-18）</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/build-ai-ready-knowledge-systems-using-5-essential-multimodal-rag-capabilities/&quot;&gt;NVIDIA Multimodal RAG Workflow&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/build-ai-ready-knowledge-systems-using-5-essential-multimodal-rag-capabilities/">NVIDIA 多模态 RAG 工作流</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-aidp.js?v=5ccbfdab"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-aidp",
+  "ar": [
+    2.549019607843137,
+    0.935064935064935
+  ],
+  "steps": [
+    {
+      "t": [
+        "企业存储接入 AI 数据路径",
+        "Connecting Enterprise Storage to the AI Data Path"
+      ],
+      "d": [
+        "将企业存储与 NVIDIA 加速计算、网络和 AI 软件结合的可定制参考设计，为 RAG 与智能体提供可检索的企业数据。",
+        "A customizable reference design combining enterprise storage with NVIDIA accelerated computing, networking, and AI software to make enterprise data searchable for RAG and agents."
+      ],
+      "b": [
+        [
+          "<p>NVIDIA AI Data Platform 是面向存储系统集成的参考设计。企业存储保存原始文件，加速基础设施承载数据准备和检索，AI 软件将检索结果交给应用。检索增强生成（RAG）在模型作答时查找外部资料，再把相关内容作为输入。</p>"
+        ],
+        [
+          "<p>NVIDIA AI Data Platform is a reference design for storage integration. Enterprise storage holds source files, accelerated infrastructure handles data preparation and retrieval, and AI software passes search results to applications. Retrieval-augmented generation (RAG) looks up external material and supplies relevant passages to a model as it answers.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "数据访问与处理各有接口",
+        "Separating Data Access from Processing"
+      ],
+      "d": [
+        "参考设计以网络连接存储和计算，BlueField DPU 可承担数据访问路径上的处理，GPU 执行提取、嵌入和检索。",
+        "The design connects storage and compute over a network. A BlueField DPU can process data in the access path while GPUs handle extraction, embedding, and retrieval."
+      ],
+      "b": [
+        [
+          "<p>一种公开配置使用 Spectrum-X 以太网连接企业存储和计算节点。数据处理器（DPU）是承担网络、存储和安全处理的可编程处理器。BlueField DPU 可加速存储访问，GPU 则在取得数据后运行数据准备与检索组件。这些部件在参考设计中是可选的实现组合。</p>"
+        ],
+        [
+          "<p>One published configuration uses Spectrum-X Ethernet to connect enterprise storage and compute nodes. A data processing unit (DPU) is a programmable processor for networking, storage, and security tasks. BlueField DPUs can accelerate storage access, while GPUs run data preparation and retrieval components once the data arrives. These components form one implementation of the reference design.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "原始文件生成可查索引",
+        "Building a Searchable Index from Source Files"
+      ],
+      "d": [
+        "摄取流程从文件提取内容并生成嵌入，将所得表示写入索引。",
+        "The ingestion pipeline extracts content from files, creates embeddings, and writes the resulting representations to an index."
+      ],
+      "b": [
+        [
+          "<p>摄取是把源数据转换成下游服务可用格式的过程。以 NeMo Retriever 的多模态流程为例，文档解析可提取文本、表格和图像，再把提取结果划分为检索单元。嵌入模型把这些单元转换为向量，即用于表示内容特征的数值序列，再由索引组织以供查询。</p>"
+        ],
+        [
+          "<p>Ingestion converts source data into formats downstream services can use. In a NeMo Retriever multimodal workflow, parsing extracts text, tables, and images from documents and divides the results into retrievable units. An embedding model converts those units into vectors, numerical sequences that represent content features, and an index organizes them for lookup.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "查询命中后生成回答",
+        "Generating an Answer from Retrieved Context"
+      ],
+      "d": [
+        "检索服务从索引选出候选内容，重排后连同问题交给生成模型。",
+        "The retrieval service finds candidates in the index, reranks them, and passes the selected context and question to the model."
+      ],
+      "b": [
+        [
+          "<p>语义检索可将问题转成向量，再寻找向量表示相近的内容。也可以结合关键词检索。重排模型对候选结果逐项估计与问题的相关性，选出的片段与问题一同送入模型推理服务，例如 NVIDIA NIM 封装的模型接口。</p>"
+        ],
+        [
+          "<p>Semantic search can embed a question and look for content with nearby vector representations. Keyword search can complement it. A reranker scores individual candidates for relevance to the question. The selected passages and the question go to a model endpoint, such as a model packaged as an NVIDIA NIM inference service.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "索引供多个应用查询",
+        "Serving Multiple Applications from an Index"
+      ],
+      "d": [
+        "数据变更进入持续索引流程，问答和研究智能体可以分别发起检索。",
+        "Data changes feed continuous indexing, and question-answering and research agents can issue separate retrieval requests."
+      ],
+      "b": [
+        [
+          "<p>参考设计把索引更新放在数据准备路径中，把按请求检索放在应用路径中。新增或变更内容经摄取后进入索引。问答应用和研究智能体分别发起查询，使用返回的相关资料生成各自响应。</p>"
+        ],
+        [
+          "<p>The reference design places index updates in the data preparation path and on-demand searches in the application path. New and changed content passes through ingestion into the index. A question-answering application and a research agent can issue separate searches and use the relevant material in their own responses.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

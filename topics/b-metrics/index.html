@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>吞吐、IOPS 与延迟 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明吞吐、IOPS 与时延的计量边界、关系和尾部解读。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-metrics.css?v=bb32abe7">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-metrics">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-metrics">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Throughput, IOPS, and Latency">吞吐、IOPS 与延迟</h1>
+        <p class="meta"><span data-en="5 steps · Storage, Metrics, Percentiles">5 步 · 存储、指标、分位数</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://fio.readthedocs.io/en/latest/fio_doc.html#interpreting-the-output&quot;&gt;Interpreting fio Output&lt;/a&gt;"><a href="https://fio.readthedocs.io/en/latest/fio_doc.html#interpreting-the-output">fio 输出解读</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/axboe/fio/releases/tag/fio-3.43&quot;&gt;fio 3.43 Release&lt;/a&gt;"><a href="https://github.com/axboe/fio/releases/tag/fio-3.43">fio 3.43 发布记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-metrics.js?v=6d2a0969"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-metrics",
+ "ar": [
+  2.6,
+  1.0588235294117647
+ ],
+ "steps": [
+  {
+   "t": [
+    "三种度量，共用一组完成记录",
+    "Three Measures from One Completion Log"
+   ],
+   "d": [
+    "用完成记录的字节数、操作数和起止时间，分别计算速率和时延。",
+    "Completion records provide byte counts, operation counts, and timestamps for calculating rates and latencies."
+   ],
+   "b": [
+    [
+     "<p>存储 I/O 是向文件或设备发出的读写等输入输出操作。一次测试先确定测量边界，例如从客户端发出请求到客户端收到完成通知。每条完成记录可包含方向、字节数和时间戳；同一窗口里的记录可以产生吞吐和 IOPS，而单条请求的起止时间给出该请求的时延。</p>"
+    ],
+    [
+     "<p>Storage I/O comprises input and output operations, such as reads and writes against a file or device. A run defines a measurement boundary, such as the client issuing a request and receiving its completion. Each completion record can include direction, byte count, and timestamps. Records in the same window yield throughput and IOPS, while the start and end timestamps of an individual request yield its latency.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "每秒传输多少数据",
+    "Bytes Transferred per Second"
+   ],
+   "d": [
+    "吞吐是窗口内完成的数据量除以窗口时长。",
+    "Throughput is the amount of data completed in the window divided by its duration."
+   ],
+   "b": [
+    [
+     "<p>存储报告常把字节吞吐记为带宽（BW）。MB/s 使用每单位 1,000,000 字节，MiB/s 使用 1,048,576 字节。报告中的读、写或读写合计，以及客户端与设备层的计数范围，都需要明确；字节单位换算只能统一标尺。</p>"
+    ],
+    [
+     "<p>Storage reports often label byte throughput as bandwidth (BW). MB/s uses 1,000,000 bytes per unit and MiB/s uses 1,048,576. A report identifies whether it covers reads, writes, or both, and whether its counters are client-side or device-side. Unit conversion aligns the scale only.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "每秒完成多少次 I/O",
+    "I/O Operations Completed per Second"
+   ],
+   "d": [
+    "同一测量窗口里，吞吐等于 IOPS 乘以每次完成操作的平均字节数。",
+    "Within the same measurement window, throughput equals IOPS times the average byte count per completed operation."
+   ],
+   "b": [
+    [
+     "<p>IOPS（每秒 I/O 操作数）以完成次数为分子。在同一层、同一方向和同一窗口内，大块与小块 I/O 即使每秒完成次数相同，也会产生不同的字节吞吐。块大小混合时，换算使用完成操作按次数加权的平均字节数。</p>"
+    ],
+    [
+     "<p>IOPS, or I/O operations per second, uses the completion count as its numerator. Large and small operations can have identical IOPS and different byte throughput when measured at the same layer, in the same direction, over the same window. With mixed sizes, the conversion uses the average byte count across completed operations.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从提交到完成的时间",
+    "Time from Submission to Completion"
+   ],
+   "d": [
+    "单次时延是两个时间点的差；并行操作可以在时间轴上重叠。",
+    "Per-operation latency is the difference between two timestamps, and concurrent operations can overlap on the timeline."
+   ],
+   "b": [
+    [
+     "<p>时延要注明起算点。fio 的总时延包含提交和完成两段；其完成时延只覆盖提交后的区间。多条请求可以同时在途，每秒完成量取决于整个窗口内完成了多少条请求，平均时延的倒数通常无法换算成并发测试的总 IOPS。</p>"
+    ],
+    [
+     "<p>Latency requires a defined starting point. fio's total latency includes submission and completion time, while completion latency covers the post-submission interval. Multiple requests can be in flight together. Aggregate IOPS counts all completions in the window, so the reciprocal of mean latency generally cannot determine aggregate IOPS in a concurrent test.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "均值与尾部",
+    "Mean and Tail Latency"
+   ],
+   "d": [
+    "p99 表示约 99% 的观测时延不超过该值。",
+    "p99 is a value at or below which approximately 99% of observed latencies fall."
+   ],
+   "b": [
+    [
+     "<p>少量慢请求可和较低的均值同时出现。尾部时延描述分布中较慢的部分；p99 是第 99 百分位，最大值才是单次最慢观测。比较两份报告需要使用相同的起止定义和分位数，并查看同一负载窗口内的吞吐、IOPS 与时延。</p>",
+     "<p>截至 2026-11-23，指标示例参考 fio 3.43 官方文档；该工具版本发布于 2026-09-23。</p>"
+    ],
+    [
+     "<p>A low mean can coexist with a small number of slow requests. Tail latency describes the slow end of the distribution. p99 is the 99th percentile and the maximum is the slowest single observation. Comparing reports requires matching timing boundaries and percentiles, then reading throughput, IOPS, and latency for the same workload window.</p>",
+     "<p>As of November 23, 2026, the metric examples use the official fio 3.43 documentation. That tool version was released on September 23, 2026.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

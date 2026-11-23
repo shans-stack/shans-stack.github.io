@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-gns.css，全部限定在 .ssa-v-gns 容器之内。
-   VAST 字标引用 assets/brand/vast-wordmark-black.svg 与 vast-wordmark-white.svg 原件（浅色、深色各一）。 */
+   样式在 assets/anim/v-gns.css，全部限定在 .ssa-v-gns 容器之内。 */
 (function(){
 var ID='v-gns';
 var EN={"源站集群":"Origin cluster","一套集群":"One cluster","卫星站 1":"Satellite 1","卫星站 2":"Satellite 2","客户端":"Client","本地客户端":"Local client","远处客户端":"Remote client","广域网":"WAN","已读完":"Reads done","示意，不代表实测数字":"Schematic, not measured",
@@ -18,7 +17,7 @@ var EN={"源站集群":"Origin cluster","一套集群":"One cluster","卫星站 
 var ENM={"呈现全局文件夹，按需取数":"Global folder, fetched on demand","源站收回卫星站的读租约":"Origin revokes read leases","卫星站 2 再读：先核对，再交数据":"Satellite 2: check, then serve","源站处理写请求":"Origin handles the write","没缓存：去源站取":"Miss: fetch from origin","缓存命中，本地返回":"Hit: served locally"};
 var ARIA="全局命名空间：源站与卫星站、读缓存、定期同步的问题、读写租约与写入转发";
 function makeScene(H){
-const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade,vlabel}=H;
+const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade}=H;
 const L_=()=>H.L(),E_=()=>H.E();
 const SCENE={
  still:[5,3,6,6.5,8.8,4],
@@ -41,17 +40,17 @@ const SCENE={
  build(L,E){
   const f=L.f,M=L.mobile;
   /* 集群框：名字 + 文件夹格子 */
-  function cluster(g,r,name,vast,full){rect(r,'box',g,12);if(vast)vlabel(r.x+14,r.y+22,name,f.sm,'lbl b7',g,M?11:13);else tx(r.x+14,r.y+22,name,f.sm,'lbl b7','start',g);
+  function cluster(g,r,name,full){rect(r,'box',g,12);tx(r.x+14,r.y+22,name,f.sm,'lbl b7','start',g);
    const cells=[];const cw=M?24:24,x0=r.x+14,y0=r.y+48;for(let i=0;i<6;i++)cells.push(el('rect',{x:x0+i*(cw+6),y:y0,width:cw,height:24,rx:3,class:'cel'+(full?' s':'')},g));
    const tag=tx(r.x+14,r.y+r.h-18,'',f.sm,'st','start',g);return {cells,tag,r}}
   function client(g,r,name){rect(r,'box',g,10);return tx(C(r).x,C(r).y,name||'客户端',f.sm,'lbl','middle',g)}
   /* 第 1 步：一套集群，远处客户端隔着广域网 */
-  {const g=grp('1');E.o1=cluster(g,L.O,'一套集群',true,true);line(L.cl.O,'',g);client(g,L.CO,M?'客户端':'本地客户端');
+  {const g=grp('1');E.o1=cluster(g,L.O,'一套集群',true);line(L.cl.O,'',g);client(g,L.CO,M?'客户端':'本地客户端');
    line(L.wan.RC,'dash',g);client(g,L.RC,'远处客户端');tx(L.wan.lab.x,L.wan.lab.y,'广域网',f.sm,'ink3-t','start',g);
    E.n1=[tx(L.CO.x,L.CO.y+L.CO.h+22,'',f.sm,'st sage-t','start',g),tx(M?L.RC.x:L.RC.x,L.RC.y+L.RC.h+22,'',f.sm,'st rose-t','start',g)];
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
   /* 第 2、3、5、6 步：源站与两个卫星站 */
-  {const g=grp('2 3 5 6');E.O=cluster(g,L.O,'源站集群',true,true);E.S1=cluster(g,L.S1,'卫星站 1',false,false);E.S2=cluster(g,L.S2,'卫星站 2',false,false);
+  {const g=grp('2 3 5 6');E.O=cluster(g,L.O,'源站集群',true);E.S1=cluster(g,L.S1,'卫星站 1',false);E.S2=cluster(g,L.S2,'卫星站 2',false);
    line(L.wan.O,'dash',g);line(L.wan.S1,'dash',g);line(L.wan.S2,'dash',g);tx(L.wan.lab.x,L.wan.lab.y,'广域网',f.sm,'ink3-t','start',g);
    line(L.cl.S1,'',g);line(L.cl.S2,'',g);client(g,L.C1);client(g,L.C2);
    E.full=tx(L.O.x+L.O.w-14,L.O.y+L.O.h-18,'保存全量',f.sm,'st slate-t','end',g);
@@ -150,7 +149,6 @@ return SCENE;
 
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-'+ID);host.innerHTML='';
@@ -189,17 +187,7 @@ function run(p,pts,t,t0,dur,opt){opt=opt||{};const u=(t-t0)/dur;
   if(u<=1){put(p,along(pts,sm(u)),1);return u}
   put(p,pts[pts.length-1],opt.post==null?1:opt.post);return 1.5}
 const loopFade=(u,per)=>u>per-0.45?clamp((per-u)/0.45,0,1):u<0.35?clamp(u/0.35,0,1):1;
-/* VAST 字标：引用 assets/brand 原件，浅色用黑字版、深色用白字版（CSS 切换）。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;
-  const g=el('g',{class:'vwm'},p);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-black.svg'),class:'vwm-l','aria-label':'VAST'},g);
-  el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,href:asset('assets/brand/vast-wordmark-white.svg'),class:'vwm-d','aria-hidden':'true'},g);
-  return g}
-/* 部件名 + VAST 字标排成一行：名字右端在 x（anchor end），字标紧跟其后；返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h,anchor){const t=tx(x,y,s,fs,cls,anchor||'start',p);let w=0;try{w=t.getComputedTextLength()}catch(e){}
-  if(!w)w=estW(T(s),fs);const a=anchor||'start';const x1=a==='start'?x+w:a==='middle'?x+w/2:x;const m=vmark(x1+Math.round(fs*0.4),y,h||Math.round(fs*0.72),p,'start');return {t,m}}
-function estW(s,fs){let w=0;for(const ch of s)w+=/[\u2e80-\uffff]/.test(ch)?fs:fs*0.56;return w}
-const H={estW,el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,vmark,vlabel,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
+const H={el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,plen,along,rev,pk,dot,put,hide,run,loopFade,T,alt:()=>tgl,E:()=>E,S:()=>S,L:()=>L};
 const SCENE=makeScene(H);
 /* ---------- 引擎 ---------- */
 function applyVis(){

@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下更紧的排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-s3.css，全部限定在 .ssa-v-s3 容器之内。
-   VAST 字标引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字，由 CSS 切换），不内嵌。 */
+   样式在 assets/anim/v-s3.css，全部限定在 .ssa-v-s3 容器之内。 */
 (function(){
 var ID='v-s3',NSTEPS=5;
 var EN={"NFS 客户端":"NFS client","SMB 客户端":"SMB client","S3 客户端":"S3 client","Element Store":"Element Store","NVMe-oF":"NVMe-oF",
@@ -23,7 +22,7 @@ var EN={"NFS 客户端":"NFS client","SMB 客户端":"SMB client","S3 客户端"
 var ENM={"PUT 存对象，GET 取对象：桶加键":"PUT stores, GET fetches: bucket plus key","HTTP / HTTPS · 签名 v2 / v4":"HTTP(S) · signatures v2 / v4","CNode 处理发往 VIP 的请求":"CNodes handle requests sent to VIPs","多协议 view 使用共享命名空间":"Multiprotocol views share a namespace","component 与 src/component 是同一个元素":"component = src/component: one element","一个 view 可以同时开 NFS、SMB、S3":"One view, NFS + SMB + S3","NFS 写文件，S3 按相对路径读取":"NFS writes; S3 reads by relative path","键首、键尾的 / 或键中的 //：仅 S3":"Leading, trailing or repeated /: S3 only","flavor = NFS：S3 请求也按权限位检查":"NFS flavor: S3 checked against mode bits","S3 Native：优先检查身份和桶策略":"S3 Native: identity and bucket policies first","权限未修改":"Ignored","文件：/dev":"Files: /dev","S3 桶：dev":"Bucket: dev","身份策略 · 桶策略 · ACL":"Identity · bucket policies · ACL"};
 var ARIA="VAST 上的 S3：CNode 直接处理 S3 请求，同一份数据既是目录里的文件，也是桶里的对象";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
-var NS='http://www.w3.org/2000/svg',ROOT=window.SS_ROOT||'',CLS='ssa-'+ID;
+var NS='http://www.w3.org/2000/svg',CLS='ssa-'+ID;
 function mount(host,opts){
 opts=opts||{};
 host.classList.add(CLS);host.innerHTML='';
@@ -57,11 +56,6 @@ function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a=
 function hide(o){put(o,-99,-99,0)}
 /* 沿路线走：t 在 [t0, t0+dur] 内走完，之后 fo 秒淡出；返回进度（<0 未出发，0–1 在路上，>1 已到） */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){hide(o);return t<t0?-1:2}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,sm(u)*0.15+u*0.85),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
-/* 厂商 logo：VAST 字标引用 assets/brand 里的原件（浅色用黑字版、深色用白字版，由 CSS 切换）。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'vwm'},p);
- [['black','wm-l'],['white','wm-d']].forEach(([c,k])=>{const im=el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:k},g);im.setAttribute('href',ROOT+'assets/brand/vast-wordmark-'+c+'.svg')});return g}
-/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
-function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.6*T(s).length;const w=h*66/14,gap=Math.round(fs*0.45),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
 /* 小牌子（可整体移动）：中心 (x,y)，宽 w 高 h */
 function chip(x,y,w,h,s,fs,cls,p){const g=el('g',{class:'chip '+(cls||'')},p);el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:6},g);const t=tx(0,0,s,fs,'','middle',g);g.setAttribute('transform',`translate(${x} ${y})`);return {g,t,x,y,w,h,set(s2){t.textContent=T(s2)},mv(nx,ny){this.x=nx;this.y=ny;g.setAttribute('transform',`translate(${nx.toFixed(1)} ${ny.toFixed(1)})`)}}}
 function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
@@ -73,12 +67,12 @@ function protoLayout(mobile){
   cl:{xs:[170,400,630],y:16,w:178,h:60},side:{x:792,y:16,w:146,h:60},busY:102,
   cn:{xs:[200,480,760],y:124,w:220,h:106},chipW:68,chipH:28,fabY:256,fabX:[70,900],
   band:{x:60,y:276,w:840,h:172},bl:{x:84,y:312,w:250,h:120},br:{x:352,y:312,w:526,h:120},fileW:132,slotX:120,slotW:220,
-  cap:{x:480,y:478},note:{x:480,y:506},logoH:14,lbl1:72};
+  cap:{x:480,y:478},note:{x:480,y:506}};
  return {W:480,H:520,mobile:true,f:{lbl:19,sm:17,cap:17,chip:17,big:28},pw:18,ph:14,dr:6,sp:230,
   cl:{xs:[70,194,318],y:10,w:114,h:60},side:{x:388,y:10,w:84,h:60},busY:92,
   cn:{xs:[85,240,395],y:112,w:146,h:106},chipW:62,chipH:28,fabY:240,fabX:[12,468],
   band:{x:12,y:262,w:456,h:170},bl:{x:24,y:300,w:152,h:120},br:{x:188,y:300,w:268,h:120},fileW:104,slotX:84,slotW:172,
-  cap:{x:240,y:460},note:{x:240,y:504},logoH:11,lbl1:68};
+  cap:{x:240,y:460},note:{x:240,y:504}};
 }
 function protoBuild(o){
  const f=L.f,M=L.mobile,cl=L.cl,cn=L.cn;
@@ -99,7 +93,7 @@ function protoBuild(o){
  const r1=cn.y+58,r2=cn.y+88,off=L.chipW/2+4;
  E.cn=cn.xs.map((x,k)=>{const r={x:x-cn.w/2,y:cn.y,w:cn.w,h:cn.h};const gg=el('g',{},g);
   line(P(x,L.busY),P(x,cn.y),'',gg);line(P(x,cn.y+cn.h),P(x,L.fabY),'',gg);const b=box(r,gg);
-  if(k===0)vpair(x,cn.y+24,'CNode 1',f.lbl,'lbl b7',gg,L.logoH,L.lbl1);else tx(x,cn.y+24,'CNode '+(k+1),f.lbl,'lbl b7','middle',gg);
+  tx(x,cn.y+24,'CNode '+(k+1),f.lbl,'lbl b7','middle',gg);
   return {r,x,b,g:gg,slots:[P(x-off,r1),P(x+off,r1),P(x,r2)]}});
  E.chips=[];for(let j=0;j<6;j++){const k=j%3,s=E.cn[k].slots[j<3?0:1];const c=chip(s.x,s.y,L.chipW,L.chipH,'地址 '+(j+1),f.chip,'',E.cn[k].g);c.home=s;c.k=k;E.chips.push(c)}
  /* 叉号 */

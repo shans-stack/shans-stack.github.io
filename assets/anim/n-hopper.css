@@ -1,0 +1,30 @@
+.n-hopper-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:17px}
+.n-hopper-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-hopper-figure .n-hopper-start{text-anchor:start}
+.n-hopper-figure .n-hopper-heading{font-size:21px;font-weight:650}
+.n-hopper-figure .n-hopper-small,.n-hopper-figure .n-hopper-note{fill:var(--ink2);font-size:16px}
+.n-hopper-figure .n-hopper-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-hopper-figure .n-hopper-quiet{stroke-dasharray:4 3}
+.n-hopper-figure .n-hopper-boundary{fill:none;stroke:var(--rule2);stroke-dasharray:5 4}
+.n-hopper-figure .n-hopper-wire,.n-hopper-figure .n-hopper-callout{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n-hopper-figure .n-hopper-directed{stroke:var(--l4)}
+.n-hopper-figure .n-hopper-secondary-wire{stroke-dasharray:3 4}
+.n-hopper-figure .n-hopper-callout{stroke:var(--rule2);stroke-width:1.1}
+.n-hopper-figure .n-hopper-packet{fill:var(--l4);stroke:var(--surface)}
+.n-hopper-figure .n-hopper-origin{fill:var(--bg);stroke:var(--l4);stroke-width:1.5}
+.n-hopper-figure .n-hopper-tray{fill:var(--rule);stroke:var(--rule2);stroke-width:.8}
+.n-hopper-figure .n-hopper-utility{fill:var(--blk)}
+.n-hopper-figure .n-hopper-coolant{fill:none;stroke:var(--l6);stroke-width:2}
+.n-hopper-figure .n-hopper-switch-tray{fill:color-mix(in srgb,var(--l4) 23%,var(--bg));stroke:var(--l4)}
+.n-hopper-figure .n-hopper-active{fill:color-mix(in srgb,var(--l4) 19%,var(--bg));stroke:var(--l4);stroke-width:1.9}
+@media(max-width:640px){
+  .n-hopper-figure svg{font-size:16px}
+  .n-hopper-figure .n-hopper-heading{font-size:18px}
+  .n-hopper-figure .n-hopper-small,.n-hopper-figure .n-hopper-note{font-size:15px}
+  body.topic-n-hopper.present .stage .figbox,body.topic-n-hopper.present .stage .cap{margin:0}
+  body.topic-n-hopper.present .stage h2{font-size:24px}
+  body.topic-n-hopper.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-hopper .mhost{aspect-ratio:var(--ar)}
+}

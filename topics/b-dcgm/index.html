@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DCGM 诊断：GPU 健康与压力检查 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明用分级检查和压力插件验证 NVIDIA GPU 的软件环境、显存和互联状态。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-dcgm.css?v=1420a893">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-dcgm">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-dcgm">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DCGM Diagnostics: GPU Health and Stress Checks">DCGM 诊断：GPU 健康与压力检查</h1>
+        <p class="meta"><span data-en="6 steps · GPU Health, Active Diagnostics, Plugin Coverage">6 步 · GPU 健康、主动诊断、插件覆盖</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html&quot;&gt;NVIDIA DCGM Diagnostics, Run Levels, and Plugins&lt;/a&gt;"><a href="https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html">NVIDIA DCGM 主动诊断、运行级别与插件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/datacenter/dcgm/latest/release-notes/changelog.html&quot;&gt;NVIDIA DCGM Release Notes&lt;/a&gt;"><a href="https://docs.nvidia.com/datacenter/dcgm/latest/release-notes/changelog.html">NVIDIA DCGM 发布说明</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/&quot;&gt;NVIDIA Ubuntu Package Index&lt;/a&gt;"><a href="https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/">NVIDIA Ubuntu 软件包索引</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-dcgm.js?v=83a1ca37"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-dcgm",
+ "ar": [
+  2.360248447204969,
+  0.8571428571428571
+ ],
+ "steps": [
+  {
+   "t": [
+    "从监控到主动诊断",
+    "From Monitoring to Active Diagnostics"
+   ],
+   "d": [
+    "DCGM 诊断在指定 NVIDIA GPU 上执行检查，有些插件会主动施加负载。",
+    "DCGM Diagnostics runs checks on selected NVIDIA GPUs, and some plugins apply load."
+   ],
+   "b": [
+    [
+     "<p>DCGM 是 NVIDIA Data Center GPU Manager。监控读取已有状态，主动诊断执行软件检查或运行插件来验证特定 GPU 子系统。插件的执行条件随硬件、权限和测试级别而变，运行级别也界定结果覆盖。</p>"
+    ],
+    [
+     "<p>DCGM is NVIDIA Data Center GPU Manager. Monitoring reads available state, while active diagnostics run software checks or plugins against specific GPU subsystems. Hardware, permissions, and run level determine the checks that can run and what the result covers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "选择运行级别",
+    "Selecting a Run Level"
+   ],
+   "d": [
+    "短级别主要检查软件环境，更深级别会加入链路、显存和压力测试。",
+    "The short level focuses on software checks. Deeper levels add link, memory, and stress tests."
+   ],
+   "b": [
+    [
+     "<p>dcgmi diag -r 选择运行级别或指定插件名。r1 以软件检查为主，r2 加入 PCIe/NVLink 和显存等检查，r3、r4 增加面向压力或特定子系统的测试。各级实际覆盖取决于支持的插件与设备。</p>"
+    ],
+    [
+     "<p>dcgmi diag -r accepts a run level or selected plugin names. r1 focuses on software checks. r2 adds PCIe/NVLink and memory checks. r3 and r4 add further stress or subsystem tests. Actual coverage depends on supported plugins and hardware.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "确定设备与运行条件",
+    "Selecting Devices and Run Conditions"
+   ],
+   "d": [
+    "诊断运行记录标明目标 GPU、运行级别、插件参数和当时的负载状态。",
+    "The run record names the target GPUs, diagnostic level, plugin settings, and workload state."
+   ],
+   "b": [
+    [
+     "<p>dcgmi diag 可面向选定 GPU 或 GPU 组执行。要求独占或施加压力的诊断安排在资源空闲的维护窗口。特定插件接受额外参数，例如测试持续时间，比较前后两次诊断时需要保留活动负载和参数上下文。</p>"
+    ],
+    [
+     "<p>dcgmi diag can target selected GPUs or a GPU group. Diagnostics that require exclusive access or apply stress belong in a maintenance window with the resources idle. Some plugins accept extra settings such as test duration. Workload state and settings give context to comparisons.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "插件怎样产生证据",
+    "How Plugins Produce Evidence"
+   ],
+   "d": [
+    "显存、互联和压力插件各观察自己的错误、吞吐或运行状态。",
+    "Memory, interconnect, and stress plugins collect distinct evidence."
+   ],
+   "b": [
+    [
+     "<p>显存检查针对所选 GPU 的显存。PCIe/NVLink 插件可检查传输表现和相关错误。压力插件施加受控工作并观察是否满足其运行条件。不同插件的证据用于缩小故障范围。</p>"
+    ],
+    [
+     "<p>Memory checks target GPU memory. The PCIe/NVLink plugin can check transfer behavior and related errors. Stress plugins apply controlled work and check their own operating criteria. These checks help narrow down the fault domain.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "读结论也读覆盖",
+    "Reading Status and Coverage"
+   ],
+   "d": [
+    "通过、失败、跳过和告警需要与 GPU 实体、检查项目和日志对应。",
+    "Pass, fail, skip, and warning outcomes belong with the GPU entity, check, and log."
+   ],
+   "b": [
+    [
+     "<p>失败可定位到特定设备和插件，再结合告警、错误代码和日志追查原因。跳过项目应视为该次运行缺少覆盖。通过代表该项检查在本次配置和运行窗口内通过，整机与跨节点能力由进一步诊断和应用测试验证。</p>"
+    ],
+    [
+     "<p>A failure can be traced to a device and plugin, then investigated using warnings, error codes, and logs. A skipped check leaves a coverage gap for the run. A pass applies to that check, configuration, and time window. Additional diagnostics and application tests cover the full node and multi-node behavior.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "诊断结果的版本上下文",
+    "Version Context for Diagnostic Results"
+   ],
+   "d": [
+    "保留 DCGM、驱动、GPU 与插件配置，才能解释测试覆盖的变化。",
+    "DCGM, driver, GPU, and plugin settings explain differences in test coverage."
+   ],
+   "b": [
+    [
+     "<p>截至 2026-11-23，NVIDIA 最新公开发布说明列出 DCGM 4.8.0。官方 Ubuntu 软件包索引记录 4.8.0 软件包时间为 2026-11-07。同名运行级别的插件、参数和设备支持可能随版本变化。</p>"
+    ],
+    [
+     "<p>As of 2026-11-23, NVIDIA’s current public release notes list DCGM 4.8.0. The official Ubuntu package index timestamps the 4.8.0 package on 2026-11-07. A run level can change its plugins, settings, or supported devices across versions.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

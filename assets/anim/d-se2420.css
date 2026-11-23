@@ -1,0 +1,21 @@
+.d-se2420-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:20px}
+.d-se2420-figure text{fill:var(--ink);dominant-baseline:central}
+.d-se2420-figure .name{font-weight:700}
+.d-se2420-figure .muted{fill:var(--ink2)}
+.d-se2420-figure .body{fill:var(--surface);stroke:var(--rule2);stroke-width:1.5}
+.d-se2420-figure .chassis{fill:none;stroke:var(--rule2);stroke-width:1.5}
+.d-se2420-figure .focus .body{stroke:var(--l4);stroke-width:2}
+.d-se2420-figure .accent .body{stroke:var(--l5);stroke-width:2}
+.d-se2420-figure .glyph{fill:none;stroke:var(--l4);stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.d-se2420-figure .wire{fill:none;stroke:var(--l5);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.d-se2420-figure .signal .wire{stroke:var(--l4);stroke-dasharray:5 4}
+.d-se2420-figure .signal path:not(:first-child){stroke-dasharray:none}
+.d-se2420-figure .idle .wire{stroke:var(--rule2)}
+.d-se2420-figure .down .wire{stroke:var(--l1);stroke-dasharray:5 5}
+.d-se2420-figure .packet{fill:var(--l5);stroke:var(--surface);stroke-width:1}
+.d-se2420-figure .packet.signal{fill:var(--l4)}
+@media (max-width:640px){
+  .d-se2420-figure svg{font-size:19px}
+  .stage .figbox:has(.d-se2420-figure){margin-block:8px}
+}
+[data-station="d-se2420"] .src a{display:inline;padding:0;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:.2em}

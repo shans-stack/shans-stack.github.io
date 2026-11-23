@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vdbench：块设备与文件系统压测 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明Vdbench 的块设备与文件系统参数、负载扫描和报告口径。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-vdbench.css?v=f2bc0c3a">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-vdbench">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-vdbench">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Vdbench: Block and File System Benchmarking">Vdbench：块设备与文件系统压测</h1>
+        <p class="meta"><span data-en="5 steps · Block Devices, File Systems, Rate Sweeps">5 步 · 块设备、文件系统、速率扫描</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.oracle.com/downloads/server-storage/vdbench-downloads.html&quot;&gt;Oracle Vdbench Downloads and Versions&lt;/a&gt;"><a href="https://www.oracle.com/downloads/server-storage/vdbench-downloads.html">Oracle Vdbench 下载与版本</a></li>
+      <li data-en="&lt;a href=&quot;https://forums.oracle.com/ords/apexds/post/vdbench-50407-is-now-available-9143&quot;&gt;Oracle 5.04.07 Availability Announcement and Release Notes&lt;/a&gt;"><a href="https://forums.oracle.com/ords/apexds/post/vdbench-50407-is-now-available-9143">Oracle 5.04.07 发布公告与发行说明</a></li>
+      <li data-en="&lt;a href=&quot;https://www.oracle.com/technetwork/server-storage/vdbench-1901683.pdf&quot;&gt;Oracle Vdbench 5.03 User Guide, Parameter and Reporting Sections&lt;/a&gt;"><a href="https://www.oracle.com/technetwork/server-storage/vdbench-1901683.pdf">Oracle Vdbench 5.03 用户指南，参数与报告章节</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-vdbench.js?v=bafa5380"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-vdbench",
+ "ar": [
+  2.4516129032258065,
+  1.0285714285714285
+ ],
+ "steps": [
+  {
+   "t": [
+    "参数文件定义负载",
+    "Workloads Defined by Parameter Files"
+   ],
+   "d": [
+    "Oracle 的存储压测工具按参数文件生成块设备或文件系统 I/O 负载。",
+    "An Oracle storage load generator that drives block or file system I/O from parameter files."
+   ],
+   "b": [
+    [
+     "<p>Vdbench 用文本参数文件声明目标、访问方式和运行条件。块设备模式可直接访问 LUN（系统识别的逻辑块设备），文件系统模式按定义的布局在测试目录发起文件与目录操作。写入与格式化会改变测试目标，因此测试使用可写且可丢弃的设备或目录。</p>",
+     "<p>截至 2026-11-23，Oracle 下载页列出的最新版本为 5.04.07，Oracle 于 2018-06-14 公告该版本可用。</p>"
+    ],
+    [
+     "<p>Vdbench uses a text parameter file to declare targets, access patterns, and run conditions. Block mode can address a LUN, a logical block device recognized by the system. File system mode issues file and directory operations within a defined test layout. Writes and formatting change the target, so runs use writable, disposable devices or directories.</p>",
+     "<p>As of November 23, 2026, the latest version listed by Oracle is 5.04.07. Oracle announced its availability on June 14, 2018.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "块设备的 SD、WD 和 RD",
+    "SD, WD, and RD for Block Devices"
+   ],
+   "d": [
+    "SD 定义设备，WD 定义访问方式，RD 选择负载并规定运行条件。",
+    "SD defines the device, WD defines the access pattern, and RD selects the workload and run conditions."
+   ],
+   "b": [
+    [
+     "<p>SD（Storage Definition）描述测试设备。WD（Workload Definition）引用 SD，描述 <code>xfersize</code> 传输大小、<code>rdpct</code> 读取比例和 <code>seekpct</code> 随机访问比例。RD（Run Definition）选定 WD，并设定 <code>iorate</code> 目标 I/O 速率、持续时间和报告间隔。</p>"
+    ],
+    [
+     "<p>An SD (Storage Definition) describes a test device. A WD (Workload Definition) references an SD and describes transfer size (<code>xfersize</code>), read percentage (<code>rdpct</code>), and random access percentage (<code>seekpct</code>). An RD (Run Definition) selects WDs and sets the target I/O rate (<code>iorate</code>), run duration, and reporting interval.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "文件系统的 FSD、FWD 和 RD",
+    "FSD, FWD, and RD for File Systems"
+   ],
+   "d": [
+    "文件系统模式定义目录树及文件操作，按文件系统操作速率加压。",
+    "File system mode defines the directory tree and file operations, then applies a target operation rate."
+   ],
+   "b": [
+    [
+     "<p>FSD（File System Definition）从 <code>anchor</code> 指定的根路径定义目录树和文件布局。FWD（File System Workload Definition）引用 FSD，并指定读取、写入、创建或删除等操作及线程数。RD 以 <code>fwdrate</code> 设置文件系统操作速率。若测试包含创建、删除等元数据操作，该速率就同时包含这些操作。</p>"
+    ],
+    [
+     "<p>An FSD (File System Definition) describes the directory tree and file layout under an <code>anchor</code> path. An FWD (File System Workload Definition) references an FSD and specifies operations such as read, write, create, or delete, plus a thread count. The RD sets the file system operation rate with <code>fwdrate</code>. When metadata operations are in the workload, the rate includes those operations.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从目标速率到实测速率",
+    "Target Rate and Achieved Rate"
+   ],
+   "d": [
+    "以多个目标速率运行，同步记录实际完成速率和响应时间。",
+    "Run at several target rates and record the achieved rate and response time at each point."
+   ],
+   "b": [
+    [
+     "<p>预热用于让系统进入代表性的运行状态，测量区间用于统计结果。目标速率表示负载生成器计划发出的操作数，实测速率表示实际完成的操作数。多点扫描可显示系统从跟上目标到响应时间升高或无法达到目标的过程。</p>"
+    ],
+    [
+     "<p>Warm-up lets the system reach a representative state. Measurement intervals contribute the reported statistics. The target rate is the offered load, while the achieved rate counts completed operations. A sweep can reveal where response time increases or the system falls behind the target.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "报告口径与对照条件",
+    "Reporting and Comparison Conditions"
+   ],
+   "d": [
+    "对照 IOPS、数据吞吐和响应时间时，同时核对操作类型、工作集和缓存状态。",
+    "Compare IOPS, data throughput, and response time together with the operation mix, working set, and cache state."
+   ],
+   "b": [
+    [
+     "<p>IOPS 表示每秒完成的 I/O 次数，吞吐量表示每秒传输的字节数。相同 IOPS 在不同传输大小下对应不同吞吐。响应时间直方图显示操作分布，可补充均值。工作集是本次运行访问的数据范围。当工作集可被缓存容纳时，结果可能主要反映缓存路径。</p>"
+    ],
+    [
+     "<p>IOPS counts completed I/O operations per second, and throughput counts bytes transferred per second. The same IOPS yields different throughput at different transfer sizes. A response-time histogram shows the distribution behind the mean. The working set is the data touched during a run. When it fits in cache, results may primarily reflect the cached path.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

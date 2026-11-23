@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA RTX PRO Server：企业服务器的 AI 与视觉计算 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps cover RTX PRO Server components, PCIe topology, and AI, graphics, and video workloads." content="分 5 步说明RTX PRO Server 的整机组件、PCIe 连接和 AI、图形与视频工作负载。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-rtxpro.css?v=24ca38b3">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-rtxpro">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-rtxpro">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA RTX PRO Server: AI and Visual Computing for Enterprise Servers">NVIDIA RTX PRO Server：企业服务器的 AI 与视觉计算</h1>
+        <p class="meta"><span data-en="5 steps · Blackwell, PCIe, visual computing">5 步 · Blackwell、PCIe、视觉计算</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/enterprise-reference-architectures/rtx-pro-ai-factory/latest/components.html&quot;&gt;NVIDIA RTX PRO AI Factory Reference Architecture Components&lt;/a&gt;"><a href="https://docs.nvidia.com/enterprise-reference-architectures/rtx-pro-ai-factory/latest/components.html">NVIDIA RTX PRO AI Factory 参考架构组件</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/rtx-pro-6000-blackwell-server-edition/&quot;&gt;NVIDIA RTX PRO 6000 Blackwell Server Edition Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/rtx-pro-6000-blackwell-server-edition/">NVIDIA RTX PRO 6000 Blackwell Server Edition 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;NVIDIA GB300 NVL72 Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">NVIDIA GB300 NVL72 产品页</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-rtxpro.js?v=1ea5edd5"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-rtxpro",
+  "ar": [
+    2.549019607843137,
+    0.935064935064935
+  ],
+  "steps": [
+    {
+      "t": [
+        "服务器与 GPU",
+        "The Server and Its GPUs"
+      ],
+      "d": [
+        "采用 RTX PRO 数据中心 GPU 的通用服务器配置，面向企业 AI 推理、物理 AI 和视觉计算等工作负载。",
+        "A general-purpose server configuration with RTX PRO data center GPUs for enterprise AI inference, physical AI, and visual computing workloads."
+      ],
+      "b": [
+        [
+          "<p>RTX PRO Server 指搭载 NVIDIA RTX PRO 数据中心 GPU 的服务器类别。以 RTX PRO 6000 Blackwell Server Edition 为例，GPU 是服务器内的加速卡。整机同时配有主机 CPU、内存、存储与网络接口。物理 AI 指感知、预测或与物理环境交互的 AI 系统。</p>"
+        ],
+        [
+          "<p>RTX PRO Server is a class of servers built with NVIDIA RTX PRO data center GPUs. The RTX PRO 6000 Blackwell Server Edition is an example of an accelerator card inside the server. The system also contains host CPUs, memory, storage, and network interfaces. Physical AI refers to AI systems that perceive, predict, or interact with the physical environment.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "PCIe 连接主机与加速卡",
+        "PCIe Connects the Host and Accelerators"
+      ],
+      "d": [
+        "GPU 经 PCIe 接入主机，参考设计按 CPU 插槽和 PCIe 根端口分配 GPU 与 I/O。",
+        "GPUs attach to the host over PCIe. The reference design distributes GPUs and I/O across CPU sockets and PCIe root ports."
+      ],
+      "b": [
+        [
+          "<p>PCI Express（PCIe）是服务器内部连接处理器和扩展设备的总线接口。RTX PRO AI Factory 参考架构在双路配置中平衡两颗 CPU 与它们的 GPU，按所需拓扑放置网卡与 NVMe 固态存储。PCIe 根端口是主机侧连接设备的起点。设计可根据负载和硬件布线采用直连或 PCIe 交换机。</p>"
+        ],
+        [
+          "<p>PCI Express (PCIe) is the internal interface connecting server processors and expansion devices. In the dual-socket RTX PRO AI Factory reference design, GPUs are balanced across the CPUs, with network adapters and NVMe solid-state storage placed according to the required topology. A PCIe root port is the host-side entry point. Direct attachment and PCIe switches are both options depending on the workload and hardware layout.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "同一 GPU 承载不同计算任务",
+        "Compute Engines for Different Workloads"
+      ],
+      "d": [
+        "Tensor Core 执行模型计算，RT Core 加速光线追踪，专用媒体引擎处理视频编解码。",
+        "Tensor Cores run model operations, RT Cores accelerate ray tracing, and dedicated media engines encode and decode video."
+      ],
+      "b": [
+        [
+          "<p>RTX PRO 6000 Blackwell Server Edition 将 AI、图形和视频能力放在同一张卡上。Tensor Core 加速神经网络中的矩阵运算，RT Core 加速光线与场景的求交计算。视频编码和解码则有各自的专用硬件。不同任务使用不同功能单元，例如推理服务运行模型，仿真应用生成可用于训练的合成场景。</p>"
+        ],
+        [
+          "<p>The RTX PRO 6000 Blackwell Server Edition combines AI, graphics, and video hardware on one card. Tensor Cores accelerate matrix operations in neural networks, and RT Cores accelerate ray-scene intersection tests. Video encoding and decoding have dedicated hardware. Inference services and simulation applications can use these capabilities for model execution and the generation of synthetic scenes for training.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "网络连接多台服务器",
+        "Networking Connects Servers"
+      ],
+      "d": [
+        "服务器经网卡接入计算网络，参考架构可另设存储与服务访问路径。",
+        "Network adapters connect servers to the compute fabric. The reference architecture can provide separate paths for storage and service access."
+      ],
+      "b": [
+        [
+          "<p>服务器内部的 PCIe 拓扑负责连接本机设备。RTX PRO AI Factory 参考设计使用 Spectrum-X 以太网连接不同节点，可配置计算节点间的东西向网络，以及面向存储和客户端服务等访问的南北向路径。网卡负责将两种范围的连接衔接起来。</p>"
+        ],
+        [
+          "<p>PCIe connects devices inside the server. The RTX PRO AI Factory reference design uses Spectrum-X Ethernet between nodes. It can configure an east-west fabric for compute traffic among nodes and a north-south path for access such as storage and client services. Network adapters connect the local device topology to these external paths.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "与整柜计算的部署分工",
+        "Deployment Roles Alongside Rack-Scale Systems"
+      ],
+      "d": [
+        "RTX PRO Server 以服务器为部署单元，GB300 NVL72 以整柜 NVLink 域为计算单元。",
+        "RTX PRO Server deploys as a server, while GB300 NVL72 provides a rack-scale NVLink domain for compute."
+      ],
+      "b": [
+        [
+          "<p>RTX PRO 平台可在同类服务器里承载推理、图形、仿真和视频任务。GB300 NVL72 则通过 NVLink 交换机把一个机柜内的多块计算托盘组成同一 GPU 互联域。两者的分工取决于应用需要的加速功能、GPU 互联范围和机房部署方式。</p>"
+        ],
+        [
+          "<p>RTX PRO servers can host inference, graphics, simulation, and video workloads on the same class of system. GB300 NVL72 uses NVLink switches to connect GPUs across the compute trays of one rack into a GPU interconnect domain. Selection depends on the application’s accelerator features, GPU interconnect scope, and data center deployment model.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>请求路由与负载均衡 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明推理路由如何按副本的就绪状态、队列、容量和前缀缓存分配请求。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-route.css?v=669fea78">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-route">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-route">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Request Routing and Load Balancing">请求路由与负载均衡</h1>
+        <p class="meta"><span data-en="6 steps · model replicas, queues, KV cache">6 步 · 模型副本、队列、KV Cache</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dynamo/knowledge-base/modular-components/router/routing-concepts&quot;&gt;NVIDIA Dynamo · Routing Concepts&lt;/a&gt;"><a href="https://docs.nvidia.com/dynamo/knowledge-base/modular-components/router/routing-concepts">NVIDIA Dynamo：路由概念</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dynamo/cli/kv-aware-routing/overview&quot;&gt;NVIDIA Dynamo · KV-Aware Routing&lt;/a&gt;"><a href="https://docs.nvidia.com/dynamo/cli/kv-aware-routing/overview">NVIDIA Dynamo：KV-aware 路由</a></li>
+      <li data-en="&lt;a href=&quot;https://llm-d.ai/docs/0.9/well-lit-paths/foundations/optimized-baseline&quot;&gt;llm-d · Optimized Baseline&lt;/a&gt;"><a href="https://llm-d.ai/docs/0.9/well-lit-paths/foundations/optimized-baseline">llm-d：负载和前缀感知路由</a></li>
+      <li data-en="&lt;a href=&quot;https://llm-d.ai/docs/0.9/well-lit-paths/foundations/precise-prefix-cache-routing&quot;&gt;llm-d · Precise Prefix Cache Routing&lt;/a&gt;"><a href="https://llm-d.ai/docs/0.9/well-lit-paths/foundations/precise-prefix-cache-routing">llm-d：精确前缀缓存路由</a></li>
+      <li data-en="&lt;a href=&quot;https://llm-d.ai/docs/0.9/well-lit-paths/foundations/workload-autoscaling&quot;&gt;llm-d · Workload Autoscaling&lt;/a&gt;"><a href="https://llm-d.ai/docs/0.9/well-lit-paths/foundations/workload-autoscaling">llm-d：工作负载扩缩容</a></li>
+      <li data-en="&lt;a href=&quot;https://gateway-api-inference-extension.sigs.k8s.io/#request-flow&quot;&gt;Kubernetes Gateway API Inference Extension · Request Flow&lt;/a&gt;"><a href="https://gateway-api-inference-extension.sigs.k8s.io/#request-flow">Kubernetes Gateway API Inference Extension：请求路径</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-route.js?v=5a0b6286"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "f-route",
+ "ar": [
+  2.410958904109589,
+  1.029940119760479
+ ],
+ "steps": [
+  {
+   "t": [
+    "从模型池选一个副本",
+    "Replica Selection Within a Model Pool"
+   ],
+   "d": [
+    "模型后端确定后，路由器为当前请求选择池内可用的副本。",
+    "Once a model backend is chosen, the router selects an eligible replica for the request."
+   ],
+   "b": [
+    [
+     "<p>副本是一个已加载同一模型、可以独立接收请求的服务实例。网关先确定服务目标，再由实例路由逻辑从这个模型池中选择具备资格的副本。就绪状态用于判断实例能否接收请求，队列和缓存则用于在候选实例之间取舍。</p>"
+    ],
+    [
+     "<p>A replica is a serving instance that has loaded the same model and can accept requests independently. The gateway first selects the service target, and the instance router then chooses an eligible replica from that model pool. Readiness establishes whether an instance can receive traffic. Queue and cache signals inform the choice among eligible replicas.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用队列和容量决定分流",
+    "Queue and Capacity Signals"
+   ],
+   "d": [
+    "轮询按顺序分配请求，负载感知路由用当前排队和容量信号调整选择。",
+    "Round robin rotates through replicas, while load-aware routing adapts to current queue and capacity signals."
+   ],
+   "b": [
+    [
+     "<p>轮询依次在副本间分配请求。推理请求的输入和输出长度各异，请求数相近的两个副本仍可能承担不同份量的工作。队列深度反映等待的请求数量，正在运行的请求和 用于保留已处理输入状态的 KV Cache 占用则能补充实例当前负载与剩余空间的信息。</p>"
+    ],
+    [
+     "<p>Round robin assigns requests to replicas in turn. Inference requests vary in input and output length, so two replicas handling similar numbers of requests may face different amounts of work. Queue depth counts pending requests. Running requests and occupancy of the KV cache, which retains state for inputs already processed, add information about current load and available space.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "查找可复用的前缀",
+    "Reusable Prefix Lookup"
+   ],
+   "d": [
+    "若副本已有匹配的输入前缀，模型可以复用已有的 KV Cache，减少重复计算。",
+    "When a replica already has a matching input prefix, it can reuse KV cache to reduce repeated computation."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 保存模型注意力层对已处理 Token 的键和值。前缀是从输入开头连续匹配的 Token 序列，例如多轮对话重带的历史。路由器可根据缓存索引判断哪个候选副本保有匹配块。命中时，该副本可复用这些块，只对尚未缓存的输入执行 Prefill，也就是生成开始前处理输入的阶段。</p>"
+    ],
+    [
+     "<p>The KV cache stores attention keys and values for tokens the model has processed. A prefix is a contiguous sequence of matching tokens from the start of the input, such as history carried forward in a conversation. A cache index can show the router which candidates hold matching blocks. The chosen replica can reuse those blocks and run prefill, the processing of input before generation, on the uncached portion.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "权衡命中与等待",
+    "Cache Reuse and Queueing Trade-Offs"
+   ],
+   "d": [
+    "已命中的副本仍可能排队，路由策略要权衡省下的计算与当前等待。",
+    "A replica with a cache hit may still have a queue, so the routing policy weighs saved work against current wait."
+   ],
+   "b": [
+    [
+     "<p>前缀命中越多，副本要重新处理的输入通常越少。但如果该副本已经积压请求或剩余容量很少，策略可把新请求发给较空闲的副本，由它处理未缓存的输入。实例路由要估算的是一次请求在当前状态下的总处理代价，缓存命中和可用容量都参与选择。</p>"
+    ],
+    [
+     "<p>More prefix matches generally mean less input to process again. If that replica has a long queue or little remaining capacity, the policy may send the new request to a less loaded replica, where the uncached input is processed. The selection accounts for the total cost of serving the request under current conditions, including cache reuse and available capacity.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从缓存事件维护路由索引",
+    "Routing Indexes from Cache Events"
+   ],
+   "d": [
+    "路由器可订阅引擎的缓存变化，更新副本各自持有哪些前缀块。",
+    "A router can subscribe to cache changes to track which prefix blocks each replica holds."
+   ],
+   "b": [
+    [
+     "<p>NVIDIA Dynamo 的 KV-aware 路由可跟踪缓存块的创建与移除，并按匹配块预计能减少的 Prefill 工作和实例的活跃负载选择 worker。worker 是执行模型推理的服务进程。</p>",
+     "<p>开源项目 llm-d 的精确前缀路由用模型服务器发布的事件建立缓存块到副本的索引，再把连续匹配前缀的评分和负载评分一起纳入端点选择。</p>"
+    ],
+    [
+     "<p>NVIDIA Dynamo&#x27;s KV-aware routing can track block creation and removal. It selects workers using the prefill work that matching blocks are expected to save and the workers&#x27; active load. A worker is a serving process that executes inference.</p>",
+     "<p>The open-source llm-d project&#x27;s precise prefix routing builds a block-to-replica index from model server events. It combines a score for the contiguous matching prefix with load scores when selecting an endpoint.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "扩缩容更新可选副本",
+    "Autoscaling Changes the Replica Pool"
+   ],
+   "d": [
+    "路由器分配当前请求，扩缩容则改变后续请求能使用的副本集合。",
+    "The router assigns the current request, while autoscaling changes which replicas future requests can use."
+   ],
+   "b": [
+    [
+     "<p>持续积压时，扩缩容控制器可用队列深度或运行中请求数等信号增加副本。新实例加载模型并进入就绪状态后，路由器才把它纳入候选；减少副本则缩小候选集合。路由逐请求发生，扩缩容通过调整副本数改变服务容量。</p>"
+    ],
+    [
+     "<p>When a backlog persists, an autoscaling controller can add replicas using signals such as queue depth or the number of running requests. A new instance enters the candidate set only after loading the model and becoming ready. Removing replicas shrinks that set. Routing happens per request, while autoscaling changes serving capacity by adjusting the replica count.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

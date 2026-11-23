@@ -1,0 +1,15 @@
+.b-mlpe-scene { display: block; width: 100%; height: auto; }
+.b-mlpe-scene text { font: 500 18px var(--f); fill: var(--ink); dominant-baseline: central; }
+.b-mlpe-scene .b-mlpe-heading { font-weight: 700; font-size: 21px; }
+.b-mlpe-scene .b-mlpe-note { fill: var(--ink3); font-weight: 400; }
+.b-mlpe-box, .b-mlpe-idle, .b-mlpe-focus { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.5; }
+.b-mlpe-idle { stroke-dasharray: 5 4; }
+.b-mlpe-focus { stroke: var(--l6); stroke-width: 2; }
+.b-mlpe-line { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
+.b-mlpe-arrow { fill: var(--ink3); }
+.b-mlpe-signal { fill: var(--l6); }
+.b-mlpe-reply { fill: var(--l3); }
+.b-mlpe-cell { fill: var(--bg); stroke: var(--rule); }
+@media (640px < width <= 720px) {
+  main[data-station="b-mlpe"] .mhost { aspect-ratio: var(--ar); }
+}

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA 公有云部署：实例、本地盘与对象存储 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA 的公有云部署。WEKA 后端在云主机上运行，兼容的对象存储可用于分层或快照，部署流程按云平台而异。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-cloud.css?v=0c6a059d">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-cloud">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-cloud">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA in the Public Cloud: Instances, Local Drives, and Object Storage">WEKA 公有云部署：实例、本地盘与对象存储</h1>
+        <p class="meta"><span data-en="5 steps · public cloud, Terraform, storage tiering">5 步 · 公有云、Terraform、存储分层</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/planning-and-installation/aws&quot;&gt;WEKA · Installation on AWS&lt;/a&gt;"><a href="https://docs.weka.io/planning-and-installation/aws">WEKA · AWS 部署</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/planning-and-installation/weka-installation-on-gcp/deployment-on-gcp-using-terraform&quot;&gt;WEKA · Google Cloud Deployment Using Terraform&lt;/a&gt;"><a href="https://docs.weka.io/planning-and-installation/weka-installation-on-gcp/deployment-on-gcp-using-terraform">WEKA · Google Cloud Terraform 部署</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/planning-and-installation/weka-installation-on-gcp/supported-machine-types-and-storage&quot;&gt;WEKA · Google Cloud Machine Types and Storage&lt;/a&gt;"><a href="https://docs.weka.io/planning-and-installation/weka-installation-on-gcp/supported-machine-types-and-storage">WEKA · Google Cloud 机器类型和存储</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/planning-and-installation/weka-installation-on-azure&quot;&gt;WEKA · Installation on Azure&lt;/a&gt;"><a href="https://docs.weka.io/planning-and-installation/weka-installation-on-azure">WEKA · Azure 部署</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/planning-and-installation/weka-installation-on-oci&quot;&gt;WEKA · Installation on OCI&lt;/a&gt;"><a href="https://docs.weka.io/planning-and-installation/weka-installation-on-oci">WEKA · OCI 部署</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/data-storage&quot;&gt;WEKA · Data Lifecycle Management&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/data-storage">WEKA · 数据生命周期</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj&quot;&gt;WEKA · Snap-to-Object&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/snap-to-obj">WEKA · Snap-to-Object</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-cloud.js?v=32ce7937"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-cloud",
+ "ar": [
+  2.8213166144200628,
+  0.8275862068965517
+ ],
+ "steps": [
+  {
+   "t": [
+    "在云主机上组成 WEKA 集群",
+    "Form a WEKA Cluster on Cloud Hosts"
+   ],
+   "d": [
+    "云主机运行 WEKA 后端，适用实例上的本地 SSD 提供文件系统的闪存层。",
+    "Cloud hosts run WEKA backends, and local SSDs on suitable instances provide the filesystem's flash tier."
+   ],
+   "b": [
+    [
+     "<p>WEKA 后端由云主机上的进程组成。后端通过云网络互联，客户端连接后端访问共享文件系统。所需的实例、盘和网络条件由各平台的部署指南定义。</p>",
+     "<p>例如，WEKA 的 Google Cloud 部署文档列出了后端可以使用带本地 SSD 的机器类型。本地盘用于闪存层，后端在这个层处理元数据和接收新写入。</p>"
+    ],
+    [
+     "<p>Cloud hosts run the WEKA backend processes. Backends communicate over the cloud network, and clients connect to them to access a shared filesystem. Each provider's deployment guide defines the required instances, drives, and networking.</p>",
+     "<p>For example, the WEKA deployment guide for Google Cloud lists backend machine types with local SSDs. The local drives provide the flash tier, which handles metadata and receives new writes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "将对象存储接为可选层",
+    "Attach Object Storage as an Optional Tier"
+   ],
+   "d": [
+    "采用分层配置时，WEKA 先把新数据写入 SSD，再按策略复制数据块到对象存储。",
+    "In a tiered configuration, WEKA writes new data to SSD, then copies chunks to object storage according to policy."
+   ],
+   "b": [
+    [
+     "<p>对象存储把数据保存为由键标识的对象。WEKA 可以使用兼容的对象存储延伸文件系统容量，也可以上传快照。哪些用途可用取决于对象存储服务和部署配置。</p>",
+     "<p>在分层模式下，新数据进入 SSD 后，对象存储的副本由后台任务生成。对象副本成功创建后，WEKA 才可按策略释放 SSD 副本。客户端通过原文件路径读回数据，WEKA 在需要时从对象层获取数据块。</p>"
+    ],
+    [
+     "<p>Object storage holds data as objects identified by keys. WEKA can use a compatible object store to extend filesystem capacity or upload snapshots. The available uses depend on the object service and deployment configuration.</p>",
+     "<p>With tiering, new data lands on SSD before a background task copies it to object storage. The SSD copy becomes eligible for release after the object copy exists. Clients read through the original file path, and WEKA fetches chunks from the object tier as needed.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用 Terraform 定义云资源",
+    "Define Cloud Resources with Terraform"
+   ],
+   "d": [
+    "AWS、Google Cloud 和 Azure 有各自的 WEKA Terraform 部署文档。",
+    "AWS, Google Cloud, and Azure each have a documented WEKA Terraform deployment workflow."
+   ],
+   "b": [
+    [
+     "<p>Terraform 通过配置描述基础设施。以 Google Cloud 为例，WEKA 的部署包可创建网络和子网，启动实例，安装 WEKA 软件并配置集群。AWS 和 Azure 的部署包分别面向各自平台的网络、实例和云服务。</p>"
+    ],
+    [
+     "<p>Terraform describes infrastructure in configuration files. On Google Cloud, for example, the WEKA package can create networks and subnets, start instances, install WEKA, and configure the cluster. The AWS and Azure packages target each provider's networking, instances, and cloud services.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "在 OCI 上部署裸金属后端",
+    "Deploy Bare-Metal Backends on OCI"
+   ],
+   "d": [
+    "Oracle Cloud Infrastructure 的 WEKA 指南描述了准备虚拟云网络和裸金属主机后安装软件的流程。",
+    "The WEKA guide for Oracle Cloud Infrastructure documents software installation after the virtual cloud network and bare-metal hosts are prepared."
+   ],
+   "b": [
+    [
+     "<p>裸金属实例提供对物理服务器的访问。OCI 部署文档把网络和裸金属服务器准备放在前面，再安装 WEKA、配置集群以及添加客户端。这个部署路径反映了 OCI 自身的实例与网络要求。</p>"
+    ],
+    [
+     "<p>A bare-metal instance provides access to a physical server. The OCI guide starts with networking and bare-metal hosts, followed by installing WEKA, configuring the cluster, and adding clients. The workflow reflects OCI-specific instance and networking requirements.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "将恢复点留在实例之外",
+    "Keep Recovery Points Outside the Instances"
+   ],
+   "d": [
+    "Snap-to-Object 将文件系统快照写入对象存储，兼容的目标集群可从该快照恢复。",
+    "Snap-to-Object writes a filesystem snapshot to object storage, where a compatible destination cluster can recover it."
+   ],
+   "b": [
+    [
+     "<p>分层决定活动文件的数据块放在哪里。Snap-to-Object 则保留一个确定的文件系统恢复点，包括文件数据和元数据。恢复端可在另一套兼容的 WEKA 集群上重建文件系统。</p>",
+     "<p>由云主机运行集群、由对象存储保留已上传恢复点，是云上暂停与恢复的基础。</p>"
+    ],
+    [
+     "<p>Tiering governs where live file chunks reside. Snap-to-Object preserves a specific filesystem recovery point with file data and metadata. The filesystem can be recreated on a different compatible WEKA cluster.</p>",
+     "<p>Hosting the cluster on cloud instances and retaining an uploaded recovery point in object storage enables cloud pause and restart.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

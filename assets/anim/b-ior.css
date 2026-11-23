@@ -1,0 +1,46 @@
+.b-ior-scene { display: block; width: 100%; height: auto; }
+.b-ior-scene text {
+  fill: var(--ink);
+  font: 500 18px var(--f);
+  dominant-baseline: central;
+}
+.b-ior-scene .b-ior-note { fill: var(--ink2); }
+.b-ior-scene .b-ior-box,
+.b-ior-scene .b-ior-accent,
+.b-ior-scene .b-ior-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.b-ior-scene .b-ior-accent { stroke: var(--lc); stroke-width: 2; }
+.b-ior-scene .b-ior-quiet { stroke-dasharray: 4 4; }
+.b-ior-scene .b-ior-line,
+.b-ior-scene .b-ior-guide,
+.b-ior-scene .b-ior-active {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-ior-scene .b-ior-guide { stroke-dasharray: 4 4; }
+.b-ior-scene .b-ior-active { stroke: var(--lc); stroke-width: 3; }
+.b-ior-scene .b-ior-token { fill: var(--lc); }
+.b-ior-scene .b-ior-alt { fill: var(--ink2); }
+body.topic-b-ior .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-ior .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-ior.present .stage .figbox { margin-block: 0; }
+  .b-ior-scene text { font-size: 16px; }
+}
+
+.b-ior-host { position: relative; }
+.b-ior-host > .b-ior-toggle {
+  position: absolute;
+  left: 50%;
+  top: 84%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  background: var(--bg);
+}
+.b-ior-host > .b-ior-toggle[hidden] { display: none; }

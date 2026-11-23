@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>环境模板：从资源定义到自助交付 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明用版本化模板声明资源、依赖和允许的参数，自动创建并管理环境实例。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-em.css?v=68918914">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-em">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-em">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Environment Templates: From Resource Definitions to Self-Service Delivery">环境模板：从资源定义到自助交付</h1>
+        <p class="meta"><span data-en="5 steps · infrastructure as code, dependencies, lifecycle">5 步 · 基础设施即代码、依赖、生命周期</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://rafay.co/solutions/environment-as-a-service&quot;&gt;Rafay · Environment as a Service&lt;/a&gt;"><a href="https://rafay.co/solutions/environment-as-a-service">Rafay · 环境即服务</a></li>
+      <li data-en="&lt;a href=&quot;https://opentofu.org/docs/language/meta-arguments/depends_on/&quot;&gt;OpenTofu · Resource Dependencies&lt;/a&gt;"><a href="https://opentofu.org/docs/language/meta-arguments/depends_on/">OpenTofu · 资源依赖</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/servicecatalog/latest/adminguide/what-is_concepts.html&quot;&gt;AWS · Service Catalog Overview&lt;/a&gt;"><a href="https://docs.aws.amazon.com/servicecatalog/latest/adminguide/what-is_concepts.html">AWS · Service Catalog 概览</a></li>
+      <li data-en="&lt;a href=&quot;https://opentofu.org/docs/language/state/purpose/&quot;&gt;OpenTofu · Purpose of State&lt;/a&gt;"><a href="https://opentofu.org/docs/language/state/purpose/">OpenTofu · 状态的用途</a></li>
+      <li data-en="&lt;a href=&quot;https://opentofu.org/docs/cli/commands/destroy/&quot;&gt;OpenTofu · Destroy Operation&lt;/a&gt;"><a href="https://opentofu.org/docs/cli/commands/destroy/">OpenTofu · 销毁操作</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-em.js?v=739c028a"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-em",
+  "ar": [
+    2.727272727272727,
+    1.2
+  ],
+  "steps": [
+    {
+      "t": [
+        "将资源写成模板",
+        "Defining Reusable Resource Templates"
+      ],
+      "d": [
+        "资源模板用可版本化的配置描述环境所需的单类资源。",
+        "A resource template uses versioned configuration to describe one type of resource an environment needs."
+      ],
+      "b": [
+        [
+          "<p>基础设施即代码（IaC）是用可执行的配置定义资源。例如，工作区环境可以由计算实例、存储和应用组件组成，各自拥有与其用途对应的参数。资源模板将这些定义提取成可复用的单元，使不同环境可以沿用同一套资源构建规则。</p>"
+        ],
+        [
+          "<p>Infrastructure as code (IaC) defines resources in executable configuration. A workspace environment can include compute, storage, and application components, each with its own parameters. Resource templates make those definitions reusable so different environments can share the same resource construction rules.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "组合依赖关系",
+        "Composing Resource Dependencies"
+      ],
+      "d": [
+        "环境模板组合资源定义，并用依赖关系描述创建顺序和资源间传递的参数。",
+        "An environment template combines resource definitions and describes their order and parameter dependencies."
+      ],
+      "b": [
+        [
+          "<p>工作区的挂载配置需要先获得存储卷标识，计算资源与存储资源就绪后才能交付可用工作区。参数可引用上游资源的输出。Rafay 的环境即服务页面示例说明，上游资源的输出可作为下游应用部署的输入。</p>"
+        ],
+        [
+          "<p>A workspace mount configuration requires a storage volume identifier. Compute and storage need to be ready before the workspace can be delivered. Parameters can reference values produced by an upstream resource. Rafay’s Environment-as-a-Service documentation describes passing outputs from an environment resource into application deployment inputs.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "发布受约束的参数",
+        "Publishing a Template with Guarded Inputs"
+      ],
+      "d": [
+        "平台发布模板版本，将用户可选项限制在允许范围，其余设置由管理员定义。",
+        "The platform publishes a template version with permitted choices and fixed administrator-defined settings."
+      ],
+      "b": [
+        [
+          "<p>例如，规格可以向项目暴露 GPU 配置和卷容量，同时固定运行镜像和网络设定。模板版本记录当前交付规格，使实例能追溯其来源。发布后，自助门户可按项目权限展示对应版本及其输入项。</p>"
+        ],
+        [
+          "<p>For example, a profile can expose GPU configuration and volume capacity while fixing the runtime image and network settings. The template version records the deployment specification so an instance can be traced back to it. Once published, a self-service portal can show the version and its inputs according to project permissions.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "按模板创建实例",
+        "Provisioning an Environment Instance"
+      ],
+      "d": [
+        "用户提交模板版本和参数，平台校验后执行资源创建并返回实例状态。",
+        "The user submits a template version and inputs. The platform validates them, provisions resources, and reports instance status."
+      ],
+      "b": [
+        [
+          "<p>执行器根据参数和依赖关系创建资源。执行状态说明环境正在部署、已完成或需要处理错误。实例记录将模板版本、参数和实际资源关联起来，使同一规格可以产生多个分别管理的环境。</p>"
+        ],
+        [
+          "<p>The provisioning engine uses the inputs and dependencies to create resources. Its status indicates whether deployment is in progress, complete, or needs attention. The instance record ties the template version and parameters to the actual resources so one specification can produce independently managed environments.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "更新和回收环境",
+        "Updating and Retiring an Environment"
+      ],
+      "d": [
+        "更新和回收依据实例记录定位实际资源，引用的共享资源继续按各自策略管理。",
+        "Updates and retirement use the instance state to identify resources. Referenced shared resources follow their own policies."
+      ],
+      "b": [
+        [
+          "<p>执行状态把配置中的资源映射到已创建的对象。一次版本升级可通过这个映射识别要变更的对象。回收时可删除由实例管理的资源。已有的共享存储或服务若仅以引用方式接入，仍由其所有方管理。OpenTofu 将资源映射记录在状态文件里，用于计划变更和销毁由配置管理的对象。</p>"
+        ],
+        [
+          "<p>Provisioning state maps resources in the configuration to objects already created. An upgrade can use that mapping to identify which objects need changes. Retirement can remove resources managed by the instance. Shared storage and services attached by reference stay under their owner’s control. OpenTofu records resource mappings in state for planning changes and destroying objects managed by the configuration.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA DSX OS：AI 工厂的运营软件 · Shan's Stack</title>
+<meta name="description" content="分 7 步说明 NVIDIA DSX OS 在 AI 工厂的软件分层、核心组件、Rafay 与 Mirantis 的集成方式及发布状态。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-dsx.css?v=32898ddd">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-dsx">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language">
+      <button type="button" data-lang-set="zh" lang="zh-Hans" aria-label="简体中文" data-en-label="Simplified Chinese" data-en="ZH" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" lang="zh-Hant" aria-label="繁體中文" data-en-label="Traditional Chinese" data-en="TW" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" lang="en" aria-label="英文" data-en-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-dsx">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA DSX OS: Operating Software for AI Factories">NVIDIA DSX OS：AI 工厂的运营软件</h1>
+        <p class="meta"><span data-en="7 steps · Infrastructure, GPU scheduling, model serving">7 步 · 基础设施、GPU 调度、模型服务</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/products/dsx/os/&quot;&gt;NVIDIA DSX OS Product Page&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/products/dsx/os/">NVIDIA DSX OS 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dsx/#dsx-os&quot;&gt;NVIDIA DSX Documentation · DSX OS Component Catalog&lt;/a&gt;"><a href="https://docs.nvidia.com/dsx/#dsx-os">NVIDIA DSX 文档 · DSX OS 组件目录</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/dsx-infrastructure-ai-factory&quot;&gt;NVIDIA Newsroom · DSX Platform and DSX OS Announcement (May 31, 2026)&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/dsx-infrastructure-ai-factory">NVIDIA 新闻稿 · DSX 平台与 DSX OS 公告（2026-05-31）</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/nvidia-dsx-os-delivers-open-modular-software-for-operating-ai-factories-at-scale/&quot;&gt;NVIDIA Technical Blog · DSX OS Components and Integration Model (May 31, 2026)&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/nvidia-dsx-os-delivers-open-modular-software-for-operating-ai-factories-at-scale/">NVIDIA 技术博客 · DSX OS 组件与集成模型（2026-05-31）</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/configure-certify-and-operate-kubernetes-gpu-clusters-with-nvidia-dsx-os/&quot;&gt;NVIDIA Technical Blog · Cluster Configuration, Validation, and Remediation (November 5, 2026)&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/configure-certify-and-operate-kubernetes-gpu-clusters-with-nvidia-dsx-os/">NVIDIA 技术博客 · 集群配置、验证和修复（2026-11-05）</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/nvidia-runai-is-now-open-source-as-part-of-nvidia-dsx-ai-factory-platform&quot;&gt;NVIDIA Technical Blog · Open-Source Run:ai Release (October 13, 2026)&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/nvidia-runai-is-now-open-source-as-part-of-nvidia-dsx-ai-factory-platform">NVIDIA 技术博客 · Run:ai 开源发布（2026-10-13）</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/european-ecosystem-builds-worlds-most-efficient-ai-factories-with-nvidia-dsx/&quot;&gt;NVIDIA Newsroom · Developer Previews for Operations Components (October 21, 2026)&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/european-ecosystem-builds-worlds-most-efficient-ai-factories-with-nvidia-dsx/">NVIDIA 新闻稿 · 运维组件开发者预览（2026-10-21）</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/manage-kubernetes-clusters-for-gpu-infrastructure-with-nvidia-kubernetes-engine/&quot;&gt;NVIDIA Technical Blog · NVKE and NVKR Public Previews (November 10, 2026)&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/manage-kubernetes-clusters-for-gpu-infrastructure-with-nvidia-kubernetes-engine/">NVIDIA 技术博客 · NVKE 与 NVKR 公开预览（2026-11-10）</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/switch-infrastructure/config-manager/changelog/2026/11/16&quot;&gt;NVIDIA Documentation · Config Manager Release Notes (November 16, 2026)&lt;/a&gt;"><a href="https://docs.nvidia.com/switch-infrastructure/config-manager/changelog/2026/11/16">NVIDIA 文档 · Config Manager 版本更新（2026-11-16）</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/ai-and-cloud-native-blog/rafay-platform-nvidia-dsx-os-integration&quot;&gt;Rafay Announcement · DSX OS Integration Scope (October 28, 2026)&lt;/a&gt;"><a href="https://rafay.co/ai-and-cloud-native-blog/rafay-platform-nvidia-dsx-os-integration">Rafay 官方公告 · DSX OS 集成范围（2026-10-28）</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/ai-and-cloud-native-blog/rafay-open-source-nvidia-runai-nvidia-dsx-ai-factories&quot;&gt;Rafay Announcement · Self-Service Run:ai Deployment (October 13, 2026)&lt;/a&gt;"><a href="https://rafay.co/ai-and-cloud-native-blog/rafay-open-source-nvidia-runai-nvidia-dsx-ai-factories">Rafay 官方公告 · 自助部署 Run:ai（2026-10-13）</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/ai-and-cloud-native-blog/nvidia-dynamo-disaggregated-inference-rafay-token-factory&quot;&gt;Rafay Announcement · Dynamo in Token Factory (October 29, 2026)&lt;/a&gt;"><a href="https://rafay.co/ai-and-cloud-native-blog/nvidia-dynamo-disaggregated-inference-rafay-token-factory">Rafay 官方文章 · Token Factory 中的 Dynamo（2026-10-29）</a></li>
+      <li data-en="&lt;a href=&quot;https://www.mirantis.com/blog/mirantis-and-nvidia-dsx-os-powering-the-next-generation-of-ai-factories/&quot;&gt;Mirantis Announcement · k0rdent AI and DSX OS (June 1, 2026)&lt;/a&gt;"><a href="https://www.mirantis.com/blog/mirantis-and-nvidia-dsx-os-powering-the-next-generation-of-ai-factories/">Mirantis 官方公告 · k0rdent AI 与 DSX OS（2026-06-01）</a></li>
+      <li data-en="&lt;a href=&quot;https://www.mirantis.com/blog/mirantis-k0rdent-ai-integrates-open-source-nvidia-run-ai-for-full-stack-nvidia-dsx-ai-factory-operations/&quot;&gt;Mirantis Announcement · Open-Source Run:ai in k0rdent AI (October 13, 2026)&lt;/a&gt;"><a href="https://www.mirantis.com/blog/mirantis-k0rdent-ai-integrates-open-source-nvidia-run-ai-for-full-stack-nvidia-dsx-ai-factory-operations/">Mirantis 官方公告 · k0rdent AI 集成开源 Run:ai（2026-10-13）</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-dsx.js?v=2b3c6dec"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-dsx",
+  "ar": [
+    2.5555555555555554,
+    0.8450704225352113
+  ],
+  "steps": [
+    {
+      "t": [
+        "DSX OS 在 AI 工厂中的位置",
+        "Where DSX OS Fits in an AI Factory"
+      ],
+      "d": [
+        "DSX OS 位于硬件与 GPU 云服务之间，提供可分别集成的运营软件。",
+        "DSX OS provides software components that can be integrated individually between physical infrastructure and GPU cloud services."
+      ],
+      "b": [
+        [
+          "<p>NVIDIA DSX 涵盖 AI 工厂的设计、仿真、建设和运营。AI 工厂将计算、网络、存储和设施组织起来，为训练和推理提供算力。DSX OS 是 DSX 中面向运营的软件组合，包含开源组件和相关 NVIDIA 技术。服务器仍运行自己的主机操作系统，DSX OS 的组件则在服务器、集群和服务层执行管理任务。</p>",
+          "<p>NVIDIA 文档列出七类能力：基础设施运维、加速 Kubernetes、可观测性、安全与机密计算、健康与韧性、工作负载与 GPU 编排、模型服务。GPU 云平台可纳入所需组件，再通过自己的控制平面管理服务目录和租户交付。控制平面负责配置资源、执行策略和跟踪状态。</p>"
+        ],
+        [
+          "<p>NVIDIA DSX covers the design, simulation, construction, and operation of AI factories. An AI factory brings compute, networking, storage, and facilities together to supply capacity for training and inference. DSX OS is the operating software portfolio within DSX and includes open-source components and related NVIDIA technologies. Servers still run their own host operating systems. DSX OS components manage servers, clusters, and services.</p>",
+          "<p>NVIDIA’s documentation lists seven areas: infrastructure operations, accelerated Kubernetes, observability, security and confidential computing, health and resilience, workload and GPU orchestration, and model serving. A GPU cloud platform can integrate selected components and manage the catalog and tenant delivery through its own control plane. A control plane configures resources, enforces policy, and tracks state.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从裸金属到 GPU 集群",
+        "From Bare Metal to GPU Clusters"
+      ],
+      "d": [
+        "裸金属控制器上线物理节点，运行时配方为 GPU 集群定义软件基线。",
+        "The bare-metal controller brings physical nodes online, and runtime recipes define the GPU cluster’s software baseline."
+      ],
+      "b": [
+        [
+          "<p><strong>NVIDIA Infra Controller（NICo）</strong> 管理裸金属服务器的发现、上线和租户交接。<strong>DOCA Platform Framework（DPF）</strong> 部署和管理 BlueField DPU 上的基础设施服务。DPU 是可承担网络等基础设施任务的专用处理器。交换网络由 <strong>Config Manager</strong> 自动配置，<strong>Rack Management Service</strong> 则处理机柜电源、设备清单、固件和交换机操作。</p>",
+          "<p><strong>Kubernetes</strong> 负责运行和管理容器化工作负载。<strong>AI Cluster Runtime（AICR）</strong> 用锁定版本的配方描述经验证的 Kubernetes 软件组合。<strong>GPU Operator</strong> 管理集群所需的 GPU 软件，<strong>Network Operator</strong> 管理加速网络资源。托管 Kubernetes 还可采用 <strong>NVIDIA Kubernetes Engine（NVKE）</strong> 管理集群生命周期，并用 <strong>NVIDIA Kubernetes Recipes（NVKR）</strong> 从锁定版本的输入构建节点镜像和软件包。</p>"
+        ],
+        [
+          "<p><strong>NVIDIA Infra Controller (NICo)</strong> handles discovery, provisioning, and tenant handover for bare-metal servers. <strong>DOCA Platform Framework (DPF)</strong> deploys and manages infrastructure services on BlueField DPUs. A DPU is a dedicated processor that can handle infrastructure tasks such as networking. <strong>Config Manager</strong> automates network configuration, while <strong>Rack Management Service</strong> handles rack power, inventory, firmware, and switch operations.</p>",
+          "<p><strong>Kubernetes</strong> runs and manages containerized workloads. <strong>AI Cluster Runtime (AICR)</strong> defines validated Kubernetes software combinations in recipes with pinned versions. <strong>GPU Operator</strong> manages the GPU software Kubernetes needs, and <strong>Network Operator</strong> manages accelerated networking resources. For managed Kubernetes, <strong>NVIDIA Kubernetes Engine (NVKE)</strong> manages the cluster lifecycle, while <strong>NVIDIA Kubernetes Recipes (NVKR)</strong> builds node images and packages from pinned inputs.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "验证、隔离与复测",
+        "Validation, Quarantine, and Retesting"
+      ],
+      "d": [
+        "集群就绪验证和持续监测衔接，修复后的节点通过复测才重新接收任务。",
+        "Readiness tests and continuous monitoring work together so repaired nodes can pass retesting before receiving jobs again."
+      ],
+      "b": [
+        [
+          "<p>软件基线部署后，<strong>NVIDIA Cluster Readiness Engine（NVCRE）</strong> 运行分布式训练和 GPU 集体通信测试，记录结果并定位可疑节点。<strong>NVSentinel</strong> 持续监测 Kubernetes 节点的 GPU 和网络健康信号。启用相应策略后，它可阻止故障节点接收新任务、迁出任务并触发修复。启用生命周期验证后，由 NVCRE 复测，NVSentinel 根据结果决定是否恢复调度。</p>",
+          "<p>同一组合还包括用于观察 GPU 资源池健康与完整性的托管服务 <strong>Fleet Intelligence</strong>，以及用于核验设备和平台完整性的 <strong>NVIDIA Attestation</strong>。在目录中，可观测性与安全各有独立组件。</p>"
+        ],
+        [
+          "<p>Once the software baseline is deployed, <strong>NVIDIA Cluster Readiness Engine (NVCRE)</strong> runs distributed training and GPU collective communication tests, records results, and identifies suspect nodes. <strong>NVSentinel</strong> continuously monitors GPU and network health signals on Kubernetes nodes. When configured, it can stop faulty nodes from receiving new jobs, drain workloads, and trigger remediation. With lifecycle validation enabled, NVCRE retests the nodes, and NVSentinel uses the results to decide whether to restore scheduling.</p>",
+          "<p>The portfolio also includes <strong>Fleet Intelligence</strong>, a managed service for monitoring GPU fleet health and integrity, and <strong>NVIDIA Attestation</strong>, which verifies the integrity of devices and platforms. The catalog lists observability and security as separate areas with their own components.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 GPU 调度到模型服务",
+        "From GPU Scheduling to Model Serving"
+      ],
+      "d": [
+        "GPU 调度为任务分配资源，模型服务组件组织推理实例并提供服务接口。",
+        "GPU scheduling allocates resources to jobs. Serving components coordinate inference replicas and expose service APIs."
+      ],
+      "b": [
+        [
+          "<p>节点可调度后，<strong>Run:ai</strong> 按团队、项目和配额编排 GPU 工作负载。<strong>KAI Scheduler</strong> 是可单独采用的调度组件，负责为任务选节点。推理是在模型上运行输入并生成结果的过程。面向分布式推理，<strong>Dynamo</strong> 在多个实例间路由请求，<strong>Grove</strong> 在 Kubernetes 中定义和扩缩由多个组件组成的推理部署。</p>",
+          "<p><strong>NVIDIA Cloud Functions（NVCF）</strong> 为推理、微调和批处理提供统一 API。调度器按容量与策略放置任务，Dynamo 在运行中的推理实例之间分派在线请求。云平台可以把这些能力纳入租户可申请的服务。</p>"
+        ],
+        [
+          "<p>Once nodes are schedulable, <strong>Run:ai</strong> orchestrates GPU workloads by team, project, and quota. <strong>KAI Scheduler</strong> places jobs on nodes and can be adopted independently. Inference runs inputs through a model to produce outputs. For distributed inference, <strong>Dynamo</strong> routes requests among serving replicas, while <strong>Grove</strong> defines and scales multi-component inference deployments on Kubernetes.</p>",
+          "<p><strong>NVIDIA Cloud Functions (NVCF)</strong> provides a common API for inference, fine-tuning, and batch work. The scheduler places workloads according to capacity and policy. Dynamo dispatches online requests among running inference replicas. A cloud platform can offer these capabilities as services that tenants can request.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Rafay 如何交付自助服务",
+        "How Rafay Delivers Self-Service"
+      ],
+      "d": [
+        "Rafay 把裸金属资源、GPU 调度和推理组件接入自己的租户服务目录。",
+        "Rafay brings bare-metal resources, GPU scheduling, and inference components into its tenant service catalog."
+      ],
+      "b": [
+        [
+          "<p>截至 2026-11-23，Rafay 的 10 月 28 日官方文章描述了 NICo 和 DPF 接入。Rafay 将控制器发现的服务器纳入资源清单，再把相应容量作为裸金属、虚拟机或 Kubernetes 服务交付。10 月 13 日公告确认，一键部署 Run:ai 已在 Rafay 平台可用。租户选择目录规格后，平台开通 GPU 基础设施与 Kubernetes、安装所需 Operator 并创建 Run:ai 租户。</p>",
+          "<p>Rafay 10 月 29 日的文章也把 Dynamo 列为 Rafay Token Factory 部署模型时可选的推理后端。Dynamo 负责推理实例之间的协调，Rafay 提供租户自助访问、速率限制和按租户记录的输入与输出 Token 用量。</p>"
+        ],
+        [
+          "<p>As of November 23, 2026, Rafay’s October 28 announcement describes its NICo and DPF integration. Rafay adds discovered servers to its inventory and offers the capacity as bare metal, virtual machines, or Kubernetes services. Its October 13 announcement confirms that one-click Run:ai deployment is available on the Rafay platform. After a tenant selects a catalog configuration, Rafay provisions GPU infrastructure and Kubernetes, installs the required operators, and creates a Run:ai tenant.</p>",
+          "<p>Rafay’s October 29 article also lists Dynamo as an inference backend that operators can select when deploying a model in Rafay Token Factory. Dynamo coordinates the inference replicas. Rafay provides tenant self-service access, rate limits, and per-tenant records of input and output token usage.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Mirantis 如何管理多集群部署",
+        "How Mirantis Manages Multicluster Deployments"
+      ],
+      "d": [
+        "k0rdent AI 用 NICo 上线裸金属，并用目录模板在受管集群部署 Run:ai。",
+        "k0rdent AI uses NICo for bare metal and a catalog template to deploy Run:ai across clusters."
+      ],
+      "b": [
+        [
+          "<p>截至 2026-11-23，Mirantis 的 6 月 1 日和 10 月 13 日官方文章将 <strong>NICo</strong> 列为 k0rdent AI 的主要裸金属上线组件，负责发现服务器、验证固件、配置网络并交付主机操作系统。10 月公告也将 <strong>DPF、GPU Operator、Network Operator 和 AICR</strong> 列为已集成的组件。</p>",
+          "<p>同一则 10 月公告确认，开源 <strong>Run:ai</strong> 集成已作为目录项提供。k0rdent AI 用声明式模板描述预期部署，把 Run:ai 控制平面、依赖和配置一起部署，并管理跨集群的组件生命周期。Run:ai 在集群内做 GPU 分配和任务编排。</p>"
+        ],
+        [
+          "<p>As of November 23, 2026, Mirantis’ announcements on June 1 and October 13 identify <strong>NICo</strong> as the primary bare-metal provisioning component in k0rdent AI. It discovers servers, verifies firmware, configures networking, and delivers the host operating system. The October announcement also lists <strong>DPF, GPU Operator, Network Operator, and AICR</strong> among the integrated components.</p>",
+          "<p>That October announcement confirms that the open-source <strong>Run:ai</strong> integration is available as a catalog entry. k0rdent AI uses a declarative template to specify the desired deployment, installs the Run:ai control plane together with its dependencies and configuration, and manages component lifecycles across clusters. Run:ai allocates GPUs and orchestrates jobs within each cluster.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "按组件确认发布状态",
+        "Release Status by Component"
+      ],
+      "d": [
+        "截至 2026-11-23，发布状态按组件与发行渠道记录。",
+        "As of November 23, 2026, release status is tracked by component and distribution channel."
+      ],
+      "b": [
+        [
+          "<p>截至 2026-11-23，NVIDIA 于 <strong>2026-05-31</strong> 公布 DSX OS 软件组合，于 <strong>2026-10-13</strong> 发布完整 Run:ai 平台的开源代码，并提供 NGC 社区版。<strong>2026-10-21</strong> 的公告将 Config Manager、Rack Management Service 和 Cluster Readiness Engine 列为开发者预览。</p>",
+          "<p>Config Manager 的公开更新日志记录了 <strong>2026-11-16</strong> 发布的 1.4.2 版本。NVIDIA 于 <strong>2026-11-10</strong> 公布 NVKE 与 NVKR 的公开预览，并将生产工作负载排除在该阶段的推荐用途之外。各项状态均对应具体组件或发行渠道。</p>"
+        ],
+        [
+          "<p>As of November 23, 2026, NVIDIA announced the DSX OS portfolio on <strong>May 31, 2026</strong>, and released the full Run:ai platform as open source on <strong>October 13, 2026</strong>, with a Community Product on NGC. NVIDIA’s <strong>October 21, 2026</strong> announcement listed Config Manager, Rack Management Service, and Cluster Readiness Engine in developer preview.</p>",
+          "<p>The public Config Manager changelog records the release of version 1.4.2 on <strong>November 16, 2026</strong>. NVIDIA announced <strong>public previews</strong> of NVKE and NVKR on <strong>November 10, 2026</strong>, with production workloads outside the recommended use at that stage. Each status applies to the named component or distribution channel.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

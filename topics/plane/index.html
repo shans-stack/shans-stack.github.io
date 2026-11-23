@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>多平面网络：让节点接入多套独立交换网络 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明多平面网络：让节点接入多套独立交换网络。节点经不同端口接入多套交换网络，传输可在平面间分配流量，并在失去一个平面时使用其余可达路径。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/plane.css?v=d4661cd0">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-plane">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="plane">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Multi-Plane Fabric: Connecting Nodes to Independent Fabrics">多平面网络：让节点接入多套独立交换网络</h1>
+        <p class="meta"><span data-en="5 steps · physical isolation, multipath, failure domains">5 步 · 物理隔离、多路径、故障域</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.opencompute.org/documents/ocp-open-cluster-designs-aligned-ai-training-fabric-ra-pdf&quot;&gt;OCP · AI Training Fabric Reference Architecture, Sections 5 and 6&lt;/a&gt;"><a href="https://www.opencompute.org/documents/ocp-open-cluster-designs-aligned-ai-training-fabric-ra-pdf">OCP · AI 训练网络参考架构，第 5、6 节</a></li>
+      <li data-en="&lt;a href=&quot;https://www.opencompute.org/documents/ocp-mrc-1-0-pdf&quot;&gt;OCP · MRC Specification, Section 9.3.2, Multi-Plane Path Selection&lt;/a&gt;"><a href="https://www.opencompute.org/documents/ocp-mrc-1-0-pdf">OCP · MRC 规范，第 9.3.2 节多平面路径选择</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/plane.js?v=a83623df"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "plane",
+ "ar": [
+  2.021276595744681,
+  0.6792452830188679
+ ],
+ "steps": [
+  {
+   "t": [
+    "同一平面内的多条路径",
+    "Multiple Paths Within One Plane"
+   ],
+   "d": [
+    "多条等价路径可以存在于同一套交换网络内。",
+    "Several equal-cost paths can exist within a single switching fabric."
+   ],
+   "b": [
+    [
+     "<p>平面指一套为相同端点提供连通性的交换网络。在单平面 Leaf–Spine 网络中，一对 Leaf 可以经不同 Spine 互通。数据包虽然可以走不同上联，这些路径仍共用连接端点的 Leaf 和端口。</p>"
+    ],
+    [
+     "<p>A plane is a switching fabric that provides connectivity to a set of endpoints. In a single-plane leaf–spine network, two leaves can reach one another through different spines. Packets can use different uplinks while still sharing the leaves and ports that attach the endpoints.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "每个平面有独立端口与交换路径",
+    "Separate Ports and Switching Paths"
+   ],
+   "d": [
+    "多平面设计让同一节点通过不同端口接入各自独立的交换网络。",
+    "A multi-plane design connects the same node to independent switching fabrics through separate ports."
+   ],
+   "b": [
+    [
+     "<p>图中的 A、B 平面各有自己的链路和交换路径，两端节点分别接入两套网络。数据在任一平面内都可以到达对端。轨道优化仍可用于平面内部，按 GPU 与网卡的亲和关系安排接入端口。</p>"
+    ],
+    [
+     "<p>Planes A and B in the diagram have their own links and switching paths. Both endpoints attach to both planes, and data can reach the peer through either fabric. Rail optimization can still be applied inside a plane to organize access ports by GPU-to-NIC affinity.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "由传输层在平面间分配数据",
+    "Transport Distribution Across Planes"
+   ],
+   "d": [
+    "具备多平面能力的传输可选择发送端口，把同一连接的数据铺到多个平面。",
+    "A multi-plane-capable transport can select egress ports and distribute packets from one connection across planes."
+   ],
+   "b": [
+    [
+     "<p>以 OCP 多路径可靠连接（MRC）规范为例，网卡把用于选路的熵值划分给各平面。发送时可以从可用平面中选择端口，并为同一个队列对发送多个包。队列对是 RDMA 中维护通信状态的一对发送与接收队列。</p>"
+    ],
+    [
+     "<p>In the OCP Multipath Reliable Connection (MRC) specification, the NIC assigns separate ranges of path-selection entropy values to planes. It can select among available ports to send packets for the same queue pair. A queue pair is a pair of send and receive queues that maintains communication state in RDMA.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "一个平面失效后的可用路径",
+    "Paths After a Plane Failure"
+   ],
+   "d": [
+    "一个平面失效时，支持恢复的传输可改用仍然可达的平面，可用容量随之减少。",
+    "After one plane fails, a transport that supports recovery can use a surviving plane with reduced available capacity."
+   ],
+   "b": [
+    [
+     "<p>若故障局限于平面 B，平面 A 的链路仍可用。在端点继续可达且传输能避开失效路径时，后续数据可以经 A 转发。故障检测、重传和恢复等待取决于具体协议与实现。</p>"
+    ],
+    [
+     "<p>If the failure is confined to plane B, links in plane A remain available. Later packets can travel through A if the endpoints remain reachable and the transport can avoid failed paths. Fault detection, retransmission, and recovery delays depend on the protocol and implementation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "平面隔离的边界",
+    "Boundaries of Plane Isolation"
+   ],
+   "d": [
+    "若多个平面共用同一张网卡或节点电源，共享部件仍可能同时影响多个平面。",
+    "When planes share a NIC or a node’s power supply, the shared component can still affect multiple planes."
+   ],
+   "b": [
+    [
+     "<p>故障域是可能被同一故障影响的一组资源。多平面可以隔离交换机和链路的故障，但同一张双端口网卡损坏时，两个端口都可能失效。端口、网卡和节点供电之间的依赖关系决定了故障隔离的边界。</p>"
+    ],
+    [
+     "<p>A failure domain is a set of resources that can be affected by the same fault. Separate planes can isolate switch and link failures. If both use a shared dual-port NIC, a fault in that NIC can take down both ports. Dependencies among ports, NICs, and node power define the boundary of isolation.</p>"
+    ]
+   ]
+  }
+ ]
+};
+
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

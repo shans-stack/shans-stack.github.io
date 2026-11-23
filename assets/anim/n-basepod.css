@@ -1,0 +1,37 @@
+.n-basepod-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:18px}
+.n-basepod-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-basepod-figure .n-basepod-start{text-anchor:start}
+.n-basepod-figure .n-basepod-heading{font-size:21px;font-weight:650}
+.n-basepod-figure .n-basepod-secondary,.n-basepod-figure .n-basepod-note{fill:var(--ink2);font-size:17px}
+.n-basepod-figure .n-basepod-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-basepod-figure .n-basepod-boundary{fill:none;stroke-dasharray:6 5}
+.n-basepod-figure .n-basepod-accent,.n-basepod-figure .n-basepod-active{stroke:var(--l4);stroke-width:2}
+.n-basepod-figure .n-basepod-active{fill:color-mix(in srgb,var(--l4) 13%,var(--bg))}
+.n-basepod-figure .n-basepod-link{fill:none;stroke:var(--ink3);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.n-basepod-figure .n-basepod-link.n-basepod-electrical{stroke:var(--l2)}
+.n-basepod-figure .n-basepod-link.n-basepod-optical{stroke:var(--l5)}
+.n-basepod-figure .n-basepod-link.n-basepod-network{stroke:var(--l4)}
+.n-basepod-figure .n-basepod-link.n-basepod-dashed{stroke-dasharray:5 5}
+.n-basepod-figure .n-basepod-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.5}
+.n-basepod-figure .n-basepod-packet.n-basepod-electrical{fill:var(--l2)}
+.n-basepod-figure .n-basepod-packet.n-basepod-optical{fill:var(--l5)}
+@media(max-width:640px){
+  .n-basepod-figure svg{font-size:15px}
+  .n-basepod-figure .n-basepod-heading{font-size:17px}
+  .n-basepod-figure .n-basepod-secondary,.n-basepod-figure .n-basepod-note{font-size:14px}
+}
+.n-basepod-figure .n-basepod-link.n-basepod-active{stroke-width:4}
+@media(max-width:640px){
+  body.topic-n-basepod.present .stage{padding:12px;row-gap:12px}
+  body.topic-n-basepod.present .stage .figbox{margin:0}
+  body.topic-n-basepod.present .stage .cap{display:block;margin:0}
+  body.topic-n-basepod.present .stage h2{font-size:24px}
+  body.topic-n-basepod.present .stage .desc{font-size:17px;line-height:1.5}
+  body.topic-n-basepod.present .stage .ctl{margin:0}
+}
+@media(640px < width <=720px){
+  body.topic-n-basepod .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-basepod-figure .n-basepod-packet{display:none}
+}

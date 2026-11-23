@@ -1,0 +1,20 @@
+.d-ha svg{display:block;width:100%;font-family:var(--f)}
+.d-ha text{fill:var(--ink);text-anchor:middle;dominant-baseline:middle;font-size:18px}
+.d-ha [data-tone=data]{--signal:var(--l6)}
+.d-ha [data-tone=meta]{--signal:var(--l4)}
+.d-ha [data-tone=failed]{--signal:var(--l1)}
+.d-ha [data-tone=idle]{--signal:var(--rule2)}
+.d-ha .d-ha-card{fill:color-mix(in srgb,var(--signal) 8%,var(--surface));stroke:var(--signal);stroke-width:1.5}
+.d-ha .d-ha-title{font-size:19px;font-weight:650}
+.d-ha .d-ha-detail,.d-ha .d-ha-note{fill:var(--ink2)}
+.d-ha .d-ha-link,.d-ha .d-ha-arrow,.d-ha .d-ha-boundary{fill:none;stroke:var(--signal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.d-ha [data-tone=idle] .d-ha-link,.d-ha [data-tone=failed] .d-ha-link{stroke-dasharray:4 5}
+.d-ha [data-tone=idle] .d-ha-link{stroke:var(--ink3)}
+.d-ha .d-ha-block{fill:var(--signal);stroke:var(--surface);stroke-width:1}
+.d-ha .d-ha-token{font-weight:650;fill:#000}
+@media (max-width:640px){
+  .d-ha text{font-size:15px}
+  .d-ha .d-ha-title{font-size:16px}
+}
+@media (641px <= width <= 720px){main[data-station="d-ha"] .mhost{aspect-ratio:var(--ar)}}
+main[data-station="d-ha"] .src li a{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:.2em}

@@ -68,8 +68,12 @@ function showWarn(t){warnEl.hidden=!t;warnEl.textContent=t}
 /* 手机：按线竖排 */
 function drawList(c){
   var stops=c.rt?c.rt.stops:[],h='';
-  c.lines.forEach(function(lid){
-    var ids=c.show.filter(function(id){return SS.stations[id].lines.indexOf(lid)>-1}).sort(function(a,b){return SS.posOf(a,mapId)-SS.posOf(b,mapId)});
+  /* 虚线支线不单列：它的站排在分出它的那一站后面，归进那一站所在的线 */
+  function on(lid,id){return SS.stations[id].lines.indexOf(lid)>-1}
+  var kidsOf={};c.lines.forEach(function(l){var b=SS.line[l].branch;if(b)(kidsOf[b]=kidsOf[b]||[]).push(l)});
+  c.lines.filter(function(l){return !SS.line[l].branch}).forEach(function(lid){
+    var base=c.show.filter(function(id){return on(lid,id)}).sort(function(a,b){return SS.posOf(a,mapId)-SS.posOf(b,mapId)}),ids=[];
+    base.forEach(function(id){ids.push(id);(kidsOf[id]||[]).forEach(function(bl){c.show.filter(function(k){return on(bl,k)}).sort(function(a,b){return SS.posOf(a,mapId)-SS.posOf(b,mapId)}).forEach(function(k){if(ids.indexOf(k)<0)ids.push(k)})})});
     h+='<div class="mline" style="--lc:'+SS.lc(lid)+'"><h3><a href="'+SS.lineHref(mapId,lid)+'" data-line="'+lid+'">'+SS.sym(lid)+SS.esc(SS.lineName(lid))+'</a><small>'+ids.length+L(' 站',' stops')+'</small></h3><ol>';
     ids.forEach(function(id){
       var s=SS.stations[id],ls=SS.linesIn(id,mapId),x=ls.length>1,n=stops.indexOf(id);
@@ -100,7 +104,7 @@ function caption(){
   cap.innerHTML='<p><b>'+SS.esc(nm)+'</b>　'+meta+'</p>'+go+'<ol>'+r.stops.map(function(id,i){return '<li style="--lc:'+SS.lc(r.at[i].line)+'"><i>'+(i+1)+'</i>'+SS.esc(SS.name(id))+'</li>'}).join('')+'</ol>';
 }
 function legend(){
-  key.innerHTML=map.lines.map(function(l){return '<span>'+SS.sym(l)+'<i class="bar" style="background:'+SS.lc(l)+'"></i>'+SS.esc(SS.lineName(l))+'</span>'}).join('')+
+  key.innerHTML=map.lines.filter(function(l){return !SS.line[l].branch}).map(function(l){return '<span>'+SS.sym(l)+'<i class="bar" style="background:'+SS.lc(l)+'"></i>'+SS.esc(SS.lineName(l))+'</span>'}).join('')+
     '<span><i class="cap-k"></i>'+L('换乘站','Transfer stop')+'</span><span><i class="pr-k"></i>'+L('同一主题，另一站在不相邻的线上','Same topic, other stop on a non-adjacent line')+'</span>'+
     (topic?'<span><i class="gn-k"></i>'+L('粗圈：总图上也有的通识站','Bold ring: a general stop that is also on the main map')+'</span>':'');
 }

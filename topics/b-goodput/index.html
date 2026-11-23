@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>推理延迟与有效吞吐 · Shan's Stack</title>
+<meta name="description" content="分 5 步解释流式推理延迟的计时边界、服务目标筛选、有效吞吐和负载扫描。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-goodput.css?v=9a8168e0">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-goodput">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-goodput">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Inference Latency and Goodput">推理延迟与有效吞吐</h1>
+        <p class="meta"><span data-en="5 steps · TTFT, ITL, TPOT, SLO">5 步 · TTFT、ITL、TPOT、SLO</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/ai-dynamo/aiperf/blob/v0.14.0/docs/tutorials/goodput.md&quot;&gt;AIPerf: Goodput and Attainment&lt;/a&gt;"><a href="https://github.com/ai-dynamo/aiperf/blob/v0.14.0/docs/tutorials/goodput.md">AIPerf：Goodput 与达标比例</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/ai-dynamo/aiperf/releases/tag/v0.14.0&quot;&gt;AIPerf v0.14.0 Release&lt;/a&gt;"><a href="https://github.com/ai-dynamo/aiperf/releases/tag/v0.14.0">AIPerf v0.14.0 发布</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vllm.ai/en/stable/cli/bench/serve/&quot;&gt;vLLM: Online Benchmarking and Goodput Options&lt;/a&gt;"><a href="https://docs.vllm.ai/en/stable/cli/bench/serve/">vLLM：在线压测与 Goodput 参数</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/vllm-project/vllm/releases/tag/v0.34.0&quot;&gt;vLLM v0.34.0 Release&lt;/a&gt;"><a href="https://github.com/vllm-project/vllm/releases/tag/v0.34.0">vLLM v0.34.0 发布</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/vllm-project/vllm/blob/v0.34.0/vllm/benchmarks/serve.py&quot;&gt;vLLM v0.34.0 Request Metric Implementation&lt;/a&gt;"><a href="https://github.com/vllm-project/vllm/blob/v0.34.0/vllm/benchmarks/serve.py">vLLM v0.34.0 请求计量实现</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-goodput.js?v=068afec9"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-goodput",
+ "ar": [
+  2.5641025641025643,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "同一请求的计时边界",
+    "Timing Boundaries of a Request"
+   ],
+   "d": [
+    "首 Token 时延描述多久收到开头，端到端延迟描述多久收到整次响应。",
+    "Time to first token describes when output starts. End-to-end latency describes when the full response arrives."
+   ],
+   "b": [
+    [
+     "<p>在流式推理中，客户端可在回复完成前接收输出。TTFT（Time to First Token）从客户端发出请求计到收到首个输出 Token，包含客户端观测到的网络、排队及服务处理时间。端到端延迟从同一起点计到响应完成。</p>",
+     "<p>Goodput 是指标。本文工具口径对应 AIPerf v0.14.0（2026-11-20）与 vLLM v0.34.0（2026-11-16）。</p>"
+    ],
+    [
+     "<p>In streaming inference, a client can receive output before the response is complete. TTFT (time to first token) runs from sending the request to receiving the first output token and includes network, queueing, and service time observed by the client. End-to-end latency uses the same start and ends at response completion.</p>",
+     "<p>Goodput is a metric. The tool definitions here correspond to AIPerf v0.14.0 (2026-11-20) and vLLM v0.34.0 (2026-11-16).</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Token 间隔与平均生成时间",
+    "Token Gaps and Mean Generation Time"
+   ],
+   "d": [
+    "ITL 是相邻输出 Token 的间隔，TPOT 常指首 Token 之后的每 Token 平均耗时。",
+    "ITL is the gap between adjacent output tokens. TPOT commonly means average time per token after the first."
+   ],
+   "b": [
+    [
+     "<p>ITL（Inter-Token Latency）描述输出过程中的间隔。TPOT（Time per Output Token）在 vLLM 的请求级口径下，用首 Token 后的耗时除以后续输出 Token 数。单 Token 输出没有后续间隔，流式批量返回的计量也依工具定义。</p>",
+     "<p>同一次请求可以出现一次明显停顿，同时保持较小的平均 TPOT。分位数的统计对象可能是 Token 间隔，也可能是每个请求的平均值。</p>"
+    ],
+    [
+     "<p>ITL (inter-token latency) describes gaps during output. At the request level in vLLM, TPOT (time per output token) divides time after the first token by the number of subsequent output tokens. A single-token output has no subsequent gap, and batched streaming delivery is handled according to the tool's definition.</p>",
+     "<p>A request can have a pronounced stall while retaining a small mean TPOT. Percentiles may summarize token gaps or per-request averages.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用服务目标筛选请求",
+    "Filtering Requests by Service Objectives"
+   ],
+   "d": [
+    "有效吞吐等于测量窗口内同时满足所有目标的完成请求数除以窗口时长。",
+    "Goodput divides the number of completed requests meeting every objective by the measurement window duration."
+   ],
+   "b": [
+    [
+     "<p>SLO（服务等级目标）规定允许的指标上限。带多个限制的运行逐请求检查每项限制。发生错误或超过任一目标的请求不贡献 goodput。完成请求速率与输出 Token 速率使用另外的计量口径。</p>",
+     "<p>达标比例回答另一项问题：所有尝试中有多大比例达标。一个运行点可以有较高的 goodput，同时未达到要求的达标比例。</p>"
+    ],
+    [
+     "<p>An SLO (service-level objective) sets an acceptable metric limit. A run with multiple limits evaluates each request against every limit. Errors and requests exceeding any objective contribute no goodput. Completion rate and output token rate use separate accounting.</p>",
+     "<p>The attainment fraction answers a different question: what share of attempted requests passed? A load point can have high goodput and still fall short of a required attainment fraction.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "扫描负载并记录约束",
+    "Sweeping Load and Recording Constraints"
+   ],
+   "d": [
+    "固定请求分布和各项门槛，在不同请求速率或并发下观测 goodput。",
+    "Keep the request distribution and limits fixed while measuring goodput across request rates or concurrency levels."
+   ],
+   "b": [
+    [
+     "<p>在线压测确定模型、接口、流式模式、输入与输出长度分布、请求到达方式、预热与测量窗口，然后改变请求速率或并发上限。AIPerf 与 <code>vllm bench serve</code> 均用 <code>--goodput</code> 表达限制，具体指标名称和单位以对应版本文档为准。</p>",
+     "<p>比较时记录请求错误、完成吞吐、达标速率和达标比例。固定门槛让各负载点采用相同的筛选条件。</p>"
+    ],
+    [
+     "<p>An online load test fixes the model, endpoint, streaming mode, input and output length distributions, arrivals, warm-up, and measurement window before varying request rate or concurrency. AIPerf and <code>vllm bench serve</code> both accept <code>--goodput</code> constraints, with metric names and units defined in their versioned documentation.</p>",
+     "<p>A comparison records errors, completion throughput, goodput, and attainment. Holding limits constant applies the same filter at every load point.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "吞吐增长与排队",
+    "Throughput Growth and Queueing"
+   ],
+   "d": [
+    "负载增加时，完成吞吐可能继续增长，而排队使更多请求超过时延目标。",
+    "As load rises, completion throughput can keep growing while queueing causes more requests to miss latency targets."
+   ],
+   "b": [
+    [
+     "<p>完成速率反映完成量，goodput 反映规定时延内的完成量。两项在拥塞时可能向不同方向变化。结合尾延迟、失败和达标比例，可以判断增加并发后是否还能维持服务目标。</p>",
+     "<p>不同模型、请求长度分布、输出上限和 SLO 对应不同的容量条件。</p>"
+    ],
+    [
+     "<p>Completion rate measures completed work, while goodput measures work completed within the declared latency limits. They can move in different directions under congestion. Tail latency, failures, and attainment show whether higher concurrency still satisfies service goals.</p>",
+     "<p>Different models, request lengths, output caps, and SLOs define different capacity conditions.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

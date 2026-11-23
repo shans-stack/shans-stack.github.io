@@ -1,0 +1,35 @@
+.b-compare-scene { display: block; width: 100%; height: auto; }
+.b-compare-scene text {
+  fill: var(--ink);
+  font: 500 18px var(--f);
+  dominant-baseline: central;
+}
+.b-compare-scene .b-compare-note { fill: var(--ink2); }
+.b-compare-scene .b-compare-box,
+.b-compare-scene .b-compare-accent,
+.b-compare-scene .b-compare-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.b-compare-scene .b-compare-accent { stroke: var(--lc); stroke-width: 2; }
+.b-compare-scene .b-compare-quiet { stroke-dasharray: 4 4; }
+.b-compare-scene .b-compare-line,
+.b-compare-scene .b-compare-guide,
+.b-compare-scene .b-compare-active {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-compare-scene .b-compare-guide { stroke-dasharray: 4 4; }
+.b-compare-scene .b-compare-active { stroke: var(--lc); stroke-width: 3; }
+.b-compare-scene .b-compare-token { fill: var(--lc); }
+.b-compare-scene .b-compare-alt { fill: var(--ink2); }
+body.topic-b-compare .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-compare .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-compare.present .stage .figbox { margin-block: 0; }
+  .b-compare-scene text { font-size: 16px; }
+}

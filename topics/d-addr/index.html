@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infinia 租户键空间与访问隔离 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明Infinia 租户键空间与访问隔离。租户标识限定数据键的逻辑范围，访问控制决定请求是否获准。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-addr.css?v=01371ecd">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-addr">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Infinia Tenant Keyspaces and Access Isolation">Infinia 租户键空间与访问隔离</h1>
+        <p class="meta"><span data-en="5 steps · Multi-tenancy, keyspaces, access control">5 步 · 多租户、键空间、访问控制</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/infinia/&quot;&gt;DDN Infinia Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/infinia/">DDN Infinia 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/resources/solution-briefs/infinia-multi-tenancy-solution-brief/&quot;&gt;DDN Solution Brief · Infinia Multi-Tenancy&lt;/a&gt;"><a href="https://www.ddn.com/resources/solution-briefs/infinia-multi-tenancy-solution-brief/">DDN 技术简报 · Infinia 多租户</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-multi-tenancy-2024-rebrand.pdf&quot;&gt;DDN Technical Brief · Tenant Identifiers and Hierarchy&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-multi-tenancy-2024-rebrand.pdf">DDN 技术简报 · 租户标识与层级</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-data-sheet-2024-rebrand-V4-3-1.pdf&quot;&gt;DDN Infinia Data Sheet · Adaptive I/O and Dynamic Erasure Coding&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-data-sheet-2024-rebrand-V4-3-1.pdf">DDN Infinia 数据表 · 自适应 I/O 与动态纠删码</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-addr.js?v=02da7477"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-addr",
+ "ar": [
+  960/416,
+  400/400
+ ],
+ "steps": [
+  {
+   "t": [
+    "共享资源上的逻辑租户",
+    "Logical Tenants on Shared Resources"
+   ],
+   "d": [
+    "多个租户共享物理集群，各有独立的数据和管理范围。",
+    "Several tenants share the physical cluster while retaining separate data and management scopes."
+   ],
+   "b": [
+    [
+     "<p>租户是面向一组用户或应用的逻辑资源边界。Infinia 允许各租户在共享存储基础设施上管理各自的数据和资源份额。</p>"
+    ],
+    [
+     "<p>A tenant is a logical resource boundary for a group of users or applications. Infinia lets tenants manage their own data and resource shares on shared storage infrastructure.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "数据键包含租户标识",
+    "Data Keys Include a Tenant Identifier"
+   ],
+   "d": [
+    "在共享引擎中，租户标识把记录归入对应键空间。",
+    "In the shared engine, a tenant identifier assigns a record to its tenant’s keyspace."
+   ],
+   "b": [
+    [
+     "<p>键空间是管理键的逻辑范围。DDN 公开说明 Infinia 把租户标识写入数据键。在图中，A 和 B 中同名的记录属于不同范围。</p>"
+    ],
+    [
+     "<p>A keyspace is a logical scope for keys. DDN states that Infinia includes the tenant identifier in its data keys. The diagram shows identically named records in separate tenant scopes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "授权约束请求范围",
+    "Authorization Governs Request Scope"
+   ],
+   "d": [
+    "租户范围用于定位记录，访问控制用于判定请求权限。",
+    "Tenant scope identifies the target record, and access controls determine request permissions."
+   ],
+   "b": [
+    [
+     "<p>定位数据和授予权限解决两个问题：数据位于哪个逻辑范围，请求者在该范围内可以执行哪些操作。DDN 将访问控制与租户隔离列为 Infinia 的安全机制。图中展现各请求的权限结果。</p>"
+    ],
+    [
+     "<p>Addressing and authorization answer two questions: which logical scope contains the data, and which operations the requester may perform in that scope. DDN identifies access control and tenant isolation as Infinia security mechanisms. The diagram shows example authorization outcomes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "子租户与数据集范围",
+    "Subtenant and Dataset Scopes"
+   ],
+   "d": [
+    "多租户层级可继续划分到子租户及其数据集。",
+    "The tenant hierarchy can extend to subtenants and their datasets."
+   ],
+   "b": [
+    [
+     "<p>子租户是租户下的资源分配与管理范围。Infinia 支持给子租户分配资源及其数据集，也支持按租户或子租户角色委派管理权限。</p>"
+    ],
+    [
+     "<p>A subtenant is a resource allocation and administrative scope within a tenant. Infinia supports allocating resources and datasets to subtenants and delegating administrative rights for tenant or subtenant roles.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "隔离延伸至各数据接口",
+    "Isolation Across Data Interfaces"
+   ],
+   "d": [
+    "各数据接口承载自己的请求语义，并沿用底层租户范围。",
+    "Each data interface retains its request semantics and uses the underlying tenant scope."
+   ],
+   "b": [
+    [
+     "<p>对象、文件和原生推理缓存都由 Infinia 键值引擎承载。租户标识进入底层数据键后，对应数据范围适用于这些服务。资源份额由 QoS 策略管理。</p>"
+    ],
+    [
+     "<p>Objects, files, and native KV cache share the Infinia key-value engine. Tenant identifiers in the underlying keys scope data across these services. QoS policies manage resource shares.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

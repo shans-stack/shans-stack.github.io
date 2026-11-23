@@ -1,0 +1,31 @@
+.n-grace-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:19px}
+.n-grace-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-grace-figure .n-grace-detail,.n-grace-figure .n-grace-caption,.n-grace-figure .n-grace-note{font-size:17px;fill:var(--ink2)}
+.n-grace-figure .n-grace-label{font-weight:650}
+.n-grace-figure .n-grace-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-grace-figure .n-grace-primary{stroke:var(--l4)}
+.n-grace-figure .n-grace-optional{stroke-dasharray:5 4}
+.n-grace-figure .n-grace-active{fill:color-mix(in srgb,var(--l4) 14%,var(--bg));stroke:var(--l4);stroke-width:2}
+.n-grace-figure .n-grace-alert,.n-grace-figure .n-grace-alert.n-grace-active{stroke:var(--l1);fill:color-mix(in srgb,var(--l1) 16%,var(--bg))}
+.n-grace-figure .n-grace-link{fill:none;stroke:var(--l4);stroke-width:2;stroke-linejoin:round}
+.n-grace-figure .n-grace-link.n-grace-signal{stroke:var(--l5)}
+.n-grace-figure .n-grace-link.n-grace-control{stroke:var(--ink3);stroke-dasharray:5 4}
+.n-grace-figure .n-grace-link.n-grace-fault{stroke:var(--l1);stroke-dasharray:2 7}
+.n-grace-figure .n-grace-packet{fill:var(--l4);stroke:var(--bg);stroke-width:1.2}
+.n-grace-figure .n-grace-packet.n-grace-control{fill:var(--ink3)}
+.n-grace-figure .n-grace-packet.n-grace-signal{fill:var(--l5)}
+@media(max-width:640px){
+  .n-grace-figure svg{font-size:17px}
+  .n-grace-figure .n-grace-detail,.n-grace-figure .n-grace-caption,.n-grace-figure .n-grace-note{font-size:16px}
+  body.topic-n-grace.present .stage{padding:12px;row-gap:10px}
+  body.topic-n-grace.present .stage .figbox,body.topic-n-grace.present .stage .cap,body.topic-n-grace.present .stage .ctl{margin:0}
+  body.topic-n-grace.present .stage .cap{display:block}
+  body.topic-n-grace.present .stage h2{font-size:24px}
+  body.topic-n-grace.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-grace .mhost{aspect-ratio:var(--ar)}
+}
+@media(prefers-reduced-motion:reduce){
+  .n-grace-figure .n-grace-packet{display:none}
+}

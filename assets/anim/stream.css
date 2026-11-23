@@ -1,0 +1,22 @@
+.topic-stream .mhost{aspect-ratio:var(--ar)}
+@media(max-width:640px){.topic-stream .mhost{aspect-ratio:var(--arm)}}
+.stream-scene{display:block;width:100%;height:auto;font:500 17px var(--f);color:var(--ink)}
+.stream-scene text{dominant-baseline:middle;fill:currentColor}
+.stream-scene .stream-title{font-size:19px;font-weight:600}
+.stream-scene .stream-detail,.stream-scene .stream-note{font-size:15px;color:var(--ink2)}
+.stream-scene .stream-note{font-weight:400;color:var(--ink3)}
+.stream-scene .stream-id{font-variant-numeric:tabular-nums}
+.stream-node,.stream-fill{fill:var(--surface);stroke:var(--rule2);stroke-width:1.5}
+.stream-slot{fill:var(--bg);stroke:var(--rule2);stroke-dasharray:3 3}
+.stream-wire{fill:none;stroke:var(--blk);stroke-width:1.5;stroke-linejoin:round}
+.stream-marker{fill:var(--ink2)}
+.stream-wait .stream-fill{fill:color-mix(in srgb,var(--l1) 24%,var(--surface));stroke:var(--l1)}
+.stream-ready .stream-fill{fill:color-mix(in srgb,var(--l5) 24%,var(--surface));stroke:var(--l5)}
+.stream-scene .stream-strain{fill:color-mix(in srgb,var(--ink) 55%,var(--l1));font-weight:600}
+.stream-scene .stream-recovered{fill:color-mix(in srgb,var(--ink) 55%,var(--l5));font-weight:600}
+@media(max-width:640px){
+  .stream-scene .stream-detail,.stream-scene .stream-note{font-size:16px}
+  .topic-stream .stage h2{font-size:25px}
+  .topic-stream .stage .desc{font-size:17px}
+}
+@media(max-width:440px){.topic-stream .hd .wrap{gap:8px}}

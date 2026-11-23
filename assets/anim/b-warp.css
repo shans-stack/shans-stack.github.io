@@ -1,0 +1,39 @@
+.b-warp-scene { display: block; width: 100%; height: auto; }
+
+.b-warp-scene text {
+  fill: var(--ink);
+  font: 500 19px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.b-warp-scene .b-warp-box,
+.b-warp-scene .b-warp-accent,
+.b-warp-scene .b-warp-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.4;
+}
+
+.b-warp-scene .b-warp-accent { stroke: var(--lc); stroke-width: 2; }
+.b-warp-scene .b-warp-quiet { stroke-dasharray: 4 5; }
+.b-warp-scene .b-warp-line,
+.b-warp-scene .b-warp-guide {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-warp-scene .b-warp-guide { stroke-dasharray: 4 5; }
+.b-warp-scene .b-warp-note { fill: var(--ink2); }
+.b-warp-scene .b-warp-signal { fill: var(--lc); }
+
+body.topic-b-warp .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-warp .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-warp.present .stage .figbox { margin-block: 0; }
+  .b-warp-scene text { font-size: 17px; }
+}
+
+.b-warp-scene .b-warp-metadata-signal { fill: var(--ink3); }

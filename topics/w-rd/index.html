@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA 参考设计：合格平台与部署 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA 参考设计：合格平台与部署。WEKA 参考设计列明用于运行 NeuralMesh 的合格服务器、网络接线和经过验证的组合。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-rd.css?v=73d2fa60">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-rd">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-rd">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA Reference Designs: Qualified Platforms and Deployment">WEKA 参考设计：合格平台与部署</h1>
+        <p class="meta"><span data-en="5 steps · Qualified Program, Servers, Topology">5 步 · Qualified Program、服务器、拓扑</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/2026/04/WEKA-Qualified-Program-Nitro-Reference-Design-for-NVIDIA-HGX-H200-B200-B300.pdf&quot;&gt;WEKA Qualified Program: HGX H200, B200, and B300 Reference Design&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/2026/04/WEKA-Qualified-Program-Nitro-Reference-Design-for-NVIDIA-HGX-H200-B200-B300.pdf">WEKA Qualified Program：HGX H200、B200、B300 参考设计</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/resources/reference-architecture/nvidia-gb200-nvl72-systems-reference-architecture-for-cloud-partners&quot;&gt;WEKA Qualified Program: GB200 and GB300 NVL72 Reference Design&lt;/a&gt;"><a href="https://www.weka.io/resources/reference-architecture/nvidia-gb200-nvl72-systems-reference-architecture-for-cloud-partners">WEKA Qualified Program：GB200、GB300 NVL72 参考设计</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/resources/2024/07/WEKApod-DGX-SuperPOD.pdf&quot;&gt;WEKA and NVIDIA: Validated DGX SuperPOD Reference Architecture (May 2024)&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/resources/2024/07/WEKApod-DGX-SuperPOD.pdf">WEKA 与 NVIDIA：DGX SuperPOD 验证参考架构（2024-05）</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-rd.js?v=11d235fc"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-rd",
+ "ar": [
+  2.5454545454545454,
+  0.875
+ ],
+ "steps": [
+  {
+   "t": [
+    "一体机与参考设计",
+    "Appliance and Reference Design"
+   ],
+   "d": [
+    "NeuralMesh 可部署在 WEKApod 或符合所选参考设计要求的合格平台上。",
+    "NeuralMesh can run on WEKApod or a qualified platform that meets the selected reference design."
+   ],
+   "b": [
+    [
+     "<p>WEKApod 是预装软件的一体机。参考设计描述了验证过的软硬件组合和连线方式。以公开的 HGX 参考设计为例，文档允许采用 WEKApod 或符合规格表的其他 WEKA 合格平台。</p>"
+    ],
+    [
+     "<p>WEKApod is an appliance with preinstalled software. A reference design describes a tested combination of hardware, software, and connections. The published HGX design allows a WEKApod appliance or another WEKA-qualified platform that meets its specification.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "合格存储服务器",
+    "Qualified Storage Servers"
+   ],
+   "d": [
+    "参考设计按处理器、内存、NVMe 盘和网卡描述验证配置。",
+    "The reference design specifies the tested CPU, memory, NVMe, and network adapters."
+   ],
+   "b": [
+    [
+     "<p>以 HGX 设计为例，验证表列明处理器、内存通道、TLC NVMe、PCIe 通道和存储网络适配器。每台 WEKA 存储服务器同时运行数据和元数据服务。元数据是文件大小、位置等描述文件的信息。</p>"
+    ],
+    [
+     "<p>In the HGX design, the validation table covers the CPU, memory channels, TLC NVMe, PCIe lanes, and storage adapters. Each WEKA storage server runs data and metadata services. Metadata describes files, including information such as size and location.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "接入存储网络",
+    "Connecting to the Storage Fabric"
+   ],
+   "d": [
+    "接线图规定存储节点接入哪些交换机，以及不同链路承担的职责。",
+    "The cabling plan identifies the switches for each storage node and the role of each link."
+   ],
+   "b": [
+    [
+     "<p>HGX 示例把存储节点的两张网卡分别接入一对叶交换机，双路均工作。叶交换机是直接接入服务器的一层交换机。数据链路承载应用 I/O，管理链路用于管理和维护。</p>"
+    ],
+    [
+     "<p>The HGX example connects two adapters on each storage node to separate leaf switches, with both paths active. A leaf switch sits at the layer that directly connects to servers. Data links carry application I/O. Management links support administration and maintenance.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按验证范围解读",
+    "Reading the Validation Scope"
+   ],
+   "d": [
+    "平台、接线和验证负载共同界定一份参考设计的适用范围。",
+    "Platform, cabling, and tested workloads define the scope of a reference design."
+   ],
+   "b": [
+    [
+     "<p>WEKA 分别发布 HGX 和 NVL72 的 NCP 参考设计。较早的 DGX SuperPOD 文档还列出存储微基准、实际应用和功能验证，分别检查 I/O、训练表现和系统功能。不同文档中的验证结论对应各自记录的组合。</p>"
+    ],
+    [
+     "<p>WEKA publishes separate NCP designs for HGX and NVL72. Its earlier DGX SuperPOD document covers storage microbenchmarks, real applications, and functional testing, addressing I/O, training behavior, and system functions. Each document’s validation applies to the combination it describes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "部署选择与 NCP",
+    "Deployment Selection and NCP"
+   ],
+   "d": [
+    "云伙伴部署还要对照对应的 NVIDIA GPU 平台和高性能存储要求。",
+    "Cloud Partner deployments also map to the applicable NVIDIA GPU platform and High-Performance Storage requirements."
+   ],
+   "b": [
+    [
+     "<p>同一款 NeuralMesh 软件可以用于多种部署形态。选定平台后，参考设计进一步限定存储拓扑和配置依据。NCP 站展示 WEKA 存储如何接入 NVIDIA 云伙伴整套架构。</p>"
+    ],
+    [
+     "<p>The same NeuralMesh software supports several deployment forms. Once a platform is selected, the applicable reference design defines the storage topology and configuration basis. The NCP stop covers how WEKA storage fits into a NVIDIA Cloud Partner deployment.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

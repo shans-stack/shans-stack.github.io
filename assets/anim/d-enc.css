@@ -1,0 +1,20 @@
+.d-enc svg{display:block;width:100%;font-family:var(--f)}
+.d-enc text{fill:var(--ink);text-anchor:middle;dominant-baseline:middle;font-size:18px}
+.d-enc [data-tone=data]{--signal:var(--l6)}
+.d-enc [data-tone=meta]{--signal:var(--l4)}
+.d-enc [data-tone=failed]{--signal:var(--l1)}
+.d-enc [data-tone=idle]{--signal:var(--rule2)}
+.d-enc .d-enc-card{fill:color-mix(in srgb,var(--signal) 8%,var(--surface));stroke:var(--signal);stroke-width:1.5}
+.d-enc .d-enc-title{font-size:19px;font-weight:650}
+.d-enc .d-enc-detail,.d-enc .d-enc-note{fill:var(--ink2)}
+.d-enc .d-enc-link,.d-enc .d-enc-arrow,.d-enc .d-enc-boundary{fill:none;stroke:var(--signal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.d-enc [data-tone=idle] .d-enc-link,.d-enc [data-tone=failed] .d-enc-link{stroke-dasharray:4 5}
+.d-enc [data-tone=idle] .d-enc-link{stroke:var(--ink3)}
+.d-enc .d-enc-block{fill:var(--signal);stroke:var(--surface);stroke-width:1}
+.d-enc .d-enc-token{font-weight:650;fill:#000}
+@media (max-width:640px){
+  .d-enc text{font-size:15px}
+  .d-enc .d-enc-title{font-size:16px}
+}
+@media (641px <= width <= 720px){main[data-station="d-enc"] .mhost{aspect-ratio:var(--ar)}}
+main[data-station="d-enc"] .src li a{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:.2em}

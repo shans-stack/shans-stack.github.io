@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lustre 原生客户端 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Lustre 原生客户端。原生客户端向应用提供统一的文件系统视图，根据布局直接访问所需的存储服务。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-client.css?v=2e6b8558">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-client">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Native Lustre Client">Lustre 原生客户端</h1>
+        <p class="meta"><span data-en="5 steps · Linux, Mounting, Parallel I/O">5 步 · Linux、挂载、并行 I/O</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/lustre-file-system-exascaler/&quot;&gt;DDN EXAScaler Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/lustre-file-system-exascaler/">DDN EXAScaler 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://doc.lustre.org/lustre_manual.pdf&quot;&gt;Lustre Operations Manual: Components, Mounting, and Client Configuration (Chapters 1, 10, and 11)&lt;/a&gt;"><a href="https://doc.lustre.org/lustre_manual.pdf">Lustre Operations Manual：组件、挂载与客户端配置（第 1、10、11 章）</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Architecture_for_Admins&quot;&gt;Lustre Wiki: Architecture and Data Flow&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Architecture_for_Admins">Lustre 官方文档：架构与数据流</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Resiliency%3A_Understanding_Lustre_Message_Loss_and_Tuning_for_Resiliency&quot;&gt;Lustre Wiki: Lustre Locking&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Resiliency%3A_Understanding_Lustre_Message_Loss_and_Tuning_for_Resiliency">Lustre 官方文档：Lustre 锁机制</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-client.js?v=e17843d9"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-client",
+ "ar": [
+  3.52,
+  1.1842105263157894
+ ],
+ "steps": [
+  {
+   "t": [
+    "应用通过本地挂载点访问",
+    "A Local Mount Point for Applications"
+   ],
+   "d": [
+    "Linux 上的 Lustre 原生客户端向应用呈现一个挂载点，接收普通文件操作。",
+    "The native Lustre client presents a mount point on Linux and accepts standard file operations."
+   ],
+   "b": [
+    [
+     "<p>EXAScaler 基于 Lustre。原生客户端运行在 Linux 内核中，负责把应用的文件操作转换成 Lustre 请求。挂载点是文件系统接入本地目录树的位置。应用通过这个路径使用 POSIX 文件接口，例如打开和读取文件。</p>"
+    ],
+    [
+     "<p>EXAScaler is based on Lustre. The native client runs in the Linux kernel and translates application file operations into Lustre requests. A mount point attaches the file system to the local directory tree. Applications use POSIX file interfaces, such as open and read, through that path.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "挂载时获取服务配置",
+    "Service Configuration at Mount Time"
+   ],
+   "d": [
+    "客户端从管理服务器取得目标卷和服务端点的配置。",
+    "The client obtains target and service endpoint configuration from the management server."
+   ],
+   "b": [
+    [
+     "<p>管理服务器（Management Server，MGS）提供文件系统的配置。客户端挂载时获取元数据目标卷（MDT）、对象存储目标卷（OST）及其服务节点的网络标识，用这些配置建立与相应服务的连接。</p>"
+    ],
+    [
+     "<p>The management server (MGS) supplies the file system configuration. At mount time the client learns about metadata targets (MDTs), object storage targets (OSTs), and the network identifiers of their service nodes. It uses that information to connect to the corresponding services.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "打开文件时取得布局",
+    "Obtaining the Layout at Open"
+   ],
+   "d": [
+    "对于需要远程查找的文件，客户端向元数据服务器解析路径并取得文件布局。",
+    "For a file that requires a remote lookup, the client resolves the path and obtains the layout from the metadata server."
+   ],
+   "b": [
+    [
+     "<p>文件系统配置说明有哪些服务，文件布局则告诉客户端该文件的数据在哪些对象上，以及字节范围如何映射到对象。Lustre 客户端在打开文件时可向元数据服务器（MDS）取得这份布局。</p>"
+    ],
+    [
+     "<p>The file system configuration describes the available services. A file layout identifies the objects that hold a particular file&#39;s data and maps byte ranges to those objects. The Lustre client can obtain this layout from the metadata server (MDS) when it opens the file.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "直接读取多个数据对象",
+    "Direct Reads from Multiple Data Objects"
+   ],
+   "d": [
+    "当读取范围跨多个对象时，客户端可并行联系对应的 OSS，并按偏移返回文件数据。",
+    "When a read spans multiple objects, the client can contact the relevant OSS nodes in parallel and return the bytes in file order."
+   ],
+   "b": [
+    [
+     "<p>对象存储服务器（Object Storage Server，OSS）负责服务端的对象读写。客户端把一个文件读请求拆成面向各个对象的请求，使应用继续使用一个文件句柄，也就是应用操作已打开文件时使用的标识。</p>"
+    ],
+    [
+     "<p>Object storage servers (OSS nodes) handle server-side object I/O. The client splits a file read into requests for individual objects. The application keeps using one file descriptor, the handle it uses to operate on the open file.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "分布式锁协调共享访问",
+    "Distributed Locks Coordinate Shared Access"
+   ],
+   "d": [
+    "多个客户端访问同一数据范围时，服务端用锁协调冲突请求和相关缓存。",
+    "When clients access the same data range, the server uses locks to coordinate conflicting requests and their caches."
+   ],
+   "b": [
+    [
+     "<p>分布式锁用于协调不同节点对同一资源的访问。对于重叠范围上的冲突读写，OSS 可要求现有客户端释放锁，待该客户端完成相关 I/O 并释放锁后，再向等待方授予锁。</p>"
+    ],
+    [
+     "<p>A distributed lock coordinates access to the same resource from different nodes. For conflicting reads and writes to an overlapping range, the OSS can ask the current holder to release its lock. Once that client finishes the relevant I/O and releases the lock, the server can grant it to the waiting client.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cuDNN：从算子图到 GPU 执行 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 cuDNN 如何用算子图、执行计划和算子融合在 GPU 上运行深度学习计算。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-cudnn.css?v=f7e935e2">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-cudnn">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-cudnn">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="cuDNN: From Operation Graphs to GPU Execution">cuDNN：从算子图到 GPU 执行</h1>
+        <p class="meta"><span data-en="5 steps · Tensors, Execution Plans, Operation Fusion">5 步 · 张量、执行计划、算子融合</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cudnn/overview&quot;&gt;NVIDIA cuDNN Overview&lt;/a&gt;"><a href="https://docs.nvidia.com/cudnn/overview">NVIDIA cuDNN 概览</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/cudnn/latest/developer/graph-api/&quot;&gt;cuDNN Graphs and Engines&lt;/a&gt;"><a href="https://docs.nvidia.com/cudnn/latest/developer/graph-api/">cuDNN 算子图与引擎</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/cudnn/backend/v9.0.0/developer/graph-api.html&quot;&gt;Convolution Fusion and Execution Example&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/cudnn/backend/v9.0.0/developer/graph-api.html">卷积融合与执行示例</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-cudnn.js?v=5464e765"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-cudnn",
+  "ar": [
+    2.7439024390243905,
+    0.8181818181818182
+  ],
+  "steps": [
+    {
+      "t": [
+        "GPU 上的深度学习算子",
+        "Deep Learning Operations on the GPU"
+      ],
+      "d": [
+        "框架可调用 cuDNN，在 NVIDIA GPU 上执行卷积、矩阵乘法和注意力等深度学习算子。",
+        "A framework can call cuDNN to run deep learning operations such as convolution, matrix multiplication, and attention on NVIDIA GPUs."
+      ],
+      "b": [
+        [
+          "\u003cp>算子是对张量执行的运算，张量是按一个或多个维度排列的数据。cuDNN 提供用于训练和推理的 GPU 实现，框架可调用这些实现来执行模型中的一段计算。\u003c/p>"
+        ],
+        [
+          "\u003cp>An operation computes on tensors, which are arrays organized along one or more dimensions. cuDNN supplies GPU implementations for training and inference. A framework can call those implementations to execute part of a model.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用张量连接算子",
+        "Connecting Operations with Tensors"
+      ],
+      "d": [
+        "算子图描述卷积、偏置加法和 ReLU 之间的张量依赖。",
+        "The operation graph describes the tensor dependencies between convolution, bias addition, and ReLU."
+      ],
+      "b": [
+        [
+          "\u003cp>算子图定义输入、输出以及算子之间的张量依赖。示例中，卷积从输入与权重计算特征，偏置加法为特征加上可学习的偏移，ReLU 将负值截为零。框架描述这段运算后，cuDNN 才为它选择执行方式。\u003c/p>"
+        ],
+        [
+          "\u003cp>An operation graph specifies inputs, outputs, and the tensor dependencies between operations. In this example, convolution computes features from input and weights, bias addition applies a learned offset, and ReLU clips negative values to zero. cuDNN can then select an implementation for the specified computation.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "选择执行计划",
+        "Selecting an Execution Plan"
+      ],
+      "d": [
+        "同一张图可有多种引擎配置；支持检查筛出可用配置，再由选中的配置构建执行计划。",
+        "One graph can have several engine configurations. Support checks identify compatible configurations, and the selected one becomes an execution plan."
+      ],
+      "b": [
+        [
+          "\u003cp>引擎是实现这张图的计算方案；配置可包含分块大小等参数。启发式查询按预期表现给出候选顺序，支持检查确认候选能在当前环境执行这张图。也可用实际运行时间比较受支持的候选，这一过程称为自动调优。\u003c/p>"
+        ],
+        [
+          "\u003cp>An engine implements the graph. Its configuration can include settings such as tile size. A heuristic ranks candidates by expected performance, while support checks establish whether each can execute the graph in the current environment. Autotuning can time compatible candidates directly.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "融合中间运算",
+        "Fusing Intermediate Operations"
+      ],
+      "d": [
+        "在支持融合的计划中，卷积、偏置和 ReLU 可在同一个 GPU 内核中执行。",
+        "A supported fused plan can execute convolution, bias addition, and ReLU in one GPU kernel."
+      ],
+      "b": [
+        [
+          "\u003cp>内核是提交到 GPU 执行的计算程序。融合实现可在内核内部消费中间结果，避免将这些结果分别作为张量写回显存再读入下一内核。图仍保留三个算子的逻辑顺序，是否能融合取决于图和可用的引擎。\u003c/p>"
+        ],
+        [
+          "\u003cp>A kernel is a program launched on the GPU. A fused implementation can consume intermediate results within the kernel, avoiding separate writes to device memory and reads by the next kernel. The logical graph still specifies all three operations in order. Fusion depends on the graph and available engines.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "绑定缓冲区并执行",
+        "Binding Buffers for Execution"
+      ],
+      "d": [
+        "执行时将实际张量地址和所需工作区传给已构建的计划。",
+        "At execution time, the built plan receives the actual tensor addresses and any required workspace."
+      ],
+      "b": [
+        [
+          "\u003cp>图定义的是计算和张量属性。运行时将输入、输出等外部张量绑定到实际的 GPU 内存地址；若计划需要工作区，还要提供临时缓冲区。随后 GPU 按计划执行并写入输出。\u003c/p>"
+        ],
+        [
+          "\u003cp>The graph defines computation and tensor properties. At runtime, external tensors such as inputs and outputs are bound to actual GPU memory addresses. A plan that requires workspace also receives a scratch buffer. The GPU executes the plan and writes the outputs.\u003c/p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  if (!controls) return;
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

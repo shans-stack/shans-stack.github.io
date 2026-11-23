@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA NFS 与 SMB 文件共享 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA 的 NFS 与 SMB 协议容器通过导出和共享，将文件系统目录提供给标准文件协议客户端。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-nfssmb.css?v=203094a8">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-nfssmb">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-nfssmb">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA NFS and SMB File Sharing">WEKA NFS 与 SMB 文件共享</h1>
+        <p class="meta"><span data-en="5 steps · NFS, SMB, protocol containers">5 步 · NFS、SMB、协议容器</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/additional-protocols/additional-protocols-overview&quot;&gt;WEKA Documentation · Protocol Containers and Multi-Protocol Access&lt;/a&gt;"><a href="https://docs.weka.io/additional-protocols/additional-protocols-overview">WEKA 文档 · 协议容器与多协议访问</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/additional-protocols/nfs-support&quot;&gt;WEKA Documentation · NFS Protocol&lt;/a&gt;"><a href="https://docs.weka.io/additional-protocols/nfs-support">WEKA 文档 · NFS 协议</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/additional-protocols/nfs-support/nfs-client-access-rules&quot;&gt;WEKA Documentation · NFS Client Access Rules&lt;/a&gt;"><a href="https://docs.weka.io/additional-protocols/nfs-support/nfs-client-access-rules">WEKA 文档 · NFS 客户端访问规则</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/additional-protocols/smb-support&quot;&gt;WEKA Documentation · SMB Protocol&lt;/a&gt;"><a href="https://docs.weka.io/additional-protocols/smb-support">WEKA 文档 · SMB 协议</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/additional-protocols/smb-support/smb-management-using-the-gui&quot;&gt;WEKA Documentation · Configuring SMB Shares&lt;/a&gt;"><a href="https://docs.weka.io/additional-protocols/smb-support/smb-management-using-the-gui">WEKA 文档 · 配置 SMB 共享</a></li>
+      <li data-en="Schematic illustrations. No measured figures.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-nfssmb.js?v=55ada535"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-nfssmb",
+ "ar": [
+  2.838709677419355,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "由协议容器接入文件系统",
+    "Filesystem Access Through Protocol Containers"
+   ],
+   "d": [
+    "标准客户端连接相应的 WEKA 协议服务，由服务访问后端文件系统。",
+    "Standard clients connect to a WEKA protocol service, which accesses the backend filesystem."
+   ],
+   "b": [
+    [
+     "<p>NFS（Network File System，网络文件系统）和 SMB（Server Message Block，服务器消息块）是网络文件访问协议。WEKA 的协议容器接收标准客户端的请求，并在后端的 WEKA 文件系统上执行操作。客户端可使用操作系统提供的 NFS 或 SMB 支持。</p>"
+    ],
+    [
+     "<p>Network File System (NFS) and Server Message Block (SMB) are network file access protocols. A WEKA protocol container handles requests from standard clients and operates on the backend WEKA filesystem. Clients can use the NFS or SMB support built into their operating systems.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "NFS 导出与客户端规则",
+    "NFS Exports and Client Access Rules"
+   ],
+   "d": [
+    "NFS 客户端挂载导出的路径，客户端规则决定哪些主机可访问。",
+    "An NFS client mounts an exported path, and client access rules determine which hosts can connect."
+   ],
+   "b": [
+    [
+     "<p>NFS 导出将文件系统路径提供给远端客户端。WEKA 可按客户端 IP、DNS 名称或网络组定义访问规则，并为导出配置读写权限。NFS 服务将获准的文件操作送到导出对应的路径。</p>"
+    ],
+    [
+     "<p>An NFS export makes a filesystem path available to remote clients. WEKA can define client access rules by IP, DNS name, or netgroup and configure access permissions for the export. The NFS service directs permitted file operations to the path covered by that export.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "SMB 共享与用户身份",
+    "SMB Shares and User Identity"
+   ],
+   "d": [
+    "SMB 共享名指向文件系统目录，SMB-W 通过 Active Directory 解析用户与组。",
+    "An SMB share name points to a filesystem directory, and SMB-W resolves users and groups through Active Directory."
+   ],
+   "b": [
+    [
+     "<p>SMB 共享将一个名称关联到文件系统根目录或子目录。WEKA 的 SMB-W 实现通过 Active Directory（AD，目录服务）处理身份认证，并将用户和组解析为文件系统使用的 POSIX 用户 ID 与组 ID。获准的文件访问随后到达共享目录。</p>"
+    ],
+    [
+     "<p>An SMB share maps a name to the filesystem root or a subdirectory. WEKA’s SMB-W implementation integrates with Active Directory (AD), a directory service, for authentication and resolves users and groups to the POSIX user and group IDs used by the filesystem. Authorized file operations then reach the shared directory.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "协议容器的部署位置",
+    "Protocol Container Placement"
+   ],
+   "d": [
+    "协议容器可部署在现有后端服务器或专用协议服务器上，具体取决于环境。",
+    "Protocol containers run on existing backend servers or dedicated protocol servers, depending on the environment."
+   ],
+   "b": [
+    [
+     "<p>WEKA 支持在符合条件的现有后端服务器上运行协议服务，也支持将协议容器放在专用服务器上，由这些服务器访问集群文件系统。在 WEKA 文档说明的云部署中，协议容器使用专用协议服务器。</p>"
+    ],
+    [
+     "<p>WEKA supports hosting protocol services on eligible backend servers or on dedicated servers that access the cluster filesystem. The cloud deployments described in the WEKA documentation use dedicated protocol servers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "共享数据与协议语义",
+    "Shared Data and Protocol Semantics"
+   ],
+   "d": [
+    "两个协议可访问同一文件，文件名、身份和锁仍受各协议规则约束。",
+    "Both protocols can access the same file, with filenames, identity, and locking governed by protocol rules."
+   ],
+   "b": [
+    [
+     "<p>同一目录通过 NFS 导出和 SMB 共享提供时，两条访问路径可以指向同一份数据。多协议应用仍需考虑名称大小写和字符限制、身份映射以及文件锁差异。文件锁用于协调并发访问，其行为取决于相关客户端和协议。</p>"
+    ],
+    [
+     "<p>An NFS export and an SMB share can give clients two access paths to the same underlying data. Multi-protocol applications still need to account for case and character restrictions, identity mapping, and differences in locking. File locks coordinate concurrent access, and their behavior depends on the protocols and clients involved.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

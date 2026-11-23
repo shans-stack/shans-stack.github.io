@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-vec.css，全部限定在 .ssa-v-vec 容器之内。
-   VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
+   样式在 assets/anim/v-vec.css，全部限定在 .ssa-v-vec 容器之内。 */
 (function(){
 var ID='v-vec',NSTEP=6;
 var EN={"SELECT 片段 FROM t WHERE 时间 >= '2026-09' ORDER BY array_distance(向量, 提问) LIMIT 2":"SELECT chunk FROM t WHERE time >= '2026-09' ORDER BY array_distance(vec, query) LIMIT 2","SELECT 片段 FROM t":"SELECT chunk FROM t","WHERE 时间 >= '2026-09'":"WHERE time >= '2026-09'","ORDER BY array_distance(向量, 提问)":"ORDER BY array_distance(vec, query)","rd/设计.pdf":"rd/design.pdf","hr/制度.pdf":"hr/policy.pdf","rd/接口.pdf":"rd/api.pdf","hr/假期.pdf":"hr/leave.pdf","片段 A":"Chunk A","片段 B":"Chunk B","片段 C":"Chunk C","片段 D":"Chunk D","片段 E":"Chunk E","片段 F":"Chunk F","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","小猫":"Kitten","小狗":"Puppy","轿车":"Sedan","卡车":"Truck","提问：小猫咪":"Query: kitty","嵌入模型":"Embedding model","维度 1":"Dim 1","维度 2":"Dim 2","二维示意":"Two-dimensional illustration","提问":"Query","距离用于衡量相似度":"Distance measures similarity","最近的 2 个：小猫、小狗":"Nearest 2: kitten, puppy",
@@ -62,20 +61,14 @@ function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a=
 function setText(o,s){const v=T(s);if(o.t.textContent!==v)o.t.textContent=v}
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,sm(u)),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const dur=(pts,sp)=>plen(pts)/(sp||L.sp);
-/* VAST 字标：<image> 引用 assets/brand/ 里的原件，浅色模式黑字、深色模式白字；(x,y) 为左端、竖直居中 */
-function vlogo(x,y,h,p){const w=h*66/14,g=el('g',{class:'vlogo'},p),base=(window.SS_ROOT||'')+'assets/brand/';
-  ['black','white'].forEach(c=>{const i=el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:c==='black'?'vwm-l':'vwm-d',preserveAspectRatio:'xMinYMid meet'},g);i.setAttribute('href',base+'vast-wordmark-'+c+'.svg')});
-  g.w=w;return g}
-/* 带 VAST 字标的标题：字标在前，名字紧跟其后，同一行 */
-function vtitle(x,y,s,fs,cls,p,h){const g=vlogo(x,y,h||L.lg,p);return tx(x+g.w+Math.round(fs*0.4),y,s,fs,cls||'ttl','start',p)}
 function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
 function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.toggle(c,!!on))}
 /* ---------- 场景 ---------- */
 const SCENE={
  still:[7.2,6.5,5.6,6.2,2.6,3.2],
  layout(m){
-  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17,big:28},pw:22,ph:16,dr:7,sp:330,lg:15,cap:{x:480,y:478},tgl:{x:480,y:478}};
-  return {W:480,H:660,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17,big:24},pw:18,ph:14,dr:6,sp:240,lg:13,cap:{x:240,y:640},tgl:{x:240,y:640}};
+  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17,big:28},pw:22,ph:16,dr:7,sp:330,cap:{x:480,y:478},tgl:{x:480,y:478}};
+  return {W:480,H:660,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17,big:24},pw:18,ph:14,dr:6,sp:240,cap:{x:240,y:640},tgl:{x:240,y:640}};
  },
  build(){
   const f=L.f,m=L.mobile;
@@ -123,7 +116,7 @@ const SCENE={
   /* ===== 第 3 步：VAST，向量是表里的一列 ===== */
   {const g=grp('3');const s={};E.s3=s;
    s.wr=m?R(150,12,180,48):R(20,190,150,60);s.fr=m?R(8,88,464,432):R(216,40,724,330);
-   box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+24,'Element Store',f.sm,'ttl',g);
+   box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+24,'Element Store',f.sm,'ttl','start',g);
    box(s.wr,g);tx(C(s.wr).x,C(s.wr).y,'写入',f.sm,'lbl','middle',g);
    const cols=m?[{k:'ID',w:40},{k:'片段',w:156},{k:'来源',w:90},{k:'向量',w:150}]:[{k:'ID',w:48},{k:'片段',w:176},{k:'来源路径',w:104},{k:'时间',w:80},{k:'向量',w:118}];
    s.tb=m?R(22,140,436,34+4*46):R(244,92,526,34+4*48);const rh=m?46:48,hh=34;s.rh=rh;

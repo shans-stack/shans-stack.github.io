@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Cosmos：物理 AI 的世界模型与合成数据 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA Cosmos 如何用世界模型生成、筛选和利用物理 AI 数据。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-cosmos.css?v=5972313c">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-cosmos">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-cosmos">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Cosmos: World Models and Synthetic Data for Physical AI">NVIDIA Cosmos：物理 AI 的世界模型与合成数据</h1>
+        <p class="meta"><span data-en="5 steps · world models, controlled generation, robot training">5 步 · 世界模型、条件生成、机器人训练</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/ai/cosmos/&quot;&gt;NVIDIA Cosmos Product Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/ai/cosmos/">NVIDIA Cosmos 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://huggingface.co/nvidia/Cosmos3-Super&quot;&gt;NVIDIA&amp;#x27;s Cosmos 3 Super Model Card&lt;/a&gt;"><a href="https://huggingface.co/nvidia/Cosmos3-Super">NVIDIA 发布的 Cosmos 3 Super 模型卡</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidia-cosmos.github.io/cosmos-cookbook/&quot;&gt;NVIDIA Cosmos Cookbook: Models and Workflows&lt;/a&gt;"><a href="https://nvidia-cosmos.github.io/cosmos-cookbook/">NVIDIA Cosmos Cookbook：模型与流程</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidia-cosmos.github.io/cosmos-cookbook/core_concepts/evaluation/overview.html&quot;&gt;NVIDIA Cosmos Cookbook: Evaluation Methods&lt;/a&gt;"><a href="https://nvidia-cosmos.github.io/cosmos-cookbook/core_concepts/evaluation/overview.html">NVIDIA Cosmos Cookbook：评估方法</a></li>
+      <li data-en="Animations are schematic and show no measured data.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-cosmos.js?v=981c4760"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-cosmos",
+  "ar": [
+    3.3076923076923075,
+    0.8780487804878049
+  ],
+  "steps": [
+    {
+      "t": [
+        "从现实场景到世界模型",
+        "From Physical Scenes to World Models"
+      ],
+      "d": [
+        "Cosmos 提供开放世界基础模型，用于处理和生成物理场景中的时序信息。",
+        "Cosmos provides open world foundation models that process and generate information about physical scenes over time."
+      ],
+      "b": [
+        [
+          "<p>物理 AI 涉及感知物理环境并在其中行动的系统，例如在工作区搬运物体的机器人。世界基础模型从广泛的场景与动作数据中学习，可用来理解场景或生成可能的后续观测。</p>",
+          "<p>Cosmos 平台还提供训练、评估和部署工具。具体模型的输入与输出取决于任务，例如场景问答需要文本输出，预测后续画面需要视频输出。</p>"
+        ],
+        [
+          "<p>Physical AI involves systems that perceive and act in a physical environment, such as a robot that moves objects in a work cell. A world foundation model learns from a broad range of scenes and actions. It can help interpret a scene or generate possible future observations.</p>",
+          "<p>The Cosmos platform also provides training, evaluation, and deployment tools. The model's inputs and outputs depend on the task. Scene question answering produces text, while visual prediction produces video.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "根据起始帧和动作生成后续观测",
+        "Generating Future Observations from a Starting Frame and Actions"
+      ],
+      "d": [
+        "Cosmos 3 Super 可依据起始画面与动作序列生成一段可能的后续视频。",
+        "Cosmos 3 Super can generate a possible future video from an initial image and a sequence of actions."
+      ],
+      "b": [
+        [
+          "<p>NVIDIA 的 Cosmos 3 Super 模型卡将这一任务称为正向动力学预测。给定起始图像和动作序列，模型生成相应的后续观测。动作序列是按顺序排列的控制输入，例如机械臂的一段移动。</p>",
+          "<p>在同一工作区示意中，生成的画面按时间展开，提供可供分析的候选结果。</p>"
+        ],
+        [
+          "<p>NVIDIA's Cosmos 3 Super model card calls this task forward dynamics prediction. Given an initial image and a sequence of actions, the model generates corresponding future observations. An action sequence is an ordered set of control inputs, such as a series of robot arm movements.</p>",
+          "<p>In a work-cell example, the generated frames unfold in time and provide a candidate outcome for analysis.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "以结构信号控制合成视频",
+        "Controlling Synthetic Video with Structural Signals"
+      ],
+      "d": [
+        "Cosmos Transfer 可利用深度或边缘等控制信号，生成保留指定结构的画面。",
+        "Cosmos Transfer can use depth or edge signals to guide video generation toward a specified structure."
+      ],
+      "b": [
+        [
+          "<p>Cosmos Transfer 是平台上面向受控视频生成的模型。深度表示物体距相机的相对远近，边缘标记物体轮廓。这些信号可来自仿真画面，用来约束生成视频中的布局和几何线索。</p>",
+          "<p>例如，在保留设备轮廓和位置的条件下，可生成不同光照的工作区视频，为训练数据增加外观变化。</p>"
+        ],
+        [
+          "<p>Cosmos Transfer is a model in the platform for controlled video generation. Depth represents relative distance from the camera. Edges mark object outlines. These signals can come from simulated images and constrain the layout and geometric cues in the generated video.</p>",
+          "<p>For example, video of a work cell can be generated under different lighting while retaining equipment outlines and positions, adding appearance variation to the training data.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "检查生成结果是否适合下游任务",
+        "Evaluating Generated Data for the Downstream Task"
+      ],
+      "d": [
+        "Cosmos 的评估流程可检查画面连续性、控制信号一致性和物理合理性。",
+        "Cosmos evaluation workflows can check temporal consistency, agreement with control signals, and physical plausibility."
+      ],
+      "b": [
+        [
+          "<p>任务决定验收标准。受控生成可检查输出中的轮廓或深度是否符合输入约束，时序评估可检查物体在连续帧中的位置与运动是否连贯。</p>",
+          "<p>视觉语言模型（能结合图像和文本进行判断的模型）可辅助检查物理合理性。NVIDIA 的评估资料还列出按任务匹配的几何或时序指标。</p>"
+        ],
+        [
+          "<p>The task determines the acceptance criteria. Controlled generation can be evaluated by comparing its edges or depth with the input constraints. Temporal evaluation can check whether positions and motion remain coherent across successive frames.</p>",
+          "<p>A vision-language model, which combines visual and textual information, can help assess physical plausibility. NVIDIA's evaluation material also lists geometric and temporal metrics matched to specific tasks.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "合成数据进入机器人训练",
+        "Using Synthetic Data in Robot Training"
+      ],
+      "d": [
+        "经过筛选的合成样本可补充训练数据，机器人策略还需针对目标任务评估。",
+        "Curated synthetic examples can augment the training data, and the robot policy is evaluated on the target task."
+      ],
+      "b": [
+        [
+          "<p>机器人策略是将观测转换为动作的模型。合成片段可补充目标工作区的外观变化或场景组合。训练与评估仍需对应机器人的相机布置、动作形式和目标环境。</p>",
+          "<p>Omniverse 场景仿真可提供三维场景与结构输入，Cosmos 可在这些输入的基础上生成候选视频。筛选后的数据可进入下游训练流程。</p>"
+        ],
+        [
+          "<p>A robot policy is a model that turns observations into actions. Synthetic clips can add appearance variations or scene combinations for the target work cell. Training and evaluation remain specific to the robot's camera layout, action representation, and target environment.</p>",
+          "<p>Omniverse simulation can provide 3D scenes and structural input, and Cosmos can use those inputs to generate candidate video. Curated examples can then enter the downstream training workflow.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

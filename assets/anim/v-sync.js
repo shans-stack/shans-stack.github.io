@@ -5,11 +5,10 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-sync.css，全部限定在 .ssa-v-sync 容器之内。
-   VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
+   样式在 assets/anim/v-sync.css，全部限定在 .ssa-v-sync 容器之内。 */
 (function(){
 var ID='v-sync',NSTEP=6;
-var EN={"对象存储":"Object store","NFS 文件系统":"NFS file system","协作平台":"Collaboration","S3 · GCS":"S3 · GCS","导出目录":"Export","Confluence 等":"Confluence etc.","SyncEngine":"SyncEngine","控制平面":"Control plane","调度 · 监控":"Schedules","标签 A":"Label A","集群":"cluster","S3 bucket":"S3 bucket","NFS 导出目录":"NFS export","DataBase 表":"DataBase table","连接器":"Connector",
+var EN={"对象存储":"Object store","NFS 文件系统":"NFS file system","协作平台":"Collaboration","S3 · GCS":"S3 · GCS","导出目录":"Export","Confluence 等":"Confluence etc.","SyncEngine":"SyncEngine","控制平面":"Control plane","调度 · 监控":"Schedules","标签 A":"Label A","VAST 集群":"VAST cluster","S3 bucket":"S3 bucket","NFS 导出目录":"NFS export","DataBase 表":"DataBase table","连接器":"Connector",
 "常见迁移目标：VAST S3 或 NFS":"Common migration targets: VAST S3 or NFS","worker 从控制平面领任务":"Workers take tasks from the control plane",
 "NFS 源端":"NFS source","目录 A":"Dir A","目录 B":"Dir B","目录 C":"Dir C","批":"Batch","逐层并行遍历，攒成批分给多个 worker":"Walk level by level in parallel, hand batches to several workers",
 "SQS 队列":"SQS queue","S3 事件通知":"S3 event notices","新对象":"New object","扫描":"Scan","定期：按间隔整体重扫一遍":"Scheduled: rescan the whole source at each interval","事件驱动：变更通知进 SQS，只同步变化的对象":"Event-driven: change notices go to SQS; only changed objects sync","换成事件驱动":"Switch to event-driven","换成定期重同步":"Switch to scheduled resync","切换同步方式，当前 ":"Switch sync mode, now ","定期重同步":"scheduled resync","事件驱动":"event-driven",
@@ -62,12 +61,6 @@ function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a=
 function setText(o,s){const v=T(s);if(o.t.textContent!==v)o.t.textContent=v}
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,sm(u)),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const dur=(pts,sp)=>plen(pts)/(sp||L.sp);
-/* VAST 字标：<image> 引用 assets/brand/ 里的原件，浅色模式黑字、深色模式白字；(x,y) 为左端、竖直居中 */
-function vlogo(x,y,h,p){const w=h*66/14,g=el('g',{class:'vlogo'},p),base=(window.SS_ROOT||'')+'assets/brand/';
-  ['black','white'].forEach(c=>{const i=el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:c==='black'?'vwm-l':'vwm-d',preserveAspectRatio:'xMinYMid meet'},g);i.setAttribute('href',base+'vast-wordmark-'+c+'.svg')});
-  g.w=w;return g}
-/* 带 VAST 字标的标题：字标在前，名字紧跟其后，同一行 */
-function vtitle(x,y,s,fs,cls,p,h){const g=vlogo(x,y,h||L.lg,p);return tx(x+g.w+Math.round(fs*0.4),y,s,fs,cls||'ttl','start',p)}
 function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
 function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.toggle(c,!!on))}
 /* ---------- 场景 ---------- */
@@ -75,10 +68,10 @@ const SCENE={
  still:[2.4,3.8,4.4,6.0,2.6,6.2],
  toggles:{3:{param:'sync',values:['sched','event'],label:v=>v==='sched'?'换成事件驱动':'换成定期重同步',aria:'切换同步方式，当前 ',name:v=>v==='sched'?'定期重同步':'事件驱动'}},
  layout(m){
-  if(!m)return {W:960,H:520,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17},pw:22,ph:16,dr:7,sp:330,lg:15,cap:{x:480,y:506},tgl:{x:795,y:59},
+  if(!m)return {W:960,H:520,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17},pw:22,ph:16,dr:7,sp:330,cap:{x:480,y:506},tgl:{x:795,y:59},
    src:[R(40,24,250,70),R(355,24,250,70),R(670,24,250,70)],ctl:R(20,190,150,84),wc:[330,570,810],wy:200,ww:180,wh:64,se:R(220,190,720,84),
    fr:R(200,330,740,156),tg:[R(300,384,180,60),R(540,384,180,60)],tb:R(600,360,320,112),midA:147,midB:300,bus:176};
-  return {W:480,H:620,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17},pw:18,ph:14,dr:6,sp:240,lg:13,cap:{x:240,y:600},tgl:{x:396,y:48},
+  return {W:480,H:620,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17},pw:18,ph:14,dr:6,sp:240,cap:{x:240,y:600},tgl:{x:396,y:48},
    src:[R(12,16,144,64),R(168,16,144,64),R(324,16,144,64)],ctl:R(8,170,110,98),wc:[192,304,416],wy:196,ww:104,wh:64,se:R(8,176,464,84),
    fr:R(8,296,464,170),tg:[R(60,350,170,60),R(270,350,170,60)],tb:R(24,342,432,112),midA:128,midB:276,bus:158};
  },
@@ -91,7 +84,7 @@ const SCENE={
   s.path=(a,j,b)=>cat(elbowV(a,wt(j),L.midA),[wb(j)],elbowV(wb(j),b,L.midB));
   s.sb=sb;
   /* VAST 框与目标 */
-  {const g=grp(null);box(L.fr,g,'box frame',16);vtitle(L.fr.x+16,L.fr.y+22,'集群',f.sm,'ttl',g);}
+  {const g=grp(null);box(L.fr,g,'box frame',16);tx(L.fr.x+16,L.fr.y+22,'VAST 集群',f.sm,'ttl','start',g);}
   {s.tgB=L.tg.map((r,i)=>{const b=box(r,grp(i?'1 3':'1 2 4 5'));tx(C(r).x,C(r).y,i?'NFS 导出目录':'S3 bucket',f.sm,'lbl','middle',grp(i?'1 3':'1 2 4 5'));return b})}
   /* 源端三个框（第 3 步换成目录树） */
   const sn=[['对象存储','S3 · GCS','1 2'],['NFS 文件系统','导出目录','1'],['协作平台','Confluence 等','1 5']];

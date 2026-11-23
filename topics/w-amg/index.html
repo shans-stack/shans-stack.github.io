@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Augmented Memory Grid 与 KV Cache 复用 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Augmented Memory Grid 将推理的 KV Cache 持久化到 NeuralMesh，并在兼容的前缀命中后将缓存取回显存。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-amg.css?v=a1ff50b3">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-amg">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-amg">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Augmented Memory Grid and KV Cache Reuse">Augmented Memory Grid 与 KV Cache 复用</h1>
+        <p class="meta"><span data-en="5 steps · KV cache, token warehouse, GDS">5 步 · KV Cache、Token Warehouse、GDS</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/resources/white-paper/unlock-agentic-ai-business-value&quot;&gt;WEKA White Paper · Persistent KV Cache and Data Path&lt;/a&gt;"><a href="https://www.weka.io/resources/white-paper/unlock-agentic-ai-business-value">WEKA 白皮书 · 持久化 KV Cache 与数据路径</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/article/why-prefill-has-become-the-bottleneck-in-inference-and-how-augmented-memory-grid-helps&quot;&gt;WEKA Technical Article · Prefill and Prefix Matching&lt;/a&gt;"><a href="https://www.weka.io/article/why-prefill-has-become-the-bottleneck-in-inference-and-how-augmented-memory-grid-helps">WEKA 技术文章 · 预填充与前缀匹配</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/resources/datasheet/persistent-gpu-memory-for-ai-inference-at-scale&quot;&gt;WEKA Datasheet · Augmented Memory Grid&lt;/a&gt;"><a href="https://www.weka.io/resources/datasheet/persistent-gpu-memory-for-ai-inference-at-scale">WEKA 数据表 · Augmented Memory Grid</a></li>
+      <li data-en="Schematic illustrations. No measured figures.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-amg.js?v=1ccb61cc"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-amg",
+ "ar": [
+  2.838709677419355,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "预填充生成 KV Cache",
+    "Prefill Produces the KV Cache"
+   ],
+   "d": [
+    "推理 GPU 在预填充阶段处理输入，并在显存中生成 KV Cache。",
+    "During prefill, the inference GPU processes input and creates a KV cache in GPU memory."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 保存 Transformer 注意力机制计算得到的键和值。预填充（prefill）处理输入 token 序列并生成这些缓存，然后解码（decode）阶段使用缓存逐个生成输出 token。GPU 上的 HBM（高带宽显存）为活跃缓存提供工作空间。</p>"
+    ],
+    [
+     "<p>The key-value (KV) cache holds keys and values computed by a Transformer’s attention mechanism. Prefill processes the input tokens and builds the cache. Decode uses it to generate output tokens one at a time. The GPU’s high-bandwidth memory (HBM) provides the working space for the active cache.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "将缓存写入持久存储",
+    "Persisting the Cache Outside the GPU"
+   ],
+   "d": [
+    "Augmented Memory Grid 将已计算的 KV 缓存块异步写入 NeuralMesh 的持久层。",
+    "Augmented Memory Grid saves computed KV blocks asynchronously to a persistent tier on NeuralMesh."
+   ],
+   "b": [
+    [
+     "<p>WEKA 将由 NeuralMesh 和 NVMe 存储提供的持久缓存层称为 Token Warehouse。活跃缓存可继续在显存中参与解码，写入仓库的副本可在对应显存空间被回收后继续保留，用于后续会话。</p>"
+    ],
+    [
+     "<p>WEKA calls its persistent cache tier on NeuralMesh and NVMe storage the token warehouse. The active cache can remain in GPU memory for decoding. The stored copy remains available for later sessions after its GPU memory is reclaimed.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "查找可复用的请求前缀",
+    "Finding a Reusable Request Prefix"
+   ],
+   "d": [
+    "后续请求从第一个 token 起匹配，只有兼容的相同前缀能够复用。",
+    "A later request matches tokens from the start and can reuse only a compatible matching prefix."
+   ],
+   "b": [
+    [
+     "<p>前缀是一段从输入开头连续出现的 token。使用兼容 KV 状态的请求可以查找已保存的输入前缀，包括开头的系统提示词。命中可覆盖整个输入，也可只覆盖开头一段。首个不同 token 开始的部分需要由模型计算。</p>"
+    ],
+    [
+     "<p>A prefix is a contiguous sequence from the start of the input. A request with compatible KV state can look up a stored prefix, including the system prompt at the start. A match may cover the entire input or just its first part. The model computes the portion starting at the first differing token.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "经 GDS 将命中块读回显存",
+    "Retrieving Matching Blocks into GPU Memory with GDS"
+   ],
+   "d": [
+    "支持 GDS 的路径将命中缓存块送回 HBM，数据无需经主机内存中转。",
+    "A GDS-enabled path returns matching cache blocks to HBM without staging the payload in host memory."
+   ],
+   "b": [
+    [
+     "<p>在 WEKA 公布的架构中，NVIDIA GPUDirect Storage（GDS）与 RDMA（远程直接内存访问）网络为存储和 GPU 显存之间提供直接的数据传输路径。主机仍可参与控制，缓存数据无需由 CPU 复制到主机内存再传到 GPU。</p>"
+    ],
+    [
+     "<p>In WEKA’s published architecture, NVIDIA GPUDirect Storage (GDS) and Remote Direct Memory Access (RDMA) networking provide a direct path between storage and GPU memory. The host can still handle control operations. The CPU does not have to stage the cache payload in host memory before it reaches the GPU.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从复用的前缀继续解码",
+    "Decoding from a Reused Prefix"
+   ],
+   "d": [
+    "命中的前缀复用已有 KV 状态，GPU 计算剩余输入后继续生成输出。",
+    "The GPU reuses the matched prefix, processes the remaining input, and continues generating output."
+   ],
+   "b": [
+    [
+     "<p>部分命中时，GPU 在已加载的前缀状态上完成剩余输入的预填充，再进入解码。没有命中时，GPU 对全部输入执行预填充。收益取决于可复用前缀的长度、命中率以及取回缓存的开销。</p>"
+    ],
+    [
+     "<p>On a partial hit, the GPU uses the loaded prefix state, prefills the remaining input, and then decodes. On a miss, it prefills the entire input. The benefit depends on reusable prefix length, cache hit rate, and the cost of retrieving the cached state.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

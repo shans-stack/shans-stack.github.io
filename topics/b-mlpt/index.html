@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLPerf Training：达到目标质量的用时 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 MLPerf Training 如何规定训练任务、计时、汇总多次运行并报告系统成绩。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-mlpt.css?v=544a6e1c">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-mlpt">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-mlpt">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="MLPerf Training: Time to Target Quality">MLPerf Training：达到目标质量的用时</h1>
+        <p class="meta"><span data-en="6 steps · training, convergence, target quality">6 步 · 训练、收敛、目标质量</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/benchmarks/training/&quot;&gt;MLCommons Training Benchmark&lt;/a&gt;"><a href="https://mlcommons.org/benchmarks/training/">训练基准与工作负载</a></li>
+      <li data-en="&lt;a href=&quot;https://mlcommons.org/2026/11/mlperf-training-v6-1-results/&quot;&gt;Training v6.1 Release Announcement&lt;/a&gt;"><a href="https://mlcommons.org/2026/11/mlperf-training-v6-1-results/">Training v6.1 发布公告</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/mlcommons/training_policies/blob/master/training_rules.adoc&quot;&gt;MLPerf Training Rules&lt;/a&gt;"><a href="https://github.com/mlcommons/training_policies/blob/master/training_rules.adoc">训练基准规则</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-mlpt.js?v=571f18e2"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-mlpt",
+ "ar": [
+  2.2222222222222223,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "达到目标质量",
+    "Reaching Target Quality"
+   ],
+   "d": [
+    "成绩是系统在规定数据集上把模型训练到目标质量所用的实际时间。",
+    "The score is the elapsed time to train a model to target quality on a defined dataset."
+   ],
+   "b": [
+    [
+     "<p>MLCommons 为每个工作负载规定数据集和质量目标。质量指标随任务变化，训练达到该目标才构成有效的收敛结果。收敛在这里指通过工作负载规定的质量判定。</p>",
+     "<p>截至 2026-11-23，最近一轮公开结果是 MLPerf Training v6.1，于 2026-11-16 发布。该轮加入推荐系统与大模型后训练任务。</p>"
+    ],
+    [
+     "<p>MLCommons defines a dataset and a quality target for each workload. The quality metric depends on the task. A run converges for benchmark purposes when it meets the workload's quality criterion.</p>",
+     "<p>As of November 23, 2026, the latest public round is MLPerf Training v6.1, released on November 16, 2026. It added recommender-system and large-model post-training workloads.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "训练和评估的计时边界",
+    "Timing Training and Evaluation"
+   ],
+   "d": [
+    "墙钟计时覆盖规范规定的训练、质量评估和纳入计时的数据准备。",
+    "Wall-clock timing includes training, quality evaluation, and data preparation as specified by the rules."
+   ],
+   "b": [
+    [
+     "<p>墙钟时间是起止之间实际经过的时间。训练数据进入被测系统后，系统更新模型，再按任务规则评估质量。预处理与初始化是否计入，由工作负载和计时规则决定。</p>"
+    ],
+    [
+     "<p>Wall-clock time is the elapsed time between the benchmark's start and stop. The system takes in training data, updates the model, and evaluates quality under the workload rules. Those rules determine which preprocessing and initialization steps fall within the measurement.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "固定工作负载与提交组别",
+    "Workload and Division Rules"
+   ],
+   "d": [
+    "Closed 组约束模型、预处理、训练方法与质量目标，Open 组允许更灵活的实现。",
+    "Closed constrains the model, preprocessing, training method, and quality target. Open allows greater implementation flexibility."
+   ],
+   "b": [
+    [
+     "<p>Closed 组以参考实现规定的工作负载为基准，具体参数和允许的优化随任务而异。Open 组允许探索超出 Closed 限制的方案，仍遵循相应提交规则。</p>",
+     "<p>全局批大小是一次参数更新所用的总样本数。它影响每步处理量，也可能影响达到质量目标所需的训练步数，因此有些任务对可用取值另有限制。</p>"
+    ],
+    [
+     "<p>The Closed division uses the reference workload, with workload-specific parameters and permitted optimizations. The Open division allows approaches beyond the Closed constraints under its applicable submission rules.</p>",
+     "<p>Global batch size is the total number of samples used in one parameter update. It affects work per step and can affect the number of steps required to reach target quality, so some workloads constrain it.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "多次运行汇总成绩",
+    "Aggregating Multiple Runs"
+   ],
+   "d": [
+    "按规则重复运行，剔除时间极值后对保留的运行取平均。",
+    "Repeated runs are aggregated by averaging the elapsed times retained after rule-defined trimming."
+   ],
+   "b": [
+    [
+     "<p>默认汇总规则剔除最快和最慢各一次，对其余用时取平均。重复次数、异常收敛处理及个别任务的例外以规范为准。公开成绩因此反映一组运行，而非单次最快纪录。</p>"
+    ],
+    [
+     "<p>The default aggregation drops the fastest and slowest runs and averages the remaining elapsed times. The rules specify repetition counts, handling of non-convergence, and workload-specific exceptions. The published score represents a set of runs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按工作负载和系统规模解读",
+    "Reading Results by Workload and Scale"
+   ],
+   "d": [
+    "在同一轮、同一任务和同一组别内，结合加速器数量与系统配置解读用时。",
+    "Interpret elapsed time alongside accelerator count and system configuration within the same round, workload, and division."
+   ],
+   "b": [
+    [
+     "<p>公开结果列出训练用时和被测系统的配置。扩展性比较需要记录节点和加速器数量，也要核对软件栈、批大小和并行方式，以免把几项同时发生的变化归给单一部件。</p>"
+    ],
+    [
+     "<p>Published results report elapsed training time and the system configuration. A scaling comparison depends on node and accelerator counts, as well as the software stack, batch size, and parallelism. Those variables can change together.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "每步更快与更早达标",
+    "Step Speed and Time to Target"
+   ],
+   "d": [
+    "每步用时和达标所需步数共同影响训练成绩。",
+    "Step duration and the number of steps to target both affect the training score."
+   ],
+   "b": [
+    [
+     "<p>每秒样本数描述处理速度。两次训练即使处理速度相同，也可能因达到质量目标所需的训练步数不同而得到不同成绩。公开用时对应所列系统与任务，无法单独归因于加速器、网络或存储。</p>"
+    ],
+    [
+     "<p>Samples per second describes processing speed. Two runs with the same processing rate can score differently if they need different numbers of steps to reach target quality. The score applies to the disclosed system and workload, with no component-level attribution on its own.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

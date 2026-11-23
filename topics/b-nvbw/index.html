@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nvbandwidth：GPU 拷贝路径 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明按设备对、方向和拷贝方式测量主机与 GPU 内存之间或 GPU 内存之间的带宽。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-nvbw.css?v=79f0553d">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-nvbw">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-nvbw">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="nvbandwidth: GPU Copy Paths">nvbandwidth：GPU 拷贝路径</h1>
+        <p class="meta"><span data-en="6 steps · GPU Copies, Copy Engines, SMs">6 步 · GPU 拷贝、CE、SM</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/NVIDIA/nvbandwidth/v0.11.0/README.md&quot;&gt;nvbandwidth v0.11.0 Documentation&lt;/a&gt;"><a href="https://raw.githubusercontent.com/NVIDIA/nvbandwidth/v0.11.0/README.md">nvbandwidth v0.11.0 项目文档</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/NVIDIA/nvbandwidth/releases/tag/v0.11.0&quot;&gt;nvbandwidth v0.11.0 Release&lt;/a&gt;"><a href="https://github.com/NVIDIA/nvbandwidth/releases/tag/v0.11.0">nvbandwidth v0.11.0 发布记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-nvbw.js?v=583d5c04"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-nvbw",
+ "ar": [
+  2.360248447204969,
+  0.8571428571428571
+ ],
+ "steps": [
+  {
+   "t": [
+    "被测内存端点",
+    "The Memory Endpoints"
+   ],
+   "d": [
+    "nvbandwidth 将主机内存和 GPU 显存之间的拷贝路径拆开测量。",
+    "nvbandwidth measures individual copy paths between host and GPU memory endpoints."
+   ],
+   "b": [
+    [
+     "<p>这项微基准按用例构造内存拷贝。常用端点包括主机内存到 GPU 显存、GPU 显存到主机内存，以及两块 GPU 之间。测试结果绑定到实际设备对和方向，集合通信表现由另一类基准测量。</p>"
+    ],
+    [
+     "<p>This microbenchmark constructs copies for individual test cases. Common endpoints include host memory to GPU memory, GPU memory to host memory, and one GPU to another. A result belongs to the tested pair and direction. Collective performance is measured separately.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "拷贝引擎与 GPU 内核",
+    "Copy Engines and GPU Kernels"
+   ],
+   "d": [
+    "CE 使用专用拷贝引擎，SM 使用 GPU 内核进行读写。",
+    "CE uses a copy engine, while SM runs a GPU kernel to perform the copy."
+   ],
+   "b": [
+    [
+     "<p>CE 是 GPU 内的专用数据拷贝引擎。SM 是流式多处理器，SM 用例由运行在 SM 上的 GPU 内核完成拷贝。同一设备对上的两种用例会调用不同的执行资源，因此结果应保留 CE 或 SM 标记。</p>"
+    ],
+    [
+     "<p>A CE is dedicated hardware for moving data. An SM, or streaming multiprocessor, runs threads of a GPU kernel. An SM copy uses such a kernel to move the data. The two methods use different execution resources even on the same pair of endpoints, so the result retains its CE or SM label.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用例、缓冲区与采样",
+    "Test Cases, Buffers, and Samples"
+   ],
+   "d": [
+    "用例决定路径，缓冲区大小和重复采样参数决定测量方式。",
+    "The test case defines the path, and buffer size and repeated samples define the measurement."
+   ],
+   "b": [
+    [
+     "<p>-l 列出当前构建的用例，-t 选择用例，--bufferSize 设定 MiB 计的拷贝缓冲区大小，--testSamples 设重复采样次数。CUDA 事件在设备执行流中计时，统计通常取中位数，--useMean 改用算术平均。输出应与这些配置和数据校验设置一起保存。</p>"
+    ],
+    [
+     "<p>-l lists cases in the current build, -t selects cases, --bufferSize sets the copy buffer in MiB, and --testSamples controls repetitions. CUDA events time work in device streams. The default statistic is the median, with --useMean selecting the arithmetic mean. These settings and data verification belong alongside the result.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "单向矩阵的读法",
+    "Reading a Unidirectional Matrix"
+   ],
+   "d": [
+    "按输出标题定位行、列和方向，每个有效单元格对应一对端点。",
+    "The output heading identifies rows, columns, and direction, and each valid cell corresponds to one pair."
+   ],
+   "b": [
+    [
+     "<p>单向矩阵的各设备对分别测试，矩阵各格对应各自运行，不能据此相加为同时通过的总量。行和列的语义跟随用例输出标题。某对设备被跳过时，该单元格缺少测量，和测得较低带宽是不同状态。</p>"
+    ],
+    [
+     "<p>Unidirectional pairs are tested individually. Matrix cells come from separate trials, so their sum does not establish concurrent throughput. Row and column meanings come from the test heading. A skipped cell indicates missing coverage, distinct from a low measured value.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "双向用例的统计口径",
+    "What a Bidirectional Result Reports"
+   ],
+   "d": [
+    "两个方向并发传输，双向用例报告并发条件下的单方向带宽。",
+    "Traffic moves concurrently in both directions, and the result describes one direction under that load."
+   ],
+   "b": [
+    [
+     "<p>例如 CE 双向用例中，测量流承载目标方向的拷贝，反向流同时施加负载。文档将报告值定义为反向流存在时的每方向带宽，理解时须区分这一量与两个方向合计值。</p>"
+    ],
+    [
+     "<p>In a CE bidirectional test, the measured stream copies in the target direction and another stream loads the reverse direction at the same time. The documentation defines the reported bandwidth per direction under that reverse traffic. A total across directions is a different quantity.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "对照同名用例",
+    "Comparing Matched Test Cases"
+   ],
+   "d": [
+    "同名用例还需对齐设备标识、方向、缓冲区大小和统计方式。",
+    "Matched test names still require the same endpoint identities, direction, buffer size, and statistic."
+   ],
+   "b": [
+    [
+     "<p>截至 2026-11-23，最新公开版本为 nvbandwidth v0.11.0，发布记录日期为 2026-11-11（UTC）。同一行结果需随用例和拓扑记录。跨节点用例另有 MPI 构建与平台前提，普通节点内拷贝不能替代这些路径的测试。</p>"
+    ],
+    [
+     "<p>As of 2026-11-23, the latest public release is nvbandwidth v0.11.0, published on 2026-11-11 UTC. Each result belongs with its test case and topology. Multi-node cases have separate MPI build and platform requirements, so local copy results cover a different path.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

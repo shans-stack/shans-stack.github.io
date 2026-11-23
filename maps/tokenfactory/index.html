@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Token Factory 专题图 · Shan's Stack</title>
+<meta name="description" content="Shan's Stack 的 AI Token Factory 专题图：按线路讲清楚 AI Token Factory 的架构和功能，每个站可以全屏演示。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/site.css?v=a8d53f6d">
+<!-- 由 tools/new_map.py 从 tools/map.tpl.html 生成。页面内容全部来自 data/，这里只定地图 id。 -->
+<script>window.SS_ROOT='../../';</script>
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div class="mhero">
+    <nav class="mswitch" id="mswitch" aria-label="切换专题图" data-en-label="Switch topic map"></nav>
+    <div class="mt"><h1 id="mtitle"></h1><span id="mbrand"></span></div>
+  </div>
+
+  <div id="map" data-map="tokenfactory">
+    <div class="mhd">
+      <h2 data-en="Line Map">线路图</h2>
+      <div class="pick" id="pick" role="group" aria-label="讲稿路线" data-en-label="Talk routes"></div>
+    </div>
+    <div class="mwrap">
+      <div class="mmain">
+        <div class="mapbox" id="mapbox">
+          <svg class="metro" id="metro" role="img"></svg>
+          <div class="mlist" id="mlist"></div>
+          <div class="pop" id="pop" hidden role="dialog"></div>
+        </div>
+        <p class="warn" id="warn" hidden></p>
+        <div class="cap" id="cap" aria-live="polite"></div>
+        <div class="key" id="key"></div>
+      </div>
+      <aside class="pnl" id="pnl" hidden aria-label="本次讲解" data-en-label="This talk"></aside>
+    </div>
+  </div>
+
+  <section id="topics" class="mtopics">
+    <div class="sh"><h2 data-en="Stops by Line">按线路找知识点</h2></div>
+    <div class="cols" id="cols"></div>
+  </section>
+</main>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../data/intro.js?v=5d3399f8"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/metro.js?v=50abb0f3"></script>
+<script src="../../assets/mapview.js?v=9b56a79d"></script>
+<script>
+document.addEventListener('ss-lang',function(){
+  var m=SS.mapById['tokenfactory'],n=SS.stationsOf(m.id).length;
+  SS.renderMapSwitch(document.getElementById('mswitch'),m.id);
+  document.getElementById('mtitle').textContent=SS.L(m.zh+' 专题图',m.en+' Topic Map');
+  document.getElementById('mbrand').innerHTML=SS.brandMark(m.brand,'mh-lg');
+  SS.renderCols(document.getElementById('cols'),m.id);
+});
+</script>
+</body>
+</html>

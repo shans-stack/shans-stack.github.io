@@ -1,0 +1,41 @@
+.b-guidellm-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  --diagram-rule: var(--ink3);
+  --diagram-accent: var(--lc, var(--l4));
+}
+
+.b-guidellm-diagram text {
+  fill: var(--ink);
+  font: 500 21px var(--f);
+  dominant-baseline: central;
+}
+
+.b-guidellm-diagram .b-guidellm-note,
+.b-guidellm-diagram .b-guidellm-muted { fill: var(--ink2); font-size: 17px; }
+.b-guidellm-diagram .b-guidellm-rule { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; }
+.b-guidellm-diagram .b-guidellm-guide { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.b-guidellm-diagram .b-guidellm-node { fill: var(--surface); stroke: var(--diagram-rule); stroke-width: 1.4; }
+.b-guidellm-diagram .b-guidellm-active { fill: var(--diagram-accent); }
+.b-guidellm-diagram .b-guidellm-pass { fill: var(--l5); }
+.b-guidellm-diagram .b-guidellm-warn { fill: var(--l1); }
+.b-guidellm-diagram .b-guidellm-quiet { fill: var(--blk); }
+.b-guidellm-diagram .b-guidellm-active-line,
+.b-guidellm-diagram .b-guidellm-pass-line,
+.b-guidellm-diagram .b-guidellm-warn-line,
+.b-guidellm-diagram .b-guidellm-quiet-line { fill: none; stroke-width: 3; stroke-linecap: round; }
+.b-guidellm-diagram .b-guidellm-active-line { stroke: var(--diagram-accent); }
+.b-guidellm-diagram .b-guidellm-pass-line { stroke: var(--l5); }
+.b-guidellm-diagram .b-guidellm-warn-line { stroke: var(--l1); }
+.b-guidellm-diagram .b-guidellm-quiet-line { stroke: var(--blk); }
+
+body.topic-b-guidellm .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-guidellm .mhost { aspect-ratio: var(--arm); }
+  .b-guidellm-diagram text { font-size: 16px; }
+  .b-guidellm-diagram .b-guidellm-note,
+  .b-guidellm-diagram .b-guidellm-muted { font-size: 16px; }
+}

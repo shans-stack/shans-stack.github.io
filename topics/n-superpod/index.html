@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DGX SuperPOD 参考架构 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明DGX SuperPOD 参考架构。以 DGX 系统为计算单元，说明如何集成网络、存储与软件来部署可扩展的 AI 超算集群。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-superpod.css?v=aa6bf166">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-superpod">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-superpod">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DGX SuperPOD Reference Architecture">DGX SuperPOD 参考架构</h1>
+        <p class="meta"><span data-en="5 steps · DGX, Scalable Units, Cluster Networks">5 步 · DGX、Scalable Unit、集群网络</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/dgx-superpod/&quot;&gt;Product and Architecture&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/dgx-superpod/">DGX SuperPOD · 产品与架构</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/dgx-superpod-components.html&quot;&gt;Key Components&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/dgx-superpod-components.html">DGX GB200 SuperPOD · 组件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/network-fabrics.html&quot;&gt;Network Fabrics&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-superpod/reference-architecture-scalable-infrastructure-gb200/latest/network-fabrics.html">DGX GB200 SuperPOD · 网络</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/dgx-basepod-overview.html&quot;&gt;Overview&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/dgx-basepod-overview.html">DGX BasePOD · 概览</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-superpod.js?v=cab8ce26"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-superpod",
+ "ar": [
+  2.191780821917808,
+  0.8490566037735849
+ ],
+ "steps": [
+  {
+   "t": [
+    "从 DGX 系统到集群",
+    "From DGX Systems to a Cluster"
+   ],
+   "d": [
+    "SuperPOD 使用 DGX 系统执行计算，并集成网络、经认证的伙伴存储和管理软件。",
+    "SuperPOD combines DGX compute systems, networking, certified partner storage, and management software."
+   ],
+   "b": [
+    [
+     "<p>NVIDIA 以 DGX SuperPOD 提供整合的 AI 基础设施方案，并发布对应参考架构，说明系统和组件怎样接入。以下以 DGX GB200 参考架构为例。DGX BasePOD 也集成 DGX 与伙伴存储，其参考文档面向企业 AI 的节点级部署。</p>"
+    ],
+    [
+     "<p>NVIDIA offers DGX SuperPOD as integrated AI infrastructure and publishes reference architectures showing how its systems and components fit together. This example uses the DGX GB200 design. DGX BasePOD also combines DGX with partner storage, with a reference design for node-based enterprise AI deployments.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "可扩展单元",
+    "Scalable Units"
+   ],
+   "d": [
+    "Scalable Unit（SU）是一组计算系统及其网络配置，可作为扩展集群的基本单元。",
+    "A Scalable Unit (SU) groups compute systems with their network configuration as a building block for cluster expansion."
+   ],
+   "b": [
+    [
+     "<p>在 DGX GB200 设计中，SU 含多台计算机柜及对应网络。网络按完整 SU 规划，扩展时复用同一组连接结构。部署多个 SU 时，还需按参考拓扑规划上层交换连接。</p>"
+    ],
+    [
+     "<p>In the DGX GB200 design, an SU includes multiple compute racks and their networking. The fabric is planned for a full SU, so expansion can reuse a defined connection pattern. Deploying multiple SUs also requires upper-tier switching according to the reference topology.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "柜内与跨柜的 GPU 通信",
+    "GPU Communication Within and Across Racks"
+   ],
+   "d": [
+    "在 DGX GB200 设计中，NVLink 负责柜内 GPU 互联，InfiniBand 计算网承载跨柜通信。",
+    "In the DGX GB200 design, NVLink connects GPUs within a rack and the InfiniBand compute fabric carries traffic between racks."
+   ],
+   "b": [
+    [
+     "<p>柜内的 GPU 通过 NVLink 交换结构通信。跨柜通信经过计算托盘的网络适配器与 InfiniBand 交换机。两层互联分别对应整柜内部扩展和跨柜集群扩展。</p>"
+    ],
+    [
+     "<p>GPUs within a rack communicate through the switched NVLink fabric. Traffic between racks uses compute-tray adapters and InfiniBand switches. The two interconnect layers serve rack-scale and cluster-scale communication, respectively.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "共享存储与管理路径",
+    "Shared Storage and Management Paths"
+   ],
+   "d": [
+    "在 GB200 参考设计里，共享存储与带内管理使用以太网承载，设备控制器另接带外管理网。",
+    "In the GB200 design, Ethernet carries shared storage and in-band management, and device controllers use a separate out-of-band network."
+   ],
+   "b": [
+    [
+     "<p>存储网负责共享数据访问。带内管理承载节点部署等操作系统可达的服务，两者在这一设计中可共用物理以太网。带外管理网独立连接基板管理控制器（BMC）和其他管理接口，提供独立于主机操作系统的管理路径。</p>"
+    ],
+    [
+     "<p>The storage network serves shared data access. In-band management supports services reachable through the operating system, such as node provisioning. In this design the two can share physical Ethernet infrastructure. The separate out-of-band network connects baseboard management controllers (BMCs) and other management interfaces for access independent of the host operating system.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "集群运维与作业调度",
+    "Cluster Operations and Workload Scheduling"
+   ],
+   "d": [
+    "Mission Control、作业调度器和网络管理工具分别负责集群运维、作业分配与互联管理。",
+    "Mission Control, workload schedulers, and fabric tools handle cluster operations, job placement, and interconnect management."
+   ],
+   "b": [
+    [
+     "<p>在 DGX GB200 参考架构中，Mission Control 集成基础设施运维功能，并可利用 Run:ai 进行工作负载编排。参考资料同时列出 Slurm 作为批处理工作负载管理器。InfiniBand fabric 由 UFM 管理，柜内 NVLink 互联有独立的管理组件。</p>"
+    ],
+    [
+     "<p>In the DGX GB200 reference architecture, Mission Control integrates infrastructure operations and can use Run:ai for workload orchestration. The reference also lists Slurm for batch workload management. UFM manages the InfiniBand fabric, and in-rack NVLink has dedicated fabric management components.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

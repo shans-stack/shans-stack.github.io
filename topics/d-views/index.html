@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infinia 协议视图：S3、POSIX 与原生 KV Cache · Shan's Stack</title>
+<meta name="description" content="分 5 步说明Infinia 协议视图：S3、POSIX 与原生 KV Cache。S3、POSIX 和原生 KV Cache 接口各自提供应用所需的语义，底层共用一个存储引擎。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-views.css?v=1351f3e5">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-views">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Infinia Protocol Views: S3, POSIX, and Native KV Cache">Infinia 协议视图：S3、POSIX 与原生 KV Cache</h1>
+        <p class="meta"><span data-en="5 steps · S3, POSIX, KV cache">5 步 · S3、POSIX、KV Cache</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/infinia/&quot;&gt;DDN Infinia Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/infinia/">DDN Infinia 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/&quot;&gt;DDN Technical Blog · The Data Path from Checkpoint to First Token&lt;/a&gt;"><a href="https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/">DDN 技术博客 · 从检查点到首个 Token 的数据路径</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/&quot;&gt;DDN Technical Blog · Infinia’s Distributed Engine&lt;/a&gt;"><a href="https://www.ddn.com/blog/ddn-infinia-expands-to-power-inference-intelligent-data-lakes-and-multi-protocol-ai-workloads/">DDN 技术博客 · Infinia 的分布式引擎</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-views.js?v=d475c363"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-views",
+ "ar": [
+  960/416,
+  400/400
+ ],
+ "steps": [
+  {
+   "t": [
+    "接口与存储引擎分层",
+    "Interfaces and Storage Engine"
+   ],
+   "d": [
+    "不同应用接口都接入 Infinia 的原生键值引擎。",
+    "Different application interfaces connect to Infinia’s native key-value engine."
+   ],
+   "b": [
+    [
+     "<p>协议或接口定义应用如何引用数据以及可以执行哪些操作。DDN 将 S3、POSIX 和原生 KV Cache 接口构建在同一个分布式键值引擎上。</p>"
+    ],
+    [
+     "<p>A protocol or interface defines how applications address data and which operations they can perform. DDN builds its S3, POSIX, and native KV cache interfaces on one distributed key-value engine.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "S3 对象视图",
+    "The S3 Object View"
+   ],
+   "d": [
+    "S3 客户端按存储桶与对象键定位对象。",
+    "An S3 client addresses objects by bucket and object key."
+   ],
+   "b": [
+    [
+     "<p>S3 兼容接口向应用呈现对象。存储桶是对象的逻辑容器，对象键标识桶内的一项内容。对象读写进入 Infinia 的共享引擎，接口负责解释 S3 请求。</p>"
+    ],
+    [
+     "<p>The S3-compatible interface exposes objects to applications. A bucket is a logical container, and an object key identifies an item in it. The interface interprets S3 requests and passes object I/O to the shared Infinia engine.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "POSIX 文件视图",
+    "The POSIX File View"
+   ],
+   "d": [
+    "文件应用使用路径和目录，通过文件接口访问存储。",
+    "File applications work with paths and directories through the file interface."
+   ],
+   "b": [
+    [
+     "<p>POSIX 定义了应用使用文件和目录的标准语义，包括打开文件和读写文件内容。Infinia 的文件接口提供这类操作，底层同样由键值引擎承载。</p>"
+    ],
+    [
+     "<p>POSIX defines standard file and directory semantics, including opening files and reading or writing their contents. Infinia’s file interface provides those operations on the same key-value engine.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "原生推理缓存接口",
+    "The Native Inference Cache Interface"
+   ],
+   "d": [
+    "推理框架通过原生接口保存和读取 KV Cache 块。",
+    "Inference frameworks use the native interface to store and retrieve KV cache blocks."
+   ],
+   "b": [
+    [
+     "<p>KV Cache 保存推理已计算的注意力键和值。DDN 的 Infinia 插件可经 NIXL 数据传输库在 GPU 内存和 Infinia 间移动这些块。缓存接口直接连接键值引擎，无需经过 S3 或文件接口。</p>"
+    ],
+    [
+     "<p>KV cache holds attention keys and values already computed during inference. DDN’s Infinia plugin uses the NIXL transfer library to move these blocks between GPU memory and Infinia. The native cache interface connects directly to the engine, bypassing the S3 and file interfaces.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "共享底座与接口语义",
+    "A Shared Engine with Distinct Interface Semantics"
+   ],
+   "d": [
+    "应用使用各自的访问语义，数据服务共用底层存储与租户隔离机制。",
+    "Applications retain their access semantics while data services share storage and tenant isolation."
+   ],
+   "b": [
+    [
+     "<p>共享引擎为三种服务提供共同的存储基础。租户标识属于底层数据键，因此租户范围适用于这些数据服务。对象键、文件路径和缓存块标识各有自己的含义。</p>"
+    ],
+    [
+     "<p>The shared engine provides a common storage foundation for the three services. Tenant identifiers belong to the underlying keys, so tenant scope applies across the services. Object keys, file paths, and cache block identifiers each retain their own meaning.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

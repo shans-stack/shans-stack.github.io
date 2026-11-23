@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Quantum InfiniBand：从端点连接到在网归约 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA Quantum InfiniBand 的端点连接、路由、在网归约、管理和代际选项。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-quantum.css?v=e7aea0cf">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-quantum">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language">
+      <button type="button" data-lang-set="zh" lang="zh-Hans" aria-label="简体中文" data-en-label="Simplified Chinese" data-en="ZH" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" lang="zh-Hant" aria-label="繁體中文" data-en-label="Traditional Chinese" data-en="TW" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" lang="en" aria-label="英文" data-en-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-quantum">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Quantum InfiniBand: From Endpoint Links to In-Network Reduction">NVIDIA Quantum InfiniBand：从端点连接到在网归约</h1>
+        <p class="meta"><span data-en="5 steps · InfiniBand, Switches, SHARP">5 步 · InfiniBand、交换机、SHARP</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/products/infiniband/quantum-x800/&quot;&gt;NVIDIA Quantum-X800 InfiniBand&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/products/infiniband/quantum-x800/">NVIDIA Quantum-X800 InfiniBand</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/quantum2/&quot;&gt;NVIDIA Quantum-2 InfiniBand&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/quantum2/">NVIDIA Quantum-2 InfiniBand</a></li>
+      <li data-en="&lt;a href=&quot;https://networking-docs.nvidia.com/sharpum/370&quot;&gt;NVIDIA SHARP Documentation&lt;/a&gt;"><a href="https://networking-docs.nvidia.com/sharpum/370">NVIDIA SHARP 文档</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/infiniband/ufm/&quot;&gt;NVIDIA UFM Product Page&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/infiniband/ufm/">NVIDIA UFM 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/products/silicon-photonics/&quot;&gt;NVIDIA Co-Packaged Optics Switches&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/products/silicon-photonics/">NVIDIA 共封装光学交换机</a></li>
+      <li data-en="Animations are schematic and show no measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-quantum.js?v=7045cfe2"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-quantum",
+  "ar": [
+    2.375,
+    0.88
+  ],
+  "steps": [
+    {
+      "t": [
+        "Quantum 位于节点之间",
+        "Quantum Connects Compute Nodes"
+      ],
+      "d": [
+        "Quantum 是 NVIDIA 的节点间 InfiniBand 交换平台，Quantum-X800 包含交换机、ConnectX 网卡和 LinkX 互连部件。",
+        "Quantum is NVIDIA’s inter-node InfiniBand platform. Quantum-X800 combines switches, ConnectX adapters, and LinkX interconnects."
+      ],
+      "b": [
+        [
+          "<p>InfiniBand 定义网络如何传输数据。Quantum-X800 是该技术的一套实现：ConnectX SuperNIC 是服务器侧网络适配器，Quantum 交换机在网络中转发流量，LinkX 线缆和收发器组成物理连接。这条路径把不同服务器连起来。</p>"
+        ],
+        [
+          "<p>InfiniBand defines how the network transports data. Quantum-X800 implements it with ConnectX SuperNICs as server-side network adapters, Quantum switches to forward traffic, and LinkX cables and transceivers for the physical links. Together they connect separate servers.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "交换网络可选路径",
+        "The Fabric Can Select Paths"
+      ],
+      "d": [
+        "自适应路由可在可用路径之间选择，基于遥测的拥塞控制可管理流量压力。",
+        "Adaptive routing selects among available paths, while telemetry-based congestion control manages traffic pressure."
+      ],
+      "b": [
+        [
+          "<p>多个交换机组成互联网络时，端点之间可能有多条可达路径。Quantum-X800 支持自适应路由，即按网络状态选路。它也支持基于遥测的拥塞控制，利用网络传回的运行数据处理拥塞。路由选择和拥塞控制承担不同职责。</p>"
+        ],
+        [
+          "<p>A multi-switch fabric may offer more than one route between endpoints. Quantum-X800 supports adaptive routing, which chooses a route based on network conditions. It also supports telemetry-based congestion control, using information about network activity to manage congestion. Routing and congestion control address different parts of the problem.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "交换机参与归约",
+        "Switches Participate in Reduction"
+      ],
+      "d": [
+        "受支持的集合操作可由 SHARP 在网络内合并部分结果，再将归约结果送回端点。",
+        "SHARP can combine partial results in the network for supported collectives and return the reduced result to the endpoints."
+      ],
+      "b": [
+        [
+          "<p>集合通信让一组计算进程协同交换数据。以 All-Reduce 为例，端点各自提交部分值，每个参与端点都需要得到聚合后的结果。Quantum-X800 支持 SHARP v4，在交换网络中执行受支持的归约操作，例如求和，从而减少端点之间重复传输部分结果。</p>"
+        ],
+        [
+          "<p>A collective lets a group of processes coordinate data exchange. In an all-reduce, each endpoint submits a partial value and needs the combined result. Quantum-X800 supports SHARP v4, which performs supported reductions, such as summation, within the switching fabric. This reduces repeated transfers of partial results between endpoints.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "UFM 负责网络管理",
+        "UFM Manages the Fabric"
+      ],
+      "d": [
+        "UFM 从交换机、适配器和线缆收集遥测，并提供网络发现和管理能力。",
+        "UFM gathers telemetry from switches, adapters, and cables, and provides fabric discovery and management."
+      ],
+      "b": [
+        [
+          "<p>Unified Fabric Manager（UFM）在业务转发路径之外采集网络状态。UFM Enterprise 在遥测之上加入自动发现、配置和拥塞定位。计算节点间的数据由交换网络传输，运维软件通过状态数据观察网络。</p>"
+        ],
+        [
+          "<p>Unified Fabric Manager (UFM) collects fabric state outside the workload forwarding path. UFM Enterprise adds automated discovery, provisioning, and congestion discovery to telemetry. The fabric moves workload data between compute nodes, while UFM uses operational data to observe the network.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "平台代际与光学选项",
+        "Platform Generations and Optical Options"
+      ],
+      "d": [
+        "Quantum-2 配套 ConnectX-7，Quantum-X800 配套更新的 ConnectX，并包含采用共封装光学的交换机型号。",
+        "Quantum-2 pairs with ConnectX-7. Quantum-X800 supports newer ConnectX adapters and includes switch models with co-packaged optics."
+      ],
+      "b": [
+        [
+          "<p>两代都包含端点适配器、交换机和互连部件。Quantum-X800 产品页列出 ConnectX-8 和 ConnectX-9，并提供带共封装光学（CPO）的 Quantum-X InfiniBand Photonics 交换机选项。CPO 将光引擎与交换芯片放入同一封装，具体连接方式取决于型号和端口。</p>"
+        ],
+        [
+          "<p>Both generations include endpoint adapters, switches, and interconnect components. NVIDIA’s Quantum-X800 product page lists ConnectX-8 and ConnectX-9 and offers Quantum-X InfiniBand Photonics switches with co-packaged optics (CPO). CPO places optical engines and the switching chip in the same package. The connection method depends on the model and port.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

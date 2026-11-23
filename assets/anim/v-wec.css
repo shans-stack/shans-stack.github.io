@@ -49,6 +49,3 @@
 .v-wec .v-wec-btn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
 .v-wec .v-wec-btn[hidden]{display:block;opacity:0;pointer-events:none}
 @media (max-width:640px){.v-wec .v-wec-btn{font-size:14px;padding:6px 12px}}
-.v-wec .vwm{fill:#000000}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .v-wec .vwm{fill:#FFFFFF}}
-:root[data-theme="dark"] .v-wec .vwm{fill:#FFFFFF}

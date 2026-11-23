@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA VFS 驱动与 Linux 页缓存 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 WEKA 原生客户端把集群文件系统挂载到 Linux 路径，并按挂载模式管理本机页缓存。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-vfs.css?v=0db390f0">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-vfs">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-vfs">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA VFS Driver and Linux Page Cache">WEKA VFS 驱动与 Linux 页缓存</h1>
+        <p class="meta"><span data-en="6 steps · POSIX, mounts, page cache">6 步 · POSIX、挂载、页缓存</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/weka-client-and-mount-modes&quot;&gt;WEKA Documentation · Client and Mount Modes&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/weka-client-and-mount-modes">WEKA 文档 · 客户端与挂载模式</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-filesystems-and-object-stores/mounting-filesystems&quot;&gt;WEKA Documentation · Mount Filesystems&lt;/a&gt;"><a href="https://docs.weka.io/weka-filesystems-and-object-stores/mounting-filesystems">WEKA 文档 · 挂载文件系统</a></li>
+      <li data-en="Schematic illustrations. No measured figures.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-vfs.js?v=87954e2b"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-vfs",
+ "ar": [
+  2.838709677419355,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "从 Linux 文件接口进入",
+    "Access Through the Linux File Interface"
+   ],
+   "d": [
+    "应用经 Linux 虚拟文件系统调用 WEKA 原生驱动，访问集群中的文件。",
+    "Applications access cluster files through the Linux Virtual File System and the native WEKA driver."
+   ],
+   "b": [
+    [
+     "<p>VFS（Virtual File System，虚拟文件系统）是 Linux 内核为不同文件系统提供的统一接口。安装在应用服务器上的 WEKA 客户端提供原生文件系统驱动。应用使用 POSIX（可移植操作系统接口）定义的文件操作，例如打开、读取和写入，通过同一套接口访问 WEKA 文件系统。</p>"
+    ],
+    [
+     "<p>The Virtual File System (VFS) is the Linux kernel interface common to different filesystems. The WEKA client installs a native filesystem driver on the application server. Applications use file operations defined by POSIX (Portable Operating System Interface), such as open, read, and write, to access a WEKA filesystem through that interface.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "将集群目录挂到本地路径",
+    "Mounting a Cluster Directory at a Local Path"
+   ],
+   "d": [
+    "挂载点把本机路径关联到指定的 WEKA 文件系统或子目录。",
+    "A mount point maps a local path to a WEKA filesystem or a subdirectory."
+   ],
+   "b": [
+    [
+     "<p>挂载点是应用服务器上用来访问文件系统的路径。WEKA 原生挂载使用 <code>wekafs</code> 类型，可将整个文件系统或指定子目录挂载到本机。子目录挂载让不同应用从各自所需的目录开始访问，共用同一个底层文件系统。</p>"
+    ],
+    [
+     "<p>A mount point is the path through which an application server accesses a filesystem. A native mount uses the <code>wekafs</code> type and exposes either the filesystem root or a specified subdirectory. Subdirectory mounts allow applications to start at different directories within the same underlying filesystem.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从页缓存读取文件数据",
+    "Reading File Data from the Page Cache"
+   ],
+   "d": [
+    "读命中由本机内存提供数据，缺失的数据从集群读取。",
+    "A read hit uses local memory, while missing data is fetched from the cluster."
+   ],
+   "b": [
+    [
+     "<p>Linux 页缓存是在主机内存中保留文件数据页的机制。读取所需数据时，客户端可从页缓存取回有效的数据页。缺失的数据由集群提供，读取的页可留在内存中供后续请求使用。</p>"
+    ],
+    [
+     "<p>The Linux page cache holds file data in host memory. The client can satisfy a read from valid pages already in the cache. The cluster supplies missing pages, and the returned pages can remain in memory for later reads.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "读缓存模式的写直达",
+    "Write-Through in Read Cache Mode"
+   ],
+   "d": [
+    "读缓存模式下，写入到达集群的受保护存储后才确认。",
+    "In read cache mode, the client acknowledges writes after they reach the cluster’s resilient storage."
+   ],
+   "b": [
+    [
+     "<p>读缓存模式采用 write-through（写直达）。客户端等数据和元数据写入受保护的存储后才确认写入。页缓存可继续服务符合条件的读取，写入确认以集群持久化为界。</p>"
+    ],
+    [
+     "<p>Read cache mode uses write-through. The client acknowledges a write after its data and metadata reach resilient storage. The page cache can still serve eligible reads, while write acknowledgment follows persistence on the cluster.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "写缓存模式的回写",
+    "Write-Back in Write Cache Mode"
+   ],
+   "d": [
+    "写缓存模式可在本机缓存处确认写入，再将数据回写到集群。",
+    "In write cache mode, the client can acknowledge a cached write before flushing it to the cluster."
+   ],
+   "b": [
+    [
+     "<p>写缓存模式采用 write-back（回写）。写入可先进入内核页缓存，由客户端确认，再在后台写入受保护的存储。需要确认数据已持久化时，应用可通过 <code>fsync</code> 同步文件。</p>"
+    ],
+    [
+     "<p>Write cache mode uses write-back. A write can enter the kernel page cache and be acknowledged before it reaches resilient storage in the background. An application can synchronize the file with <code>fsync</code> when it needs a persistence boundary.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "跨主机访问时失效旧缓存",
+    "Cache Invalidation Across Hosts"
+   ],
+   "d": [
+    "当另一主机修改同一文件时，WEKA 会使旧的文件数据缓存失效。",
+    "WEKA invalidates stale file data in the cache when another host changes the same file."
+   ],
+   "b": [
+    [
+     "<p>多个应用服务器可以各自挂载同一文件系统。在读缓存模式下，当多台主机同时访问同一文件且有主机写入时，WEKA 会使相关缓存失效，并从后端处理该文件的读写。目录项缓存保存的是路径查找信息，有单独的一致性设置。</p>"
+    ],
+    [
+     "<p>Multiple application servers can mount the same filesystem. In read cache mode, when multiple hosts access a file concurrently and one writes to it, WEKA invalidates the relevant cached pages and handles that file’s I/O on the backend. The directory-entry cache stores path lookup information and has separate consistency settings.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-paradigm.css，全部限定在 .ssa-v-paradigm 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg（浅色）与 vast-wordmark-white.svg（深色），不内嵌。 */
+   样式在 assets/anim/v-paradigm.css，全部限定在 .ssa-v-paradigm 容器之内。 */
 (function(){
 var EN={"直接访问：一对控制器":"Reach: 2 controllers","直接访问：1 台节点":"Reach: 1 node","直接访问：1 台服务器":"Reach: 1 server","直接访问：全部 CNode":"Reach: every CNode","共享介质":"Shared media","无共享":"Shared nothing","并行文件系统":"Parallel file system","解耦全共享（DASE）":"DASE","解耦全共享":"DASE",
 "方框：处理请求的控制器或节点 · 小格：盘 · 连线：能直接访问":"Boxes: controllers or nodes that handle requests · cells: drives · lines: direct access","方框：处理请求的部件 · 小格：盘":"Boxes: request handlers · cells: drives",
@@ -58,13 +57,6 @@ function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a==null?1:a;o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=o.a}
 /* 沿线走：t 在 [t0, t0+dur] 内沿 pts 走，之后 fo 秒内淡出；返回进度（之前 -1，淡出时 1.5） */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
-/* VAST 字标：引用 assets/brand 原件。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const R=window.SS_ROOT||'';
-  const g=el('g',{class:'vwm','aria-label':'VAST'},p),a={x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h};
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-black.svg',class:'vwm-l'},a),g);
-  el('image',Object.assign({href:R+'assets/brand/vast-wordmark-white.svg',class:'vwm-d'},a),g);return g}
-/* 部件名 + VAST 字标排成一行：文字从 x 起（左对齐），字标紧跟在文字后面。返回 {t,m} */
-function vlabel(x,y,s,fs,cls,p,h){const t=tx(x,y,s,fs,cls,'start',p);let w;try{w=t.getComputedTextLength()}catch(e){w=0}if(!w)w=fs*0.62*T(s).length;const m=vmark(x+w+Math.round(fs*0.35),y,h,p,'start');return {t,m}}
 function xmark(c,a,b,p){const g=el('g',{class:'xm'},p);line(P(c.x-b,c.y-a),P(c.x+b,c.y+a),'xmark',g);line(P(c.x-b,c.y+a),P(c.x+b,c.y-a),'xmark',g);return g}
 const dur=pts=>plen(pts)/L.sp;
 const SCENE={
@@ -94,7 +86,7 @@ const SCENE={
   const ttl=[M?'共享介质':'共享介质','无共享','并行文件系统',M?'解耦全共享':'解耦全共享（DASE）'];
   const own=M?['直接访问：一对控制器','直接访问：1 台节点','直接访问：1 台服务器','直接访问：全部 CNode']:['能直接访问这块盘：一对控制器','能直接访问这块盘：1 台节点','能直接访问这块盘：1 台数据服务器','能直接访问这块盘：全部 CNode'];
   L.cards.forEach((r,ci)=>{const c={r,units:[],disks:[],own:[]};E.cards.push(c);
-   c.box=box(r,gC,'box soft',14);tx(r.x+16,r.y+24,ttl[ci],f.ttl,'lbl b7','start',gC);if(ci===3)vmark(r.x+r.w-14,r.y+24,M?11:13,gC,'end');
+   c.box=box(r,gC,'box soft',14);tx(r.x+16,r.y+24,ttl[ci],f.ttl,'lbl b7','start',gC);
    const x0=r.x+16,x1=r.x+r.w-16,cx=(x0+x1)/2,top=r.y+48,uy=top,dy=r.y+r.h-44-m.dh,barY=dy-14,ucy=uy+m.uh/2;
    c.ln=el('g',{},gC);c.hl=el('g',{},gC);
    const U=(ux,w,cls)=>{const rr={x:ux-w/2,y:uy,w,h:m.uh};c.units.push(rr);return rr};
@@ -166,8 +158,8 @@ const SCENE={
   line(P(dc.x,Dd.client.y+Dd.client.h),P(dc.x,Dd.busY),'',g5);line(P(Dd.xs[0],Dd.busY),P(Dd.xs[2],Dd.busY),'',g5);Dd.xs.forEach(x=>line(P(x,Dd.busY),P(x,Dd.y),'',g5));
   Dd.xs.forEach(x=>line(P(x,Dd.y+Dd.h),P(x,Dd.fabY),'',g5));E.da.fab=line(P(M?8:40,Dd.fabY),P(M?472:920,Dd.fabY),'',g5);
   tx(M?161:340,Dd.fabY-16,'NVMe-oF 网络',f.sm,'ink3-t','middle',g5);
-  E.da.cn=Dd.xs.map((x,i)=>{const r={x:x-Dd.w/2,y:Dd.y,w:Dd.w,h:Dd.h};const b=box(r,g5);
-   if(i===0){const w0=f.lbl*3.1,mh=M?11:14,w1=mh*66/14,gap=M?6:8;vlabel(x-(w0+gap+w1)/2,dcy,'CNode',f.lbl,'lbl b7',g5,mh)}else tx(x,dcy,'CNode',f.lbl,'lbl b7','middle',g5);return b});
+  E.da.cn=Dd.xs.map(x=>{const r={x:x-Dd.w/2,y:Dd.y,w:Dd.w,h:Dd.h};const b=box(r,g5);
+   tx(x,dcy,'CNode',f.lbl,'lbl b7','middle',g5);return b});
   const DB=Dd.db;E.da.drx=[];E.da.dk=[];
   DB.xs.forEach((c,b)=>{const r={x:c-DB.w/2,y:DB.y,w:DB.w,h:DB.h};box(r,g5,'box soft',14);tx(r.x+12,r.y+20,'DBox',f.sm,'ttl','start',g5);
    const by=DB.y+DB.barDy,dy=DB.y+DB.drDy,tot=6*DB.drW+5*DB.drGap,xs=[];for(let k=0;k<6;k++)xs.push(c-tot/2+DB.drW/2+k*(DB.drW+DB.drGap));

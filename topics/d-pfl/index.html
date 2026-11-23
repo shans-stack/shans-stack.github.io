@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PFL 渐进式文件布局 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明PFL 渐进式文件布局。按文件偏移把数据分成多个范围，各范围使用自己的条带规则和目标池。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-pfl.css?v=0b35b9a5">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-pfl">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="PFL Progressive File Layout">PFL 渐进式文件布局</h1>
+        <p class="meta"><span data-en="5 steps · EXAScaler, Lustre, striping">5 步 · EXAScaler、Lustre、条带化</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://doc.lustre.org/lustre_manual.pdf#page=215&quot;&gt;Lustre Operations Manual, Section 19.5: Progressive File Layout&lt;/a&gt;"><a href="https://doc.lustre.org/lustre_manual.pdf#page=215">Lustre 官方操作手册，第 19.5 节：PFL</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Understanding_Lustre_Internals#Lustre_File_Layouts&quot;&gt;Understanding Lustre Internals: File Layouts&lt;/a&gt;"><a href="https://wiki.lustre.org/Understanding_Lustre_Internals#Lustre_File_Layouts">Lustre 官方架构文档：复合布局</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-pfl.js?v=1ed4a461"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-pfl",
+ "ar": [900/342,360/320],
+ "steps": [
+  {
+    "t": [
+      "固定布局覆盖整个文件",
+      "One Fixed Layout for the Whole File"
+    ],
+    "d": [
+      "传统布局用同一套条带参数映射一个文件的所有数据。",
+      "A fixed layout maps all of a file’s data using the same striping parameters."
+    ],
+    "b": [
+      [
+        "<p>条带化把相邻数据块按布局规则分配给 OST（Object Storage Target，数据目标）。条带数量决定一个布局可使用多少个目标。统一布局需要在分散大文件流量和控制小文件涉及的目标数之间取舍。</p>"
+      ],
+      [
+        "<p>Striping assigns adjacent blocks to Object Storage Targets (OSTs) according to the layout. Stripe count determines how many targets a layout uses. A single layout trades off spreading large-file traffic and limiting the targets involved for small files.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "按字节偏移定义组件",
+      "Defining Components by Byte Offset"
+    ],
+    "d": [
+      "PFL 把一个文件布局拆成互不重叠的字节范围，每段由独立组件描述。",
+      "PFL splits a file layout into non-overlapping byte ranges, each described by a separate component."
+    ],
+    "b": [
+      [
+        "<p>PFL（Progressive File Layout，渐进式文件布局）的组件记录起止偏移以及该范围的条带参数。它们组成一个复合布局，应用仍看到一个文件。组件边界由布局定义，可以为文件开头和后续内容配置不同规则。</p>"
+      ],
+      [
+        "<p>A Progressive File Layout (PFL) component records a byte range and its striping parameters. The components form a composite layout while the application sees a single file. Layout boundaries allow one rule for the beginning of the file and another for later data.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "首段使用较窄条带",
+      "Starting with a Narrow Stripe"
+    ],
+    "d": [
+      "写入停在首段时，数据只落到首段使用的目标。",
+      "When writes stay in the first range, data lands on the targets for that range."
+    ],
+    "b": [
+      [
+        "<p>一种布局为首段指定一个目标，为后续范围预留更宽的条带。尚未实例化的组件已经有布局规则，实际存放数据的 OST 对象在相关范围需要时分配。</p>"
+      ],
+      [
+        "<p>One layout can assign a single target to the first range and reserve wider stripes for later ranges. An uninstantiated component already has layout rules. The OST objects that hold its data are allocated when the range is needed.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "文件增长时启用后续组件",
+      "Activating Later Components as the File Grows"
+    ],
+    "d": [
+      "写入跨过边界时，后续数据进入新组件，前段保持原有放置。",
+      "When a write crosses the boundary, later data enters the new component and the earlier range stays in place."
+    ],
+    "b": [
+      [
+        "<p>客户端访问尚未实例化的范围时，由 MDT（Metadata Target，元数据目标）为该组件分配对象。新数据按这一段的条带数量、条带大小和可选 OST 池分布。先前范围仍由它原来的组件描述。</p>"
+      ],
+      [
+        "<p>When the client accesses an uninstantiated range, the Metadata Target (MDT) allocates objects for that component. The new data follows the range’s stripe count, stripe size, and optional OST pool. The preceding range keeps its existing component.</p>"
+      ]
+    ]
+  },
+  {
+    "t": [
+      "按偏移读回完整文件",
+      "Reading the File by Offset"
+    ],
+    "d": [
+      "客户端按每个范围的布局读取数据，应用仍使用同一个文件句柄。",
+      "The client reads each range through its own layout while the application uses a single file handle."
+    ],
+    "b": [
+      [
+        "<p>跨越组件边界的 I/O 会涉及对应的多个布局。偏移决定访问哪一段，池和条带决定从哪些目标取回这段。为已有数据重新安排布局则是显式迁移，和文件继续增长是两个操作。</p>"
+      ],
+      [
+        "<p>I/O that crosses a component boundary uses the layouts for both ranges. The offset selects the range, and the pool and striping rules determine where to retrieve it. Explicit migration can rearrange existing data independently of file growth.</p>"
+      ]
+    ]
+  }
+]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

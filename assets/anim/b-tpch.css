@@ -1,0 +1,41 @@
+.b-tpch-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.b-tpch-scene text {
+  fill: var(--ink);
+  font: 500 20px var(--f);
+  dominant-baseline: central;
+}
+.b-tpch-scene .b-tpch-note,
+.b-tpch-scene .b-tpch-muted {
+  fill: var(--ink2);
+  font-size: 18px;
+}
+.b-tpch-scene .b-tpch-box,
+.b-tpch-scene .b-tpch-quiet,
+.b-tpch-scene .b-tpch-accent {
+  fill: var(--bg);
+  stroke: var(--ink3);
+  stroke-width: 1.4;
+}
+.b-tpch-scene .b-tpch-quiet { stroke-dasharray: 4 5; }
+.b-tpch-scene .b-tpch-accent { stroke: var(--lc); stroke-width: 2; }
+.b-tpch-scene .b-tpch-line,
+.b-tpch-scene .b-tpch-guide {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-tpch-scene .b-tpch-guide { stroke-dasharray: 4 5; }
+.b-tpch-scene .b-tpch-token { fill: var(--lc); }
+
+body.topic-b-tpch .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-tpch .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-tpch.present .stage .figbox { margin-block: 0; }
+  .b-tpch-scene text { font-size: 19px; }
+}

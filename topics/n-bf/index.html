@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlueField DPU：把基础设施服务移到主机之外 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 BlueField DPU 的板上组件、数据路径、存储服务与主机隔离。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-bf.css?v=653841a5">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-bf">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-bf">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="BlueField DPU: Running Infrastructure Services Outside the Host">BlueField DPU：把基础设施服务移到主机之外</h1>
+        <p class="meta"><span data-en="5 steps · DPU, hardware offload, isolation">5 步 · DPU、硬件卸载、隔离</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nvidia-bluefield-3-networking-platform-user-guide.pdf&quot;&gt;BlueField-3 Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/nvidia-bluefield-3-networking-platform-user-guide.pdf">BlueField-3 硬件指南</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/networking/doca&quot;&gt;NVIDIA DOCA Software Platform&lt;/a&gt;"><a href="https://developer.nvidia.com/networking/doca">NVIDIA DOCA 软件平台</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/products/data-processing-unit/&quot;&gt;NVIDIA BlueField Portfolio&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/products/data-processing-unit/">NVIDIA BlueField 产品系列</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking/display/bluefieldbsp4130/initial-configuration.pdf&quot;&gt;BlueField Configuration Guide: DPU and Restricted Modes&lt;/a&gt;"><a href="https://docs.nvidia.com/networking/display/bluefieldbsp4130/initial-configuration.pdf">BlueField 官方配置指南：DPU 模式与受限模式</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/doca/sdk/nvidia-doca-snap-4-service-guide.pdf&quot;&gt;DOCA SNAP-4 Service Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/doca/sdk/nvidia-doca-snap-4-service-guide.pdf">DOCA SNAP-4 服务指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html&quot;&gt;DGX Vera Rubin NVL72 Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">DGX Vera Rubin NVL72 硬件指南</a></li>
+      <li data-en="The animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-bf.js?v=310a2ba8"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-bf",
+ "ar": [
+  2.6470588235294117,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "板上处理器与网络引擎",
+    "Onboard Processors and Networking Engines"
+   ],
+   "d": [
+    "BlueField 将处理器、板上内存和网络加速部件放在主机与外部网络的连接位置。",
+    "BlueField places processors, onboard memory, and network accelerators at the link between the host and the external network."
+   ],
+   "b": [
+    [
+     "<p>DPU 是 Data Processing Unit（数据处理器）的缩写。以 BlueField-3 DPU 为例，它将 Arm 处理器、板上内存和 ConnectX-7 网络引擎集成在同一设备。主机通过 PCIe 使用设备提供的功能，外部网络连接到设备的网络端口。</p>",
+     "<p>板上处理器可以运行独立的软件环境。网络引擎可执行适合硬件加速的工作，使基础设施逻辑与主机上的应用有各自的执行位置。</p>"
+    ],
+    [
+     "<p>DPU stands for data processing unit. The BlueField-3 DPU integrates Arm processors, onboard memory, and a ConnectX-7 networking engine in one device. The host reaches device functions over PCIe, and the external fabric connects to the device’s network ports.</p>",
+     "<p>The onboard processors can run a separate software environment. The networking engine can accelerate suitable operations in hardware, giving infrastructure logic and host applications separate execution locations.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Arm 配置规则，硬件处理命中流量",
+    "Arm Configures Rules and Hardware Handles Matching Traffic"
+   ],
+   "d": [
+    "DPU 模式下，板上 Arm 控制嵌入式交换机，已卸载规则可直接在交换硬件中处理数据包。",
+    "In DPU mode, onboard Arm processors control the embedded switch, and offloaded rules let the switch hardware handle matching packets directly."
+   ],
+   "b": [
+    [
+     "<p>嵌入式交换机是网卡芯片内部连接主机功能和物理端口的转发模块。在 BlueField-3 的 DPU 模式中，板上 Arm 可以下发规则，定义匹配条件和相应动作。</p>",
+     "<p>未卸载的处理可经过 Arm 软件路径，命中已卸载规则的数据包由硬件直接处理。这使规则管理与逐包数据处理有独立的执行路径。</p>"
+    ],
+    [
+     "<p>The embedded switch is the forwarding block inside the adapter that connects host functions to physical ports. In BlueField-3 DPU mode, onboard Arm processors can install rules that specify matches and actions.</p>",
+     "<p>Work that has yet to be offloaded can take the Arm software path. The switch hardware handles packets that match offloaded rules, giving rule management and per-packet processing separate paths.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "DPU 可以向主机呈现块设备",
+    "The DPU Can Present a Block Device to the Host"
+   ],
+   "d": [
+    "BlueField-3 上的 DOCA SNAP 可把网络存储呈现为主机 PCIe 总线上的块设备。",
+    "DOCA SNAP on BlueField-3 can present network storage as a block device on the host PCIe bus."
+   ],
+   "b": [
+    [
+     "<p>DOCA 是 NVIDIA 的网络开发软件平台。其 SNAP 存储服务可以模拟 NVMe 或 virtio-blk 块设备。这两种接口都允许操作系统以固定大小的块执行存储读写。</p>",
+     "<p>主机使用相应块设备驱动提交请求。DPU 上的服务处理请求并转交给后端存储，存储系统仍负责持久化。</p>"
+    ],
+    [
+     "<p>DOCA is NVIDIA’s networking software development platform. Its SNAP storage service can emulate an NVMe or virtio-blk device. Both interfaces let an operating system read and write storage in fixed-size blocks.</p>",
+     "<p>The host submits I/O through the corresponding block driver. The DPU service handles the request and directs it to the storage backend, which remains responsible for persistence.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "主机接口与管理权限分开",
+    "Host Interfaces Have Separate Management Privileges"
+   ],
+   "d": [
+    "主机使用获授权的网络功能，DPU 管理员可在受限模式中保留端口配置等权限。",
+    "The host uses its assigned network functions, while restricted mode lets the DPU administrator retain privileges such as port configuration."
+   ],
+   "b": [
+    [
+     "<p>基础设施隔离取决于哪些组件持有管理权限。在 BlueField-3 的受限模式中，数据中心管理员可限制主机侧的端口所有权、硬件计数器访问等操作。</p>",
+     "<p>此时主机仍通过被分配的接口收发业务流量。基础设施侧可在独立控制环境中管理这些接口和转发规则。</p>"
+    ],
+    [
+     "<p>Infrastructure isolation depends on which components hold administrative privileges. In BlueField-3 restricted mode, the data center administrator can limit host-side operations such as port ownership and hardware counter access.</p>",
+     "<p>The host continues to send and receive workload traffic through assigned interfaces. The infrastructure control environment manages those interfaces and forwarding rules separately.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "BlueField-3 和 BlueField-4 的系统角色",
+    "System Roles for BlueField-3 and BlueField-4"
+   ],
+   "d": [
+    "BlueField-3 可承载 SNAP 等基础设施服务，DGX Vera Rubin NVL72 用 BlueField-4 接入存储和管理网络。",
+    "BlueField-3 can host services such as SNAP, and DGX Vera Rubin NVL72 uses BlueField-4 for storage and management networking."
+   ],
+   "b": [
+    [
+     "<p>BlueField-3 的公开软件文档展示了将虚拟块设备服务部署在 DPU 上的一种方式。BlueField-4 延续板上执行基础设施服务的分工。DGX Vera Rubin NVL72 的计算托盘将 BlueField-4 用作存储和管理网络端点。</p>",
+     "<p>同一托盘以 ConnectX-9 连接 InfiniBand 计算网络。这个系统把 GPU 扩展互联和存储、管理流量放在不同的端点上。</p>"
+    ],
+    [
+     "<p>The BlueField-3 software documentation shows one way to run a virtual block service on the DPU. BlueField-4 continues the role of hosting infrastructure services on the device. DGX Vera Rubin NVL72 compute trays use BlueField-4 as the storage and management network endpoint.</p>",
+     "<p>The same tray uses ConnectX-9 for the InfiniBand compute fabric. In this system, GPU scale-out traffic and storage and management traffic use distinct endpoints.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

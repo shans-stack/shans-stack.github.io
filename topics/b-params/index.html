@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>负载参数 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 I/O 大小、访问模式、读写组成、队列深度和缓存如何定义负载。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-params.css?v=f0ef7145">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-params">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-params">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Workload Parameters">负载参数</h1>
+        <p class="meta"><span data-en="5 steps · Storage, Workloads, Queue Depth">5 步 · 存储、负载、队列深度</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-parameters&quot;&gt;fio I/O Types and Configuration&lt;/a&gt;"><a href="https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-parameters">fio I/O 类型与配置选项</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/axboe/fio/releases/tag/fio-3.43&quot;&gt;fio 3.43 Release&lt;/a&gt;"><a href="https://github.com/axboe/fio/releases/tag/fio-3.43">fio 3.43 发布记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-params.js?v=ab5b4158"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-params",
+ "ar": [
+  2.6,
+  1.0588235294117647
+ ],
+ "steps": [
+  {
+   "t": [
+    "定义一次实验",
+    "Defining a Run"
+   ],
+   "d": [
+    "一份负载定义把测量目标、请求序列和统计窗口放在一起。",
+    "A workload definition ties together the target, request sequence, and measurement window."
+   ],
+   "b": [
+    [
+     "<p>文件路径和裸块设备代表不同的测量边界。fio 可用同一作业格式配置两者；路径、读写范围和统计时段决定结果描述的是哪一段系统，以及运行的哪个阶段。测试目标确定后，再定义每个请求包含多少数据。</p>"
+    ],
+    [
+     "<p>A file path and a raw block device define different measurement boundaries. fio can configure both with the same job format. The path, I/O range, and reporting interval determine which part of the system and which phase of the run the result describes. Once the target is set, the workload defines how much data each request carries.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "I/O 大小与地址",
+    "I/O Size and Address Pattern"
+   ],
+   "d": [
+    "大小描述每次请求的字节数，顺序或随机描述下一次请求落在哪里。",
+    "Size gives the byte count per request, while sequential or random access describes where the next request lands."
+   ],
+   "b": [
+    [
+     "<p>I/O 大小是负载生成器一次请求的数据量，与文件总大小分别配置。顺序访问沿连续地址推进，随机访问从指定范围选取偏移，即距文件或设备起点的位置。访问范围及随机分布也影响缓存命中和底层设备的访问方式。</p>"
+    ],
+    [
+     "<p>I/O size is the amount of data in one request from the generator and is configured separately from total file size. Sequential access advances through adjacent addresses. Random access selects offsets, or positions relative to the start of a file or device, within a specified range. The range and offset distribution also affect cache hits and device access patterns.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "读写组成",
+    "Read and Write Mix"
+   ],
+   "d": [
+    "混合负载中的读写比例按请求数配置，字节比例还取决于各方向的 I/O 大小。",
+    "The read/write mix is configured by request count, while the byte mix also depends on I/O sizes in each direction."
+   ],
+   "b": [
+    [
+     "<p>读请求从目标取回数据，写请求把数据送向目标。以 fio 为例，混合模式用 <code>rwmixread</code> 定义读操作所占比例，读写也可以用不同块大小。结果中的读与写具有各自的 IOPS、吞吐和时延，合计吞吐只描述两者一起运行的窗口。</p>"
+    ],
+    [
+     "<p>Reads retrieve data from the target, and writes send data to it. In fio, <code>rwmixread</code> sets the share of read operations in a mixed workload, and reads and writes can use different block sizes. Each direction has its own IOPS, throughput, and latency. Combined throughput describes their shared run window.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "并发与队列深度",
+    "Concurrency and Queue Depth"
+   ],
+   "d": [
+    "并发描述有多少发起者，队列深度描述每个发起者可维持多少未完成请求。",
+    "Concurrency describes how many issuers run, and queue depth describes how many outstanding I/Os each issuer can maintain."
+   ],
+   "b": [
+    [
+     "<p>在 fio 中，<code>numjobs</code> 复制作业，<code>iodepth</code> 给出每份作业的目标在途深度。在途请求已经发出、尚未完成。同步引擎一般在当前 I/O 完成后才提交下一个请求；异步引擎也可能受操作系统或 I/O 模式限制。因此，配置值需和报告中的实际深度分布一起读。</p>"
+    ],
+    [
+     "<p>In fio, <code>numjobs</code> clones a job and <code>iodepth</code> sets the target outstanding depth per job. An outstanding request has been issued and has yet to complete. A synchronous engine generally waits for one I/O before issuing the next, and an asynchronous engine may still face operating system or I/O mode limits. The configured depth is interpreted alongside the observed depth distribution.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "缓存与时间窗口",
+    "Cache and Timing Windows"
+   ],
+   "d": [
+    "缓存状态、预热和统计时段共同定义结果适用的条件。",
+    "Cache state, warm-up, and the reporting interval define the conditions represented by the result."
+   ],
+   "b": [
+    [
+     "<p>页面缓存是操作系统在内存中保留的文件数据。缓冲 I/O 可以由该缓存满足，文件反复读取时可能得到不同结果。fio 的 <code>direct</code> 请求非缓冲 I/O，具体支持取决于引擎和系统。预热让负载先运行一段时间；若测试用 fio 的 <code>ramp_time</code>，该时段在 fio 采集性能统计之前。</p>",
+     "<p>截至 2026-11-23，参数示例参考 2026-09-23 发布的 fio 3.43。</p>"
+    ],
+    [
+     "<p>The page cache holds file data in operating system memory. Buffered I/O can be served by that cache, so repeated reads may yield different results. fio's <code>direct</code> requests non-buffered I/O, subject to engine and system support. A warm-up runs the workload before measurement. If a job uses fio's <code>ramp_time</code>, that period precedes collection of performance statistics.</p>",
+     "<p>As of November 23, 2026, the parameter examples use fio 3.43, released on September 23, 2026.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

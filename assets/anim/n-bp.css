@@ -1,0 +1,27 @@
+.n-bp-diagram { display: block; width: 100%; height: auto; font-family: var(--f); }
+.n-bp-diagram text { fill: var(--ink); }
+.n-bp-diagram .name { font-weight: 600; }
+.n-bp-diagram .sub, .n-bp-diagram .note { fill: var(--ink2); }
+.n-bp-diagram .panel { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.4; }
+.n-bp-diagram .artifact .panel { fill: none; stroke-dasharray: 4 3; }
+.n-bp-diagram .idle .panel { stroke-dasharray: 4 4; }
+.n-bp-diagram .idle .name { fill: var(--ink2); }
+.n-bp-diagram .node.arrived .panel, .n-bp-diagram .good .panel { stroke: var(--l5); }
+.n-bp-diagram .node.blocked .panel { stroke: var(--l1); }
+.n-bp-diagram .route { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
+.n-bp-diagram .route.control:not(.arrow) { stroke-dasharray: 5 3; }
+.n-bp-diagram .route.active { stroke: var(--l4); }
+.n-bp-diagram .route.ok, .n-bp-diagram .route.ok.active { stroke: var(--l5); }
+.n-bp-diagram .route.stop, .n-bp-diagram .route.stop.active { stroke: var(--l1); }
+.n-bp-diagram .packet { fill: var(--l4); }
+.n-bp-diagram .packet.ok { fill: var(--l5); }
+.n-bp-diagram .packet.stop { fill: var(--l1); }
+.n-bp-diagram .route, .n-bp-diagram .packet { pointer-events: none; }
+[data-station="n-bp"] .src a { display: inline; padding: 0; font-size: inherit; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-n-bp .stage .figbox { margin-block: 8px; }
+  .topic-n-bp .stage .cap { display: block; margin-top: 8px; }
+  .topic-n-bp .stage h2 { font-size: 24px; line-height: 1.25; }
+  .topic-n-bp .stage .desc { font-size: 17px; line-height: 1.45; }
+  .topic-n-bp .stage .ctl { gap: 8px; margin-top: 10px; }
+}

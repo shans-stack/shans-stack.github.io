@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuideLLM：推理服务的负载扫描 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 GuideLLM 的请求数据、调度方式、负载扫描和时延目标判读。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-guidellm.css?v=4a85a5ae">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-guidellm">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-guidellm">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="GuideLLM: Load Sweeps for Inference Serving">GuideLLM：推理服务的负载扫描</h1>
+        <p class="meta"><span data-en="6 steps · serving endpoints, load sweeps, capacity limits">6 步 · 服务端点、负载扫描、容量边界</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/vllm-project/guidellm/releases/tag/v0.8.1&quot;&gt;GuideLLM v0.8.1 Release&lt;/a&gt;"><a href="https://github.com/vllm-project/guidellm/releases/tag/v0.8.1">GuideLLM v0.8.1 发布记录</a></li>
+      <li data-en="&lt;a href=&quot;https://vllm-project.github.io/guidellm/0.8.1/getting-started/benchmark/&quot;&gt;Benchmark Runs and Scheduling Profiles&lt;/a&gt;"><a href="https://vllm-project.github.io/guidellm/0.8.1/getting-started/benchmark/">基准运行与调度配置</a></li>
+      <li data-en="&lt;a href=&quot;https://vllm-project.github.io/guidellm/0.8.1/guides/metrics/&quot;&gt;Metrics and Measurement Windows&lt;/a&gt;"><a href="https://vllm-project.github.io/guidellm/0.8.1/guides/metrics/">指标与测量窗口</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-guidellm.js?v=12153cd3"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-guidellm",
+ "ar": [
+  2.2222222222222223,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "对端点运行负载配置",
+    "Running a Load Profile Against an Endpoint"
+   ],
+   "d": [
+    "GuideLLM 用请求数据和调度配置对运行中的推理端点做压测。",
+    "GuideLLM uses request data and a scheduling profile to benchmark a running inference endpoint."
+   ],
+   "b": [
+    [
+     "<p><code>guidellm run</code> 将目标端点、模型、数据和 profile 组合起来。Profile 指行为配置，可展开为多项采用不同调度策略的子测试。相同请求在不同调度下会产生不同的在途负载。</p>",
+     "<p>截至 2026-11-23，最近的公开稳定版本为 GuideLLM v0.8.1，于 2026-10-08 发布。</p>"
+    ],
+    [
+     "<p><code>guidellm run</code> combines a target endpoint, model, data, and profile. A profile specifies load behavior and can expand into sub-benchmarks using different scheduling strategies. The same requests can create different in-flight loads under different scheduling.</p>",
+     "<p>As of November 23, 2026, the latest public stable release is GuideLLM v0.8.1, published October 8, 2026.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "控制请求和测量窗口",
+    "Requests and the Measurement Window"
+   ],
+   "d": [
+    "工作负载由输入输出长度、数据源、预热和有效测量时段共同定义。",
+    "Request lengths, data, warmup, and the active interval define the test."
+   ],
+   "b": [
+    [
+     "<p>合成数据可控制提示词及输出的长度设置，真实数据或轨迹可表达不同的请求结构。预热和收尾与正式测量分开，指标按文档规定的请求或 Token 事件纳入窗口。相同数据配置可用于比较不同负载档位。</p>"
+    ],
+    [
+     "<p>Synthetic data controls prompt and output length settings. Real datasets or traces represent other request structures. Warmup and cooldown are distinct from the active interval, and documented rules govern which requests or token events enter each metric. A shared data configuration supports comparisons across load points.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "定速到达与固定并发",
+    "Rate-Based Arrivals and Fixed Concurrency"
+   ],
+   "d": [
+    "并发策略维持在途请求数，定速与泊松策略按目标速率安排发起时间。",
+    "Concurrent strategies maintain in-flight requests, while constant and Poisson strategies schedule arrivals at a target rate."
+   ],
+   "b": [
+    [
+     "<p>Synchronous 等待上一条请求完成再发送下一条。Concurrent 用多条请求流按完成事件补发。Constant 以均匀时间间隔安排请求，Poisson 使用随机间隔。目标到达率、实际发出速率与服务完成速率各有独立含义。</p>"
+    ],
+    [
+     "<p>Synchronous waits for the preceding request to complete. Concurrent runs several streams that send on completion. Constant schedules arrivals at even intervals. Poisson schedules them at randomized intervals. Target arrival rate, achieved dispatch rate, and service completion rate describe different stages.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Sweep 测多个负载点",
+    "Measuring Multiple Load Points with Sweep"
+   ],
+   "d": [
+    "Sweep 先测串行与吞吐边界，再在两者之间安排多个速率档位。",
+    "Sweep measures serial and throughput bounds, then tests several arrival rates between them."
+   ],
+   "b": [
+    [
+     "<p><code>sweep</code> 根据同步和吞吐策略的观测值安排中间测试。v0.8.1 也提供独立的 <code>knee</code> profile，以自适应并发搜索输出 Token 吞吐趋于平缓的位置。两种配置回答不同的容量问题。</p>"
+    ],
+    [
+     "<p>The <code>sweep</code> profile uses observations from synchronous and throughput strategies to schedule intermediate runs. Version 0.8.1 also provides a separate <code>knee</code> profile that adapts concurrency to look for the region where output-token throughput levels off. The profiles answer different capacity questions.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用时延目标判读容量",
+    "Reading Capacity Against Latency Targets"
+   ],
+   "d": [
+    "有效服务容量结合输出吞吐、尾时延和失败情况判定。",
+    "Usable capacity depends on output throughput, tail latency, and failures at the tested load."
+   ],
+   "b": [
+    [
+     "<p>尾时延描述较慢的请求，例如首 Token 时延的 P95 或 P99。达到吞吐平台前后，时延和错误仍可能上升。可用容量对应满足业务服务目标的档位，其判断依赖所设门槛和实际完成率。</p>"
+    ],
+    [
+     "<p>Tail latency describes slower observations, such as P95 or P99 time to first token. Latency and errors can still rise around a throughput plateau. Usable capacity is an observed point that meets the applicable service targets, which depend on the defined limits and completion rate.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用结果文件复核每个负载点",
+    "Auditing Each Point in the Output"
+   ],
+   "d": [
+    "报告将子测试的配置、指标和样本范围保留下来，支持复盘比较。",
+    "The reports preserve sub-benchmark settings, metrics, and sample scope for comparison."
+   ],
+   "b": [
+    [
+     "<p>默认结果文件为 <code>benchmarks.json</code> 和 <code>benchmarks.csv</code>。配置、实际负载、统计窗口与分发延迟共同决定结果能否复现。客户端准备数据或发送请求过慢也可能拉低吞吐，即使端点还有余量。</p>"
+    ],
+    [
+     "<p>The default outputs are <code>benchmarks.json</code> and <code>benchmarks.csv</code>. Configuration, achieved load, measurement windows, and dispatch delays affect whether a result can be reproduced. Slow data preparation or dispatch by the client can lower reported throughput while the endpoint still has spare capacity.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

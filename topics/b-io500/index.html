@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IO500：带宽、元数据与搜索 · Shan's Stack</title>
+<meta name="description" content="分 5 步解释 IO500 的子测试、运行约束、综合分数和比较条件。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-io500.css?v=38aac475">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-io500">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-io500">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="IO500: Bandwidth, Metadata, and Search">IO500：带宽、元数据与搜索</h1>
+        <p class="meta"><span data-en="5 steps · HPC storage, IOR, mdtest, pfind">5 步 · HPC 存储、IOR、mdtest、pfind</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/IO500/io500/blob/io500-sc26/README.md&quot;&gt;IO500 SC26 Code and Run Guide&lt;/a&gt;"><a href="https://github.com/IO500/io500/blob/io500-sc26/README.md">IO500 SC26 代码与运行手册</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/IO500/io500/io500-sc26/src/main.c&quot;&gt;IO500 SC26 Score Implementation&lt;/a&gt;"><a href="https://raw.githubusercontent.com/IO500/io500/io500-sc26/src/main.c">IO500 SC26 汇总公式实现</a></li>
+      <li data-en="&lt;a href=&quot;https://io500.org/rules&quot;&gt;IO500 Official Rules&lt;/a&gt;"><a href="https://io500.org/rules">IO500 官方规则</a></li>
+      <li data-en="&lt;a href=&quot;https://io500.org/list/sc26/production&quot;&gt;IO500 Production SC26 Round&lt;/a&gt;"><a href="https://io500.org/list/sc26/production">IO500 Production SC26 发布轮次</a></li>
+      <li data-en="&lt;a href=&quot;https://io500.org/pages/bof-sc26&quot;&gt;IO500 SC26 Release Event Date&lt;/a&gt;"><a href="https://io500.org/pages/bof-sc26">IO500 SC26 发布活动日期</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-io500.js?v=3c12a2da"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-io500",
+ "ar": [
+  2.5641025641025643,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "三类存储负载",
+    "Three Storage Workloads"
+   ],
+   "d": [
+    "IO500 用 IOR、mdtest 和 pfind 测并行存储的带宽、元数据操作和搜索。",
+    "IO500 uses IOR, mdtest, and pfind to measure bandwidth, metadata operations, and search."
+   ],
+   "b": [
+    [
+     "<p>IOR 执行并行数据读写，mdtest 执行文件元数据操作，pfind 并行搜索测试生成的命名空间。套件将各阶段组织在一次运行里，保留各阶段的独立结果。</p>",
+     "<p>截至 2026-11-23，最新 Production 轮次为 SC26，于 2026-11-18 揭晓，基准代码 tag 为 <code>io500-sc26</code>。</p>"
+    ],
+    [
+     "<p>IOR performs parallel data I/O, mdtest exercises file metadata operations, and pfind searches the generated namespace in parallel. The suite orchestrates these phases in one run and retains individual phase results.</p>",
+     "<p>As of 2026-11-23, the latest Production round is SC26, presented on 2026-11-18, with benchmark code tagged <code>io500-sc26</code>.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Easy 与 Hard",
+    "Easy and Hard Workloads"
+   ],
+   "d": [
+    "Easy 与 Hard 使用不同的文件共享方式、访问粒度或命名空间布局。",
+    "Easy and Hard use different file sharing, I/O granularity, or namespace layouts."
+   ],
+   "b": [
+    [
+     "<p>IOR Easy 以每进程独立文件执行带宽测试，Hard 由多个进程访问共享文件，并使用规定的小传输粒度。mdtest Easy 使用每进程独立工作目录，Hard 将文件集中在共享目录。</p>",
+     "<p>两组阶段都进入套件报告，各自反映不同的访问模式。</p>"
+    ],
+    [
+     "<p>IOR Easy uses a file per rank, while Hard has multiple ranks access a shared file with a prescribed small transfer size. mdtest Easy uses working directories per rank, while Hard concentrates files in a shared directory.</p>",
+     "<p>Both groups appear in the suite report and represent different access patterns.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "配置与有效运行",
+    "Configuration and Valid Runs"
+   ],
+   "d": [
+    "MPI 与配置文件定义客户端、路径、接口和阶段参数，校验程序检查运行有效性。",
+    "MPI and an INI file define clients, paths, interfaces, and phase parameters, and the verifier checks run validity."
+   ],
+   "b": [
+    [
+     "<p>配置文件记录测试数据目录、结果目录和访问接口；MPI 作业确定客户端进程及分布。Easy 的数据量、Hard 的分段数和元数据条目数需足以支撑各写阶段规定的运行时间。</p>",
+     "<p>SC26 运行手册给出正式写阶段至少 300 秒的要求。运行摘要记录各阶段和综合分数的有效性，短时调试可用于验证流程。</p>"
+    ],
+    [
+     "<p>The configuration file records the data directory, results directory, and interface. The MPI job sets client ranks and placement. Easy data volumes, Hard segment counts, and metadata item counts must support the required write-phase duration.</p>",
+     "<p>The SC26 guide specifies a 300-second minimum for official write phases. The summary marks the validity of individual phases and the composite score. A short debug run can verify the workflow.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "两个分项与综合分数",
+    "Two Subscores and the Composite Score"
+   ],
+   "d": [
+    "带宽与元数据分项分别取几何平均，综合分数取两个分项的几何平均。",
+    "Bandwidth and metadata each use a geometric mean. The composite is the geometric mean of the two subscores."
+   ],
+   "b": [
+    [
+     "<p>带宽分项 BW 归纳计分的 IOR 阶段，单位为 GiB/s。元数据分项 MD 归纳计分的 mdtest 和搜索等阶段，单位为千次操作每秒。几何平均会反映较弱阶段对分项的影响。</p>",
+     "<p>综合分数把两个分项合成一个值。定位瓶颈时，阶段明细能区分读、写、属性查询和搜索。</p>"
+    ],
+    [
+     "<p>BW aggregates the scored IOR phases in GiB/s. MD aggregates scored metadata phases, including mdtest and search, in thousands of operations per second. The geometric means reflect the impact of weaker phases.</p>",
+     "<p>The composite reduces both subscores to one value. Phase details help distinguish read, write, attribute lookup, and search bottlenecks.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "轮次、类别与客户端规模",
+    "Round, Category, and Client Scale"
+   ],
+   "d": [
+    "比较时需要同时考虑发布轮次、榜单类别、客户端规模和所用配置。",
+    "Comparisons depend on the publication round, list category, client scale, and configuration."
+   ],
+   "b": [
+    [
+     "<p>IO500 分开发布 Production 和 Research 榜单，并列出限制客户端节点数的 10 Node 类别。常规榜单中，客户端节点数和进程数可能相差很大。榜单轮次也可保留往次提交，单项记录的测试轮次需单独核对。</p>",
+     "<p>IO500 回答 HPC 存储在规定合成负载下的表现。应用的文件大小和访问组合不同时，单项更接近诊断依据。</p>"
+    ],
+    [
+     "<p>IO500 separates Production and Research and publishes 10 Node categories with a client-node cap. Client node and rank counts can vary widely on unrestricted lists. A published round can retain earlier submissions, so the run round of an individual record matters.</p>",
+     "<p>IO500 characterizes HPC storage under prescribed synthetic workloads. When application file sizes and access mix differ, individual phases are more useful for diagnosis.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

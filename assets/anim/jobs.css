@@ -1,0 +1,25 @@
+.an-jobs {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 18px var(--f);
+  color: var(--ink);
+}
+.an-jobs text { fill: currentColor; dominant-baseline: central; }
+.an-jobs-title { font-weight: 650; }
+.an-jobs-secondary, .an-jobs-note { color: var(--ink2); }
+.an-jobs-note { font-size: 16px; }
+.an-jobs-normal { --accent: var(--ink3); }
+.an-jobs-good { --accent: var(--l5); }
+.an-jobs-slow { --accent: var(--l1); }
+.an-jobs-idle { --accent: var(--rule2); }
+.an-jobs-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.an-jobs-line.an-jobs-idle { stroke-dasharray: 5 5; }
+.an-jobs-box, .an-jobs-bar { fill: color-mix(in srgb, var(--accent) 12%, var(--surface)); stroke: var(--accent); stroke-width: 1.5; }
+.an-jobs-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; }
+@media (max-width: 640px) {
+  .an-jobs, .an-jobs-note { font-size: 15px; }
+}
+@media (641px <= width <= 720px) {
+  main[data-station="jobs"] .mhost { aspect-ratio: var(--ar); }
+}

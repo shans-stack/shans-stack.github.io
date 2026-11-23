@@ -6,7 +6,7 @@
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步快进到预设时刻定格。
    数据块由精灵池逐帧绘制，位置一律由路线折线插值，只落在画出来的线上或方块里。
    文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/d-stripe.css。
-   四台数据服务器是 EXAScaler，服务器组上方放 DDN 官方 logo（assets/brand/ddn-logo-primary-color.svg）。 */
+   四台数据服务器是 EXAScaler。 */
 (function(){
 var EN={"服务器 ": "Server ", "客户端": "Client", "示意，不代表实测数字": "Schematic, not measured", "文件 A": "File A", "在出数": "Sending", "空闲": "Idle", "条带大小：一块多大才换下一台": "Stripe size: chunk size before the next server", "应用要读的一条记录": "One record the app reads", "对齐：只找 1 台": "Aligned: only 1 server", "错位：要找 2 台，每块只用到一部分": "Misaligned: 2 servers, part of each chunk used", "大文件目录：条带数 4": "Big-file dir: count 4", "小文件目录：条带数 1": "Small-file dir: count 1", "布局在建文件时定好，之后改目录设置只影响新文件": "Layout is fixed when a file is created; later directory changes affect new files only", "布局建文件时定好，改设置只影响新文件": "Set at creation; changes affect new files only", "条带数 1：一台出数": "Stripe count 1: one server", "条带数 4：四台一起出数": "Stripe count 4: four servers", "已读回": "Read back", "⇄ 条带数换成 2": "⇄ Stripe count to 2", "⇄ 条带数换成 4": "⇄ Stripe count to 4", "⇄ 换成对齐": "⇄ Align it", "⇄ 换成错位": "⇄ Misalign it", "一个文件切成条带块，轮流放到多台数据服务器上": "A file is cut into stripe chunks placed in turn across data servers"};
 /* 画面里的切换按钮：第几步（0 起）有按钮，两种状态各写什么 */
@@ -14,7 +14,6 @@ var TG={"3": ["⇄ 条带数换成 2", "⇄ 条带数换成 4"], "4": ["⇄ 换�
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function Z(zh,en){return lang()==='en'?en:zh}
-function asset(p){return window.SS&&SS.url?SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 /* ---------- 公共小工具：画布、数据块、沿线移动 ---------- */
@@ -64,17 +63,8 @@ function clearPool(){for(const s of POOL.values())s.g.remove();POOL.clear();SEEN
 function run(id,pts,t0,dur,t,o){if(t<t0)return -1;if(t>t0+dur)return 2;put(id,atU(pts,(t-t0)/dur),o);return (t-t0)/dur}
 function setCls(e,c){if(e&&e.getAttribute('class')!==c)e.setAttribute('class',c)}
 function setTxt(e,s){s=T(s);if(e&&e.textContent!==s)e.textContent=s}
-/* 在 SVG 里放一个 DDN 官方 logo（assets/brand/ddn-logo-primary-color.svg）：h 是高度，宽按原件比例；深色模式垫浅灰底 */
-function brandLogo(key,x,y,h,p){const A=280/93,w=h*A,px=h*0.22,py=h*0.16;
-  const g=el('g',{},p);
-  el('rect',{x:x-px,y:y-py,width:w+2*px,height:h+2*py,rx:2,class:'lgbk'},g);
-  el('image',{x,y,width:w,height:h,href:asset('assets/brand/ddn-logo-primary-color.svg'),'aria-label':'DDN'},g);
-  return {g,x,w,h}}
 /* 框里放不下的字（多是英文）：按可用宽度压一点字距，不出框 */
 function fit(t,max){try{t.removeAttribute('textLength');t.removeAttribute('lengthAdjust');const w=t.getComputedTextLength();if(w>max){t.setAttribute('textLength',max.toFixed(1));t.setAttribute('lengthAdjust','spacingAndGlyphs')}}catch(e){}}
-/* logo 紧跟某行字：字变长（英文）时把 logo 往右推，不压字 */
-function after(lg,t,gap){try{const need=(+t.getAttribute('x'))+t.getComputedTextLength()+gap;lg.g.setAttribute('transform',need>lg.x?`translate(${(need-lg.x).toFixed(1)} 0)`:'')}catch(e){}}
-
 const ARIA='一个文件切成条带块，轮流放到多台数据服务器上';
 /* ================= 条带化：版式 ================= */
 function layout(m){
@@ -101,8 +91,6 @@ function layout(m){
   o.sp=(j,s)=>{const q=o.slot(j,s);return P(o.ox(j)+q.dx,q.y)};
   // 路线：客户端第 k 格 ↔ 服务器 j 的第 s 格
   o.down=(k,j,s)=>[P(o.sx(k),o.rowY),P(o.sx(k),o.Dy),P(o.ox(j),o.Dy),P(o.ox(j),o.oss[j].y),o.sp(j,s)];
-  // DDN logo：服务器组上方、服务器 1 和 2 的连线之间（避开数据块路线）；第 3 步放在「条带数 4」那条标题后
-  o.lgh=m?16:18;o.lgO={x:o.ox(0)+o.pw/2+12,y:o.oss[0].y-10-o.lgh};o.lgR=m?{x:256,y:282}:{x:284,y:213};
   o.race=m?raceM():raceD();
   return o;
 }
@@ -128,7 +116,6 @@ function build(){
   E.oG=L.oss.map((r,j)=>{const g=el('g',{},net);line(P(L.ox(j),L.Dy),P(L.ox(j),r.y),'data',g);E['o'+j]=rect(r,'blk',g);
     tx(C(r).x,r.y+r.h+L.labDy,T('服务器 ')+(j+1),f.note,'lbl','middle',g);return g});
   E.st=L.oss.map((r,j)=>tx(C(r).x,L.stY,'',f.sm,'st','middle',net));
-  brandLogo('ddn',L.lgO.x,L.lgO.y,L.lgh,net);
   // 第 4 步：两个括号
   const g4=grp('4',net);
   const bx=L.sx(0);E.brS=el('path',{d:`M${bx-L.pw/2} ${L.brS.y+8} V${L.brS.y} H${bx+L.pw/2} V${L.brS.y+8}`,class:'brk'},g4);
@@ -147,8 +134,7 @@ function build(){
   // 第 3 步：两条通道
   const R=L.race,g=grp('3');
   tx(R.title[0].x,R.title[0].y,'条带数 1：一台出数',f.lane,'lblb','start',g);
-  E.raceT=tx(R.title[1].x,R.title[1].y,'条带数 4：四台一起出数',f.lane,'lblb','start',g);
-  E.lgR=brandLogo('ddn',L.lgR.x,L.lgR.y,L.lgh,g);
+  tx(R.title[1].x,R.title[1].y,'条带数 4：四台一起出数',f.lane,'lblb','start',g);
   // 服务器名放在框里偏左：数据块从框右端出发，不压字
   E.fits=[];const ep=(r,s,right)=>{rect(r,'ep',g,10);if(right)tx(r.x+r.w-12,C(r).y,s,f.note,'lbl','end',g);else E.fits.push([tx(r.x+(r.w-L.pw)/2,C(r).y,s,f.note,'lbl','middle',g),r.w-L.pw-6])};
   wires([P(R.top.src.x+R.top.src.w,C(R.top.src).y),P(R.top.dst.x,C(R.top.src).y)],'data',g);
@@ -159,7 +145,6 @@ function build(){
   el('line',{x1:R.sep.x1,y1:R.sep.y,x2:R.sep.x2,y2:R.sep.y,class:'sep'},g);
   tx(R.note.x,R.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);
 }
-function fixLogos(){after(E.lgR,E.raceT,14)}
 function reset(){if(!E.o0)return;for(let j=0;j<4;j++){setCls(E['o'+j],'blk');E.oG[j].style.opacity=1;setTxt(E.st[j],'')}
   E.ghost.forEach(g=>g.style.opacity=1);E.ticks.forEach(t=>t.style.opacity=1)}
 
@@ -234,7 +219,7 @@ function loop(now){const dt=Math.max(0,Math.min(0.05,(now-last)/1000||0));last=n
 function go(){cancelAnimationFrame(raf);if(paused||dead||reduce)return;last=performance.now();raf=requestAnimationFrame(loop)}
 function enter(i){
   step=i;cancelAnimationFrame(raf);clearPool();T0=0;TT=0;tog=false;
-  applyVis();reset();fixLogos();(E.fits||[]).forEach(a=>fit(a[0],a[1]));
+  applyVis();reset();(E.fits||[]).forEach(a=>fit(a[0],a[1]));
   const m=MODES[i];m.enter&&m.enter();
   if(reduce){const lim=m.still==null?3:m.still;for(let t=0;t<lim;t+=1/30)frame(1/30);return}
   frame(0);go();

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fio：块设备与文件 I/O · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 fio 如何按作业文件生成 I/O 并报告吞吐、IOPS 与时延。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-fio.css?v=c81b6116">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-fio">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-fio">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="fio: Block and File I/O">fio：块设备与文件 I/O</h1>
+        <p class="meta"><span data-en="5 steps · Storage Tools, Job Files, Completion Latency">5 步 · 存储工具、作业文件、完成时延</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-format&quot;&gt;fio Job File Format&lt;/a&gt;"><a href="https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-format">fio 作业文件格式</a></li>
+      <li data-en="&lt;a href=&quot;https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-parameters&quot;&gt;fio Job Parameters&lt;/a&gt;"><a href="https://fio.readthedocs.io/en/latest/fio_doc.html#job-file-parameters">fio 作业参数</a></li>
+      <li data-en="&lt;a href=&quot;https://fio.readthedocs.io/en/latest/fio_doc.html#interpreting-the-output&quot;&gt;Interpreting fio Output&lt;/a&gt;"><a href="https://fio.readthedocs.io/en/latest/fio_doc.html#interpreting-the-output">fio 输出解读</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/axboe/fio/releases/tag/fio-3.43&quot;&gt;fio 3.43 Release&lt;/a&gt;"><a href="https://github.com/axboe/fio/releases/tag/fio-3.43">fio 3.43 发布记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-fio.js?v=a24a398d"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-fio",
+ "ar": [
+  2.6,
+  1.0588235294117647
+ ],
+ "steps": [
+  {
+   "t": [
+    "从负载模型到 I/O",
+    "From Workload to I/O"
+   ],
+   "d": [
+    "fio 按作业定义向文件或块设备提交请求，并记录完成情况。",
+    "fio issues requests to files or block devices according to a job definition and records completions."
+   ],
+   "b": [
+    [
+     "<p>fio 是可配置的 I/O 负载生成器。它以线程或进程执行作业，也就是一组针对指定目标的 I/O 参数。文件测试包含文件系统路径，裸设备测试直接面向所选设备接口；结果的解释以所测路径为准。</p>",
+     "<p>截至 2026-11-23，最新公开发行版为 fio 3.43，发布于 2026-09-23。</p>"
+    ],
+    [
+     "<p>fio is a configurable I/O load generator. It runs jobs as threads or processes. Each job defines I/O parameters for a target. A file test uses a file system path, while a raw device test addresses the selected device interface directly. Interpretation depends on the measured path.</p>",
+     "<p>As of November 23, 2026, fio 3.43 was the latest public release. It was released on September 23, 2026.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "作业文件与测量时段",
+    "Job Files and Measurement Windows"
+   ],
+   "d": [
+    "作业文件把共同参数与每组独立参数放在同一份可复现配置里。",
+    "A job file records common parameters and per-job settings in one reproducible configuration."
+   ],
+   "b": [
+    [
+     "<p><code>[global]</code> 提供默认值，命名作业段可以单独覆盖。常用参数包括 <code>filename</code>（目标）、<code>rw</code>（访问模式）、<code>bs</code>（I/O 大小）和 <code>size</code>（测试范围）。例如 <code>fio workload.fio</code> 读取指定作业文件并实例化各段；需要按时间持续发出负载时，可用 <code>time_based</code> 配合 <code>runtime</code>，<code>ramp_time</code> 则把预热留在统计之外。</p>"
+    ],
+    [
+     "<p><code>[global]</code> supplies defaults, and named job sections can override them. Common settings include <code>filename</code> for the target, <code>rw</code> for the access pattern, <code>bs</code> for I/O size, and <code>size</code> for the tested region. For example, <code>fio workload.fio</code> reads the specified job file and instantiates its job sections. <code>time_based</code> with <code>runtime</code> keeps issuing I/O for a set period, while <code>ramp_time</code> keeps warm-up outside the statistics.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "引擎、作业数与实测深度",
+    "Engines, Workers, and Observed Depth"
+   ],
+   "d": [
+    "引擎决定请求怎样发出，作业数与目标深度共同给出发起端的并行规模。",
+    "The engine controls how requests are submitted, while job count and target depth define issuer-side parallelism."
+   ],
+   "b": [
+    [
+     "<p><code>ioengine</code> 选择提交机制，<code>numjobs</code> 指定作业实例数，<code>iodepth</code> 指定每个实例期望维持的在途请求数。同步引擎通常无法通过提高 <code>iodepth</code> 增加并行度，异步引擎也会受平台与缓冲模式限制。报告中的 I/O 深度分布给出运行实际达到的深度。</p>"
+    ],
+    [
+     "<p><code>ioengine</code> selects how I/O is submitted, <code>numjobs</code> sets the number of instances, and <code>iodepth</code> sets the target number of outstanding requests per instance. Raising <code>iodepth</code> generally has no effect with a synchronous engine, and asynchronous engines can be limited by the platform or buffering mode. The I/O depth distribution in the output shows what the run achieved.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "缓冲与写完成",
+    "Buffering and Write Completion"
+   ],
+   "d": [
+    "是否经过主机缓存、是否等待同步写回，改变了被计入的路径。",
+    "Host buffering and waiting for synchronization change the path covered by the measurement."
+   ],
+   "b": [
+    [
+     "<p><code>direct=1</code> 请求非缓冲 I/O；可用性依平台与目标而异。它没有定义服务端缓存或介质持久性。使用缓冲写时，请求可能在数据仍留在主机内存时完成。若测试需要把等待同步写回计入测量，可用 <code>fsync</code> 等同步选项定义语义，并单独核对同步操作的统计。</p>"
+    ],
+    [
+     "<p><code>direct=1</code> requests non-buffered I/O, subject to the platform and target. It does not define server-side caching or media durability. Buffered writes may complete with data still in host memory. When the test includes waiting for synchronization, options such as <code>fsync</code> define that behavior, and synchronization statistics are inspected separately.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "按方向与时延口径读报告",
+    "Reading the Report by Direction and Latency"
+   ],
+   "d": [
+    "读写分栏给出 BW 与 IOPS，时延项需区分提交、完成和总时延。",
+    "Read and write sections report BW and IOPS, while latency is split into submission, completion, and total time."
+   ],
+   "b": [
+    [
+     "<p><code>slat</code> 是提交时延，<code>clat</code> 是提交后至完成的时延，<code>lat</code> 是总时延。fio 可分别为完成时延或总时延输出分位数，也能输出结构化 JSON。解读时保留作业文件、统计口径、错误状态和深度分布；峰值带宽与长尾时延需要在相同运行条件下理解。</p>"
+    ],
+    [
+     "<p><code>slat</code> is submission latency, <code>clat</code> runs from submission to completion, and <code>lat</code> is total latency. fio can report completion or total latency percentiles and write structured JSON. Interpretation retains the job file, reporting scope, error status, and depth distribution. Peak bandwidth and tail latency are understood in the context of the run conditions.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

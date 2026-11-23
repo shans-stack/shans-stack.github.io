@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA CMX：推理上下文的共享存储层 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA CMX 的推理上下文缓存层、BlueField 数据路径和缓存回读。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-cmx.css?v=1c31bd01">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-cmx">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language">
+      <button type="button" data-lang-set="zh" lang="zh-Hans" aria-label="简体中文" data-en-label="Simplified Chinese" data-en="ZH" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" lang="zh-Hant" aria-label="繁體中文" data-en-label="Traditional Chinese" data-en="TW" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" lang="en" aria-label="英文" data-en-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-cmx">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA CMX: A Shared Storage Tier for Inference Context">NVIDIA CMX：推理上下文的共享存储层</h1>
+        <p class="meta"><span data-en="5 steps · KV Cache, Context Storage, BlueField">5 步 · KV Cache、上下文存储、BlueField</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/ai-storage/cmx/&quot;&gt;NVIDIA CMX Product Page&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/ai-storage/cmx/">NVIDIA CMX 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/&quot;&gt;NVIDIA BlueField-4 and CMX Technical Overview&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/">NVIDIA BlueField-4 与 CMX 技术说明</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/ai-storage/stx/&quot;&gt;NVIDIA STX Product Page&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/ai-storage/stx/">NVIDIA STX 产品页</a></li>
+      <li data-en="Animations are schematic and show no measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-cmx.js?v=5dafb63c"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-cmx",
+  "ar": [
+    2.375,
+    0.88
+  ],
+  "steps": [
+    {
+      "t": [
+        "上下文缓存来自模型计算",
+        "Inference Produces the Context Cache"
+      ],
+      "d": [
+        "KV Cache 保存模型处理过的 Token 的中间结果，后续生成可复用它们。",
+        "The KV cache stores intermediate results for tokens the model has processed so later generation can reuse them."
+      ],
+      "b": [
+        [
+          "<p>生成式模型先在预填充阶段处理输入 Token（模型处理的文本单位），并保存注意力计算所需的键和值，形成 KV Cache。解码阶段逐步生成后续 Token，并读取这些缓存。上下文越长、并发请求越多，需要保留的缓存通常越多，GPU 的高带宽内存（HBM）也会面临更大的容量压力。</p>"
+        ],
+        [
+          "<p>During prefill, a generative model processes input tokens, the units of text it operates on. It stores attention keys and values as a KV cache. During decoding, the model reads these cached values as it generates further tokens. Longer contexts and more concurrent requests typically increase the amount of cache competing for high-bandwidth memory (HBM) on the GPU.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "CMX 增加共享的闪存层",
+        "CMX Adds a Shared Flash Tier"
+      ],
+      "d": [
+        "CMX 在节点内存与持久共享存储之间提供可由多节点访问的缓存层。",
+        "CMX adds a cache tier that multiple nodes can access between node-local memory and durable shared storage."
+      ],
+      "b": [
+        [
+          "<p>CMX（Context Memory Storage）在 NVIDIA 的层级划分中是 G3.5，即经以太网连接的共享闪存，位于 GPU 显存、主机内存和本地固态盘组成的本地层与持久共享存储之间。CMX 面向可重建的上下文缓存，日志、模型或需要长期保存的结果仍可保存在持久存储。</p>"
+        ],
+        [
+          "<p>NVIDIA calls its CMX Context Memory Storage tier G3.5. It uses Ethernet-attached shared flash between the node-local tiers, which include GPU and host memory and local SSDs, and durable shared storage. CMX is intended for context cache that can be reconstructed. Logs, models, and results with long retention requirements can remain on durable storage.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "BlueField-4 处理缓存 I/O",
+        "BlueField-4 Handles Cache I/O"
+      ],
+      "d": [
+        "BlueField-4 管理 CMX 存储端的数据读写，计算节点经 Spectrum-X 以太网访问共享缓存。",
+        "BlueField-4 manages I/O on the CMX storage side, while compute nodes access shared cache over Spectrum-X Ethernet."
+      ],
+      "b": [
+        [
+          "<p>CMX 使用 BlueField-4 存储处理器管理闪存，并可在数据路径中卸载加密和完整性检查。DOCA Memos 提供管理与共享缓存的键值接口。Spectrum-X 网络承载远程直接内存访问（RDMA）流量，将计算节点接到 CMX 存储节点。</p>"
+        ],
+        [
+          "<p>CMX uses BlueField-4 storage processors to manage flash and can offload encryption and integrity checking along the data path. DOCA Memos provides key-value interfaces for managing and sharing cache. Spectrum-X carries remote direct memory access (RDMA) traffic between compute nodes and CMX storage nodes.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "在解码前把缓存调回内存",
+        "Loading Cache Back Into Memory Before Decode"
+      ],
+      "d": [
+        "推理框架可在解码前把匹配的缓存块从 CMX 调入主机内存或 GPU 显存。",
+        "Before decoding, an inference framework can load matching cache blocks from CMX into host or GPU memory."
+      ],
+      "b": [
+        [
+          "<p>以 NVIDIA Dynamo 的公开架构为例，缓存管理器跟踪 KV 块，NIXL（NVIDIA 推理传输库）协助在不同层级间搬运这些块。将匹配的块预先调入目标节点后，解码可以在计算节点读取它们。如果需要的块不可用，模型仍需计算相应上下文。</p>"
+        ],
+        [
+          "<p>In NVIDIA’s published Dynamo architecture, cache managers track KV blocks and NIXL, the NVIDIA Inference Transfer Library, helps move them between tiers. Loading matching blocks ahead of time lets decoding read them from the compute node. If a required block is unavailable, the model still has to compute the corresponding context.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "STX 定义架构，CMX 承担缓存层",
+        "STX Defines the Architecture and CMX Provides the Cache Tier"
+      ],
+      "d": [
+        "CMX 是 STX 的一项实现，针对共享缓存保留与复用，持久数据仍有自己的存储路径。",
+        "CMX implements STX for shared cache retention and reuse. Durable data follows its own storage path."
+      ],
+      "b": [
+        [
+          "<p>STX 定义存储处理器、网络和软件的组合方式。CMX 以此构建推理上下文存储，把匹配的缓存返回给不同计算节点。缓存可以被淘汰并重新计算，需要长期保留的原始数据和结果应由具备相应持久性要求的存储层保存。</p>"
+        ],
+        [
+          "<p>STX defines how storage processors, networking, and software fit together. CMX uses that design to return matching context cache to different compute nodes. Cache entries can be evicted and recomputed. Source data and results that must be retained belong on a storage tier with the required durability.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

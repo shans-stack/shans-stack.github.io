@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>共封装光学：交换机里的光电转换 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps explain pluggable transceivers, co-packaged optics, electrical paths, external lasers, and NVIDIA Photonics switches." content="分 5 步说明 可插拔光模块、共封装光引擎、电信号路径、外置激光源及 NVIDIA Photonics 交换机。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-cpo.css?v=890be45b">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-cpo">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-cpo">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Co-Packaged Optics: Electrical-to-Optical Conversion in Switches">共封装光学：交换机里的光电转换</h1>
+        <p class="meta"><span data-en="5 steps · Silicon Photonics, Optical Engines, Switches">5 步 · 硅光、光引擎、交换机</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/products/silicon-photonics/&quot;&gt;NVIDIA Silicon Photonics&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/products/silicon-photonics/">NVIDIA Silicon Photonics 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/a-new-era-in-data-center-networking-with-nvidia-silicon-photonics-based-network-switching/&quot;&gt;NVIDIA Technical Blog · Silicon Photonics Switching&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/a-new-era-in-data-center-networking-with-nvidia-silicon-photonics-based-network-switching/">NVIDIA 技术博客 · 硅光交换机与共封装</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/how-industry-collaboration-fosters-nvidia-co-packaged-optics/&quot;&gt;NVIDIA Technical Blog · Optical Engines and External Lasers&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/how-industry-collaboration-fosters-nvidia-co-packaged-optics/">NVIDIA 技术博客 · 光引擎与外置激光源</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/interconnect/&quot;&gt;NVIDIA LinkX Transceivers and Cables&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/interconnect/">NVIDIA LinkX 光模块与线缆</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-cpo.js?v=16d112e3"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-cpo",
+ "ar": [
+  2.2857142857142856,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "可插拔模块中的光电转换",
+    "Conversion in a Pluggable Transceiver"
+   ],
+   "d": [
+    "交换 ASIC 经电路板把电信号送到面板上的可插拔光模块，模块将电信号转换为光信号并送入光纤。",
+    "The switch ASIC sends an electrical signal across the board to a front-panel transceiver, which converts it to light and sends it down the fiber."
+   ],
+   "b": [
+    [
+     "<p>ASIC 是为特定用途设计的集成电路，交换 ASIC 负责转发报文。可插拔方案把光电转换放在面板模块内。发送方向由电转光，接收方向由光转电。</p>"
+    ],
+    [
+     "<p>An application-specific integrated circuit (ASIC) is a chip built for a particular task. A switch ASIC forwards packets. In a pluggable design, the front-panel module converts electrical signals to light on transmit and light to electrical signals on receive.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "光引擎移入交换芯片封装",
+    "The Optical Engine Moves into the Switch Package"
+   ],
+   "d": [
+    "共封装光学把光引擎放到交换 ASIC 旁边，两者位于同一封装中。",
+    "Co-packaged optics puts the optical engine beside the switch ASIC in the same package."
+   ],
+   "b": [
+    [
+     "<p>光引擎是执行光电转换的部件。共封装光学（CPO）把转换位置从面板移到封装，面板用光纤连接器接入光路。使用共封装的端口由封装内的光引擎完成转换，因而省去面板端的可插拔光模块。</p>"
+    ],
+    [
+     "<p>An optical engine performs the electrical-to-optical and optical-to-electrical conversion. Co-packaged optics (CPO) moves conversion from the front panel to the package and uses fiber connectors at the panel. Ports built this way use the integrated engine in place of a front-panel transceiver.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "电信号在封装内传输",
+    "The Electrical Path Stays Inside the Package"
+   ],
+   "d": [
+    "缩短 ASIC 与光引擎之间的高速电路径，可以减小信号损耗。",
+    "A shorter high-speed electrical path between the ASIC and the optical engine reduces signal loss."
+   ],
+   "b": [
+    [
+     "<p>可插拔设计的高速电信号需要从芯片封装穿过电路板到面板。NVIDIA 的共封装设计将这段互联缩到封装内部，可省去用于补偿和恢复信号的独立数字信号处理器（DSP）重定时器。光信号仍经光纤传到链路另一端。</p>"
+    ],
+    [
+     "<p>In a pluggable design, the high-speed electrical signal crosses the board from the chip package to the panel. NVIDIA's co-packaged design keeps this interconnect inside the package, allowing it to omit a separate digital signal processor (DSP) retimer that compensates for and restores the signal. The optical signal still travels over fiber to the far end of the link.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "外置激光源提供载波",
+    "An External Laser Supplies the Carrier"
+   ],
+   "d": [
+    "外置激光源向光引擎供光，光引擎将电信号调制到光载波上。",
+    "An external laser supplies light to the optical engine, which modulates it with the electrical signal."
+   ],
+   "b": [
+    [
+     "<p>光载波是承载数据的光。NVIDIA 的实现将供光与调制分开，外置激光模块通过内部光纤给光引擎供光。外置模块可现场更换，其维护位置与封装内的光引擎分开。</p>"
+    ],
+    [
+     "<p>An optical carrier is the light that carries the data. NVIDIA separates light generation from modulation. An external laser module supplies light to the engine through internal fiber. The laser module is field-replaceable and has a separate service location from the packaged optical engine.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "Ethernet 与 InfiniBand 中的实现",
+    "Implementations in Ethernet and InfiniBand"
+   ],
+   "d": [
+    "NVIDIA 在 Spectrum-X Ethernet Photonics 和 Quantum-X InfiniBand Photonics 交换机中采用共封装光学。",
+    "NVIDIA uses co-packaged optics in Spectrum-X Ethernet Photonics and Quantum-X InfiniBand Photonics switches."
+   ],
+   "b": [
+    [
+     "<p>两条产品线的 Photonics 型号采用类似的封装思路，各自承载所在平台的网络协议。链路的另一端仍由对端端口及其光学方案决定。NVIDIA LinkX 也为 Ethernet 和 InfiniBand 链路提供可插拔光模块与线缆。</p>"
+    ],
+    [
+     "<p>Photonics models in the two product lines use a similar packaging approach, with each carrying its platform's network protocol. The far end of the link follows the peer port's optical design. NVIDIA LinkX also offers pluggable transceivers and cables for Ethernet and InfiniBand links.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

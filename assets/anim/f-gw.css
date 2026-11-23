@@ -1,0 +1,23 @@
+.f-gw-diagram{display:block;width:100%;height:auto;font-family:var(--f)}
+.f-gw-diagram text{fill:var(--ink);dominant-baseline:alphabetic}
+.f-gw-link,.f-gw-arrow{fill:none;stroke:var(--ink3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.f-gw-link[data-tone=active],.f-gw-arrow[data-tone=active]{stroke:var(--l5);stroke-width:2}
+.f-gw-link[data-tone=idle],.f-gw-arrow[data-tone=idle]{stroke:var(--rule2)}
+.f-gw-link[data-tone=control],.f-gw-arrow[data-tone=control],.f-gw-arrow[data-tone=return]{stroke:var(--l4)}
+.f-gw-link[data-tone=control]{stroke-dasharray:3 3}
+.f-gw-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.25}
+.f-gw-node[data-state=selected] .f-gw-card{fill:color-mix(in srgb,var(--l5) 12%,var(--surface));stroke:var(--l5)}
+.f-gw-node[data-state=unavailable] .f-gw-card{fill:color-mix(in srgb,var(--l1) 12%,var(--surface));stroke:var(--l1)}
+.f-gw-node[data-state=control] .f-gw-card{stroke:var(--l4)}
+.f-gw-node[data-state=idle] .f-gw-title{fill:var(--ink2)}
+.f-gw-diagram .f-gw-detail,.f-gw-diagram .f-gw-note{fill:var(--ink2)}
+.f-gw-title{font-size:19px;font-weight:600}
+.f-gw-detail,.f-gw-status,.f-gw-note{font-size:16px}
+.f-gw-status{font-weight:500}
+.f-gw-packet{fill:var(--l5);stroke:var(--surface);stroke-width:1.25}
+.f-gw-packet[data-tone=return],.f-gw-packet[data-tone=control]{fill:var(--l4)}
+.f-gw-packet[data-tone=denied]{fill:var(--l1)}
+@media (max-width:640px){
+  .f-gw-title{font-size:15px}
+  .f-gw-detail,.f-gw-status,.f-gw-note{font-size:13px}
+}

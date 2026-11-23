@@ -1,0 +1,45 @@
+.f-dsx-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+  --f-dsx-stroke: var(--rule2);
+  --f-dsx-tone: var(--ink2);
+}
+
+.f-dsx-node {
+  fill: var(--surface);
+  stroke: var(--f-dsx-stroke);
+  stroke-width: 1.5;
+}
+
+.f-dsx-track, .f-dsx-arrow {
+  fill: none;
+  stroke: var(--f-dsx-tone);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.f-dsx-fault { --f-dsx-tone: var(--l1); --f-dsx-stroke: var(--l1); }
+.f-dsx-ready { --f-dsx-tone: var(--l5); --f-dsx-stroke: var(--l5); }
+.f-dsx-marker { fill: var(--f-dsx-tone); }
+
+.f-dsx-title, .f-dsx-detail, .f-dsx-note {
+  dominant-baseline: central;
+}
+
+.f-dsx-title { fill: var(--ink); font-size: 19px; font-weight: 600; }
+.f-dsx-detail, .f-dsx-note { fill: var(--ink2); font-size: 17px; }
+.f-dsx-note { fill: var(--ink3); }
+
+.f-dsx-release-bg { fill: var(--surface); stroke: var(--rule); transition: stroke 180ms; }
+.f-dsx-release-bg.f-dsx-current { stroke: var(--ink2); }
+
+@media (max-width: 640px) {
+  .f-dsx-title, .f-dsx-detail, .f-dsx-note { font-size: 18px; }
+}
+
+@media (640px < width <= 720px) {
+  .topic-f-dsx .mhost { aspect-ratio: var(--ar); }
+}

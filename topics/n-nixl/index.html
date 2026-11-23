@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIXL：分布式推理的数据传输 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NIXL 如何注册缓冲区、交换元数据，并在推理实例间传输 KV Cache。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-nixl.css?v=ccebc799">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-nixl">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-nixl">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NIXL: Data Transfer for Distributed Inference">NIXL：分布式推理的数据传输</h1>
+        <p class="meta"><span data-en="5 steps · KV Cache, Point-to-Point Transfer, Transfer Backends">5 步 · KV Cache、点对点传输、传输后端</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/ai-dynamo/nixl/blob/main/docs/nixl.md&quot;&gt;NIXL Architecture and Transfer Workflow&lt;/a&gt;"><a href="https://github.com/ai-dynamo/nixl/blob/main/docs/nixl.md">NIXL 架构与请求流程</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dynamo/v1.2.0/kubernetes-deployment/operate/disagg-communication&quot;&gt;NVIDIA Dynamo Disaggregated Inference Communication&lt;/a&gt;"><a href="https://docs.nvidia.com/dynamo/v1.2.0/kubernetes-deployment/operate/disagg-communication">NVIDIA Dynamo 分离式推理通信</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-nixl.js?v=e25ce698"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-nixl",
+  "ar": [
+    2.7439024390243905,
+    0.8181818181818182
+  ],
+  "steps": [
+    {
+      "t": [
+        "Prefill 与 Decode 的交接",
+        "The Prefill-to-Decode Handoff"
+      ],
+      "d": [
+        "在分离式推理中，NIXL 可将 Prefill 生成的 KV Cache 传到 Decode 实例。",
+        "In disaggregated inference, NIXL can transfer the KV cache from prefill to a decode instance."
+      ],
+      "b": [
+        [
+          "\u003cp>Prefill 处理提示词并生成 KV Cache，即注意力层后续生成 token 时复用的键和值。两个阶段部署在不同实例时，推理框架安排交接，NIXL 承担点对点数据传输。\u003c/p>"
+        ],
+        [
+          "\u003cp>Prefill processes the prompt and produces the KV cache, the attention keys and values reused when generating subsequent tokens. When the stages run in separate instances, the inference framework coordinates the handoff and NIXL handles point-to-point data transfer.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "注册可传输的缓冲区",
+        "Registering Transferable Buffers"
+      ],
+      "d": [
+        "运行时为两端创建代理，并将用于传输的缓冲区登记到相应后端。",
+        "The runtime creates an agent at each endpoint and registers transfer buffers with the relevant backend."
+      ],
+      "b": [
+        [
+          "\u003cp>代理是 NIXL 管理缓冲区和传输请求的对象。后端是执行实际传输的插件，可支持不同的内存或存储类型。应用分配传输缓冲区后，可提前注册并在后续请求中重复使用。\u003c/p>"
+        ],
+        [
+          "\u003cp>An agent is the NIXL object that manages buffers and transfer requests. A backend is a plug-in that performs the transfer and supports particular memory or storage types. After allocating buffers, the application can register them in advance and reuse them across requests.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "交换端点元数据",
+        "Exchanging Endpoint Metadata"
+      ],
+      "d": [
+        "两端通过控制路径交换并缓存元数据，以便识别远端代理和已注册区域。",
+        "The endpoints exchange and cache metadata over a control path to identify peer agents and registered regions."
+      ],
+      "b": [
+        [
+          "\u003cp>代理元数据包含与后端相关的连接或注册信息。推理运行时可在数据传输之前加载对端元数据，并在后续请求中复用。实际读写的远端缓冲区描述符还需由应用交给发起端。\u003c/p>"
+        ],
+        [
+          "\u003cp>Agent metadata carries backend-specific connection or registration information. The inference runtime can load peer metadata before data transfer and reuse it for later requests. The application also provides the initiator with descriptors for the specific remote buffers involved.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "在已注册区域间传输",
+        "Transferring Between Registered Regions"
+      ],
+      "d": [
+        "发起端提交读或写请求，兼容的后端在本端和远端已注册区域之间传输数据。",
+        "The initiator posts a read or write, and a compatible backend transfers data between registered local and remote regions."
+      ],
+      "b": [
+        [
+          "\u003cp>传输请求关联本端与远端缓冲区描述符。以 Decode 发起的读请求为例，数据路径从 Prefill 的 GPU 缓冲区指向 Decode 的 GPU 缓冲区。具体路径取决于后端和部署；NIXL 也可通过适配的后端访问其他内存或存储端点。\u003c/p>"
+        ],
+        [
+          "\u003cp>A transfer request pairs local and remote buffer descriptors. In a read initiated by decode, the data path runs from the prefill GPU buffer to the decode GPU buffer. The actual path depends on the backend and deployment. Other memory or storage endpoints are available through compatible backends.\u003c/p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "检查完成后消费",
+        "Consuming Data After Completion"
+      ],
+      "d": [
+        "请求提交后，运行时检查完成状态；Decode 在数据就绪后继续生成。",
+        "After posting the request, the runtime checks completion before decode consumes the data and continues generation."
+      ],
+      "b": [
+        [
+          "\u003cp>提交请求与传输完成是两个状态。发起端可查询完成状态；支持通知的后端还可向对端发送完成通知。推理运行时据此衔接后续计算，避免在目标缓冲区写完前读取 KV Cache。\u003c/p>"
+        ],
+        [
+          "\u003cp>Posting and completion are separate states. The initiator can query status, and backends that support notifications can also signal the peer. The inference runtime coordinates subsequent work so the destination cache is read after the transfer completes.\u003c/p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  if (!controls) return;
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA NeMo：模型训练、评估与持续优化 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA NeMo 如何整理训练数据、定制模型并用评估结果改进智能体。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-nemo.css?v=9a4b6624">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-nemo">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-nemo">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA NeMo: Model Training, Evaluation, and Continuous Improvement">NVIDIA NeMo：模型训练、评估与持续优化</h1>
+        <p class="meta"><span data-en="5 steps · training data, model customization, evaluation loops">5 步 · 训练数据、模型定制、评估闭环</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nemo/&quot;&gt;NVIDIA NeMo Suite and Components&lt;/a&gt;"><a href="https://docs.nvidia.com/nemo/">NeMo 套件与组件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nemo/curator/home/welcome&quot;&gt;NeMo Curator Documentation&lt;/a&gt;"><a href="https://docs.nvidia.com/nemo/curator/home/welcome">NeMo Curator 数据整理文档</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nemo/megatron-bridge/latest/&quot;&gt;NeMo Megatron Bridge Documentation&lt;/a&gt;"><a href="https://docs.nvidia.com/nemo/megatron-bridge/latest/">NeMo Megatron Bridge 训练与微调文档</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nemo/evaluator/latest/&quot;&gt;NeMo Evaluator Documentation&lt;/a&gt;"><a href="https://docs.nvidia.com/nemo/evaluator/latest/">NeMo Evaluator 文档</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/ai-data-science/products/nim-microservices/&quot;&gt;NVIDIA NIM Product Overview&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/ai-data-science/products/nim-microservices/">NVIDIA NIM 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nemo-guardrails/&quot;&gt;NVIDIA NeMo Guardrails Documentation&lt;/a&gt;"><a href="https://docs.nvidia.com/nemo-guardrails/">NeMo Guardrails 官方文档</a></li>
+      <li data-en="Animations are schematic and show no measured data.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-nemo.js?v=79367d78"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-nemo",
+  "ar": [
+    3.3076923076923075,
+    0.8780487804878049
+  ],
+  "steps": [
+    {
+      "t": [
+        "模型开发的组件分工",
+        "Components of the Model Development Workflow"
+      ],
+      "d": [
+        "NeMo 将数据准备、模型训练、评估和应用优化拆成可独立采用的组件。",
+        "NeMo provides separate components for data preparation, model training, evaluation, and application improvement."
+      ],
+      "b": [
+        [
+          "<p>NeMo 是由库和服务组成的软件套件。NeMo Framework 提供大规模生成模型训练的工具，涵盖预训练和后训练。预训练为模型建立通用能力，后训练以现有权重为起点，调整模型在特定任务上的表现。</p>",
+          "<p>在一条定制流程里，整理后的数据交给训练组件，训练后的模型交给评估组件。数据集、模型权重和评估结果是这些阶段之间的交付物。</p>"
+        ],
+        [
+          "<p>NeMo is a suite of libraries and services. NeMo Framework provides tools for training generative models at scale, including pretraining and post-training. Pretraining builds general capabilities. Post-training starts from existing weights and adapts model behavior for particular tasks.</p>",
+          "<p>In a customization workflow, curated data goes to the training component, and the resulting model goes to evaluation. Datasets, weights, and evaluation results are the artifacts passed between these stages.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用 Curator 整理训练样本",
+        "Preparing Training Examples with Curator"
+      ],
+      "d": [
+        "NeMo Curator 可过滤、格式化和去除重复样本，输出供训练使用的数据集。",
+        "NeMo Curator can filter, format, and deduplicate examples to produce a training dataset."
+      ],
+      "b": [
+        [
+          "<p>以文本语料为例，过滤按任务要求保留适用内容，去重减少相同或近似样本反复进入训练集。Curator 提供可组合的数据处理阶段，具体规则由数据来源与任务决定。</p>",
+          "<p>训练和评估数据分别保留，评估样本可用于检查模型在未参与训练的任务实例上的表现。</p>"
+        ],
+        [
+          "<p>For a text corpus, filtering retains material that meets the task requirements, and deduplication reduces repeated or near-identical training examples. Curator supplies composable processing stages. Their rules depend on the source data and the target task.</p>",
+          "<p>Training and evaluation data are kept separate so evaluation can check model behavior on examples it did not train on.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用现有模型进行任务定制",
+        "Adapting a Model to a Target Task"
+      ],
+      "d": [
+        "NeMo 的训练工具可使用任务样本微调已有模型，并输出新的权重或适配器。",
+        "NeMo training tools can fine-tune an existing model on task examples and produce updated weights or an adapter."
+      ],
+      "b": [
+        [
+          "<p>以 NeMo Megatron Bridge 支持的 LoRA 为例，基础权重保持固定，训练更新额外的低秩参数。低秩适配器是以较小参数量表示权重调整的组件，可与基础权重配合使用。</p>",
+          "<p>微调沿用前一步准备的数据。定制后的候选模型保留明确的基础模型和适配器组合，便于在评估阶段与原模型比较。</p>"
+        ],
+        [
+          "<p>LoRA, one fine-tuning method supported by NeMo Megatron Bridge, keeps the base weights fixed and trains additional low-rank parameters. A low-rank adapter represents changes to the weights with a smaller set of parameters and works alongside the base weights.</p>",
+          "<p>Fine-tuning uses the data prepared in the previous stage. Recording the base model and adapter together makes it possible to compare the resulting candidate against the original model.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "在同一评估条件下比较",
+        "Comparing Models Under the Same Evaluation Conditions"
+      ],
+      "d": [
+        "NeMo Evaluator 在同一组任务和指标下运行评估，让基础模型和定制模型的结果可以对照。",
+        "NeMo Evaluator runs models against a common set of tasks and metrics so the baseline and customized model can be compared."
+      ],
+      "b": [
+        [
+          "<p>评估任务定义输入、预期行为及计分规则。标准基准用于覆盖常见能力，面向应用的任务则可检查特定输出格式或回答要求。NeMo Evaluator 支持基准与可配置的评估流程。</p>",
+          "<p>使用同一任务集和评分规则可以定位变化落在哪类样本，并为下一轮数据整理提供依据。</p>"
+        ],
+        [
+          "<p>An evaluation task defines the input, expected behavior, and scoring rules. Standard benchmarks cover common capabilities. Application-specific tasks can check a required output format or response behavior. NeMo Evaluator supports benchmarks and configurable evaluation workflows.</p>",
+          "<p>Using the same tasks and scoring rules shows which kinds of examples changed and informs the next round of data preparation.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "将评估结果送回开发流程",
+        "Feeding Evaluation Results Back into Development"
+      ],
+      "d": [
+        "通过评估的候选模型可交由推理服务部署，失败样本可进入下一轮数据整理。",
+        "A candidate that passes evaluation can move to serving, while failed cases can inform the next round of data preparation."
+      ],
+      "b": [
+        [
+          "<p>兼容的模型可由 NIM 等推理服务向应用提供接口。评估发现的失败样本可用来补充下一轮训练或评测数据，后续候选模型再按同一标准复测。NVIDIA 将数据整理、评估与微调之间的循环称为 data flywheel。</p>",
+          "<p>训练、推理服务和应用策略可以各自更新。应用层需要可编程策略时，可在模型调用流程中接入 NeMo Guardrails。</p>"
+        ],
+        [
+          "<p>A compatible model can serve application requests through a system such as NIM. Failed evaluation cases can inform the next training or evaluation dataset. Later candidates can be tested against the same criteria. NVIDIA calls the cycle of curation, evaluation, and fine-tuning a data flywheel.</p>",
+          "<p>Training, serving, and application policies can change separately. NeMo Guardrails can add programmable policies to the application's model call flow.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

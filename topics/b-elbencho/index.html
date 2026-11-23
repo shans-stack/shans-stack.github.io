@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>elbencho：分布式存储压测 · Shan's Stack</title>
+<meta name="description" content="分 5 步解释 elbencho 的存储目标、分布式服务、负载参数和测量边界。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-elbencho.css?v=bc6203ba">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-elbencho">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-elbencho">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="elbencho: Distributed Storage Benchmarking">elbencho：分布式存储压测</h1>
+        <p class="meta"><span data-en="5 steps · files, blocks, objects, concurrency">5 步 · 文件、块、对象、并发</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/breuner/elbencho&quot;&gt;elbencho Project Documentation and CLI Help&lt;/a&gt;"><a href="https://github.com/breuner/elbencho">elbencho 项目文档与命令帮助入口</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/breuner/elbencho/releases&quot;&gt;elbencho Official Releases&lt;/a&gt;"><a href="https://github.com/breuner/elbencho/releases">elbencho 官方发布记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-elbencho.js?v=d5734ad3"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-elbencho",
+ "ar": [
+  2.5641025641025643,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "三类存储目标",
+    "Three Storage Target Types"
+   ],
+   "d": [
+    "elbencho 可以对文件、块设备或 S3 对象存储生成并发负载。",
+    "elbencho can generate concurrent load against files, block devices, or S3 object storage."
+   ],
+   "b": [
+    [
+     "<p>目标类型定义访问接口。文件测试使用文件路径，块设备测试访问块地址，对象测试通过 S3 接口访问存储桶中的对象。S3 需要启用相应构建支持。</p>",
+     "<p>截至 2026-11-23，最新正式版为 2026-11-20 发布的 3.4.1，代码 tag 为 <code>v3.4-1</code>。</p>"
+    ],
+    [
+     "<p>The target type determines the interface. A file test uses file paths, a block device test addresses blocks, and an object test uses S3 to access objects in a bucket. S3 requires a build with the corresponding support.</p>",
+     "<p>As of 2026-11-23, the latest stable release is 3.4.1, released on 2026-11-20 under the code tag <code>v3.4-1</code>.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "协调端与负载端",
+    "Coordinator and Load Generators"
+   ],
+   "d": [
+    "分布式模式由协调端下发测试，多个客户端的工作线程向存储发起 I/O。",
+    "In distributed mode, the coordinator dispatches the test and worker threads on multiple clients issue I/O."
+   ],
+   "b": [
+    [
+     "<p>客户端通过 <code>--service</code> 进入服务模式，协调端通过 <code>--hosts</code> 指定参与节点。协调端控制阶段并汇总数据，服务端的工作线程产生实际 I/O。</p>",
+     "<p>本地模式由单个客户端运行工作线程。两种模式的结果都包含所选客户端与存储之间的路径。</p>"
+    ],
+    [
+     "<p>Clients start in service mode with <code>--service</code>. The coordinator selects participating clients with <code>--hosts</code>. It controls the phases and gathers results while service-side workers perform the I/O.</p>",
+     "<p>Local mode runs the workers on a single client. Both modes include the paths from the selected clients to storage.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "读写方式与并发参数",
+    "Access Patterns and Concurrency"
+   ],
+   "d": [
+    "线程数、I/O 大小、队列深度与访问顺序共同形成负载。",
+    "Thread count, I/O size, queue depth, and access order define the workload."
+   ],
+   "b": [
+    [
+     "<p><code>-t</code> 定义每个服务进程的线程数，<code>-b</code> 定义一个 I/O 块大小。按目标与模式，读写阶段可用顺序或随机访问，<code>--iodepth</code> 可为支持的模式设置未完成 I/O 的深度。缓冲或直接 I/O 也会改变经过的缓存层。</p>",
+     "<p>测试路径决定结果适用范围。对象请求和块设备读写使用各自的访问接口，结果中的一次操作具有不同含义。</p>"
+    ],
+    [
+     "<p><code>-t</code> sets threads per service process and <code>-b</code> sets the I/O block size. Read and write phases can use sequential or random access where supported. <code>--iodepth</code> sets the outstanding I/O depth for supported modes. Buffered and direct I/O traverse different cache layers.</p>",
+     "<p>The path defines the scope of a result. An object request and a block device operation use different interfaces and have different meanings.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "带宽、IOPS 与延迟",
+    "Bandwidth, IOPS, and Latency"
+   ],
+   "d": [
+    "带宽统计字节，IOPS 统计操作，延迟描述单个请求的耗时。",
+    "Bandwidth counts bytes, IOPS counts operations, and latency describes individual request times."
+   ],
+   "b": [
+    [
+     "<p>同一阶段的吞吐与延迟互为补充。吞吐反映单位时间搬运的数据，IOPS 反映单位时间完成的操作，延迟分布可揭示少数慢操作。比较重复运行时，可用 <code>--jsonfile</code> 保存结果。</p>"
+    ],
+    [
+     "<p>Throughput and latency describe complementary aspects of a phase. Bandwidth is the volume moved per unit time, IOPS is the number of completed operations per second, and a latency distribution exposes slow requests. The <code>--jsonfile</code> option saves results across repeated runs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "结果适用的路径",
+    "Scope of a Result"
+   ],
+   "d": [
+    "多个客户端的汇总成绩取决于客户端、网络、协议和存储端。",
+    "Aggregate results depend on the clients, network, protocol, and storage target."
+   ],
+   "b": [
+    [
+     "<p>相同的存储系统可因客户端数、数据集大小、缓存状态、访问接口或每客户端并发不同而给出不同成绩。大块顺序读带宽用于解释该负载，小文件或小对象的操作率需要对应测试。</p>",
+     "<p>对照单端和多端运行，有助于区分单客户端上限与多客户端汇聚后的限制。</p>"
+    ],
+    [
+     "<p>The same storage system can yield different results as client count, dataset size, cache state, interface, or per-client concurrency changes. Large sequential read bandwidth describes that workload. Small-file or small-object operation rates require their own tests.</p>",
+     "<p>Comparing single-client and multi-client runs helps distinguish a client ceiling from an aggregate bottleneck.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

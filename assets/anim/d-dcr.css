@@ -43,7 +43,3 @@
 .ddcr .quota{stroke-width:2;transition:fill .4s,stroke .4s}
 .ddcr .quota.free{fill:var(--sage);stroke:var(--sage)}
 .ddcr .quota.used{fill:none;stroke:var(--rose);stroke-dasharray:4 3}
-/* 部件上的厂商 logo：DDN 没有白色版，深色模式在 logo 后垫浅灰底 #DADCDF，logo 不改色 */
-.ddcr .lgbk{fill:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ddcr .lgbk{fill:#DADCDF}}
-:root[data-theme=dark] .ddcr .lgbk{fill:#DADCDF}

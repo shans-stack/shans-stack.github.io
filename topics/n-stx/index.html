@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA STX：AI 存储的数据路径 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 NVIDIA STX 的存储处理器、网络和软件，以及 CMX 和企业数据路径。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-stx.css?v=52296c64">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-stx">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language">
+      <button type="button" data-lang-set="zh" lang="zh-Hans" aria-label="简体中文" data-en-label="Simplified Chinese" data-en="ZH" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" lang="zh-Hant" aria-label="繁體中文" data-en-label="Traditional Chinese" data-en="TW" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" lang="en" aria-label="英文" data-en-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-stx">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA STX: The Data Path for AI Storage">NVIDIA STX：AI 存储的数据路径</h1>
+        <p class="meta"><span data-en="5 steps · Storage Architecture, BlueField, Spectrum-X">5 步 · 存储参考架构、BlueField、Spectrum-X</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/ai-storage/stx/&quot;&gt;NVIDIA STX Product Page&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/ai-storage/stx/">NVIDIA STX 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-launches-bluefield-4-stx-storage-architecture-with-broad-industry-adoption&quot;&gt;NVIDIA BlueField-4 STX Architecture Announcement&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-launches-bluefield-4-stx-storage-architecture-with-broad-industry-adoption">NVIDIA BlueField-4 STX 架构公告</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/&quot;&gt;NVIDIA CMX Technical Overview&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/">NVIDIA CMX 技术说明</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/ai-data-platform/&quot;&gt;NVIDIA AI Data Platform&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/ai-data-platform/">NVIDIA AI Data Platform</a></li>
+      <li data-en="Animations are schematic and show no measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-stx.js?v=5981b6da"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-stx",
+  "ar": [
+    2.375,
+    0.88
+  ],
+  "steps": [
+    {
+      "t": [
+        "存储参考架构连接计算与数据",
+        "A Storage Reference Architecture Connects Compute and Data"
+      ],
+      "d": [
+        "STX 为存储系统设计提供模块化基础，覆盖存储处理、网络和配套软件。",
+        "STX provides a modular foundation for storage systems, spanning storage processing, networking, and software."
+      ],
+      "b": [
+        [
+          "<p>参考架构描述可组合的组件及其职责，供系统制造商与存储供应商据此构建设备和软件。STX 面向训练、分析和推理所需的数据路径，也就是数据从存储介质传到计算任务的过程。具体实现可面向高性能存储、企业 AI 数据或推理上下文等用途。</p>"
+        ],
+        [
+          "<p>A reference architecture defines components and their roles so system and storage providers can build hardware and software around them. STX addresses the data path, which carries data from storage media to compute workloads for training, analytics, and inference. Implementations can target high-performance storage, enterprise AI data, or inference context.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "存储处理器位于网络与介质之间",
+        "The Storage Processor Sits Between Network and Media"
+      ],
+      "d": [
+        "BlueField-4 STX 结合 Vera CPU 与 ConnectX-9，在存储端处理数据传输及部分存储操作。",
+        "BlueField-4 STX combines a Vera CPU with ConnectX-9 to handle data movement and selected storage operations at the storage endpoint."
+      ],
+      "b": [
+        [
+          "<p>BlueField-4 STX 是为存储优化的处理器。Vera CPU 提供可编程计算，ConnectX-9 SuperNIC 提供网络接入。平台还具备用于加密与完整性检查的硬件能力。所卸载的操作取决于具体存储实现，存储介质承担数据保存。</p>"
+        ],
+        [
+          "<p>BlueField-4 STX is a storage-optimized processor. The Vera CPU provides programmable compute, and the ConnectX-9 SuperNIC provides network connectivity. The processor also has hardware for functions such as encryption and integrity checking. The storage implementation determines which operations it offloads. The media holds the data.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Spectrum-X 与 DOCA 分工",
+        "How Spectrum-X and DOCA Divide the Work"
+      ],
+      "d": [
+        "Spectrum-X 提供计算端与存储端之间的以太网连接，DOCA 提供使用 BlueField 能力的软件接口。",
+        "Spectrum-X connects compute and storage endpoints over Ethernet, while DOCA provides software interfaces to BlueField capabilities."
+      ],
+      "b": [
+        [
+          "<p>Spectrum-X 是 NVIDIA 的以太网平台。在采用它的 STX 部署中，交换网络承载计算节点和存储节点之间的流量。DOCA 则提供开发和运行 BlueField 加速服务所需的软件组件。网络负责传输，存储软件和处理器负责端点上的具体操作。</p>"
+        ],
+        [
+          "<p>Spectrum-X is NVIDIA’s Ethernet platform. In an STX deployment that uses it, the fabric carries traffic between compute and storage nodes. DOCA provides software components for developing and running accelerated services on BlueField. The fabric transports traffic, while storage software and processors perform the endpoint operations.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "CMX 将架构用于上下文缓存",
+        "CMX Applies the Architecture to Context Caching"
+      ],
+      "d": [
+        "CMX 基于 STX，在多台计算节点之间提供共享的推理上下文存储层。",
+        "CMX uses STX to provide a shared inference context tier across compute nodes."
+      ],
+      "b": [
+        [
+          "<p>KV Cache 保存模型处理过的上下文所生成的中间结果，后续推理可读取这些结果。CMX 在计算节点旁提供基于闪存的共享存储层，让所需缓存可从存储节点调入计算节点。它是 STX 的机柜级实现之一，针对推理上下文的访问需求。</p>"
+        ],
+        [
+          "<p>A key-value cache (KV cache) holds intermediate results from context a model has already processed. Later inference can read those results. CMX places a shared flash tier near the compute nodes so they can load cached context from storage nodes. It is a rack-scale implementation of STX designed for inference context access.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "企业数据路径服务检索与准备",
+        "The Enterprise Data Path Serves Preparation and Retrieval"
+      ],
+      "d": [
+        "AI Data Platform 将加速计算引入企业存储，提供数据准备与检索能力。",
+        "AI Data Platform brings accelerated compute into enterprise storage for data preparation and retrieval."
+      ],
+      "b": [
+        [
+          "<p>NVIDIA 将 AI Data Platform 列为 STX 生态中的企业数据参考设计。它可把文档等企业数据转成可检索的索引，供检索增强生成（RAG，即将检索到的资料交给生成模型）等工作流使用。此处处理的是企业数据与索引，上一环节的 CMX 则保存模型生成的上下文缓存。</p>"
+        ],
+        [
+          "<p>NVIDIA lists AI Data Platform as an enterprise data reference design in its STX ecosystem. It can index enterprise data such as documents for workflows like retrieval-augmented generation (RAG), where retrieved material accompanies a prompt to the model. This path processes enterprise data and indexes. The CMX path deals with context cache produced by inference.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

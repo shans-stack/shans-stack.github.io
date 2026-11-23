@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DDN KV Cache 方案 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 DDN EXAScaler 上的缓存文件路径与 Infinia 原生 KV Cache 接口，以及各自的框架对接。" data-en-content="Five steps on DDN EXAScaler cache files, the Infinia native KV cache interface, and their framework integrations.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-kvp.css?v=3fd41835">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language" data-noconv>
+      <button type="button" data-lang-set="zh" data-en="SC" aria-label="简体中文" data-en-label="Simplified Chinese" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" data-en="TC" aria-label="繁體中文" data-en-label="Traditional Chinese" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" aria-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-kvp">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DDN KV Cache Solution">DDN KV Cache 方案</h1>
+        <p class="meta"><span data-en="5 steps · EXAScaler, Infinia, NIXL, GPUDirect Storage">5 步 · EXAScaler、Infinia、NIXL、GPUDirect Storage</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/products/exascaler/&quot;&gt;DDN EXAScaler&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/products/exascaler/">DDN EXAScaler 产品页</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.youtube.com/watch?v=P3B3f651SU8&amp;amp;t=199s&quot;&gt;DDN vLLM KV Cache Demo on EXAScaler&lt;/a&gt;"><a class="gen-source" href="https://www.youtube.com/watch?v=P3B3f651SU8&amp;t=199s">DDN EXAScaler 上的 vLLM KV Cache 演示</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/hands-on-enabling-kv-cache-on-exascaler/&quot;&gt;DDN EXAScaler KV Cache Walkthrough&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/hands-on-enabling-kv-cache-on-exascaler/">DDN EXAScaler KV Cache 技术讲解</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/&quot;&gt;DDN Dynamo Integration Announcement&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/press-releases/ddn-unveils-next-generation-ai-hpc-data-intelligence-innovations-at-isc-2026/">DDN 发布的 Dynamo 对接公告</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/&quot;&gt;DDN Infinia Native KV Cache and Data Path&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/blog/where-does-gpu-time-go-between-the-checkpoint-and-the-first-token/">DDN Infinia 原生 KV Cache 接口与数据路径</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/blog/ddn-becomes-the-first-storage-vendor-natively-integrated-into-nvidia-kv-cache-management/&quot;&gt;DDN Infinia Plugin and Inference Integration&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/blog/ddn-becomes-the-first-storage-vendor-natively-integrated-into-nvidia-kv-cache-management/">DDN Infinia 插件与推理框架对接</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://github.com/ai-dynamo/nixl/blob/main/src/plugins/infinia/README.md&quot;&gt;NIXL Infinia Plugin Documentation&lt;/a&gt;"><a class="gen-source" href="https://github.com/ai-dynamo/nixl/blob/main/src/plugins/infinia/README.md">NIXL Infinia 插件文档</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.lmcache.ai/mp/l2_storage/nixl_native.html&quot;&gt;LMCache Native NIXL Adapter&lt;/a&gt;"><a class="gen-source" href="https://docs.lmcache.ai/mp/l2_storage/nixl_native.html">LMCache 原生 NIXL 适配器</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-kvp.js?v=24d2e959"></script>
+<script>
+const stationMeta = SS.stations["d-kvp"];
+stationMeta.t ??= ["DDN KV Cache 方案", "DDN KV Cache Solution"];
+stationMeta.prev ??= ["kvoff"];
+stationMeta.next ??= ["d-inf", "d-exa", "d-views"];
+window.SS_TOPIC_CFG = {
+  "anim": "d-kvp",
+  "ar": [
+    2.8486646884273,
+    0.9012875536480687
+  ],
+  "steps": [
+    {
+      "t": [
+        "两个 KV Cache 后端",
+        "Two KV Cache Backends"
+      ],
+      "d": [
+        "EXAScaler 保存缓存文件，Infinia 通过原生接口按键存取缓存数据。",
+        "EXAScaler stores cache files, while Infinia stores and retrieves cache data by key through its native interface."
+      ],
+      "b": [
+        [
+          "<p>KV Cache 保存模型处理输入时生成的注意力键和值。DDN 公开了两种存放卸载数据的方式。EXAScaler 是基于 Lustre 的并行文件系统，推理端可把缓存写进挂载的文件目录。Infinia 提供原生 KV Cache 接口，允许数据传输库 NIXL 的插件访问由键标识的缓存数据。</p>"
+        ],
+        [
+          "<p>A KV cache holds the attention keys and values a model creates while processing input. DDN documents two ways to store offloaded KV. EXAScaler is a parallel filesystem built on Lustre, where a serving stack can write cache files to a mounted directory. Infinia exposes a native KV cache interface that a plugin for the NIXL transfer library can use to access cache data by key.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "EXAScaler 的做法",
+        "How EXAScaler Stores KV Cache"
+      ],
+      "d": [
+        "DDN 的 vLLM 演示用挂载的 EXAScaler 保存缓存，通过 GPUDirect Storage 传输。",
+        "DDN’s vLLM demo uses mounted EXAScaler for cache storage and GPUDirect Storage for transfers."
+      ],
+      "b": [
+        [
+          "<p>在 DDN 的公开演示里，vLLM 在 GPU 上生成 KV，缓存组件通过 GPUDirect Storage（GDS）把 KV 保存到 EXAScaler 的缓存目录。后续请求命中时，缓存组件从该目录把对应数据读回显存。GDS 提供文件系统与显存之间的数据路径。</p>",
+          "<p>这条演示路径包括 vLLM、支持 GDS 的缓存组件、GPU 主机上的 EXAScaler 挂载和 GDS 数据路径。</p>"
+        ],
+        [
+          "<p>In the DDN demo, vLLM creates KV on the GPU and the cache component saves it to an EXAScaler cache directory using GPUDirect Storage (GDS). On a later hit, the cache component reads the matching data from that directory back into GPU memory. GDS provides the data path between the filesystem and GPU memory.</p>",
+          "<p>This demonstration uses vLLM, a cache component that supports GDS, an EXAScaler mount on the GPU host, and the GDS data path.</p>"
+        ]
+      ],
+      "tabs": [
+        {
+          "t": [
+            "vLLM",
+            "vLLM"
+          ],
+          "d": [
+            "DDN 的 vLLM 演示用挂载的 EXAScaler 保存缓存，通过 GPUDirect Storage 传输。",
+            "DDN’s vLLM demo uses mounted EXAScaler for cache storage and GPUDirect Storage for transfers."
+          ],
+          "b": [
+            [
+              "<p>在 DDN 的公开演示里，vLLM 在 GPU 上生成 KV，缓存组件通过 GPUDirect Storage（GDS）把 KV 保存到 EXAScaler 的缓存目录。后续请求命中时，缓存组件从该目录把对应数据读回显存。GDS 提供文件系统与显存之间的数据路径。</p>",
+              "<p>这条演示路径包括 vLLM、支持 GDS 的缓存组件、GPU 主机上的 EXAScaler 挂载和 GDS 数据路径。</p>"
+            ],
+            [
+              "<p>In the DDN demo, vLLM creates KV on the GPU and the cache component saves it to an EXAScaler cache directory using GPUDirect Storage (GDS). On a later hit, the cache component reads the matching data from that directory back into GPU memory. GDS provides the data path between the filesystem and GPU memory.</p>",
+              "<p>This demonstration uses vLLM, a cache component that supports GDS, an EXAScaler mount on the GPU host, and the GDS data path.</p>"
+            ]
+          ],
+          "key": "vllm"
+        },
+        {
+          "t": [
+            "NVIDIA Dynamo",
+            "NVIDIA Dynamo"
+          ],
+          "d": [
+            "Dynamo 编排推理；DDN 的公开技术讲解展示了由缓存栈将 KV 保存为 EXAScaler 文件的做法。",
+            "Dynamo orchestrates serving. DDN’s public walkthrough describes how the cache stack saves KV as EXAScaler files."
+          ],
+          "b": [
+            [
+              "<p>DDN 公布了 EXAScaler 与 NVIDIA Dynamo 的对接，并在技术讲解中以 Dynamo、LMCache 和 NIXL 为例，说明新生成的 KV 如何写为文件。推理 worker 生成 KV，缓存组件通过连接器保存文件，前缀命中后再加载对应块供 worker 使用。</p>",
+              "<p>这条路径涉及 Dynamo、推理 worker、缓存组件与传输库，以及挂载的 EXAScaler 目录。图展示文件读写的逻辑路径。实际是否经主机内存中转，取决于部署采用的传输后端。</p>"
+            ],
+            [
+              "<p>DDN announced its EXAScaler integration with NVIDIA Dynamo and describes freshly computed KV becoming files in a walkthrough featuring Dynamo, LMCache, and NIXL. The inference worker produces KV, the cache component saves it through a connector, and a prefix hit loads the corresponding blocks for the worker.</p>",
+              "<p>This path involves Dynamo, an inference worker, cache and transfer components, and a mounted EXAScaler directory. The figure shows logical file I/O. Whether data is staged in host memory depends on the transfer backend used in the deployment.</p>"
+            ]
+          ],
+          "key": "dynamo"
+        }
+      ]
+    },
+    {
+      "t": [
+        "Infinia 的原生 KV Cache 接口",
+        "Infinia’s Native KV Cache Interface"
+      ],
+      "d": [
+        "Infinia 按键存取缓存块；支持的配置可以通过 RDMA 在存储与显存之间传输。",
+        "Infinia stores cache blocks by key, with RDMA transfers between storage and GPU memory in supported configurations."
+      ],
+      "b": [
+        [
+          "<p>Infinia 的分布式键值底座为原生 KV Cache、S3 和 POSIX 文件接口提供存储。KV Cache 连接使用原生接口，输入为键与缓存数据。NIXL 的 Infinia 后端通过 DDN 客户端库把这些操作交给 Infinia。</p>",
+          "<p>该插件支持已注册的主机内存与显存缓冲区。在直接显存路径上，写入从显存传到 Infinia，命中后可经 RDMA 读回目标显存缓冲区。缓存策略仍由推理端执行。</p>"
+        ],
+        [
+          "<p>Infinia’s distributed key-value engine serves its native KV cache, S3, and POSIX file interfaces. The KV cache path sends keys and cache data through the native interface. The NIXL backend submits the operations through DDN’s Infinia client libraries.</p>",
+          "<p>The plugin supports registered host and GPU buffers. On the direct GPU path, a write transfers data from GPU memory to Infinia, and a hit can be read back into a destination GPU buffer over RDMA. The serving stack controls cache policy.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Infinia 的做法",
+        "How Infinia Connects to Inference Frameworks"
+      ],
+      "d": [
+        "Dynamo 管理推理 worker，NIXL 的 Infinia 插件搬运需要保存和读回的 KV。",
+        "Dynamo manages inference workers, and the Infinia NIXL plugin transfers KV for saves and reloads."
+      ],
+      "b": [
+        [
+          "<p>Dynamo 编排执行推理的 worker。推理栈通过缓存连接器提交卸载和读回请求，NIXL 将操作交给 Infinia 插件。DDN 的示例展示了显存与 Infinia 之间的 RDMA 双向路径。</p>",
+          "<p>配置包含 Dynamo 与推理 worker、启用 Infinia 插件的 NIXL、DDN 客户端库，以及 Infinia 的集群、租户和数据集配置。</p>"
+        ],
+        [
+          "<p>Dynamo orchestrates the inference workers. The serving stack submits offload and reload requests through its cache connector, and NIXL dispatches the transfers to the Infinia plugin. DDN illustrates a bidirectional RDMA path between GPU memory and Infinia.</p>",
+          "<p>The setup includes Dynamo and a serving worker, NIXL with the Infinia plugin, DDN client libraries, and the Infinia cluster, tenant, and dataset settings.</p>"
+        ]
+      ],
+      "tabs": [
+        {
+          "t": [
+            "NVIDIA Dynamo",
+            "NVIDIA Dynamo"
+          ],
+          "d": [
+            "Dynamo 管理推理 worker，NIXL 的 Infinia 插件搬运需要保存和读回的 KV。",
+            "Dynamo manages inference workers, and the Infinia NIXL plugin transfers KV for saves and reloads."
+          ],
+          "b": [
+            [
+              "<p>Dynamo 编排执行推理的 worker。推理栈通过缓存连接器提交卸载和读回请求，NIXL 将操作交给 Infinia 插件。DDN 的示例展示了显存与 Infinia 之间的 RDMA 双向路径。</p>",
+              "<p>配置包含 Dynamo 与推理 worker、启用 Infinia 插件的 NIXL、DDN 客户端库，以及 Infinia 的集群、租户和数据集配置。</p>"
+            ],
+            [
+              "<p>Dynamo orchestrates the inference workers. The serving stack submits offload and reload requests through its cache connector, and NIXL dispatches the transfers to the Infinia plugin. DDN illustrates a bidirectional RDMA path between GPU memory and Infinia.</p>",
+              "<p>The setup includes Dynamo and a serving worker, NIXL with the Infinia plugin, DDN client libraries, and the Infinia cluster, tenant, and dataset settings.</p>"
+            ]
+          ],
+          "key": "dynamo-infinia"
+        },
+        {
+          "t": [
+            "vLLM",
+            "vLLM"
+          ],
+          "d": [
+            "vLLM 可把 KV 交给 LMCache，再由支持 NIXL 的后端读写 Infinia。",
+            "vLLM can hand KV to LMCache and use a NIXL-enabled backend to read and write Infinia."
+          ],
+          "b": [
+            [
+              "<p>DDN 公布了独立 vLLM 和 LMCache 的 Infinia 接入。以 LMCache 的原生 NIXL 适配器为例，vLLM 把 KV 交给 LMCache，适配器从已注册的主机 DRAM 写出缓存块。命中后，数据从 Infinia 返回主机内存，由 vLLM 装回显存。</p>",
+              "<p>这条路径涉及 vLLM 与 LMCache 连接器、支持 NIXL 的 LMCache 后端、Infinia NIXL 插件和 DDN 客户端库。</p>"
+            ],
+            [
+              "<p>DDN documents Infinia integration for standalone vLLM and LMCache. In the path using LMCache’s native NIXL adapter, vLLM hands KV to LMCache and the adapter writes from registered host DRAM. On a hit, Infinia returns the data to host memory for vLLM to load into GPU memory.</p>",
+              "<p>This path involves vLLM with an LMCache connector, a NIXL-enabled LMCache backend, the Infinia NIXL plugin, and DDN client libraries.</p>"
+            ]
+          ],
+          "key": "vllm-infinia"
+        }
+      ]
+    },
+    {
+      "t": [
+        "请求如何复用已保存的 KV",
+        "How a Request Reuses Stored KV"
+      ],
+      "d": [
+        "推理端找到匹配的缓存块后将其读回，GPU 继续处理尚未计算的输入。",
+        "The serving stack reloads matching cache blocks, and the GPU processes the input it still needs to compute."
+      ],
+      "b": [
+        [
+          "<p>以 Infinia 为例，推理端通过兼容的缓存标识查询前缀，再由插件从配置的数据集加载命中的 KV。即使请求换到另一台推理节点，该节点也可在拥有访问权限和兼容缓存配置时读回对应块。</p>",
+          "<p>缓存未命中或无法加载时，推理引擎可以对缺失部分重新执行预填充，也就是处理输入并生成对应的 KV。</p>"
+        ],
+        [
+          "<p>With Infinia, the serving stack looks up the prefix using compatible cache identifiers, then uses the plugin to load hits from the configured dataset. A request can move to another inference node and still reload the blocks if that node has access and a compatible cache configuration.</p>",
+          "<p>If the cache misses or a block cannot be loaded, the engine can run prefill for the missing portion, processing that input and generating its KV.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script>
+document.addEventListener('ss-lang', function () {
+  document.title = document.querySelector('h1').textContent + " · Shan's Stack";
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.zhContent ??= description.content;
+  description.content = window.SS_LANG === 'en' ? description.dataset.enContent : description.dataset.zhContent;
+});
+</script>
+</body>
+</html>

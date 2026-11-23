@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>光模块与线缆：交换机端口之间的物理链路 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明光模块与线缆：交换机端口之间的物理链路。网络端口可用铜缆、有源光缆或光模块与光纤连接，两端须使用兼容的链路模式与介质。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/optics.css?v=f14d1673">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-optics">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="optics">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Optics and Cabling: The Physical Link Between Ports">光模块与线缆：交换机端口之间的物理链路</h1>
+        <p class="meta"><span data-en="5 steps · physical layer, copper, fiber, breakout">5 步 · 物理层、铜缆、光纤、端口拆分</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://standards.ieee.org/ieee/802.3/10422/&quot;&gt;IEEE 802.3 · Ethernet PHY and Copper and Fiber Amendments&lt;/a&gt;"><a href="https://standards.ieee.org/ieee/802.3/10422/">IEEE 802.3 · 以太网物理层及铜缆、光纤相关修订</a></li>
+      <li data-en="&lt;a href=&quot;https://infinibandta.org/ibta-specification/&quot;&gt;IBTA · InfiniBand Architecture and Cabling FAQ&lt;/a&gt;"><a href="https://infinibandta.org/ibta-specification/">IBTA · InfiniBand 架构与布线 FAQ</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/nvidia-linkx-cables-and-transceivers-guide-to-key-technologies.pdf&quot;&gt;NVIDIA · Cables and Transceivers Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/nvidia-linkx-cables-and-transceivers-guide-to-key-technologies.pdf">NVIDIA · 铜缆、光缆与收发模块指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/networking-ethernet-software/knowledge-base/Setup-and-Getting-Started/layer-1-Data-Center-Cheat-Sheet/&quot;&gt;NVIDIA · Data Center Physical Layer and Breakout&lt;/a&gt;"><a href="https://docs.nvidia.com/networking-ethernet-software/knowledge-base/Setup-and-Getting-Started/layer-1-Data-Center-Cheat-Sheet/">NVIDIA · 数据中心物理层与端口拆分</a></li>
+      <li data-en="&lt;a href=&quot;https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/best-practices-multimode-bidi-plug-transceiver-wp.html&quot;&gt;Cisco · Fiber and Connector Loss Budget for Multimode Links&lt;/a&gt;"><a href="https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/best-practices-multimode-bidi-plug-transceiver-wp.html">Cisco · 多模光链路的光纤和连接损耗预算</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/optics.js?v=773643bf"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "optics",
+ "ar": [
+  2.021276595744681,
+  0.6792452830188679
+ ],
+ "steps": [
+  {
+   "t": [
+    "从电端口到传输介质",
+    "From Electrical Ports to a Transmission Medium"
+   ],
+   "d": [
+    "铜缆把电信号送到对端，光链路在两端分别进行电光和光电转换。",
+    "Copper carries an electrical signal to the other end. Optical links convert between electrical and optical signals at their two ends."
+   ],
+   "b": [
+    [
+     "<p>物理层规定信号如何在端口与介质之间传输。交换机和网卡的高速端口向可插拔线缆或模块提供电信号。铜缆组件沿铜导体传输，光收发模块用发射器把信号送入光纤，再由对端接收器还原成电信号。</p>"
+    ],
+    [
+     "<p>The physical layer defines how signals pass between a port and its medium. High-speed switch and NIC ports provide electrical signals to pluggable cables or modules. Copper assemblies carry signals on conductors. An optical transceiver sends the signal into fiber, and the receiving transceiver converts it back to an electrical signal.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "无源铜缆与有源铜缆",
+    "Passive and Active Copper"
+   ],
+   "d": [
+    "无源直连铜缆依赖两端端口的电接口，有源铜缆在组件内加入信号处理。",
+    "Passive direct-attach copper relies on the electrical ports at both ends. Active copper adds signal conditioning to the assembly."
+   ],
+   "b": [
+    [
+     "<p>DAC 通常指无源直连铜缆，插头和铜缆是一体组件。某些有源铜缆在插头内使用线性放大或均衡等电路补偿信号损耗。可用距离取决于信号速率、线缆设计和设备对该组件的支持。</p>"
+    ],
+    [
+     "<p>DAC commonly refers to a passive direct-attach copper cable, with plugs and copper conductors in one assembly. Some active copper cables use circuitry such as linear amplification or equalization in the plugs to compensate for signal loss. Reach depends on signaling rate, cable design, and device support for the assembly.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "一体式光缆与可换光纤",
+    "Integrated Optical Cables and Replaceable Fiber"
+   ],
+   "d": [
+    "有源光缆把收发端与光纤做成一体，可插拔光模块则在两端接独立光纤。",
+    "An active optical cable integrates the optical ends and fiber. Pluggable transceivers connect to a separate fiber cable."
+   ],
+   "b": [
+    [
+     "<p>有源光缆（AOC）两端内置光收发器，光纤固定在组件内。用两个光模块加独立光纤时，模块和光纤可分别更换。多模与单模描述光在光纤中的传播模式，具体链路使用哪种介质及覆盖什么距离，由对应物理层规范确定。</p>"
+    ],
+    [
+     "<p>An active optical cable (AOC) has an optical transceiver at each end and fiber fixed inside the assembly. A link with two optical modules and a separate fiber cable lets each part be replaced independently. Multimode and single-mode describe how light travels in the fiber. The applicable physical-layer specification defines the medium and reach for a particular link.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "外形与链路模式的兼容性",
+    "Form Factor and Link Compatibility"
+   ],
+   "d": [
+    "插头能插入端口只说明机械外形相容，两端仍需支持兼容的信号和介质。",
+    "A plug that fits confirms mechanical fit. The two ends still need compatible signaling and media."
+   ],
+   "b": [
+    [
+     "<p>QSFP 和 OSFP 是可插拔组件的外形系列。一条链路还涉及协议、速率、通道组织与通信模式，以及物理介质。光链路同时受光纤类别、连接器和光损耗预算约束。损耗预算是信号可以承受的总衰减，连接点和光纤长度都会消耗这部分余量。</p>"
+    ],
+    [
+     "<p>QSFP and OSFP identify families of pluggable form factors. A link also depends on protocol, rate, lane arrangement and link mode, as well as the physical medium. On optical links, fiber type, connectors, and optical loss budget matter as well. The loss budget is the total attenuation the link can tolerate. Connectors and fiber length contribute to it.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用端口拆分形成独立子链路",
+    "Creating Independent Links with Breakout"
+   ],
+   "d": [
+    "端口拆分把兼容的通道组映射为多条子链路，设备和组件都要支持该模式。",
+    "Breakout maps compatible lane groups to multiple links and requires support from both the port and the assembly."
+   ],
+   "b": [
+    [
+     "<p>通道是并行传输信号的路径。拆分时，交换机把一个物理端口配置成多个逻辑端口，兼容的分支组件把各组信号送到对应的对端。可拆的通道数和组合取决于交换机和模块或线缆。仅改变光纤接头无法改变光模块的信号映射。</p>"
+    ],
+    [
+     "<p>Lanes are parallel paths for signaling. With breakout, a switch configures one physical port as several logical ports and a compatible assembly carries each lane group to its peer. Supported lane groupings depend on the switch and the module or cable. Changing fiber connectors alone cannot change a transceiver’s signal mapping.</p>"
+    ]
+   ]
+  }
+ ]
+};
+
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

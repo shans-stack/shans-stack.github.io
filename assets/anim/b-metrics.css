@@ -1,0 +1,35 @@
+.b-metrics-scene { display: block; width: 100%; height: auto; }
+.b-metrics-scene text {
+  fill: var(--ink);
+  font: 500 18px var(--f);
+  dominant-baseline: central;
+}
+.b-metrics-scene .b-metrics-note { fill: var(--ink2); }
+.b-metrics-scene .b-metrics-box,
+.b-metrics-scene .b-metrics-accent,
+.b-metrics-scene .b-metrics-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.b-metrics-scene .b-metrics-accent { stroke: var(--lc); stroke-width: 2; }
+.b-metrics-scene .b-metrics-quiet { stroke-dasharray: 4 4; }
+.b-metrics-scene .b-metrics-line,
+.b-metrics-scene .b-metrics-guide,
+.b-metrics-scene .b-metrics-active {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-metrics-scene .b-metrics-guide { stroke-dasharray: 4 4; }
+.b-metrics-scene .b-metrics-active { stroke: var(--lc); stroke-width: 3; }
+.b-metrics-scene .b-metrics-token { fill: var(--lc); }
+.b-metrics-scene .b-metrics-alt { fill: var(--ink2); }
+body.topic-b-metrics .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-metrics .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-metrics.present .stage .figbox { margin-block: 0; }
+  .b-metrics-scene text { font-size: 16px; }
+}

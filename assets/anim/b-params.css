@@ -1,0 +1,35 @@
+.b-params-scene { display: block; width: 100%; height: auto; }
+.b-params-scene text {
+  fill: var(--ink);
+  font: 500 18px var(--f);
+  dominant-baseline: central;
+}
+.b-params-scene .b-params-note { fill: var(--ink2); }
+.b-params-scene .b-params-box,
+.b-params-scene .b-params-accent,
+.b-params-scene .b-params-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.b-params-scene .b-params-accent { stroke: var(--lc); stroke-width: 2; }
+.b-params-scene .b-params-quiet { stroke-dasharray: 4 4; }
+.b-params-scene .b-params-line,
+.b-params-scene .b-params-guide,
+.b-params-scene .b-params-active {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-params-scene .b-params-guide { stroke-dasharray: 4 4; }
+.b-params-scene .b-params-active { stroke: var(--lc); stroke-width: 3; }
+.b-params-scene .b-params-token { fill: var(--lc); }
+.b-params-scene .b-params-alt { fill: var(--ink2); }
+body.topic-b-params .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-params .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-params.present .stage .figbox { margin-block: 0; }
+  .b-params-scene text { font-size: 16px; }
+}

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Rubin：HBM4 与第六代 NVLink · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Rubin 的 GPU 封装、HBM4、第三代 Transformer Engine、第六代 NVLink 和整柜组成。" data-description-en="Five steps explain Rubin’s GPU package, HBM4, third-generation Transformer Engine, sixth-generation NVLink, and rack integration..">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-rubin.css?v=93a59b15">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-rubin">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-rubin">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Rubin: HBM4 and Sixth-Generation NVLink">NVIDIA Rubin：HBM4 与第六代 NVLink</h1>
+        <p class="meta"><span data-en="5 steps · HBM4, NVLink 6, Vera Rubin">5 步 · HBM4、NVLink 6、Vera Rubin</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/inside-nvidia-rubin-gpu-architecture-powering-the-era-of-agentic-ai/&quot;&gt;NVIDIA Rubin GPU Architecture In-Depth&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/inside-nvidia-rubin-gpu-architecture-powering-the-era-of-agentic-ai/">NVIDIA Rubin GPU 架构解析</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/&quot;&gt;NVIDIA Vera Rubin NVL72&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/">NVIDIA Vera Rubin NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html&quot;&gt;NVIDIA DGX Vera Rubin NVL72 Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">NVIDIA DGX Vera Rubin NVL72 硬件指南</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb300-nvl72/&quot;&gt;NVIDIA GB300 NVL72&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb300-nvl72/">NVIDIA GB300 NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout&quot;&gt;NVIDIA Volume Shipment Announcement (November 17, 2026)&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA 批量出货公告（2026-11-17）</a></li>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027&quot;&gt;NVIDIA Fiscal 2027 Third-Quarter Results (November 17, 2026)&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027">NVIDIA 2027 财年第三季度财报（2026-11-17）</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-rubin.js?v=8dd4a2b2"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-rubin",
+  "ar": [
+    2.392638036809816,
+    0.9836065573770492
+  ],
+  "steps": [
+    {
+      "t": [
+        "从 Blackwell Ultra 到 Rubin",
+        "From Blackwell Ultra to Rubin"
+      ],
+      "d": [
+        "Rubin GPU 的架构，采用 HBM4 显存和第六代 NVLink。",
+        "The Rubin GPU architecture uses HBM4 memory and sixth-generation NVLink."
+      ],
+      "b": [
+        [
+          "<p>Rubin 延续了 Blackwell Ultra 的双裸片结构。两颗计算裸片经封装内的 NV-HBI 高带宽接口组成一个 GPU。Rubin 将封装上的显存从 HBM3E 换为 HBM4，并将连接其他 GPU 的 NVLink 升级到第六代。</p>"
+        ],
+        [
+          "<p>Rubin retains the dual-die layout of Blackwell Ultra. The two compute dies form one GPU through NV-HBI, a high-bandwidth in-package interface. Rubin moves from HBM3E to HBM4 on the package and changes the GPU-to-GPU NVLink fabric to the sixth generation.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "HBM4 与解码的数据路径",
+        "HBM4 and the Decode Data Path"
+      ],
+      "d": [
+        "HBM4 和新的显存控制器为解码阶段持续读取模型权重与 KV Cache 提供更高带宽。",
+        "HBM4 and new memory controllers provide more bandwidth for reading weights and the KV cache repeatedly during decoding."
+      ],
+      "b": [
+        [
+          "<p>HBM 是封装上的高带宽显存。容量决定能在本地保留多少数据，带宽影响单位时间能搬运多少数据。解码是模型逐个生成 token 的阶段，计算单元需要反复读取模型权重和 KV Cache，后者保存此前 token 的注意力键和值。Rubin 的 HBM4 使用比 HBM3E 更宽的接口，并配有新的显存控制器。</p>"
+        ],
+        [
+          "<p>HBM is high-bandwidth memory on the package. Capacity determines how much data can reside there, while bandwidth governs how much can be moved per unit of time. During decoding, the model generates tokens one at a time and repeatedly reads weights and the KV cache, which holds attention keys and values from earlier tokens. Rubin pairs HBM4’s wider interface with new memory controllers.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "第三代 Transformer Engine",
+        "Third-Generation Transformer Engine"
+      ],
+      "d": [
+        "Rubin 的第三代 Transformer Engine 扩展数值格式选择，Tensor Core 执行相应的矩阵运算。",
+        "Rubin’s third-generation Transformer Engine expands numerical format options, and Tensor Cores execute the corresponding matrix operations."
+      ],
+      "b": [
+        [
+          "<p>Transformer Engine 是配合 Tensor Core 管理数值精度的硬件与软件机制。Rubin 保留 NVFP4 这条 4 位浮点推理路径，并增加用于部分矩阵权重的查找表表示。该方式在权重中保存指向代表值的短索引，Tensor Core 在计算中查表恢复对应值，减少权重存储和搬运。</p>"
+        ],
+        [
+          "<p>The Transformer Engine combines hardware and software to manage numerical precision for Tensor Core operations. Rubin retains NVFP4, its 4-bit floating-point inference path, and adds a lookup-table representation for some matrix weights. Short indices reference representative values, which the Tensor Cores look up during computation to reduce weight storage and movement.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "第六代 NVLink 连接多个 GPU",
+        "Sixth-Generation NVLink Connects GPUs"
+      ],
+      "d": [
+        "Rubin GPU 经 NVLink 6 交换芯片与同域 GPU 通信，可交换跨 GPU 的模型分片数据。",
+        "Rubin GPUs communicate through NVLink 6 switch chips to exchange model data with GPUs in the same domain."
+      ],
+      "b": [
+        [
+          "<p>NVLink 域是通过 NVLink 互联可彼此通信的一组 GPU。在混合专家模型（MoE）中，每个 token 会被分配到部分专家子网络。如果所选专家部署在另一颗 GPU，就需要跨 GPU 传输。Rubin 在整柜中通过第六代 NVLink 交换网络完成同域传输。</p>"
+        ],
+        [
+          "<p>An NVLink domain is a group of GPUs that can reach one another over the NVLink fabric. In a mixture-of-experts model (MoE), each token is routed to a subset of expert subnetworks. Routing to an expert on another GPU requires a GPU-to-GPU transfer. In the rack, Rubin can carry that transfer over the sixth-generation switched NVLink fabric.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "Rubin GPU 在 Vera Rubin NVL72 中的位置",
+        "Rubin GPUs in Vera Rubin NVL72"
+      ],
+      "d": [
+        "Vera Rubin NVL72 将 Rubin GPU、Vera CPU 和 NVLink 6 交换托盘装进同一液冷机柜。",
+        "Vera Rubin NVL72 integrates Rubin GPUs, Vera CPUs, and NVLink 6 switch trays in a single liquid-cooled rack."
+      ],
+      "b": [
+        [
+          "<p>Rubin 指 GPU。Vera Rubin NVL72 的计算托盘组合 Vera CPU 与 Rubin GPU，72 颗 GPU 经过背部铜缆和交换托盘接入同一域。整柜另有集群网络适配器、供电和液冷。相较采用 Grace 和第五代 NVLink 的 GB300 NVL72，GPU、主机 CPU 和柜内互联均已换代。</p>",
+          "<p>截至 2026-11-23，NVIDIA 11 月 17 日公告确认 Vera Rubin NVL72 和 Vera CPU 已在其 2027 财年第三季度开始批量出货，财报所列季度截止日为 2026-10-25。</p>"
+        ],
+        [
+          "<p>Rubin names the GPU. Vera Rubin NVL72 compute trays pair Vera CPUs with Rubin GPUs, and a rear copper interconnect and switch trays connect 72 GPUs in one domain. The rack also includes cluster network adapters, power, and liquid cooling. Compared with GB300 NVL72, which pairs Grace with fifth-generation NVLink, the GPU, host CPU, and in-rack fabric all change generation.</p>",
+          "<p>As of November 23, 2026, NVIDIA’s November 17 announcement confirmed that volume shipments of Vera Rubin NVL72 and Vera CPUs began in the third quarter of fiscal 2027. The corresponding earnings release gives October 25, 2026 as the quarter end.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

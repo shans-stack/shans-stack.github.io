@@ -1,0 +1,15 @@
+.b-hpcg-scene { display: block; width: 100%; height: auto; }
+.b-hpcg-scene text { font: 500 18px var(--f); fill: var(--ink); dominant-baseline: central; }
+.b-hpcg-scene .b-hpcg-heading { font-weight: 700; font-size: 21px; }
+.b-hpcg-scene .b-hpcg-note { fill: var(--ink3); font-weight: 400; }
+.b-hpcg-box, .b-hpcg-idle, .b-hpcg-focus { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.5; }
+.b-hpcg-idle { stroke-dasharray: 5 4; }
+.b-hpcg-focus { stroke: var(--l6); stroke-width: 2; }
+.b-hpcg-line { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
+.b-hpcg-arrow { fill: var(--ink3); }
+.b-hpcg-signal { fill: var(--l6); }
+.b-hpcg-reply { fill: var(--l3); }
+.b-hpcg-cell { fill: var(--bg); stroke: var(--rule); }
+@media (640px < width <= 720px) {
+  main[data-station="b-hpcg"] .mhost { aspect-ratio: var(--ar); }
+}

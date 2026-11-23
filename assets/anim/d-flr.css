@@ -1,0 +1,20 @@
+.d-flr svg{display:block;width:100%;font-family:var(--f)}
+.d-flr text{fill:var(--ink);text-anchor:middle;dominant-baseline:middle;font-size:18px}
+.d-flr [data-tone=data]{--signal:var(--l6)}
+.d-flr [data-tone=meta]{--signal:var(--l4)}
+.d-flr [data-tone=failed]{--signal:var(--l1)}
+.d-flr [data-tone=idle]{--signal:var(--rule2)}
+.d-flr .d-flr-card{fill:color-mix(in srgb,var(--signal) 8%,var(--surface));stroke:var(--signal);stroke-width:1.5}
+.d-flr .d-flr-title{font-size:19px;font-weight:650}
+.d-flr .d-flr-detail,.d-flr .d-flr-note{fill:var(--ink2)}
+.d-flr .d-flr-link,.d-flr .d-flr-arrow,.d-flr .d-flr-boundary{fill:none;stroke:var(--signal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.d-flr [data-tone=idle] .d-flr-link,.d-flr [data-tone=failed] .d-flr-link{stroke-dasharray:4 5}
+.d-flr [data-tone=idle] .d-flr-link{stroke:var(--ink3)}
+.d-flr .d-flr-block{fill:var(--signal);stroke:var(--surface);stroke-width:1}
+.d-flr .d-flr-token{font-weight:650;fill:#000}
+@media (max-width:640px){
+  .d-flr text{font-size:15px}
+  .d-flr .d-flr-title{font-size:16px}
+}
+@media (641px <= width <= 720px){main[data-station="d-flr"] .mhost{aspect-ratio:var(--ar)}}
+main[data-station="d-flr"] .src li a{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:.2em}

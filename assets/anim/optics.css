@@ -1,0 +1,35 @@
+.optics-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 500 17px var(--f);
+}
+.optics-scene text { fill: var(--ink); dominant-baseline: central; }
+.optics-scene .optics-note { fill: var(--ink2); font-size: 16px; }
+.optics-scene .optics-heading { font-size: 19px; font-weight: 600; }
+.optics-scene .optics-token { fill: var(--ink); font-size: 16px; font-weight: 700; }
+.optics-link { fill: none; stroke: var(--rule2); stroke-width: 2.2; stroke-linejoin: round; }
+.optics-link.optics-optical { stroke: var(--ink2); stroke-width: 3.2; }
+.optics-link.optics-control { stroke: var(--ink3); stroke-dasharray: 4 5; }
+.optics-link.optics-rose { stroke: var(--l1); }
+.optics-link.optics-sage { stroke: var(--l5); }
+.optics-link.optics-fault { stroke: var(--l1); stroke-dasharray: 4 5; }
+.optics-box { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.25; }
+.optics-box.optics-idle { stroke-dasharray: 4 4; }
+.optics-box.optics-fault { stroke: var(--l1); stroke-width: 2; }
+.optics-block { fill: var(--ink2); stroke: var(--surface); stroke-width: 1; }
+.optics-block.optics-rose { fill: color-mix(in srgb, var(--l1) 65%, var(--surface)); stroke: var(--l1); }
+.optics-block.optics-sage { fill: color-mix(in srgb, var(--l5) 65%, var(--surface)); stroke: var(--l5); }
+.optics-scene .optics-token { paint-order: stroke; stroke: var(--surface); stroke-width: 2; }
+@media (641px <= width <= 720px) {
+  .topic-optics .mhost { aspect-ratio: var(--ar); }
+}
+@media (max-width: 640px) {
+  .topic-optics .stage .figbox { margin: 0; }
+  .topic-optics .stage .cap { margin-top: 8px; column-gap: 12px; }
+  .topic-optics .stage h2 { font-size: 24px; line-height: 1.2; }
+  .topic-optics .stage .desc { font-size: 16px; line-height: 1.35; }
+  .optics-scene { font-size: 15px; }
+  .optics-scene .optics-heading { font-size: 17px; }
+  .optics-scene .optics-note, .optics-scene .optics-token { font-size: 14px; }
+}

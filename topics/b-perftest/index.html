@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>perftest：RDMA 带宽与时延 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明用双端 verbs 微基准测量指定 RDMA 操作在给定链路和消息大小下的带宽或时延。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-perftest.css?v=3a2a9a4e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-perftest">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-perftest">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="perftest: RDMA Bandwidth and Latency">perftest：RDMA 带宽与时延</h1>
+        <p class="meta"><span data-en="6 steps · RDMA, Link Throughput, Round-Trip Timing">6 步 · RDMA、链路吞吐、往返时延</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/linux-rdma/perftest/26.07.8/README&quot;&gt;linux-rdma perftest 26.07.8 Methodology and Options&lt;/a&gt;"><a href="https://raw.githubusercontent.com/linux-rdma/perftest/26.07.8/README">linux-rdma perftest 26.07.8 方法与参数</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/linux-rdma/perftest/releases/tag/26.07.8&quot;&gt;linux-rdma perftest 26.07.8 Release&lt;/a&gt;"><a href="https://github.com/linux-rdma/perftest/releases/tag/26.07.8">linux-rdma perftest 26.07.8 发布记录</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-perftest.js?v=9a80ac27"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-perftest",
+ "ar": [
+  2.360248447204969,
+  0.8571428571428571
+ ],
+ "steps": [
+  {
+   "t": [
+    "两端之间的一种操作",
+    "One Operation Between Two Endpoints"
+   ],
+   "d": [
+    "perftest 用 RDMA verbs 生成指定操作的微基准负载。",
+    "perftest generates a microbenchmark load for a selected RDMA verb."
+   ],
+   "b": [
+    [
+     "<p>RDMA（远程直接内存访问）由网卡在端点内存之间传输数据。verbs 是应用提交这些操作的接口。perftest 提供 Write、Read、Send 等独立测试，例如 ib_write_bw 测量 RDMA Write 带宽，ib_write_lat 测量相应时延。</p>"
+    ],
+    [
+     "<p>RDMA, or remote direct memory access, uses adapters to transfer data between endpoint memories. Verbs are the interface applications use to submit the operations. perftest supplies separate Write, Read, and Send tests. For example, ib_write_bw measures RDMA Write bandwidth and ib_write_lat measures latency for that operation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "服务端与客户端配对",
+    "Pairing the Server and Client"
+   ],
+   "d": [
+    "两端运行同一版本及相同测试配置，客户端指定服务端地址。",
+    "Both endpoints use the same version and test settings, and the client specifies the server address."
+   ],
+   "b": [
+    [
+     "<p>服务端先启动，客户端使用同一基准程序连接服务端。-d 指定 RDMA 设备，-i 指定该设备的端口，RoCE 环境中还可能需要 -x 选择 GID 索引。GID 是 RDMA 端口使用的全局标识，所选索引影响连接使用的地址。连接配置与实际数据接口均应写入记录。</p>"
+    ],
+    [
+     "<p>The server starts first, and the client connects with the same benchmark program. -d selects the RDMA device and -i its port. A RoCE setup may also use -x to select the GID index. A GID is a global identifier used by an RDMA port, and its index affects which address is used. Both connection setup and data interface belong in the record.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "消息大小与并发",
+    "Message Size and Concurrency"
+   ],
+   "d": [
+    "消息大小、队列深度、连接数和测量时长影响施加到链路的负载。",
+    "Message size, queue depth, connection count, and duration shape the offered load."
+   ],
+   "b": [
+    [
+     "<p>-s 指定消息字节数，带宽测试可用 -t 设发送队列深度、-q 设队列对数量。队列对是 RDMA 提交与接收工作的端点对象。-D 用持续时间定义运行窗口，也可按迭代次数执行。测试配置改变时，应保留独立记录，避免混用曲线。</p>"
+    ],
+    [
+     "<p>-s sets the message size in bytes. A bandwidth test can use -t for transmit queue depth and -q for the number of queue pairs. A queue pair is an endpoint object for submitting and receiving RDMA work. -D sets a duration window, and iteration-based mode is also available. Configuration changes belong in separate run records.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "带宽结果与流量方向",
+    "Bandwidth and Traffic Direction"
+   ],
+   "d": [
+    "单向由客户端测量，双向带宽由两端分别测量各自发起的流量后合并。",
+    "The client measures unidirectional bandwidth. Bidirectional runs combine traffic initiated and measured at both ends."
+   ],
+   "b": [
+    [
+     "<p>带宽记录需要区分平均与峰值、单向与双向，以及字节每秒或比特每秒。双向结果的合并口径和 nvbandwidth 报告的单方向拷贝带宽不同。可比条件应包含消息大小、持续时间和参与路径。</p>"
+    ],
+    [
+     "<p>Bandwidth records distinguish average from peak, unidirectional from bidirectional, and bytes per second from bits per second. The combined perftest result uses a different reporting basis from nvbandwidth’s per-direction copy result. Comparable runs share message size, duration, and path scope.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "时延是半个往返",
+    "Latency as Half the Round Trip"
+   ],
+   "d": [
+    "时延微基准测往返时间，以往返的一半近似单向时延。",
+    "The latency test measures round-trip time and reports half as an approximation of one-way latency."
+   ],
+   "b": [
+    [
+     "<p>结果中的最小值、中位数和最大值属于这一采样。正反方向条件不对称时，往返时间除以二无法识别任一方向的真实单向时延。集合通信时延还取决于参与方、拓扑与算法。</p>"
+    ],
+    [
+     "<p>The minimum, median, and maximum describe these samples. When directions are asymmetric, halving the round trip cannot identify the true latency in either direction. Collective timing additionally depends on participants, topology, and algorithm.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "微基准的适用范围",
+    "Where a Microbenchmark Applies"
+   ],
+   "d": [
+    "一对端点的合成流量刻画所选路径，实际作业的多流竞争需要另外验证。",
+    "Synthetic traffic between two endpoints characterizes the selected path. Application contention needs separate validation."
+   ],
+   "b": [
+    [
+     "<p>截至 2026-11-23，linux-rdma 最新公开版本为 perftest 26.07.8，发布记录日期为 2026-09-28（UTC）。结果需记录所选 verbs、方向、消息大小和内存类型；主机内存与 GPU 内存走不同路径时应分别测量。</p>"
+    ],
+    [
+     "<p>As of 2026-11-23, the latest public linux-rdma release is perftest 26.07.8, dated 2026-09-28 UTC. The chosen verb, direction, size, and memory type define the result. Host and GPU memory paths are measured separately when the data path differs.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+.b-goodput-scene { display: block; width: 100%; height: auto; }
+.b-goodput-scene text {
+  fill: var(--ink);
+  font: 500 20px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.b-goodput-scene .b-goodput-note { fill: var(--ink2); font-size: 17px; }
+.b-goodput-scene .b-goodput-box { fill: var(--bg); stroke: var(--ink3); stroke-width: 1.4; }
+.b-goodput-scene .b-goodput-line { fill: none; stroke: var(--ink3); stroke-width: 1.5; stroke-linejoin: round; }
+.b-goodput-scene .b-goodput-guide { stroke-dasharray: 4 5; }
+.b-goodput-scene .b-goodput-token { fill: var(--ink2); }
+
+@media (max-width: 720px) {
+  body.topic-b-goodput .mhost { aspect-ratio: var(--ar); }
+  body.topic-b-goodput.present .stage .figbox { margin-block: 0; }
+}
+@media (max-width: 640px) {
+  body.topic-b-goodput .mhost { aspect-ratio: var(--arm); }
+  .b-goodput-scene text { font-size: 18px; }
+}
+
+@media (max-width: 440px) {
+  body.topic-b-goodput .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-goodput .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}
+
+.b-goodput-scene .b-goodput-pass { stroke: var(--l5); stroke-width: 2.5; }
+.b-goodput-scene .b-goodput-miss { stroke: var(--l1); stroke-width: 2.5; stroke-dasharray: 5 3; }
+.b-goodput-scene .b-goodput-pass-dot { fill: var(--l5); stroke: var(--ink2); }
+.b-goodput-scene .b-goodput-miss-dot { fill: var(--bg); stroke: var(--l1); stroke-width: 3; }

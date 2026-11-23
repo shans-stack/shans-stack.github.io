@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>元数据服务：从文件路径到数据位置 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明文件元数据如何解析路径、协调访问，以及元数据负载与故障切换如何影响文件服务。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/meta.css?v=1236fe7c">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="meta">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Metadata Services: From File Paths to Data Locations">元数据服务：从文件路径到数据位置</h1>
+        <p class="meta"><span data-en="6 steps · Namespaces, file layout, failover">6 步 · 命名空间、文件布局、故障切换</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html&quot;&gt;Apache HDFS Architecture and Metadata Persistence&lt;/a&gt;"><a href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html">Apache HDFS 架构与元数据持久化</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.ceph.com/en/squid/cephfs/&quot;&gt;CephFS Architecture and Data Path&lt;/a&gt;"><a href="https://docs.ceph.com/en/squid/cephfs/">CephFS 架构与数据路径</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.ceph.com/en/squid/cephfs/multimds/&quot;&gt;CephFS Multiple Active Metadata Servers&lt;/a&gt;"><a href="https://docs.ceph.com/en/squid/cephfs/multimds/">CephFS 多活跃元数据服务</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.ceph.com/en/squid/cephfs/dynamic-metadata-management/&quot;&gt;CephFS Directory Subtree Assignment&lt;/a&gt;"><a href="https://docs.ceph.com/en/squid/cephfs/dynamic-metadata-management/">CephFS 目录子树分配</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.ceph.com/en/squid/cephfs/standby/&quot;&gt;CephFS Standbys and Failover&lt;/a&gt;"><a href="https://docs.ceph.com/en/squid/cephfs/standby/">CephFS 备用实例与故障切换</a></li>
+      <li data-en="&lt;a href=&quot;https://io500.org/about&quot;&gt;mdtest Operations in IO500&lt;/a&gt;"><a href="https://io500.org/about">IO500 的 mdtest 操作</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/meta.js?v=8ea55c1d"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "meta",
+ "ar": [
+  2.5714285714285716,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "解析文件路径",
+    "Resolving a File Path"
+   ],
+   "d": [
+    "元数据服务根据目录层级解析路径，并识别路径所指的文件。",
+    "The metadata service resolves a path through the directory hierarchy and identifies the file it names."
+   ],
+   "b": [
+    [
+     "<p>文件系统的命名空间是文件与目录组成的可见层级。元数据描述文件的名称、归属、权限、大小和数据布局等信息。客户端提交路径时，文件系统沿目录查找，并按访问规则判断相应操作能否进行。</p>"
+    ],
+    [
+     "<p>A file system namespace is the visible hierarchy of files and directories. Metadata describes information such as names, ownership, permissions, size, and data layout. When a client supplies a path, the file system looks up its directory entries and applies the relevant access rules.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "查询布局后读取数据",
+    "Looking Up Layout Before Reading Data"
+   ],
+   "d": [
+    "客户端先查询文件布局，再向数据服务读取内容。",
+    "The client looks up the file layout, then reads the contents from the data service."
+   ],
+   "b": [
+    [
+     "<p>布局描述文件的各段内容位于何处。以 HDFS 为例，NameNode 管理命名空间和数据块到 DataNode 的映射。获得块位置后，客户端直接从相应的 DataNode 读取数据。另一些分布式文件系统也采用这种设计，将目录与权限操作和文件内容传输分开。</p>"
+    ],
+    [
+     "<p>A layout describes where ranges of file contents reside. In HDFS, the NameNode manages the namespace and maps blocks to DataNodes. With the block locations in hand, the client reads from the relevant DataNodes directly. Other distributed file systems also use this design to separate directory and permission operations from file content transfers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "记录命名空间变更",
+    "Recording Namespace Changes"
+   ],
+   "d": [
+    "创建、删除和重命名会更新命名空间，这些变更可以写入日志以供恢复。",
+    "Creates, deletes, and renames change the namespace, and those changes can be journaled for recovery."
+   ],
+   "b": [
+    [
+     "<p>重命名改变目录条目中的名称。在采用元数据日志的实现中，服务将变更记录为可重放的操作。元数据日志记录的是状态变化，例如 HDFS 的 EditLog 记录文件系统元数据的更改，CephFS 的元数据服务则将变更写入后端对象存储中的日志。</p>"
+    ],
+    [
+     "<p>A rename changes a directory entry. In implementations that journal metadata, the service records changes as operations it can replay. A metadata journal captures changes to state. For example, the HDFS EditLog records changes to file system metadata, and CephFS metadata servers journal their changes in the backing object store.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "小文件为何增加元数据负载",
+    "Why Small Files Raise Metadata Load"
+   ],
+   "d": [
+    "同样的数据量分散到更多文件时，逐文件操作会使元数据请求更加密集。",
+    "Splitting the same volume of data across more files can produce more metadata requests when each file is accessed separately."
+   ],
+   "b": [
+    [
+     "<p>连续读取一个大文件时，应用通常可以在打开文件后读取大量内容。逐个打开小文件、查询属性或遍历目录时，每次操作涉及的数据较少，应用进度更依赖元数据操作时延和每秒完成次数。mdtest 将创建、属性查询和删除等操作分开测量，可用于识别这种负载。</p>"
+    ],
+    [
+     "<p>A sequential read of one large file can transfer substantial data after the file is opened. Opening small files individually, querying attributes, or traversing directories moves little data per operation. Progress then depends more on metadata latency and the number of operations completed per second. mdtest measures operations such as create, attribute lookup, and delete separately.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "多个服务分担命名空间",
+    "Sharing the Namespace Across Servers"
+   ],
+   "d": [
+    "部分文件系统将不同目录子树交给多个活跃服务处理，以分摊并发请求。",
+    "Some file systems assign different directory subtrees to active servers to share concurrent requests."
+   ],
+   "b": [
+    [
+     "<p>目录子树是某个目录及其下的文件和目录。CephFS 可以配置多个活跃元数据服务分担这些操作，访问不同目录的并发客户端可能受益。集中访问同一目录的负载仍可能集中在处理该目录的服务上，收益取决于请求的分布。</p>"
+    ],
+    [
+     "<p>A directory subtree is a directory and its descendants. CephFS can run multiple active metadata servers to share these operations, which can benefit concurrent clients working in different directories. Activity concentrated in one directory can still concentrate load on its serving process, so gains depend on how requests are distributed.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "故障切换恢复服务",
+    "Restoring Service Through Failover"
+   ],
+   "d": [
+    "活跃服务失效后，备用实例接管其职责，并利用持久化状态恢复元数据服务。",
+    "When an active server fails, a standby takes over its role and uses persistent state to recover metadata service."
+   ],
+   "b": [
+    [
+     "<p>故障切换是将失效实例的服务职责移交给可用实例。以 CephFS 为例，监控服务可提升备用元数据实例接管失效角色。配置日志跟随的备用实例可提前跟进活跃实例的日志，以缩短恢复所需的重放过程。</p>"
+    ],
+    [
+     "<p>Failover transfers a failed instance’s serving role to an available instance. In CephFS, the monitors can promote a standby metadata server to take over a failed role. A standby configured to follow the active server’s journal can replay it in advance to reduce recovery work.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

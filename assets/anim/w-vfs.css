@@ -1,0 +1,36 @@
+.ssa-w-vfs{--path:var(--l4);--data:var(--l5);--signal:var(--l3);--warn:var(--l1)}
+.ssa-w-vfs svg{display:block;width:100%;height:auto;overflow:visible}
+.ssa-w-vfs-body{fill:var(--bg);stroke:var(--rule2);stroke-width:1.2}
+.ssa-w-vfs-card[data-tone=store] .ssa-w-vfs-body{fill:color-mix(in srgb,var(--data) 8%,var(--bg))}
+.ssa-w-vfs-label,.ssa-w-vfs-detail,.ssa-w-vfs-note{font-family:var(--f);dominant-baseline:central;text-anchor:middle}
+.ssa-w-vfs-label{fill:var(--ink);font-size:19px;font-weight:600}
+.ssa-w-vfs-detail,.ssa-w-vfs-note{fill:var(--ink2);font-size:16px}
+.ssa-w-vfs-card[data-state=on] .ssa-w-vfs-body{stroke:var(--data);stroke-width:2}
+.ssa-w-vfs-card[data-state=on] .ssa-w-vfs-detail{fill:var(--ink);font-weight:600}
+.ssa-w-vfs-card[data-state=idle] .ssa-w-vfs-body{stroke-dasharray:4 4}
+.ssa-w-vfs-card[data-state=idle] .ssa-w-vfs-label{fill:var(--ink2)}
+.ssa-w-vfs-chip{fill:var(--data)}
+.ssa-w-vfs-chip[data-color=""]{visibility:hidden}
+.ssa-w-vfs-chip[data-color=B]{fill:var(--path)}
+.ssa-w-vfs-chip[data-color=R]{fill:var(--warn)}
+.ssa-w-vfs-wire{fill:none;stroke:var(--rule2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ssa-w-vfs-arrow{fill:var(--rule2)}
+.ssa-w-vfs-wire[data-kind=control]{stroke-dasharray:5 4}
+.ssa-w-vfs-wire.ssa-w-vfs-done{stroke:var(--data)}
+.ssa-w-vfs-arrow.ssa-w-vfs-done,.ssa-w-vfs-packet{fill:var(--data)}
+.ssa-w-vfs-wire.ssa-w-vfs-done[data-kind=control]{stroke:var(--path)}
+.ssa-w-vfs-arrow.ssa-w-vfs-done[data-kind=control],.ssa-w-vfs-packet[data-kind=control]{fill:var(--path)}
+.ssa-w-vfs-wire.ssa-w-vfs-done[data-kind=signal]{stroke:var(--signal)}
+.ssa-w-vfs-arrow.ssa-w-vfs-done[data-kind=signal],.ssa-w-vfs-packet[data-kind=signal]{fill:var(--signal)}
+@media(min-width:641px) and (max-width:720px){
+  .topic-w-vfs .mhost{aspect-ratio:var(--ar)}
+}
+@media(max-width:640px){
+  .ssa-w-vfs-label{font-size:16px}
+  .ssa-w-vfs-detail,.ssa-w-vfs-note{font-size:15px}
+  .topic-w-vfs.present .stage .figbox{margin:0}
+  .topic-w-vfs.present .stage .cap{grid-template-columns:1fr;gap:4px;margin-top:8px}
+  .topic-w-vfs.present .stage .cnt{grid-row:auto;font-size:14px;line-height:1.2}
+  .topic-w-vfs.present .stage h2{font-size:24px;line-height:1.25}
+  .topic-w-vfs.present .stage .desc{font-size:17px;line-height:1.45}
+}

@@ -30,18 +30,12 @@
       return node;
     }
 
-    function box(wide, mobile, title, rows, brand) {
+    function box(wide, mobile, title, rows) {
       const [x, y, w] = narrow.matches ? mobile : wide;
       const h = 42 + rows.length * 34;
       const g = el('g', {}, boxes);
       el('rect', { x, y, width: w, height: h, rx: 4, class: 'v-catalog-outline' }, g);
-      const heading = label(g, x + 14, y + 22, title, 'v-catalog-heading');
-      if (brand) {
-        for (const [theme, file] of [['light', 'black'], ['dark', 'white']]) {
-          el('image', { x: x + 24 + heading.getComputedTextLength(), y: y + 16.5, width: 52, height: 11.03, class: 'v-catalog-logo-' + theme,
-            href: window.SS.url('assets/brand/vast-wordmark-' + file + '.svg') }, g);
-        }
-      }
+      label(g, x + 14, y + 22, title, 'v-catalog-heading');
       const lines = rows.map((value, i) => {
         const top = y + 42 + i * 34;
         const row = el('g', { class: 'v-catalog-row' }, g);
@@ -106,7 +100,7 @@
           ['对象　frame.jpg', 'Object · frame.jpg'],
           ['目录　/images/', 'Directory · /images/']
         ]);
-        const catalog = box([546, 86, 248], [54, 225, 252], 'Catalog', ['—', '—', '—'], true);
+        const catalog = box([546, 86, 248], [54, 225, 252], 'Catalog', ['—', '—', '—']);
         const entries = ['cover.png · FILE', 'frame.jpg · FILE', 'images · DIR'];
 
         catalog.lines.forEach((line, i) => {
@@ -125,7 +119,7 @@
       function freshness() {
         const namespace = box([31, 97, 221], [52, 20, 256], ['命名空间', 'Namespace'], ['cover.png', '—']);
         const snapshot = box([330, 97, 220], [52, 149, 256], ['定期快照', 'Scheduled snapshot'], ['cover.png', '—']);
-        const catalog = box([628, 97, 221], [52, 278, 256], 'Catalog', ['cover.png', '—'], true);
+        const catalog = box([628, 97, 221], [52, 278, 256], 'Catalog', ['cover.png', '—']);
         const capture = link(namespace, snapshot);
         const index = link(snapshot, catalog);
 
@@ -147,7 +141,7 @@
       function query() {
         const catalog = box([76, 86, 277], [38, 24, 284], 'Catalog', [
           '/images/cover.png', '/images/frame.jpg', '/logs/trace.txt'
-        ], true);
+        ]);
         const result = box([552, 86, 250], [55, 229, 250], ['查询结果', 'Query result'], [
           'search_path = /images/', ['扩展名 = PNG', 'Extension = PNG'], '—'
         ]);
@@ -169,7 +163,7 @@
         ]);
         const catalog = box([546, 102, 248], [54, 224, 252], 'Catalog', [
           'frame.jpg', 'tag_processed = —'
-        ], true);
+        ]);
         const path = link(object, catalog, [['right', 93], ['left', 93]]);
         mark(object.lines[1], 'v-catalog-scope', 0.65);
         flow(path, 0.65, 2.15);
@@ -181,7 +175,7 @@
       function compare() {
         const earlier = box([105, 82, 266], [47, 25, 266], ['旧版 Catalog', 'Earlier Catalog'], [
           '/images/cover.png', '/images/old.png', '—'
-        ], true);
+        ]);
         const later = box([509, 82, 266], [47, 226, 266], ['新版 Catalog', 'Later Catalog'], [
           '/images/cover.png', '—', '/images/frame.jpg'
         ]);

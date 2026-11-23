@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>按 Token 计量计费 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明把请求的输入、输出和适用的缓存用量归到调用方，再按周期核算费用并执行独立的速率配额。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-meter.css?v=6e1de945">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-meter">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-meter">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Token Metering and Billing">按 Token 计量计费</h1>
+        <p class="meta"><span data-en="5 steps · Usage Events, Billing Aggregation, Rate Quotas">5 步 · 用量事件、账单归集、速率配额</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html&quot;&gt;AWS Amazon Bedrock · Converse API and Token Usage&lt;/a&gt;"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html">AWS Amazon Bedrock · Converse 接口与 Token 用量</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html&quot;&gt;AWS Amazon Bedrock · Model Invocation Logging&lt;/a&gt;"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html">AWS Amazon Bedrock · 调用日志</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.stripe.com/billing/subscriptions/usage-based/recording-usage-api&quot;&gt;Stripe Billing · Meter Events and Idempotency&lt;/a&gt;"><a href="https://docs.stripe.com/billing/subscriptions/usage-based/recording-usage-api">Stripe Billing · 用量事件与幂等</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/cost-mgmt-request-metadata.html&quot;&gt;AWS Amazon Bedrock · Computing Cost by Usage Category&lt;/a&gt;"><a href="https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/cost-mgmt-request-metadata.html">AWS Amazon Bedrock · 按类别归集成本</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/quotas-token-burndown.html&quot;&gt;AWS Amazon Bedrock · Token Counts for Quotas&lt;/a&gt;"><a href="https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/quotas-token-burndown.html">AWS Amazon Bedrock · 配额中的 Token 计数</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-meter.js?v=12abad91"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-meter",
+  "ar": [880/302, 350/462],
+  "steps": [
+    {
+      "t": [
+        "分开计量输入和输出",
+        "Counting Input and Output Separately"
+      ],
+      "d": [
+        "推理服务分别记录送入模型的 Token 和模型生成的 Token。",
+        "The inference service records tokens passed into the model separately from tokens it generates."
+      ],
+      "b": [
+        [
+          "<p>Token 是模型处理文字的离散单位。输入计量涵盖服务传入模型的内容，例如提示和对话历史；输出计量记录模型生成的用量。不同模型和接口使用各自的计量定义。AWS 的 Amazon Bedrock Converse 接口返回输入与输出用量，并可报告提示缓存读取和写入的 Token。</p>"
+        ],
+        [
+          "<p>A token is a discrete unit a model uses to process text. Input metering covers material the service sends to the model, such as prompts and conversation history. Output metering records generated usage. Models and APIs define their own accounting rules. The Amazon Bedrock Converse API from AWS returns input and output usage and can report tokens read from or written to the prompt cache.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "生成可归属的用量事件",
+        "Creating Attributable Usage Events"
+      ],
+      "d": [
+        "用量事件关联实际计数、请求标识、时间和调用方。",
+        "A usage event ties measured counts to a request identifier, a timestamp, and a caller."
+      ],
+      "b": [
+        [
+          "<p>用量事件是一条用于汇总的记录。服务可以附上模型标识、租户或团队，以及触发计量的时间。租户是在共享平台上独立归属用量的组织范围。AWS 在 Amazon Bedrock 调用日志中记录请求标识和模型标识，并支持将请求元数据用于团队级归集。</p>"
+        ],
+        [
+          "<p>A usage event is a record used for aggregation. It can include a model identifier, a tenant or team, and the time associated with the usage. A tenant is an organizational scope for attributing usage on a shared platform. AWS records request and model identifiers in Amazon Bedrock invocation logs and supports request metadata for team-level aggregation.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "重送用量事件时去重",
+        "Deduplicating Retried Usage Events"
+      ],
+      "d": [
+        "同一用量事件重送时沿用唯一标识，避免同一笔用量被累计多次。",
+        "Retries reuse the usage event’s unique identifier so the same usage is counted once."
+      ],
+      "b": [
+        [
+          "<p>事件从推理服务交给用量账本时，可能因超时而重送。账本按事件标识去重。幂等是指重复提交同一事件，汇总结果与提交一次相同。Stripe 的用量记录接口采用事件标识和幂等键防止重复报告。一个新执行的推理请求可以产生新的用量记录。</p>"
+        ],
+        [
+          "<p>Usage events sent from an inference service to a usage ledger may be retried after a timeout. The ledger deduplicates by event identifier. Idempotency means resubmitting the same event has the same effect on the total as submitting it once. Stripe’s usage recording API uses event identifiers and idempotency keys to prevent duplicate reporting. A new inference execution can produce a new usage event.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "按账期和类别核算",
+        "Calculating Charges by Period and Category"
+      ],
+      "d": [
+        "先按租户、模型、账期和用量类别汇总，再对各类别应用相应费率。",
+        "Aggregate by tenant, model, billing period, and usage category, then apply the rate for each category."
+      ],
+      "b": [
+        [
+          "<p>按量计费时，各类别的费用等于该类别的用量乘以对应费率，账期的按量费用为各项之和。缓存读取和写入可以有独立字段。分类时以接口定义为准，避免把总量和属于该总量的子项重复相加。逐笔用量记录提供账期汇总的对账依据。</p>"
+        ],
+        [
+          "<p>For usage-based billing, each category’s charge is its metered quantity multiplied by the applicable rate. The usage-based charge for the period is the sum across categories. Cache reads and writes can have separate fields. The API’s category definitions determine whether counts are disjoint or already included in a total. Individual usage records provide a basis for reconciling period totals.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "将速率配额用于请求准入",
+        "Applying Rate Quotas at Admission"
+      ],
+      "d": [
+        "账单汇总已记录用量，速率配额在短窗口内控制模型调用。",
+        "Billing aggregates recorded usage, while a rate quota controls calls in a short time window."
+      ],
+      "b": [
+        [
+          "<p>速率配额规定一段时间内可消耗的用量。平台可以在请求开始时预留预计用量，完成后再按实际用量调整配额占用。AWS 的 Amazon Bedrock 按模型在请求处理前后计算配额占用。账单和配额都可以归到同一调用方，但各自采用独立的窗口和规则。</p>"
+        ],
+        [
+          "<p>A rate quota limits how much usage can be consumed over an interval. A platform can reserve estimated usage at admission and adjust the reservation once actual usage is known. AWS calculates Amazon Bedrock quota consumption by model before and after processing a request. Billing and quota can refer to the same caller while using their own windows and rules.</p>"
+        ]
+      ]
+    }
+  ]
+};
+document.addEventListener('ss-lang', () => {
+  document.querySelector('meta[name=description]').content = [
+  "分 5 步说明把请求的输入、输出和适用的缓存用量归到调用方，再按周期核算费用并执行独立的速率配额。",
+  "5 steps on AI token factories. Attribute input, output, and applicable cache usage to the caller, aggregate charges by billing period, and enforce separate rate quotas."
+][window.SS.lang() === 'en' ? 1 : 0];
+  const english = window.SS.lang() === 'en';
+  const controls = document.querySelector('.nav .langs');
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  const labels = english ? ['ZH-CN', 'ZH-TW'] : ['简', '繁'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese'] : ['简体中文', '繁體中文'];
+  controls.querySelectorAll('button:not([data-lang-set=en])').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant'][i];
+  });
+});
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

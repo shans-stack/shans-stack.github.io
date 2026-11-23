@@ -47,6 +47,7 @@ p{text-wrap:pretty;margin:0}
 .mapbox{margin-top:20px}
 .metro{display:block;width:100%;height:auto;font-family:var(--f);overflow:visible}
 .metro .ln{fill:none;stroke-width:8;stroke-linecap:butt}
+.metro .lnb{stroke-width:6;stroke-dasharray:10 7}
 .metro .ln,.metro .gut,.metro .stn{transition:opacity .2s}
 .metro .gname{font-size:14px;font-weight:500;fill:var(--ink2)}
 .metro .st{fill:var(--bg);stroke:var(--ink);stroke-width:3}
@@ -376,3 +377,6 @@ a.tm:hover h3{text-decoration:underline}
 /* 站与站之间的虚线连接 */
 .metro .lk{stroke:var(--ink2);stroke-width:2.5;stroke-dasharray:5 5;fill:none}
 .pop .pop-k{font-size:14px;color:var(--ink2);margin-top:6px}
+
+/* 动画里不放厂商字标（2026-11-23 定）：厂商部件改用颜色区分，字标统一隐藏。页头与面包屑的 logo 不受影响。 */
+svg image[href*="assets/brand/"],svg use[href*="-wm"],svg use[href*="logo"],img[class$="-mark"][src*="brand/"],[class*="logo-backing"],svg .vlogo,svg .nvbk{display:none!important}

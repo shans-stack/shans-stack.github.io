@@ -1,0 +1,35 @@
+.b-fio-scene { display: block; width: 100%; height: auto; }
+.b-fio-scene text {
+  fill: var(--ink);
+  font: 500 18px var(--f);
+  dominant-baseline: central;
+}
+.b-fio-scene .b-fio-note { fill: var(--ink2); }
+.b-fio-scene .b-fio-box,
+.b-fio-scene .b-fio-accent,
+.b-fio-scene .b-fio-quiet {
+  fill: var(--bg);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.b-fio-scene .b-fio-accent { stroke: var(--lc); stroke-width: 2; }
+.b-fio-scene .b-fio-quiet { stroke-dasharray: 4 4; }
+.b-fio-scene .b-fio-line,
+.b-fio-scene .b-fio-guide,
+.b-fio-scene .b-fio-active {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.b-fio-scene .b-fio-guide { stroke-dasharray: 4 4; }
+.b-fio-scene .b-fio-active { stroke: var(--lc); stroke-width: 3; }
+.b-fio-scene .b-fio-token { fill: var(--lc); }
+.b-fio-scene .b-fio-alt { fill: var(--ink2); }
+body.topic-b-fio .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-fio .mhost { aspect-ratio: var(--arm); }
+  body.topic-b-fio.present .stage .figbox { margin-block: 0; }
+  .b-fio-scene text { font-size: 16px; }
+}

@@ -21,3 +21,6 @@
 .mh-lg{--L:16px}
 .cr-lg{--L:10px;margin-left:auto}
 @media (max-width:720px){.mh-lg{--L:13px}}
+
+/* 动画里不放厂商字标（2026-11-23 定）：厂商部件改用颜色区分，字标统一隐藏。页头与面包屑的 logo 不受影响。 */
+svg image[href*="assets/brand/"],svg use[href*="-wm"],svg use[href*="logo"],img[class$="-mark"][src*="brand/"],[class*="logo-backing"],svg .vlogo,svg .nvbk{display:none!important}

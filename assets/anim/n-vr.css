@@ -1,0 +1,24 @@
+.n-vr-figure svg{display:block;width:100%;height:auto;font-family:var(--f);font-size:18px}
+.n-vr-figure text{fill:var(--ink);text-anchor:middle;dominant-baseline:central;font-weight:500}
+.n-vr-figure .n-vr-start{text-anchor:start}
+.n-vr-figure .n-vr-heading{font-size:21px;font-weight:650}
+.n-vr-figure .n-vr-secondary,.n-vr-figure .n-vr-note{fill:var(--ink2);font-size:16px}
+.n-vr-figure .n-vr-panel{fill:var(--bg);stroke:var(--rule2);stroke-width:1.5}
+.n-vr-figure .n-vr-boundary{fill:none;stroke:var(--rule2);stroke-width:1.5;stroke-dasharray:6 4}
+.n-vr-figure .n-vr-accent,.n-vr-figure .n-vr-active{stroke:var(--l4);stroke-width:2}
+.n-vr-figure .n-vr-active{fill:color-mix(in srgb,var(--l4) 17%,var(--bg))}
+.n-vr-figure .n-vr-wire{fill:none;stroke:var(--ink3);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.n-vr-figure .n-vr-external{stroke:var(--l6)}
+.n-vr-figure .n-vr-block{fill:var(--l4);stroke:var(--surface);stroke-width:1}
+@media(max-width:640px){
+  .n-vr-figure svg{font-size:16px}
+  .n-vr-figure .n-vr-heading{font-size:18px}
+  .n-vr-figure .n-vr-secondary,.n-vr-figure .n-vr-note{font-size:14px}
+  body.topic-n-vr.present .stage .figbox{margin:0}
+  body.topic-n-vr.present .stage .cap{margin:0}
+  body.topic-n-vr.present .stage h2{font-size:24px}
+  body.topic-n-vr.present .stage .desc{font-size:17px;line-height:1.5}
+}
+@media(640px < width <=720px){
+  body.topic-n-vr .mhost{aspect-ratio:var(--ar)}
+}

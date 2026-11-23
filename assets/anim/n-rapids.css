@@ -1,0 +1,54 @@
+.n-rapids-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  font-family: var(--f);
+  --data: var(--l5);
+  --control: var(--l4);
+  --miss: var(--l1);
+}
+.n-rapids-scene text { font-size: 18px; fill: var(--ink); }
+.n-rapids-scene .n-rapids-label { font-weight: 600; }
+.n-rapids-scene .n-rapids-detail { font-size: 16px; fill: var(--ink2); }
+.n-rapids-card {
+  fill: var(--surface);
+  stroke: var(--rule2);
+  stroke-width: 1.5;
+}
+.n-rapids-active .n-rapids-card, .n-rapids-ready .n-rapids-card {
+  fill: color-mix(in srgb, var(--data) 12%, var(--surface));
+  stroke: var(--data);
+}
+.n-rapids-idle .n-rapids-card { stroke-dasharray: 4 4; }
+.n-rapids-idle .n-rapids-label { fill: var(--ink2); }
+.n-rapids-miss .n-rapids-card { stroke: var(--miss); }
+.n-rapids-line, .n-rapids-arrow {
+  fill: none;
+  stroke: var(--data);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.n-rapids-line.n-rapids-control { stroke-dasharray: 5 5; }
+.n-rapids-line.n-rapids-miss { stroke-dasharray: 2 4; }
+.n-rapids-line.n-rapids-control, .n-rapids-arrow.n-rapids-control { stroke: var(--control); }
+.n-rapids-line.n-rapids-miss, .n-rapids-arrow.n-rapids-miss { stroke: var(--miss); }
+.n-rapids-line.n-rapids-idle, .n-rapids-arrow.n-rapids-idle { stroke: var(--rule2); }
+.n-rapids-token { fill: var(--data); }
+.n-rapids-token.n-rapids-control { fill: var(--control); }
+.n-rapids-token.n-rapids-miss { fill: var(--miss); }
+@media (max-width: 640px) {
+  .n-rapids-scene .n-rapids-label { font-size: 17px; }
+  .n-rapids-scene .n-rapids-detail { font-size: 16px; }
+}
+@media (min-width: 641px) and (max-width: 720px) {
+  .topic-n-rapids .mhost { aspect-ratio: var(--ar); }
+}
+.n-rapids-key { fill: color-mix(in srgb, var(--control) 23%, var(--surface)); }
+.n-rapids-value { fill: color-mix(in srgb, var(--data) 29%, var(--surface)); }
+.n-rapids-line.n-rapids-column, .n-rapids-arrow.n-rapids-column { stroke: var(--control); }
+.n-rapids-token.n-rapids-column { fill: var(--control); }
+.n-rapids-tile { fill: var(--data); stroke: var(--data); }
+.n-rapids-copy { fill: none; }
+.n-rapids-ready .n-rapids-copy { fill: var(--data); }

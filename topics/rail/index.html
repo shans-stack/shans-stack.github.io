@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>轨道优化：让同轨流量留在接入层 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明轨道优化：让同轨流量留在接入层。按 GPU 与网卡的亲和关系把各节点的对应端口接到同一组 Leaf，使同轨流量优先留在接入层。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/rail.css?v=3684ffe7">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-rail">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="rail">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Rail Optimization: Keeping Same-Rail Traffic at the Leaf">轨道优化：让同轨流量留在接入层</h1>
+        <p class="meta"><span data-en="5 steps · GPU affinity, leaf switches, collectives">5 步 · GPU 亲和性、Leaf、集合通信</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.opencompute.org/documents/ocp-open-cluster-designs-aligned-ai-training-fabric-ra-pdf&quot;&gt;OCP · AI Training Fabric Reference Architecture, Section 5&lt;/a&gt;"><a href="https://www.opencompute.org/documents/ocp-open-cluster-designs-aligned-ai-training-fabric-ra-pdf">OCP · AI 训练网络参考架构，第 5 节轨道优化</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html#nccl-cross-nic&quot;&gt;NCCL User Guide · Cross-NIC Policy&lt;/a&gt;"><a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html#nccl-cross-nic">NCCL 用户指南 · 跨网卡策略</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/rail.js?v=8bbce37b"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "rail",
+ "ar": [
+  2.021276595744681,
+  0.6792452830188679
+ ],
+ "steps": [
+  {
+   "t": [
+    "GPU 与网卡的亲和关系",
+    "GPU-to-NIC Affinity"
+   ],
+   "d": [
+    "每台节点按本地 PCIe 拓扑，把一组 GPU 与合适的网卡端口对应起来。",
+    "Each node maps GPUs to suitable NIC ports based on its local PCIe topology."
+   ],
+   "b": [
+    [
+     "<p>轨道优化从节点内开始。这里的亲和性指 GPU 到网卡之间的拓扑邻近关系，例如经同一组 PCIe 交换路径连接。轨道编号用来标识跨节点相对应的一组端口。编号本身只是布线和通信软件约定的标识。</p>"
+    ],
+    [
+     "<p>Rail optimization begins inside the node. Affinity describes how closely a GPU and a NIC are connected in the local topology, for example through the same PCIe switching path. A rail index identifies a set of corresponding ports across nodes. It is an identifier used by cabling plans and communication software.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "对应端口接入同轨 Leaf",
+    "Matching Ports Share a Rail Leaf"
+   ],
+   "d": [
+    "不同节点上对应轨道的端口接到同一台 Leaf，规模扩大时可接到同一组 Leaf。",
+    "Corresponding ports on different nodes attach to one leaf per rail, or to a group of leaves at larger scale."
+   ],
+   "b": [
+    [
+     "<p>Leaf 是直接连接服务器的接入交换机。轨道优化为各轨道预先分配 Leaf 下联端口。只要两个同轨端口在同一台 Leaf 上，它们的流量就可以由这台交换机转发。OCP 的训练网络参考架构也允许一个轨道使用一组 Leaf。</p>"
+    ],
+    [
+     "<p>A leaf is an access switch that directly connects to servers. Rail optimization assigns leaf downlinks to specific rails. If two ports on the same rail share one leaf, that switch alone can forward their traffic. The OCP training fabric reference architecture also allows a rail to span a group of leaves.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "同轨与跨轨转发",
+    "Same-Rail and Cross-Rail Forwarding"
+   ],
+   "d": [
+    "同一 Leaf 内的流量走接入交换机，跨 Leaf 流量仍可借助上层 Spine。",
+    "Traffic within a leaf stays on that switch. Traffic between leaves can use a spine."
+   ],
+   "b": [
+    [
+     "<p>Spine 是在接入层之上互连 Leaf 的交换机。在轨道优化的两层 Clos 网络中，同轨且同 Leaf 的流量可以留在接入层。若目的端口在另一台 Leaf，例如同轨跨接入组或图中的跨轨通信，路径可经上层 Spine。</p>"
+    ],
+    [
+     "<p>A spine is a switch that interconnects leaves above the access layer. In a rail-optimized two-tier Clos network, traffic on the same rail and leaf can stay at the access layer. When the destination port sits on another leaf, such as across leaf groups within a rail or across rails as shown, the path can use a spine.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "集合通信如何利用轨道",
+    "How Collectives Use Rails"
+   ],
+   "d": [
+    "通信库可让同一个通信环或树优先使用各节点上相对应的网卡。",
+    "A communication library can prefer the corresponding NICs across nodes for a given ring or tree."
+   ],
+   "b": [
+    [
+     "<p>集合通信指一组进程共同完成的数据交换或归约。物理布线提供了局部路径，通信库选用对应端口时才能利用它。以开源 NCCL 为例，跨网卡策略可以让一个环或树优先使用相同轨道，具体行为还取决于参与通信的 GPU 与拓扑。</p>"
+    ],
+    [
+     "<p>A collective is an exchange or reduction carried out by a group of processes. Cabling makes a local path available, and the library uses that locality by choosing corresponding ports. In open-source NCCL, the cross-NIC policy can favor keeping a ring or tree on the same rail. Actual behavior also depends on participating GPUs and topology.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "轨道扩展到多个接入组",
+    "Extending a Rail Across Leaf Groups"
+   ],
+   "d": [
+    "同一轨道分布到多台 Leaf 后，同轨流量也可能使用上联。",
+    "When a rail spans multiple leaves, some same-rail traffic uses uplinks."
+   ],
+   "b": [
+    [
+     "<p>同轨描述的是端口分组。同 Leaf 描述的是交换机位置。图中两个端口仍属于轨道 A，但进入不同的接入交换机，流量因此经 Spine 转发。上联需要承载多少流量，取决于端口布线与实际通信模式。</p>"
+    ],
+    [
+     "<p>Same rail describes the port grouping. Same leaf describes switch placement. In the diagram, both ports still belong to rail A but attach to different leaves, so traffic is forwarded through a spine. Uplink demand depends on the port map and actual communication pattern.</p>"
+    ]
+   ]
+  }
+ ]
+};
+
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH', 'TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

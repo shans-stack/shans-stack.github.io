@@ -50,6 +50,3 @@
 .v-scm .v-scm-btn[hidden]{display:block;opacity:0;pointer-events:none}
 @media (max-width:640px){.v-scm .v-scm-btn{font-size:14px;padding:6px 12px}}
 .v-scm .ackdot{fill:var(--sage);stroke:var(--card);stroke-width:2}
-.v-scm .vwm{fill:#000000}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .v-scm .vwm{fill:#FFFFFF}}
-:root[data-theme="dark"] .v-scm .vwm{fill:#FFFFFF}

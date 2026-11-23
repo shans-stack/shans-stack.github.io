@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LNet：Lustre 网络层 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 LNet：Lustre 网络层。LNet 承载 Lustre 通信，通过网络驱动、端点标识、路由和 Multi-Rail 连接客户端与服务端。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-lnet.css?v=07510b95">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-lnet">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="LNet: The Lustre Network Layer">LNet：Lustre 网络层</h1>
+        <p class="meta"><span data-en="5 steps · Networking, NID, Multi-Rail">5 步 · 网络、NID、Multi-Rail</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/products/lustre-file-system-exascaler/&quot;&gt;DDN EXAScaler Product Page&lt;/a&gt;"><a href="https://www.ddn.com/products/lustre-file-system-exascaler/">DDN EXAScaler 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Lustre_Networking_%28LNET%29_Overview&quot;&gt;Lustre Wiki: LNet Overview&lt;/a&gt;"><a href="https://wiki.lustre.org/Lustre_Networking_%28LNET%29_Overview">Lustre 官方文档：LNet 概览</a></li>
+      <li data-en="&lt;a href=&quot;https://doc.lustre.org/lustre_manual.pdf&quot;&gt;Lustre Operations Manual: LNet Routing and Multi-Rail (Chapters 15 and 16)&lt;/a&gt;"><a href="https://doc.lustre.org/lustre_manual.pdf">Lustre Operations Manual：LNet 路由与 Multi-Rail（第 15、16 章）</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-lnet.js?v=903bd81a"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-lnet",
+ "ar": [
+  3.52,
+  1.1842105263157894
+ ],
+ "steps": [
+  {
+   "t": [
+    "元数据与文件数据共用 LNet",
+    "LNet Carries Metadata and File Data"
+   ],
+   "d": [
+    "客户端向元数据服务器发出的查询和从数据服务器读取的内容都经 LNet 传输。",
+    "Metadata queries from the client and file bytes from the object storage server both travel over LNet."
+   ],
+   "b": [
+    [
+     "<p>LNet 是 Lustre Networking 的简称。它在客户端和各项 Lustre 服务之间传递消息。以 EXAScaler 为例，打开文件时的布局请求面向元数据服务器（MDS），文件内容读取面向对象存储服务器（OSS），两类通信均使用 LNet。</p>"
+    ],
+    [
+     "<p>LNet stands for Lustre Networking. It carries messages between clients and Lustre services. In EXAScaler, for example, a file open requests its layout from the metadata server (MDS), and a read requests bytes from the object storage server (OSS). Both exchanges use LNet.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "网络驱动连接不同底层网络",
+    "Network Drivers Connect Different Fabrics"
+   ],
+   "d": [
+    "LNet 通过网络驱动使用底层网络，例如以太网上的 TCP 或 InfiniBand 上的 RDMA。",
+    "LNet uses network drivers to reach the fabric, such as TCP over Ethernet or RDMA over InfiniBand."
+   ],
+   "b": [
+    [
+     "<p>Lustre Network Driver（LND）是 LNet 接入特定传输方式的驱动层。以 <code>socklnd</code> 为例，它通过 TCP 传输；<code>o2ib</code> 可在 InfiniBand 上使用远程直接内存访问（RDMA）传输。Lustre 上层服务通过同一套 LNet 接口发送消息。</p>"
+    ],
+    [
+     "<p>A Lustre Network Driver (LND) connects LNet to a particular transport. For example, <code>socklnd</code> uses TCP, and <code>o2ib</code> can use remote direct memory access (RDMA) over InfiniBand. Higher-level Lustre services send messages through the same LNet interface.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "NID 标识网络端点",
+    "NIDs Identify Network Endpoints"
+   ],
+   "d": [
+    "网络标识符由地址和 LNet 网络名组成，用于在指定网络中定位接口。",
+    "A network identifier combines an address and an LNet network name to identify an interface on that network."
+   ],
+   "b": [
+    [
+     "<p>网络标识符（Network Identifier，NID）采用“地址@网络”形式，例如 <code>192.0.2.10@tcp0</code>。<code>tcp0</code> 与 <code>tcp1</code> 是不同的 LNet 网络。即使地址部分相同，两个网络名也会标识不同的 LNet 端点。</p>"
+    ],
+    [
+     "<p>A network identifier (NID) has the form address@network, such as <code>192.0.2.10@tcp0</code>. The labels <code>tcp0</code> and <code>tcp1</code> denote distinct LNet networks. Even with the same address portion, different network names identify different LNet endpoints.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "LNet 路由器连接不同网络",
+    "LNet Routers Connect Separate Networks"
+   ],
+   "d": [
+    "当客户端和服务端位于不同 LNet 网络时，配置好的路由器在两个网络之间转发消息。",
+    "When client and server are on separate LNet networks, a configured router forwards messages between them."
+   ],
+   "b": [
+    [
+     "<p>在同一 LNet 网络内，节点可直接通信。跨网络时，LNet 路由器连接两个网络并转发 LNet 流量，例如从客户端侧以太网转发到存储侧 InfiniBand。客户端仍将请求发往存储服务的网络端点。</p>"
+    ],
+    [
+     "<p>Nodes on the same LNet network can communicate directly. Across networks, an LNet router connects the two fabrics and forwards LNet traffic, for example from client-side Ethernet to storage-side InfiniBand. The storage service endpoint remains the destination of the request.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "使用多条网络路径",
+    "Using Multiple Network Paths"
+   ],
+   "d": [
+    "Multi-Rail 允许通信节点使用多个已配置接口，LNet Health 可在有可用替代路径时尝试重发。",
+    "Multi-Rail lets peers use multiple configured interfaces, and LNet Health can retry over an available alternative path."
+   ],
+   "b": [
+    [
+     "<p>Multi-Rail 将节点的多个接口作为消息传输候选。接口和路径的选择取决于配置及可达性。当一条路径出现传输错误时，LNet Health 可以降低相关接口的健康度，并尝试通过其他可用接口重发消息。</p>"
+    ],
+    [
+     "<p>Multi-Rail gives LNet multiple candidate interfaces for message delivery. Interface and path selection depends on configuration and reachability. On a transmission error, LNet Health can lower the health score of the affected interface and retry over another available interface.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

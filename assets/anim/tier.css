@@ -1,0 +1,25 @@
+.an-tier {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 18px var(--f);
+  color: var(--ink);
+}
+.an-tier text { fill: currentColor; dominant-baseline: central; }
+.an-tier-title { font-weight: 650; }
+.an-tier-secondary, .an-tier-note { color: var(--ink2); }
+.an-tier-note { font-size: 16px; }
+.an-tier-normal { --accent: var(--ink3); }
+.an-tier-good { --accent: var(--l5); }
+.an-tier-slow { --accent: var(--l1); }
+.an-tier-idle { --accent: var(--rule2); }
+.an-tier-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.an-tier-line.an-tier-idle { stroke-dasharray: 5 5; }
+.an-tier-box { fill: color-mix(in srgb, var(--accent) 12%, var(--surface)); stroke: var(--accent); stroke-width: 1.5; }
+.an-tier-packet { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; }
+@media (max-width: 640px) {
+  .an-tier, .an-tier-note { font-size: 15px; }
+}
+@media (641px <= width <= 720px) {
+  main[data-station="tier"] .mhost { aspect-ratio: var(--ar); }
+}

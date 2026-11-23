@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataStore：VAST 的统一存储层 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 VAST DataStore 的统一存储层、多协议视图、块卷、写缓冲与快照。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/v-datastore.css?v=e33e3f1c">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-v-datastore">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-datastore">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DataStore: VAST’s Unified Storage Layer">DataStore：VAST 的统一存储层</h1>
+        <p class="meta"><span data-en="6 steps · file, object, block storage">6 步 · 文件、对象、块存储</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.vastdata.com/platform/datastore&quot;&gt;VAST DataStore Product Page&lt;/a&gt;"><a href="https://www.vastdata.com/platform/datastore">VAST DataStore 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/docs-5-5/docs/overview-tg&quot;&gt;Views and View Policies&lt;/a&gt;"><a href="https://docs.vastdata.com/docs-5-5/docs/overview-tg">视图与视图策略</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/develop/docs/dev-datastore-guides-multiprotocol&quot;&gt;Multiprotocol Access&lt;/a&gt;"><a href="https://docs.vastdata.com/develop/docs/dev-datastore-guides-multiprotocol">多协议访问</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/kb/docs/block-storage-on-vast&quot;&gt;Block Storage on VAST&lt;/a&gt;"><a href="https://docs.vastdata.com/kb/docs/block-storage-on-vast">VAST 块存储</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vastdata.com/develop/docs/dev-datastore-concepts-index&quot;&gt;DataStore Developer Guide: Writes and Snapshots&lt;/a&gt;"><a href="https://docs.vastdata.com/develop/docs/dev-datastore-concepts-index">DataStore 开发者指南：写入与快照</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/v-datastore.js?v=d162eed9"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "v-datastore",
+ "ar": [840/328,350/401],
+ "steps": [
+  {
+   "t": [
+    "统一存储层",
+    "The Unified Storage Layer"
+   ],
+   "d": [
+    "DataStore 在同一 VAST 集群中提供文件、对象和块存储。",
+    "DataStore provides file, object, and block storage in one VAST cluster."
+   ],
+   "b": [
+    [
+     "<p>VAST DataStore 是 VAST AI OS 的存储层。文件应用通过 NFS 或 SMB 访问目录，对象应用通过 S3 按对象键访问数据，块存储主机通过 NVMe/TCP 访问卷。NVMe/TCP 是在 TCP 网络上传输 NVMe 存储命令的协议。</p>",
+     "<p>这些接口共用一套集群存储服务。客户端通过各自协议访问目录、存储桶或卷，数据由同一集群保存和保护。</p>"
+    ],
+    [
+     "<p>VAST DataStore is the storage layer of the VAST AI OS. File applications use NFS or SMB to access directories, object applications use S3 to address data by key, and block hosts use NVMe/TCP to access volumes. NVMe/TCP carries NVMe storage commands over a TCP network.</p>",
+     "<p>These interfaces share the cluster’s storage services. Clients work with directories, buckets, or volumes through their respective protocols, and one cluster stores and protects the data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用视图发布路径",
+    "Exposing Paths Through Views"
+   ],
+   "d": [
+    "Element Store 组织集群内的数据路径，视图决定哪条路径通过哪些协议发布。",
+    "The Element Store organizes data paths, and a view specifies which path to expose and over which protocols."
+   ],
+   "b": [
+    [
+     "<p>Element Store 是集群内的命名空间，也就是数据的路径和名称所在的目录结构。视图（View）将其中一条路径发布为客户端入口。按启用的协议，同一路径可以表现为 NFS 导出目录、SMB 共享或 S3 存储桶。</p>",
+     "<p>每个视图关联一条视图策略（View Policy），用来规定访问和协议行为。比如，文件视图可以按客户端 IP 限制访问，也可以指定跨协议访问时采用的权限规则。</p>"
+    ],
+    [
+     "<p>The Element Store is the cluster namespace, the directory structure in which data paths and names are organized. A view exposes one path to clients. Depending on the enabled protocols, that path can appear as an NFS export, an SMB share, or an S3 bucket.</p>",
+     "<p>Each view has a view policy that defines access and protocol behavior. For example, a file view can restrict access by client IP address or specify the permission rules used for multiprotocol access.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "文件与对象共用数据",
+    "Sharing Data Between Files and Objects"
+   ],
+   "d": [
+    "在同时启用 NFS 和 S3 的视图中，文件相对路径可直接作为 S3 对象键。",
+    "In a view that enables both NFS and S3, a file’s relative path can also be its S3 object key."
+   ],
+   "b": [
+    [
+     "<p>S3 对象键是对象在存储桶内的名称。假设 NFS 客户端在挂载目录下写入 <code>reports/run.csv</code>，S3 客户端可在对应存储桶中用该对象键读取同一份内容。两条访问路径指向同一个存储元素，无需另行同步。</p>",
+     "<p>具体读写行为仍取决于协议和视图设置。例如，启用 S3 版本控制的对象可通过 NFS 读取，更新则使用 S3。</p>"
+    ],
+    [
+     "<p>An S3 object key names an object within a bucket. If an NFS client writes <code>reports/run.csv</code> under its mount, an S3 client can read the same content using that key in the corresponding bucket. Both access paths reach one storage element, so there is no separate synchronization step.</p>",
+     "<p>Read and write behavior still depends on the protocol and view settings. For example, NFS can read versioned S3 objects, while updates to them use S3.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "块卷使用专用路径",
+    "Dedicated Paths for Block Volumes"
+   ],
+   "d": [
+    "块主机通过 NVMe/TCP 连接专用子系统，只看到映射给该主机的卷。",
+    "A block host connects to a dedicated subsystem over NVMe/TCP and sees the volumes mapped to it."
+   ],
+   "b": [
+    [
+     "<p>启用块协议的视图称为子系统。它占用一条专用路径，内部可创建一个或多个卷。卷对主机表现为块设备，主机可以在卷上建立自己的文件系统。</p>",
+     "<p>块卷与文件、对象共用集群底层存储。文件或对象客户端只能访问为其协议发布的路径，卷内的文件由主机上的文件系统管理。</p>"
+    ],
+    [
+     "<p>A block-enabled view is called a subsystem. It uses a dedicated path and can contain one or more volumes. A volume appears to its host as a block device, on which the host can create its own file system.</p>",
+     "<p>Block volumes share the cluster storage with files and objects. File and object clients reach paths exposed for their protocols, and the host’s file system manages any files inside the volume.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "持久写缓冲与后台整理",
+    "Persistent Write Buffer and Background Processing"
+   ],
+   "d": [
+    "以文件写入为例，数据先进入持久写缓冲，再由后台缩减并移入闪存。",
+    "A file write enters a persistent write buffer first. The cluster then reduces the data and moves it to flash in the background."
+   ],
+   "b": [
+    [
+     "<p>持久写缓冲使用存储级内存（SCM），用于暂存新写入的数据。后续写入闪存时，集群可合并重复的数据块、压缩内容，或保存相似数据之间的差异，以减少实际占用的空间。</p>"
+    ],
+    [
+     "<p>The persistent write buffer uses storage-class memory (SCM) to stage new writes. As the cluster moves data to flash, it can store duplicate blocks once, compress content, or store differences between similar data to reduce the space it occupies.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "快照保留路径版本",
+    "Preserving Path Versions with Snapshots"
+   ],
+   "d": [
+    "快照保留路径在某个时刻的只读版本，供误删或覆盖后恢复。",
+    "A snapshot preserves a read-only version of a path for recovery after accidental deletion or overwrites."
+   ],
+   "b": [
+    [
+     "<p>快照记录目录、文件和对象在取快照时的状态。创建快照时，系统保留旧数据的引用。活动文件后来被覆盖或删除，快照仍可访问其原有内容。块卷也可创建快照，并从符合条件的快照向主机呈现卷。</p>"
+    ],
+    [
+     "<p>A snapshot records the state of directories, files, and objects at the time it is taken. The cluster keeps references to the original data. If a live file is later overwritten or deleted, its original content remains accessible through the snapshot. Block volumes can also be snapshotted, and eligible snapshots can be presented to hosts as volumes.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['SC', 'TC', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

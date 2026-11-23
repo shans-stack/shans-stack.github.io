@@ -1,0 +1,15 @@
+.w-wsnap-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font: 500 20px var(--f);
+}
+.w-wsnap-scene text { fill: var(--ink); dominant-baseline: central; }
+.w-wsnap-scene .w-wsnap-title { font-weight: 650; }
+.w-wsnap-scene .w-wsnap-note { fill: var(--ink2); font-size: 18px; }
+.w-wsnap-scene .w-wsnap-version { font-size: 17px; font-weight: 650; }
+.w-wsnap-card { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
+.w-wsnap-file { fill: var(--bg); stroke: var(--ink3); stroke-width: 1.4; }
+.w-wsnap-empty .w-wsnap-file { fill: none; stroke: var(--rule2); stroke-dasharray: 3 3; }
+.w-wsnap-path { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.w-wsnap-blocked { stroke: var(--l1); stroke-width: 2.2; }

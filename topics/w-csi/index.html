@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEKA CSI 驱动与 Kubernetes 持久卷 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 WEKA CSI 驱动为 Kubernetes 配置持久卷，并在运行 Pod 的工作节点上挂载存储。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-csi.css?v=b380a996">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-w-csi">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-csi">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="WEKA CSI Driver and Kubernetes Persistent Volumes">WEKA CSI 驱动与 Kubernetes 持久卷</h1>
+        <p class="meta"><span data-en="5 steps · Kubernetes, CSI, persistent volumes">5 步 · Kubernetes、CSI、持久卷</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin&quot;&gt;WEKA Documentation · CSI Plugin&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin">WEKA 文档 · CSI 插件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin/storage-class-configurations&quot;&gt;WEKA Documentation · StorageClass Configurations&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin/storage-class-configurations">WEKA 文档 · StorageClass 配置</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin/dynamic-and-static-provisioning&quot;&gt;WEKA Documentation · Dynamic and Static Provisioning&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin/dynamic-and-static-provisioning">WEKA 文档 · 动态与静态配置</a></li>
+      <li data-en="Schematic illustrations. No measured figures.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-csi.js?v=9e514444"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-csi",
+ "ar": [
+  2.838709677419355,
+  0.8780487804878049
+ ],
+ "steps": [
+  {
+   "t": [
+    "Kubernetes 通过 CSI 管理存储",
+    "Kubernetes Manages Storage Through CSI"
+   ],
+   "d": [
+    "CSI 提供统一的卷接口，WEKA 插件将请求交给 WEKA 存储。",
+    "CSI defines a common volume interface, and the WEKA plugin connects those requests to WEKA storage."
+   ],
+   "b": [
+    [
+     "<p>CSI（Container Storage Interface，容器存储接口）定义 Kubernetes 等编排系统调用存储驱动的方式。WEKA 插件连接控制平面、工作节点与 WEKA 存储，让 Pod（Kubernetes 中运行容器的基本单元）可以使用外部持久存储。</p>"
+    ],
+    [
+     "<p>The Container Storage Interface (CSI) defines how orchestrators such as Kubernetes call storage drivers. The WEKA plugin connects the control plane and worker nodes to WEKA storage so that Pods, the basic execution units for containers, can use external persistent storage.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "PVC 选择存储类别",
+    "A PVC Selects a Storage Class"
+   ],
+   "d": [
+    "持久卷声明引用 StorageClass，由类别指定驱动和后端配置。",
+    "A persistent volume claim references a StorageClass that specifies the driver and backend configuration."
+   ],
+   "b": [
+    [
+     "<p>PVC（PersistentVolumeClaim，持久卷声明）描述应用需要的容量和访问模式。StorageClass（存储类别）定义如何为该声明配置卷，例如选择 WEKA 驱动及目录型卷所用的目标文件系统。相同类别可服务多个声明。</p>"
+    ],
+    [
+     "<p>A PersistentVolumeClaim (PVC) describes the capacity and access mode the application needs. A StorageClass specifies how to satisfy the claim, for example by selecting the WEKA driver and the target filesystem for directory-backed volumes. Multiple claims can use the same class.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "创建后端卷并绑定",
+    "Creating and Binding a Backing Volume"
+   ],
+   "d": [
+    "动态配置创建后端卷，Kubernetes 将对应的 PV 绑定到 PVC。",
+    "Dynamic provisioning creates backing storage, and Kubernetes binds the corresponding PV to the claim."
+   ],
+   "b": [
+    [
+     "<p>PV（PersistentVolume，持久卷）是 Kubernetes 对后端存储的表示。以目录型卷为例，WEKA 插件在指定文件系统内为声明创建目录，Kubernetes 将对应 PV 与 PVC 绑定。静态配置也可用一个预先定义的 PV 引用已有目录。</p>"
+    ],
+    [
+     "<p>A PersistentVolume (PV) represents backing storage in Kubernetes. For example, the WEKA plugin provisions a directory in the selected filesystem for a directory-backed volume, and Kubernetes binds the corresponding PV to the PVC. With static provisioning, a predefined PV can reference an existing directory.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "工作节点将卷挂给 Pod",
+    "The Worker Node Mounts the Volume for the Pod"
+   ],
+   "d": [
+    "Pod 引用已绑定的 PVC，工作节点将后端卷挂载到容器路径。",
+    "The Pod references the bound PVC, and its worker node mounts the backing volume at the container path."
+   ],
+   "b": [
+    [
+     "<p>在原生 WEKA 客户端配置下，工作节点上的 CSI 节点插件负责把卷接入 Pod。挂载完成后，应用通过容器中的文件路径读写，文件数据经工作节点上的客户端到达 WEKA。CSI 控制器负责卷的配置，应用文件读写走挂载后的数据路径。</p>"
+    ],
+    [
+     "<p>In a native-client configuration, the CSI node plugin on the worker makes the volume available to the Pod. Once mounted, the application reads and writes through a file path in the container, and the worker’s WEKA client handles the data path. The CSI controller handles provisioning.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "后端卷类型决定存储边界",
+    "Backing Volume Types Define the Storage Boundary"
+   ],
+   "d": [
+    "WEKA 支持以目录、可写快照或整个文件系统作为卷的后端。",
+    "WEKA supports backing a volume with a directory, a writable snapshot, or an entire filesystem."
+   ],
+   "b": [
+    [
+     "<p>目录型卷位于已有文件系统内。快照型卷使用现有文件系统的可写快照，即可写入的时间点副本。文件系统型卷以整个文件系统为后端。卷类型由存储类别中的配置决定，Pod 仍通过 PVC 引用卷。</p>"
+    ],
+    [
+     "<p>A directory-backed volume lives within an existing filesystem. A snapshot-backed volume uses a writable snapshot, a point-in-time version that accepts writes. A filesystem-backed volume uses an entire filesystem. The StorageClass configuration selects the backing type, while the Pod still references the volume through a PVC.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

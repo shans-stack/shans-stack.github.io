@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VectorDBBench：向量检索性能 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 VectorDBBench 的向量检索用例、召回率与并发结果。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-vdbbench.css?v=166d8308">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-vdbbench">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-vdbbench">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="VectorDBBench: Vector Search Performance">VectorDBBench：向量检索性能</h1>
+        <p class="meta"><span data-en="5 steps · Vector search, recall, QPS">5 步 · 向量检索、召回率、QPS</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/zilliztech/VectorDBBench/v2.0.0/README.md&quot;&gt;VectorDBBench v2.0.0 Methodology and Run Parameters&lt;/a&gt;"><a href="https://raw.githubusercontent.com/zilliztech/VectorDBBench/v2.0.0/README.md">VectorDBBench v2.0.0 方法与运行参数</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/zilliztech/VectorDBBench/releases/tag/v2.0.0&quot;&gt;VectorDBBench v2.0.0 Release Notes&lt;/a&gt;"><a href="https://github.com/zilliztech/VectorDBBench/releases/tag/v2.0.0">VectorDBBench v2.0.0 发布说明</a></li>
+      <li data-en="&lt;a href=&quot;https://pypi.org/project/vectordb-bench/2.0.0/&quot;&gt;Official Package Release Date&lt;/a&gt;"><a href="https://pypi.org/project/vectordb-bench/2.0.0/">官方软件包发布日期</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-vdbbench.js?v=c57fd516"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-vdbbench",
+ "ar": [
+  2.318840579710145,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "向量搜索的三个指标",
+    "Three Vector Search Metrics"
+   ],
+   "d": [
+    "VectorDBBench 用已知最近邻的查询同时测量召回率、延迟和吞吐。",
+    "VectorDBBench uses queries with known nearest neighbors to measure recall, latency, and throughput."
+   ],
+   "b": [
+    [
+     "<p>向量是用一组数表达数据特征的表示形式。向量检索按指定距离或相似度找出最接近查询向量的 K 条记录，称为 Top-K。基准用预先计算的正确近邻校验实际返回结果。</p>",
+     "<p>截至 2026-11-23，最新公开发行版为 v2.0.0，于 2026-09-10 发布。本页聚焦向量检索性能用例。</p>"
+    ],
+    [
+     "<p>A vector is an array of numbers representing data features. Vector search retrieves the K records nearest to a query vector under a chosen distance or similarity measure, known as Top-K. The benchmark checks the returned results against precomputed nearest neighbors.</p>",
+     "<p>As of November 23, 2026, the latest public release is v2.0.0, published on September 10, 2026. This page covers its vector search performance cases.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "装载、索引与查询条件",
+    "Loading, Indexing, and Query Conditions"
+   ],
+   "d": [
+    "数据先装载并建索引，查询按选定的数据集、Top-K 和响应内容执行。",
+    "The run loads and indexes the data, then searches with a selected dataset, Top-K, and response payload."
+   ],
+   "b": [
+    [
+     "<p>向量索引是用于缩小搜索范围的数据结构。检索用例使用预设的数据集和查询集合，数据集决定向量数量、维数及相似度口径。索引类型与参数影响查询需要检查多少候选，也会影响装载和建索引的耗时。</p>",
+     "<p>过滤用例为候选增加属性条件，评估时对应过滤后的参考近邻。响应内容也可改变，例如只返回标识符或同时返回向量，需按同一口径比较。</p>"
+    ],
+    [
+     "<p>A vector index narrows the search space. Search cases use a defined corpus and query set. The dataset fixes the vector count, dimension, and similarity measure. Index type and settings affect how many candidates a query examines and can affect load and indexing time.</p>",
+     "<p>Filtered cases restrict eligible records and use the corresponding filtered reference neighbors. Response content can also vary, such as returning IDs only or including vectors, so comparisons depend on matching payloads.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "召回率如何计算",
+    "How Recall Is Calculated"
+   ],
+   "d": [
+    "Recall@K 衡量返回结果找回了多少参考近邻。",
+    "Recall@K measures how many reference neighbors the returned results recover."
+   ],
+   "b": [
+    [
+     "<p>在参考近邻恰有 K 条的常规 Top-K 用例中，对每条查询取返回结果与参考集合的交集，匹配数除以 K 得到该条查询的召回率。再跨查询汇总，可检查总体召回率。较高的平均值仍可能伴随个别查询的低召回率。</p>"
+    ],
+    [
+     "<p>In a standard Top-K case with K reference neighbors, per-query recall divides the number of returned items that match the reference set by K. The benchmark aggregates recall across queries. A high average can still coincide with low recall for individual queries.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "并发、QPS 和尾延迟",
+    "Concurrency, QPS, and Tail Latency"
+   ],
+   "d": [
+    "在每个设定的并发档位测量吞吐和延迟，最高实测 QPS 来自这些档位。",
+    "Throughput and latency are measured at configured concurrency levels, and peak observed QPS comes from those levels."
+   ],
+   "b": [
+    [
+     "<p>常规单向量请求下，QPS 是每秒完成的向量查询数。并发档位决定同时发起查询的客户端数量。p99 表示第 99 百分位延迟，用来观察较慢请求。串行阶段与并发阶段分别出具数据，最高实测 QPS 只是本次并发范围内的结果。</p>"
+    ],
+    [
+     "<p>For single-vector requests, QPS counts completed vector queries per second. The concurrency setting determines how many clients search in parallel. The 99th percentile, p99, describes slow-query latency. Serial and concurrent phases produce separate measurements. Peak observed QPS is bounded by the concurrency levels tested.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "同约束下比较结果",
+    "Comparing Under Matching Constraints"
+   ],
+   "d": [
+    "吞吐与延迟的比较以相同召回要求、查询条件和部署资源为前提。",
+    "Throughput and latency comparisons depend on matching recall requirements, search conditions, and deployment resources."
+   ],
+   "b": [
+    [
+     "<p>放宽搜索精度可能减少候选检查，从而改变吞吐和延迟。对照两组结果时，需要核对召回率、Top-K、过滤条件、响应内容、并发档位和运行资源。最高 QPS 无法单独表明相同召回要求下的性能，也无法代表写入与查询同时进行的表现。</p>"
+    ],
+    [
+     "<p>Relaxing search accuracy can reduce candidate checks and change throughput and latency. Comparing runs requires matching recall, Top-K, filters, payload, concurrency levels, and resources. Peak QPS alone cannot establish performance at a common recall requirement or under mixed writes and searches.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const group = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  group.setAttribute('aria-label', english ? 'Language' : '语言');
+  group.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

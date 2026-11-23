@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布（DBox 排成两行）；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-classic.css，全部限定在 .ssa-v-classic 容器之内。
-   VAST 字标直接引用 assets/brand/vast-wordmark-black.svg 与 -white.svg（浅色用黑、深色用白），不内嵌。 */
+   样式在 assets/anim/v-classic.css，全部限定在 .ssa-v-classic 容器之内。 */
 (function(){
 var EN={"CNode 1":"CNode 1","CNode 2":"CNode 2","CNode 3":"CNode 3","DBox 1":"DBox 1","DBox 2":"DBox 2","DBox 3":"DBox 3","DBox 4":"DBox 4","NVMe-oF 网络":"NVMe-oF network",
 "其余 SSD 仍可访问":"Remaining SSDs stay accessible","故障域：单块 SSD":"Failure domain: one SSD",
@@ -28,7 +27,6 @@ host.classList.add('ssa-v-classic');host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','ssa-scene');svg.setAttribute('role','img');host.appendChild(svg);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mq=matchMedia('(max-width: 640px)');
-const ROOT=window.SS_ROOT||'';
 function T(s){if(lang()!=='en')return s;if(L&&L.mobile&&ENM[s]!==undefined)return ENM[s];return EN[s]!==undefined?EN[s]:s}
 function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
 function tx(x,y,s,size,cls,anchor,p){const t=el('text',{x,y,'font-size':size,class:cls||''},p);if(anchor)t.setAttribute('text-anchor',anchor);t.textContent=T(s);return t}
@@ -42,8 +40,6 @@ function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-p
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function rev(pts){return pts.slice().reverse()}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-function vmark(x,y,h,p){const w=h*66/14,g=el('g',{class:'vwm'},p);
-  [['l','black'],['d','white']].forEach(([k,c])=>el('image',{href:ROOT+'assets/brand/vast-wordmark-'+c+'.svg',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm-'+k},g));return g}
 let L=null,E,S,step=0,T0=0,raf=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(cls){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(cls||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=a==null?1:a}
@@ -88,7 +84,6 @@ function build(){
   E.db=L.db.map((B,b)=>{const g=el('g',{class:'dbx'},gS),o={g};
     o.frame=box(B.frame,g,'box soft',14);
     tx(B.title.x,B.title.y,'DBox '+(b+1),f.ttl,'ttl','start',g);
-    if(b===0)vmark(B.title.x+f.ttl*0.58*6+6,B.title.y,L.mobile?10:12,g);
     o.up=B.dn.map(d=>poly([C(d),P(C(d).x,B.fabY)],'',g));
     o.down=B.dn.map(d=>poly([P(C(d).x,d.y+d.h),P(C(d).x,B.barY)],'thin',g));
     const xs=B.dr.map(d=>C(d).x).concat(B.dn.map(d=>C(d).x));

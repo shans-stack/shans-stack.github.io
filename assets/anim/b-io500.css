@@ -1,0 +1,26 @@
+.b-io500-scene { display: block; width: 100%; height: auto; }
+.b-io500-scene text {
+  fill: var(--ink);
+  font: 500 20px var(--f);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.b-io500-scene .b-io500-note { fill: var(--ink2); font-size: 17px; }
+.b-io500-scene .b-io500-box { fill: var(--bg); stroke: var(--ink3); stroke-width: 1.4; }
+.b-io500-scene .b-io500-line { fill: none; stroke: var(--ink3); stroke-width: 1.5; stroke-linejoin: round; }
+.b-io500-scene .b-io500-guide { stroke-dasharray: 4 5; }
+.b-io500-scene .b-io500-token { fill: var(--ink2); }
+
+@media (max-width: 720px) {
+  body.topic-b-io500 .mhost { aspect-ratio: var(--ar); }
+  body.topic-b-io500.present .stage .figbox { margin-block: 0; }
+}
+@media (max-width: 640px) {
+  body.topic-b-io500 .mhost { aspect-ratio: var(--arm); }
+  .b-io500-scene text { font-size: 18px; }
+}
+
+@media (max-width: 440px) {
+  body.topic-b-io500 .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-io500 .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

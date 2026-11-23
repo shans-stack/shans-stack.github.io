@@ -1,0 +1,15 @@
+.d-dne svg{display:block;width:100%;font-family:var(--f);overflow:hidden}
+.d-dne text{fill:var(--ink);text-anchor:middle;dominant-baseline:middle}
+.d-dne [data-tone=meta]{--signal:var(--l4)}
+.d-dne [data-tone=data]{--signal:var(--l6)}
+.d-dne [data-tone=idle]{--signal:var(--rule2)}
+.d-dne [data-tone=failed]{--signal:var(--l1)}
+.d-dne .d-dne-node{fill:color-mix(in srgb,var(--signal,var(--rule)) 8%,var(--surface));stroke:var(--signal,var(--rule2));stroke-width:1.5}
+.d-dne .d-dne-link{fill:none;stroke:var(--signal);stroke-width:2;stroke-linejoin:round}
+.d-dne [data-tone=idle] path,.d-dne [data-tone=failed] path{stroke-dasharray:5 5}
+.d-dne .d-dne-packet{fill:var(--signal);stroke:var(--surface);stroke-width:1}
+.d-dne .d-dne-title,.d-dne .d-dne-status,.d-dne .d-dne-mark{font-weight:600}
+.d-dne .d-dne-mark{fill:#090c10}
+.d-dne .d-dne-detail,.d-dne .d-dne-route,.d-dne .d-dne-note{fill:var(--ink2)}
+[data-station="d-dne"] .src li a{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:.2em}
+@media (641px <= width <= 720px){main[data-station="d-dne"] .mhost{aspect-ratio:var(--ar)}}

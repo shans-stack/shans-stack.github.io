@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCCL Tests：GPU 集合通信 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明按消息大小测量 GPU 集合通信的耗时、带宽和结果正确性。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-nccltest.css?v=e9ac537e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-nccltest">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-nccltest">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NCCL Tests: GPU Collectives">NCCL Tests：GPU 集合通信</h1>
+        <p class="meta"><span data-en="6 steps · Collectives, Message Sweeps, Bus Bandwidth">6 步 · 集合通信、消息扫描、busbw</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/NVIDIA/nccl-tests/v2.21.1/README.md&quot;&gt;NCCL Tests v2.21.1 Usage and Options&lt;/a&gt;"><a href="https://raw.githubusercontent.com/NVIDIA/nccl-tests/v2.21.1/README.md">NCCL Tests v2.21.1 运行与参数文档</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/NVIDIA/nccl-tests/v2.21.1/doc/PERFORMANCE.md&quot;&gt;NCCL Tests Bandwidth Methodology&lt;/a&gt;"><a href="https://raw.githubusercontent.com/NVIDIA/nccl-tests/v2.21.1/doc/PERFORMANCE.md">NCCL Tests 带宽计算口径</a></li>
+      <li data-en="&lt;a href=&quot;https://github.com/NVIDIA/nccl-tests/tags&quot;&gt;NCCL Tests Version Tags&lt;/a&gt;"><a href="https://github.com/NVIDIA/nccl-tests/tags">NCCL Tests 版本标签</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-nccltest.js?v=7e14e45f"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-nccltest",
+ "ar": [
+  2.360248447204969,
+  0.8571428571428571
+ ],
+ "steps": [
+  {
+   "t": [
+    "一次集合通信的输入和输出",
+    "Inputs and Outputs of a Collective"
+   ],
+   "d": [
+    "All-reduce 对多块 GPU 的同位置元素做归约，并在每块参与 GPU 上生成同一份结果。",
+    "All-reduce combines corresponding elements across participating GPUs and produces the same result on each."
+   ],
+   "b": [
+    [
+     "<p>集合通信是多路参与者共同调用的通信操作。NCCL 是 GPU 集合通信库。NCCL Tests 分别测试 all-reduce、all-gather 等操作的性能和正确性。以求和为例，各 GPU 贡献各自输入，完成后各自持有全体输入的逐元素和。</p>"
+    ],
+    [
+     "<p>A collective is a communication operation invoked by a group of participants. NCCL is a GPU collective library. NCCL Tests measures performance and correctness for operations such as all-reduce and all-gather. With sum all-reduce, each GPU contributes its input and receives the elementwise sum of all inputs.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "参与 GPU 与节点范围",
+    "GPUs and Node Scope"
+   ],
+   "d": [
+    "同节点与跨节点测试由 rank 的放置区分，跨节点运行使用 MPI 版本。",
+    "Rank placement defines node scope, and cross-node runs use an MPI-enabled build."
+   ],
+   "b": [
+    [
+     "<p>一个 rank 是一次集合通信的逻辑参与者，在该测试中对应一个 CUDA 设备。rank 总数是进程数、每进程线程数与每线程 GPU 数的乘积。单节点可由一个进程管理多块 GPU，跨节点通常由 MPI（进程间消息传递接口）启动多进程。逐个 rank 的节点和设备归属决定所测范围。</p>"
+    ],
+    [
+     "<p>A rank is a logical participant and corresponds to a CUDA device in this test. Total ranks equal processes × threads per process × GPUs per thread. A single process can drive several local GPUs. Multi-node runs normally launch multiple processes with MPI, a message-passing interface. The host and device assignment of each rank defines test scope.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "扫描消息大小",
+    "Sweeping Message Sizes"
+   ],
+   "d": [
+    "all_reduce_perf 按大小逐组运行预热、计时和正确性检查。",
+    "all_reduce_perf warms up, times, and checks the operation across a range of message sizes."
+   ],
+   "b": [
+    [
+     "<p>-b 与 -e 确定起止字节数，-f 设倍数步长，-g 选择每线程 GPU 数。-w 配置不纳入计时的预热次数，-n 配置计时迭代，-c 配置正确性检查次数。每个消息大小产生独立记录。原地模式复用缓冲区，非原地模式分别分配输入和输出。</p>"
+    ],
+    [
+     "<p>-b and -e give the start and end sizes, -f sets a multiplicative step, and -g sets GPUs per thread. -w sets untimed warmup iterations, -n controls timed iterations, and -c controls correctness checks. Each message size has a separate record. In-place mode reuses a buffer, while out-of-place mode uses separate input and output buffers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "时间、algbw 与 busbw",
+    "Time, algbw, and busbw"
+   ],
+   "d": [
+    "algbw 根据消息大小和耗时计算，busbw 还乘以集合操作的归一化系数。",
+    "algbw divides message size by time, and busbw applies a collective-specific normalization."
+   ],
+   "b": [
+    [
+     "<p>输出按消息大小给出 time、algbw、busbw 和 #wrong。algbw 为消息大小 S 除以操作耗时 t。对于 n 个 rank 的 all-reduce，busbw 为 algbw × 2(n−1)/n。该系数反映这一操作的通信量口径，busbw 属于派生指标。#wrong 是校验发现的错误元素计数，判读前需确认启用了校验。</p>"
+    ],
+    [
+     "<p>The output reports time, algbw, busbw, and #wrong for each size. algbw equals message size S divided by elapsed time t. For all-reduce over n ranks, busbw is algbw × 2(n−1)/n. The factor normalizes the operation’s communication volume, so busbw is a derived metric. #wrong counts mismatched elements when validation is enabled.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "带宽的比较范围",
+    "Matching the Scope of a Comparison"
+   ],
+   "d": [
+    "同一操作、消息大小、rank 范围和缓冲模式构成一组可比记录。",
+    "Comparable rows share the operation, size, rank scope, and buffer mode."
+   ],
+   "b": [
+    [
+     "<p>跨节点成绩同时反映参与设备、节点互联和通信实现。busbw 由集合通信时间推得，指定端点路径的吞吐需要用独立的点到点测试测量。若使用 NCCL_TESTS_SPLIT 把 rank 分组，输出带宽按组报告，节点内与跨节点的分组仍取决于 rank 放置。</p>"
+    ],
+    [
+     "<p>A cross-node result reflects the participating devices, fabric, and communication implementation. busbw is derived from collective timing. Measuring throughput on a selected endpoint path calls for a separate point-to-point test. With NCCL_TESTS_SPLIT, bandwidth is reported per group, and rank placement still determines whether groups stay within a node or cross nodes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "工具与通信库版本",
+    "Tool and Library Versions"
+   ],
+   "d": [
+    "测试程序版本、链接的 NCCL 版本和运行配置共同构成结果记录。",
+    "The test revision, linked NCCL version, and run settings define the result record."
+   ],
+   "b": [
+    [
+     "<p>截至 2026-11-23，NCCL Tests 最新公开标签为 v2.21.1，标签记录日期为 2026-10-05（UTC）。NCCL Tests 和被测 NCCL 库各自版本化。运行记录同时保存两者，以及设备分配、消息范围和校验选项。</p>"
+    ],
+    [
+     "<p>As of 2026-11-23, the latest public NCCL Tests tag is v2.21.1, dated 2026-10-05 UTC. NCCL Tests and the NCCL library under test are versioned independently. Run records preserve both versions, plus device placement, the size sweep, and validation settings.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

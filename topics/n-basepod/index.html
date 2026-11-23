@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DGX BasePOD：从 DGX 服务器到企业 AI 集群 · Shan's Stack</title>
+<meta name="description" data-description-en="Five steps explain DGX BasePOD compute nodes, networking, partner storage, management, and scaling." content="分 5 步说明 DGX BasePOD 的计算节点、网络分工、伙伴存储、管理软件与集群扩展。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-basepod.css?v=029a4cf2">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-basepod">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-basepod">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="DGX BasePOD: From DGX Servers to an Enterprise AI Cluster">DGX BasePOD：从 DGX 服务器到企业 AI 集群</h1>
+        <p class="meta"><span data-en="5 steps · DGX, Cluster Networking, Partner Storage">5 步 · DGX、集群网络、伙伴存储</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/dgx-basepod-overview.html&quot;&gt;NVIDIA DGX BasePOD · Reference Architecture Overview&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/dgx-basepod-overview.html">NVIDIA DGX BasePOD · 参考架构概览</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/core-components.html&quot;&gt;NVIDIA DGX BasePOD · Core Components&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/core-components.html">NVIDIA DGX BasePOD · 核心组件</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/reference-architectures.html&quot;&gt;NVIDIA DGX BasePOD · Reference Topologies&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/reference-architectures.html">NVIDIA DGX BasePOD · 参考拓扑</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/dgx-superpod/&quot;&gt;NVIDIA DGX SuperPOD&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/dgx-superpod/">NVIDIA DGX SuperPOD 产品页</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-basepod.js?v=b3beae44"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-basepod",
+ "ar": [
+  2.2857142857142856,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "集群参考架构",
+    "A Cluster Reference Architecture"
+   ],
+   "d": [
+    "BasePOD 把 DGX 服务器、网络、经验证的伙伴存储与管理软件组合成企业 AI 集群。",
+    "BasePOD combines DGX servers, networking, validated partner storage, and management software into an enterprise AI cluster."
+   ],
+   "b": [
+    [
+     "<p>参考架构描述经过验证的部件及其连接关系。DGX 是集群的计算节点，也就是运行 AI 作业的服务器。NVIDIA 本页引用的 BasePOD 设计覆盖 DGX B200、H200 和 H100，提供节点以外的网络、存储与软件集成指导。</p>"
+    ],
+    [
+     "<p>A reference architecture describes validated components and their connections. DGX systems are the compute nodes, or servers that run AI jobs. The BasePOD design cited here covers DGX B200, H200, and H100 and describes how to integrate networking, storage, and software around those nodes.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "计算、存储与管理路径",
+    "Compute, Storage, and Management Paths"
+   ],
+   "d": [
+    "BasePOD 的一个 InfiniBand 设计将节点间计算、存储与带内管理、带外管理分配给不同网络。",
+    "One BasePOD InfiniBand design uses separate networks for inter-node compute, storage and in-band management, and out-of-band management."
+   ],
+   "b": [
+    [
+     "<p>计算网络承载分布式作业的节点间通信。这个设计使用 Ethernet 为存储访问和带内管理提供连接，另设带外管理网来访问基板管理控制器（BMC）。BMC 可在服务器操作系统之外提供硬件管理。</p>"
+    ],
+    [
+     "<p>The compute fabric carries traffic between nodes in distributed jobs. In this design, Ethernet provides storage access and in-band management. An out-of-band network reaches the baseboard management controller (BMC), which manages hardware independently of the server operating system.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "伙伴存储接入集群",
+    "How Partner Storage Connects"
+   ],
+   "d": [
+    "训练数据和模型检查点通过存储网络在 DGX 与经验证的伙伴存储之间传输。",
+    "Training data and model checkpoints travel between DGX systems and validated partner storage over the storage network."
+   ],
+   "b": [
+    [
+     "<p>检查点保存训练状态，供作业之后恢复。BasePOD 将伙伴存储作为集群的一层，验证范围以对应存储方案为准。计算节点在此设计中通过 Ethernet 访问存储。同一训练任务仍可使用独立的计算网执行节点间通信。</p>"
+    ],
+    [
+     "<p>A checkpoint saves training state for later recovery. BasePOD treats partner storage as a cluster layer, with validation scoped to the specific storage solution. Compute nodes access storage over Ethernet in this design. The same training job can still use the separate compute fabric for inter-node traffic.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "集群管理与作业调度",
+    "Cluster Management and Job Scheduling"
+   ],
+   "d": [
+    "Base Command Manager 管理节点部署和监控，参考设计可配合 Slurm 或 Kubernetes 管理工作负载。",
+    "Base Command Manager provisions and monitors nodes, and the reference design can use Slurm or Kubernetes to manage workloads."
+   ],
+   "b": [
+    [
+     "<p>集群管理负责让节点具备所需的软件环境，并跟踪节点健康。调度器根据作业需求分配可用资源。Slurm 是集群作业调度系统，Kubernetes 管理容器化工作负载。参考设计按部署需求选择相应的软件组合。</p>"
+    ],
+    [
+     "<p>Cluster management prepares the required software environment and tracks node health. A scheduler assigns available resources based on job requirements. Slurm schedules cluster jobs, and Kubernetes manages containerized workloads. The deployment requirements determine the software combination.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从节点扩展到集群",
+    "Scaling from Nodes to a Cluster"
+   ],
+   "d": [
+    "增加 DGX 节点时，交换机端口、存储方案和管理配置仍需按参考架构一起规划。",
+    "Adding DGX nodes also requires planning switch ports, storage, and management against the reference architecture."
+   ],
+   "b": [
+    [
+     "<p>BasePOD 提供不同规模的网络配置示例，线缆和交换机需求随拓扑变化。集群规模和选件取决于具体设计验证。DGX SuperPOD 是另一套参考架构及同名集群方案，有自己的计算单元、网络和运维设计。</p>"
+    ],
+    [
+     "<p>BasePOD provides network configurations at different scales. Cabling and switch requirements change with the topology. Supported scale and options depend on the validated design. DGX SuperPOD is a separate reference architecture and cluster offering, with its own compute units, networking, and operations design.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

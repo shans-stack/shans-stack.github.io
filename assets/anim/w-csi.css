@@ -1,0 +1,36 @@
+.ssa-w-csi{--path:var(--l4);--data:var(--l5);--signal:var(--l3);--warn:var(--l1)}
+.ssa-w-csi svg{display:block;width:100%;height:auto;overflow:visible}
+.ssa-w-csi-body{fill:var(--bg);stroke:var(--rule2);stroke-width:1.2}
+.ssa-w-csi-card[data-tone=store] .ssa-w-csi-body{fill:color-mix(in srgb,var(--data) 8%,var(--bg))}
+.ssa-w-csi-label,.ssa-w-csi-detail,.ssa-w-csi-note{font-family:var(--f);dominant-baseline:central;text-anchor:middle}
+.ssa-w-csi-label{fill:var(--ink);font-size:19px;font-weight:600}
+.ssa-w-csi-detail,.ssa-w-csi-note{fill:var(--ink2);font-size:16px}
+.ssa-w-csi-card[data-state=on] .ssa-w-csi-body{stroke:var(--data);stroke-width:2}
+.ssa-w-csi-card[data-state=on] .ssa-w-csi-detail{fill:var(--ink);font-weight:600}
+.ssa-w-csi-card[data-state=idle] .ssa-w-csi-body{stroke-dasharray:4 4}
+.ssa-w-csi-card[data-state=idle] .ssa-w-csi-label{fill:var(--ink2)}
+.ssa-w-csi-chip{fill:var(--data)}
+.ssa-w-csi-chip[data-color=""]{visibility:hidden}
+.ssa-w-csi-chip[data-color=B]{fill:var(--path)}
+.ssa-w-csi-chip[data-color=R]{fill:var(--warn)}
+.ssa-w-csi-wire{fill:none;stroke:var(--rule2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ssa-w-csi-arrow{fill:var(--rule2)}
+.ssa-w-csi-wire[data-kind=control]{stroke-dasharray:5 4}
+.ssa-w-csi-wire.ssa-w-csi-done{stroke:var(--data)}
+.ssa-w-csi-arrow.ssa-w-csi-done,.ssa-w-csi-packet{fill:var(--data)}
+.ssa-w-csi-wire.ssa-w-csi-done[data-kind=control]{stroke:var(--path)}
+.ssa-w-csi-arrow.ssa-w-csi-done[data-kind=control],.ssa-w-csi-packet[data-kind=control]{fill:var(--path)}
+.ssa-w-csi-wire.ssa-w-csi-done[data-kind=signal]{stroke:var(--signal)}
+.ssa-w-csi-arrow.ssa-w-csi-done[data-kind=signal],.ssa-w-csi-packet[data-kind=signal]{fill:var(--signal)}
+@media(min-width:641px) and (max-width:720px){
+  .topic-w-csi .mhost{aspect-ratio:var(--ar)}
+}
+@media(max-width:640px){
+  .ssa-w-csi-label{font-size:16px}
+  .ssa-w-csi-detail,.ssa-w-csi-note{font-size:15px}
+  .topic-w-csi.present .stage .figbox{margin:0}
+  .topic-w-csi.present .stage .cap{grid-template-columns:1fr;gap:4px;margin-top:8px}
+  .topic-w-csi.present .stage .cnt{grid-row:auto;font-size:14px;line-height:1.2}
+  .topic-w-csi.present .stage h2{font-size:24px;line-height:1.25}
+  .topic-w-csi.present .stage .desc{font-size:17px;line-height:1.45}
+}

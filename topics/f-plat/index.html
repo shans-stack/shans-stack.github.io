@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rafay Platform：GPU 云的控制平面 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明Rafay Platform：GPU 云的控制平面。Rafay 的 GPU 云运营平台，提供自助交付、租户治理与资源用量跟踪。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-plat.css?v=a7a64bf3">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-plat">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Rafay Platform: The Control Plane for a GPU Cloud">Rafay Platform：GPU 云的控制平面</h1>
+        <p class="meta"><span data-en="6 steps · GPU Cloud Platforms">6 步 · GPU 云平台产品</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-GPU-PaaS-Deployment-Guide.pdf&quot;&gt;Rafay · GPU PaaS Deployment Guide&lt;/a&gt;"><a href="https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-GPU-PaaS-Deployment-Guide.pdf">Rafay · GPU PaaS 部署指南</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/ai-and-cloud-native-blog/a-differentiated-approach-to-scaling-kubernetes-cluster-management-operations&quot;&gt;Rafay · Multicluster Controller and Connector Architecture&lt;/a&gt;"><a href="https://rafay.co/ai-and-cloud-native-blog/a-differentiated-approach-to-scaling-kubernetes-cluster-management-operations">Rafay · 多集群控制器与连接器架构</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-Controller-Deployment-in-Air-Gapped-Environments.pdf&quot;&gt;Rafay · Air-Gapped Controller Deployment Guide&lt;/a&gt;"><a href="https://rafay.co/wp-content/uploads/2024/11/Rafay-Platform-Controller-Deployment-in-Air-Gapped-Environments.pdf">Rafay · 气隙控制器部署指南</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/solutions/self-service&quot;&gt;Rafay · Self-Service Compute and Governance&lt;/a&gt;"><a href="https://rafay.co/solutions/self-service">Rafay · 自助计算与治理</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/solutions/enterprise-gpu-paas&quot;&gt;Rafay · GPU Resource Usage and Chargeback&lt;/a&gt;"><a href="https://rafay.co/solutions/enterprise-gpu-paas">Rafay · GPU 资源用量与成本分摊</a></li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/platform/ai-token-factory&quot;&gt;Rafay · Token Factory&lt;/a&gt;"><a href="https://rafay.co/platform/ai-token-factory">Rafay · Token Factory</a></li>
+      <li data-en="Illustrative, not measured.">动画为示意，不代表实测数字。</li>
+      <li data-en="&lt;a href=&quot;https://rafay.co/press-release/rafay-systems-and-datadirect-networks-partner-to-power-next-generation-ai-factories&quot;&gt;Rafay · Rafay Systems and DataDirect Networks Announce Collaboration (2026-03-19)&lt;/a&gt;"><a href="https://rafay.co/press-release/rafay-systems-and-datadirect-networks-partner-to-power-next-generation-ai-factories">Rafay · Rafay Systems 与 DDN 宣布合作（2026-03-19）</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-plat.js?v=8ccd766b"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-plat",
+  "ar": [880/300,350/410],
+  "steps": [
+    {"t": ["纳管资源并发布目录", "Manage Inventory and Publish a Catalog"], "d": ["Rafay 的 GPU 云运营平台，提供自助交付、租户治理与资源用量跟踪。", "The Rafay GPU cloud operations platform, providing self-service delivery, tenant governance and resource usage tracking."], "b": [["<p>Rafay Platform 的控制平面负责管理资源、策略和交付任务。运营方登记可用基础设施，在 PaaS Studio 中定义可复用的计算与服务模板，再把可申请的规格发布给租户。目录可包括裸金属、虚拟机、Kubernetes 集群和托管 AI 服务。</p>"], ["<p>The Rafay Platform control plane manages resources, policies, and provisioning tasks. Operators register infrastructure, define reusable compute and service templates in PaaS Studio, and publish offerings for tenants to request. A catalog can include bare metal, VMs, Kubernetes clusters, and managed AI services.</p>"]]},
+    {"t": ["代理发起出站连接", "The Agent Initiates the Connection"], "d": ["受管环境内的代理发起出站 TLS 连接，通过已建立的管理通道接收任务并报告状态。", "The local agent initiates outbound TLS to receive tasks and report status."], "b": [["<p>Rafay 的托管控制器部署指南描述了由受管环境向控制器发起的加密连接。部署代理在环境内执行模板和工作流。出站描述的是连接由哪一侧发起，建立后任务与状态可双向传递。应用流量和应用端点的网络访问由各自配置决定。</p>"], ["<p>Rafay’s hosted-controller deployment guide describes encrypted connections initiated from the managed environment. Deployment agents execute templates and workflows locally. Outbound describes which side initiates the connection. Once established, it carries tasks and status in both directions. Application traffic and endpoint access follow their own network configuration.</p>"]]},
+    {"t": ["跨数据中心与云管理交付", "Manage Delivery Across Data Centers and Clouds"], "d": ["同一个 Rafay 控制平面可统筹不同站点的资源，各环境在其自身的基础设施上执行部署。", "One Rafay control plane can coordinate resources across sites, with each environment executing deployments on its own infrastructure."], "b": [["<p>运营方可在私有数据中心和公有云纳管不同资源，将已批准的模板用于各自适用的环境。以 GPU 工作区为例，申请和审批规则可集中配置，目标环境仍提供实际的计算、网络与存储。</p>"], ["<p>Operators can manage resources in private data centers and public clouds and use approved templates where they apply. For a GPU workspace, request and approval rules can be defined centrally while the target environment supplies the actual compute, networking, and storage.</p>"]]},
+    {"t": ["在气隙内自托管控制器", "Self-Host the Controller Inside an Air Gap"], "d": ["气隙部署把控制器、受管资源和部署依赖放在隔离网络内，管理链路不依赖外部托管控制器。", "An air-gapped deployment keeps the controller, managed resources, and provisioning dependencies inside an isolated network without relying on the hosted controller."], "b": [["<p>气隙环境与外部网络隔离。Rafay 提供可在此类环境内运行的自托管控制器。安装包和所需依赖须事先准备，受管环境连接本地控制器，部署工作从隔离区内可用的资源取得依赖。</p>"], ["<p>An air-gapped environment is isolated from external networks. Rafay provides a self-hosted controller that can run inside that boundary. Installation packages and dependencies are prepared in advance. Managed environments connect to the local controller and provisioning uses dependencies available inside the isolated network.</p>"]]},
+    {"t": ["集中执行租户治理", "Apply Tenant Governance Centrally"], "d": ["Rafay 以组织和项目划分访问范围，为资源申请设置角色、配额与策略。", "Rafay uses organizations and projects to scope access and applies roles, quotas, and policies to resource requests."], "b": [["<p>运营方可控制哪些租户和项目可以使用某个服务规格。基于角色的访问控制（RBAC）决定谁可以发起操作，配额约束可分配的资源量，审计记录用于追踪操作。各项目可配置各自的角色、配额和资源。</p>"], ["<p>Operators can control which tenants and projects can use each offering. Role-based access control (RBAC) governs who can act, quotas bound resource allocation, and audit records track actions. Projects can have separate roles, quotas, and resources.</p>"]]},
+    {"t": ["归集资源与模型用量", "Attribute Resource and Model Usage"], "d": ["Rafay 跟踪资源用量，其 Token Factory 功能可另按租户、模型和端点记录 Token。", "Rafay tracks resource usage. Its Token Factory capabilities can also record tokens by tenant, model, and endpoint."], "b": [["<p>计算资源用量可汇总到组织或项目，用于成本分摊。部署模型服务时，Rafay Token Factory 可分别计量输入和输出 Token。两类用量各自归集，分别回答租户占用了多少计算资源和调用了多少模型服务。</p>","<p>DDN 与 Rafay Systems 于 2026 年 3 月 19 日宣布合作，面向企业和 neocloud 运营方部署和运营大规模 AI 环境。</p>"], ["<p>Compute resource usage can be attributed to an organization or project for cost allocation. For a deployed model service, Rafay Token Factory can meter input and output tokens separately. These records describe different things: the compute capacity a tenant used and the model service it consumed.</p>","<p>DDN and Rafay Systems announced a collaboration on March 19, 2026, aimed at helping enterprises and neocloud providers deploy and run large-scale AI environments.</p>"]]}
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

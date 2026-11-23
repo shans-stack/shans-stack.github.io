@@ -1,0 +1,54 @@
+.v-cloud-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f);
+}
+.v-cloud-label,
+.v-cloud-detail {
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-size: 20px;
+  font-weight: 600;
+}
+.v-cloud-detail {
+  fill: var(--ink2);
+  font-size: 17px;
+  font-weight: 400;
+}
+.v-cloud-node {
+  fill: var(--bg);
+  stroke: var(--rule2);
+}
+.v-cloud-wire,
+.v-cloud-control {
+  fill: none;
+  stroke: var(--ink3);
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.v-cloud-control {
+  stroke: var(--rule2);
+  stroke-dasharray: 5 5;
+}
+.v-cloud-data { fill: var(--ink); }
+.v-cloud-operation {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 1.6px;
+}
+
+@media (width > 640px) and (width <= 720px) {
+  .topic-v-cloud .mhost { aspect-ratio: var(--ar); }
+}
+
+@media (max-width: 640px) {
+  .v-cloud-label { font-size: 17px; }
+  .v-cloud-detail { font-size: 16px; }
+  .topic-v-cloud .stage .figbox { margin-block: 0; }
+  .topic-v-cloud .stage .cap { display: block; margin-top: 8px; }
+  .topic-v-cloud .stage h2 { font-size: 24px; }
+  .topic-v-cloud .stage .desc { font-size: 17px; line-height: 1.4; }
+}

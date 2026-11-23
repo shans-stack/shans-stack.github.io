@@ -1,0 +1,28 @@
+.d-s3ds-diagram {
+  display:block; width:100%; height:auto; overflow:hidden;
+  font-family:var(--f); --diagram-data:var(--l5); --diagram-native:var(--l6);
+  --diagram-request:var(--l4); --diagram-key:var(--l3); --diagram-sealed:var(--l8);
+}
+.d-s3ds-box {fill:var(--bg); stroke:var(--rule2); stroke-width:1.25}
+.d-s3ds-node[data-state=idle] .d-s3ds-box {stroke-dasharray:4 4; fill:var(--surface)}
+.d-s3ds-node[data-state=blocked] .d-s3ds-box {stroke:var(--l1); fill:color-mix(in srgb,var(--l1) 13%,var(--surface))}
+.d-s3ds-node[data-state=done] .d-s3ds-box {stroke:var(--l5); fill:color-mix(in srgb,var(--l5) 13%,var(--surface))}
+.d-s3ds-title,.d-s3ds-detail,.d-s3ds-note {dominant-baseline:central}
+.d-s3ds-title {fill:var(--ink); font-size:20px; font-weight:600}
+.d-s3ds-detail {fill:var(--ink2); font-size:18px}
+.d-s3ds-note {fill:var(--ink3); font-size:16px}
+.d-s3ds-route {color:var(--rule2)}
+.d-s3ds-route[data-state=active] {color:var(--route-tone)}
+.d-s3ds-wire,.d-s3ds-arrow {fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.d-s3ds-route[data-state=idle] .d-s3ds-wire {stroke-dasharray:4 5}
+.d-s3ds-data {--route-tone:var(--diagram-data)}
+.d-s3ds-native {--route-tone:var(--diagram-native)}
+.d-s3ds-key {--route-tone:var(--diagram-key)}
+.d-s3ds-request {--route-tone:var(--diagram-request)}
+.d-s3ds-sealed {--route-tone:var(--diagram-sealed)}
+.d-s3ds-packet,.d-s3ds-stored {fill:var(--route-tone); stroke:var(--surface); stroke-width:1}
+@media (max-width:640px) {
+  .d-s3ds-title {font-size:16.5px}
+  .d-s3ds-detail {font-size:15.5px}
+  .d-s3ds-note {font-size:15px}
+}

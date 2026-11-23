@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HiCache：SGLang 分层 KV Cache · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 SGLang HiCache 的三层缓存、前缀匹配、预取和写入策略。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-hicache.css?v=725a4e83">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-hicache">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-hicache">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="HiCache: Hierarchical KV Cache in SGLang">HiCache：SGLang 分层 KV Cache</h1>
+        <p class="meta"><span data-en="5 steps · HiRadixTree, three-tier caching, prefetch and writeback">5 步 · HiRadixTree、三级缓存、预取与写回</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.sglang.io/docs/advanced_features/hicache&quot;&gt;SGLang Hierarchical KV Caching&lt;/a&gt;"><a href="https://docs.sglang.io/docs/advanced_features/hicache">SGLang HiCache 官方文档</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.sglang.io/docs/advanced_features/hicache_design&quot;&gt;HiCache System Design and Optimization&lt;/a&gt;"><a href="https://docs.sglang.io/docs/advanced_features/hicache_design">HiCache 系统设计与优化</a></li>
+      <li data-en="Schematic, not measured.">示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Shan's Stack</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-hicache.js?v=fda0cf99"></script>
+<script>
+window.SS_TOPIC_CFG={
+  anim: "f-hicache",
+  ar: [900/350,380/420],
+  steps: [
+    {
+      "t": [
+        "在 SGLang 中设置缓存层级",
+        "Organizing Cache Tiers Inside SGLang"
+      ],
+      "d": [
+        "HiCache 使用显存 L1、主机内存 L2，以及按配置接入的外部存储 L3。",
+        "HiCache uses GPU memory as L1, host memory as L2, and a configured external storage backend as L3."
+      ],
+      "b": [
+        [
+          "<p>KV Cache 是注意力层为已处理 token 保留的键和值。L1 保存 GPU 可直接使用的缓存，L2 提供本实例的主机内存缓存。L3 为可选层，只有后端和配置提供共享访问时，才能用于跨实例复用。</p>"
+        ],
+        [
+          "<p>The KV cache holds keys and values retained by attention layers for processed tokens. L1 holds cache the GPU can use directly, and L2 provides host-memory cache for the local instance. Optional L3 enables cross-instance reuse when the backend and its configuration provide shared access.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "用 HiRadixTree 匹配本地前缀",
+        "Matching Local Prefixes with HiRadixTree"
+      ],
+      "d": [
+        "HiRadixTree 用同一棵本地前缀索引定位在 L1 和 L2 连续命中的键值。",
+        "HiRadixTree uses one local prefix index to locate a contiguous match across L1 and L2."
+      ],
+      "b": [
+        [
+          "<p>HiRadixTree 是 SGLang 基数树索引的分层扩展，记录 token 序列与本地缓存的位置。查找可以得到一段已在显存的前缀，紧接着一段仍在主机内存的前缀。索引查找阶段只定位数据，实际复制随后进行。</p>"
+        ],
+        [
+          "<p>HiRadixTree extends SGLang’s radix-tree index to track token sequences and their local cache locations across tiers. Lookup may find the first part of a prefix in GPU memory and its contiguous continuation in host memory. The lookup locates those entries, with data copying handled separately.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 L3 预取连续命中的部分",
+        "Prefetching the Contiguous L3 Match"
+      ],
+      "d": [
+        "本地匹配结束后，达到触发门槛的 L3 连续命中部分可以预先读入 L2。",
+        "After local matching, a contiguous L3 hit that meets the trigger threshold can be prefetched into L2."
+      ],
+      "b": [
+        [
+          "<p>预取指在计算需要数据之前发起读取。HiCache 查询 L3 中紧随本地命中部分的缓存，按配置决定何时停止等待。预取停止后，已取得的缓存可以与本地命中部分一起使用。</p>"
+        ],
+        [
+          "<p>Prefetching starts a read before computation needs the data. HiCache checks L3 for the continuation of the local match and follows its configured policy for when to stop waiting. Data already retrieved can be used alongside the local cache hit.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "将主机内存中的命中块装入显存",
+        "Loading Host Cache Hits into GPU Memory"
+      ],
+      "d": [
+        "L2 中可复用的键值复制回 L1，SGLang 可按模型层重叠传输与计算。",
+        "Reusable keys and values are copied from L2 to L1, and SGLang can overlap transfers with computation across model layers."
+      ],
+      "b": [
+        [
+          "<p>L2 包括原有主机缓存，也可以包括刚从 L3 预取的数据。进入预填充阶段时，已经抵达 GPU 的键值供模型使用。按层装载时，GPU 可以计算当前模型层，同时把下一层所需的缓存传到显存。</p>"
+        ],
+        [
+          "<p>L2 can contain both existing host cache and data just prefetched from L3. During prefill, keys and values that have reached GPU memory are ready for the model. With layer-by-layer loading, the GPU can compute the current model layer while cache for the next layer moves into GPU memory.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "按写入策略保留下层副本",
+        "Retaining Copies According to the Write Policy"
+      ],
+      "d": [
+        "写入策略决定缓存何时向下一层复制，包括即时写入、按访问频率选择，以及驱逐时回写。",
+        "The write policy determines when KV data moves down a tier, such as on access, after repeated access, or on eviction."
+      ],
+      "b": [
+        [
+          "<p>即时写入（write-through）在访问时将缓存写到下一层，选择性即时写入在访问频率达到条件后写入。回写（write-back）把写入推迟到上层驱逐时。策略决定保留副本的时机，也会改变下层的写入流量。</p>"
+        ],
+        [
+          "<p>Write-through writes cache to the next tier on access. Selective write-through writes after an access frequency threshold is reached. Write-back defers the write until upper-tier eviction. The policy changes when copies become available and how much write traffic lower tiers receive.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

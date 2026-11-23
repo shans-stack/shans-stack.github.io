@@ -50,7 +50,3 @@
 .d-exa .d-exa-tgl[hidden]{display:block;opacity:0;pointer-events:none}
 .d-exa .d-exa-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
 @media (max-width:640px){.d-exa .d-exa-tgl{font-size:14px;padding:6px 12px}}
-/* 部件上的 DDN logo：没有白色版，深色模式在 logo 后垫浅灰底 #DADCDF，logo 不改色 */
-.d-exa .lgbk{fill:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .d-exa .lgbk{fill:#DADCDF}}
-:root[data-theme=dark] .d-exa .lgbk{fill:#DADCDF}

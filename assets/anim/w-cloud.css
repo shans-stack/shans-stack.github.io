@@ -1,0 +1,25 @@
+.w-cloud-scene{display:block;width:100%;height:auto;overflow:hidden;font:500 17px var(--f)}
+.w-cloud-scene text{fill:var(--ink);dominant-baseline:central}
+.w-cloud-scene .w-cloud-title{font-size:19px;font-weight:700}
+.w-cloud-scene .w-cloud-row,.w-cloud-scene .w-cloud-annotation{fill:var(--ink2)}
+.w-cloud-scene .w-cloud-note{fill:var(--ink3)}
+.w-cloud-card{fill:var(--surface);stroke:var(--rule2);stroke-width:1.2}
+.w-cloud-key .w-cloud-card,.w-cloud-a .w-cloud-card{stroke:var(--l6);stroke-width:1.8}
+.w-cloud-b .w-cloud-card{stroke:var(--l4);stroke-width:1.8}
+.w-cloud-off .w-cloud-card{stroke-dasharray:5 5}
+.w-cloud-route{fill:none;stroke:var(--l6);stroke-width:2;stroke-linejoin:round}
+.w-cloud-route.w-cloud-signal{stroke:var(--l4);stroke-dasharray:5 3}
+.w-cloud-route.w-cloud-b,.w-cloud-route.w-cloud-meta{stroke:var(--l4)}
+.w-cloud-route.w-cloud-idle{stroke:var(--rule2);stroke-dasharray:5 5}
+.w-cloud-scene .w-cloud-route-label{fill:var(--ink2);paint-order:stroke;stroke:var(--diagram-bg,var(--surface));stroke-width:5;stroke-linejoin:round}
+.present .w-cloud-scene{--diagram-bg:var(--bg)}
+.w-cloud-packet,.w-cloud-mark{fill:var(--l6)}
+.w-cloud-packet{stroke:var(--surface);stroke-width:1}
+.w-cloud-packet.w-cloud-signal,.w-cloud-packet.w-cloud-b,.w-cloud-packet.w-cloud-meta,.w-cloud-mark.w-cloud-b{fill:var(--l4)}
+.w-cloud-mark.w-cloud-p{fill:var(--l2)}
+@media(max-width:640px){
+  .w-cloud-scene{font-size:15px}
+  .w-cloud-scene .w-cloud-title{font-size:16px}
+}
+.w-cloud-route.w-cloud-parity{stroke:var(--l2)}
+.w-cloud-packet.w-cloud-parity{fill:var(--l2)}

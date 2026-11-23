@@ -5,23 +5,15 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-cnode.css，全部限定在 .ssa-v-cnode 容器之内。
-   VAST 字标取自 assets/brand/vast-wordmark-*.svg（路径原样内嵌为 symbol，浅色纯黑、深色纯白）。 */
+   样式在 assets/anim/v-cnode.css，全部限定在 .ssa-v-cnode 容器之内。 */
 (function(){
 var EN={"NFS 客户端": "NFS client", "SMB 客户端": "SMB client", "S3 客户端": "S3 client", "NVMe-oF 网络": "NVMe-oF network", "协议": "Protocols", "纠删码": "EC", "数据缩减": "Reduce", "启动盘": "Boot drive only", "没有数据盘": "", "不在内存攒写入": "No RAM write buffer", "不缓存": "No cache", "地址 1": "IP 1", "地址 2": "IP 2", "地址 3": "IP 3", "协议、纠删码、数据缩减都在 CNode 上算": "Protocols, erasure coding and data reduction all run on the CNode", "数据都在 DBox 的盘上": "All data lives on the DBox drives", "两块 SCM 都写好，才回确认": "Both SCM drives written, then the ACK", "第 1 次读": "1st read", "第 2 次读：照样去盘上取": "2nd read: still goes to the drive", "三台 CNode 读到同一个文件": "Three CNodes read the same file", "SMB 客户端连着地址 2": "SMB client is on IP 2", "第 2 台坏了，地址 2 漂走": "CNode 2 fails; IP 2 moves", "地址 2 由第 3 台接手": "CNode 3 takes over IP 2", "VAST CNode：处理全部协议与存储逻辑，自己不存数据，写入落到两块 SCM 盘才确认，任何一台都能接任何请求": "VAST CNode: runs all protocol and storage logic, keeps no data, acknowledges a write only once it is on two SCM drives, and any CNode can take any request"};
 var ENM={"启动盘": "Boot drive", "没有数据盘": "No data drive", "不在内存攒写入": "No RAM buffer", "协议、纠删码、数据缩减都在 CNode 上算": "Protocols, EC and reduction run on CNodes"};
 var ARIA="VAST CNode：处理全部协议与存储逻辑，自己不存数据，写入落到两块 SCM 盘才确认，任何一台都能接任何请求";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function sprite(){
-  if(document.getElementById('ssa-vast-wm'))return;
-  var d=document.createElementNS(NS,'svg');d.setAttribute('width','0');d.setAttribute('height','0');d.setAttribute('aria-hidden','true');d.setAttribute('focusable','false');d.style.position='absolute';
-  d.innerHTML='<symbol id="ssa-vast-wm" viewBox="0 0 66 14"><path d="m11.918.916-.783-.375a.919.919 0 0 0-1.23.444l-.22.414L6.235 8.77 2.788 1.4l-.22-.414a.917.917 0 0 0-1.23-.444L.556.916c-.466.219-.69.804-.474 1.273l.195.383 4.689 10.024a1.383 1.383 0 0 0 1.248.797h.042a1.385 1.385 0 0 0 1.248-.797l4.689-10.024.195-.383c.217-.469-.007-1.054-.47-1.273ZM19.311 12.926l.784.375a.918.918 0 0 0 1.23-.444l.22-.414 3.451-7.371 3.448 7.371.22.414a.918.918 0 0 0 1.23.444l.785-.375c.462-.221.687-.804.469-1.271l-.195-.383-4.689-10.024a1.384 1.384 0 0 0-1.248-.797h-.041a1.386 1.386 0 0 0-1.25.797l-4.688 10.024-.195.383c-.219.467.006 1.05.47 1.27ZM47.275 3.212a.918.918 0 0 0 .966-.882l.03-.868c.02-.512-.393-.982-.908-1.006L46.887.45h-5.413c-.03 0-.059 0-.092.004-1.433.095-3.565 1.126-3.565 3.572 0 2.487 2.104 3.599 3.236 3.846l2.823.677c.041.009.082.017.124.023.15.022.896.176.896 1.014 0 .504-.253.801-.754.885h-5.318l-.362.005a.918.918 0 0 0-.966.883l-.03.868c-.02.512.393.982.908 1.006l.45.005h5.413c.043 0 .086 0 .128-.005 1.327-.123 3.301-1.196 3.301-3.647 0-2.539-2.051-3.547-3.195-3.742l-2.787-.668-.039-.008c-.042-.01-1.058-.235-1.058-1.142 0-.606.578-.769.953-.81h5.347l.388-.004ZM66 1.365a.916.916 0 0 0-.938-.914H55.5a.919.919 0 0 0-.938.914v.878c0 .513.427.968.942.976H58.897v9.086a.914.914 0 0 0 .56.864.919.919 0 0 0 .355.073h.879c.512 0 .968-.426.976-.94V3.217H65.06c.515-.007.943-.463.942-.975l-.003-.878Z"/></symbol>';
-  document.body.appendChild(d);
-}
 function mount(host,opts){
 opts=opts||{};
-sprite();
 host.classList.add('ssa-v-cnode');host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','ssa-scene');svg.setAttribute('role','img');host.appendChild(svg);
 const tgl=document.createElement('button');tgl.className='tgl';tgl.type='button';tgl.hidden=true;host.appendChild(tgl);
@@ -53,10 +45,6 @@ function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a==null?1:a;o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=o.a}
 function cls(o,c,on){o.el.classList.toggle(c,!!on)}
 /* ---------- 场景（画面内容与原动画稿一致） ---------- */
-/* 厂商 logo：VAST 字标放在部件角上。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;return el('use',{href:'#ssa-vast-wm',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm brand-part'},p)}
-/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
-function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.63*s.length;const w=h*66/14,gap=Math.round(fs*0.4),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
 /* CNode：跑全部逻辑、自己不存数据 */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const tw=(s,fs)=>[...s].reduce((a,c)=>a+(c.charCodeAt(0)>0x2e80?fs:fs*0.58),0);
@@ -68,7 +56,7 @@ const SCENE={
    cn:{x:248,w:280,h:104,cs:[120,240,360]},fabX:588,
    db:{x:632,w:308,h:172,cs:[146,334],dnW:96,dnH:34,dnDx:70,dnDy:-34,barDy:2,drW:36,drGap:12,drDy:14,drH:42,lblDy:72,ttl:{dx:14,dy:20}},
    cap:{x:944,y:30,a:'end'},note:{x:480,y:450}};
-  return {W:480,H:476,mobile:true,f:{lbl:17,sm:16,cap:17,cn:19,chip:16},pw:20,ph:15,dr:6,sp:200,
+  return {W:480,H:476,mobile:true,f:{lbl:17,sm:17,cap:17,cn:19,chip:17},pw:20,ph:15,dr:6,sp:200,
    cl:{y:10,w:142,h:48,cs:[82,240,398]},busY:80,
    cn:{y:100,w:150,h:112,cs:[82,240,398]},fabY:238,
    db:{y:260,w:226,h:160,cs:[121,359],dnW:88,dnH:32,dnDx:30,dnDy:24,barDy:72,drW:28,drGap:8,drDy:84,drH:40,lblDy:140,ttl:{dx:10,dy:16}},
@@ -100,7 +88,6 @@ const SCENE={
   D.cs.forEach((c,b)=>{
    const r=M?{x:c-D.w/2,y:D.y,w:D.w,h:D.h}:{x:D.x,y:c-D.h/2,w:D.w,h:D.h};E.dbr.push(r);
    box(r,g,'box soft',14);tx(r.x+D.ttl.dx,r.y+D.ttl.dy,'DBox',f.sm,'ttl','start',g);
-   /* VAST 字标：只标第一台 DBox，紧跟在「DBox」标题后面同一行 */if(b===0)vmark(r.x+D.ttl.dx+f.sm*2.5+9,r.y+D.ttl.dy,12,g,'start');
    const base=M?r.y:c;
    const dnc=M?P(c+D.dnDx,r.y+D.dnDy+D.dnH/2):P(r.x+D.dnDx,c+D.dnDy);
    const dr={x:dnc.x-D.dnW/2,y:dnc.y-D.dnH/2,w:D.dnW,h:D.dnH};E.dn.push(dr);
@@ -251,5 +238,186 @@ host.__anim=ctrl;
 return ctrl;
 }
 window.SSAnim=window.SSAnim||{};
-window.SSAnim['v-cnode']={steps:6,mount:mount};
+window.SSAnim['v-cnode']={steps:7,mount:mount, figures: {
+ "gen6": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "1U · 单节点",
+    "1U · one node"
+   ]
+  ],
+  [
+   [
+    "处理器",
+    "Processor"
+   ],
+   [
+    "EPYC 9555P · Turin",
+    "EPYC 9555P · Turin"
+   ]
+  ],
+  [
+   [
+    "内存",
+    "Memory"
+   ],
+   [
+    "384 GB DDR5-6400",
+    "384 GB DDR5-6400"
+   ]
+  ],
+  [
+   [
+    "网络",
+    "Network"
+   ],
+   [
+    "1 或 2 块 ConnectX-7",
+    "1 or 2 ConnectX-7 NICs"
+   ]
+  ]
+ ],
+ "gen5": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "1U · 单节点",
+    "1U · one node"
+   ]
+  ],
+  [
+   [
+    "处理器",
+    "Processor"
+   ],
+   [
+    "EPYC 9454P · Genoa",
+    "EPYC 9454P · Genoa"
+   ]
+  ],
+  [
+   [
+    "内存",
+    "Memory"
+   ],
+   [
+    "384 GB DDR5-4800",
+    "384 GB DDR5-4800"
+   ]
+  ],
+  [
+   [
+    "网络",
+    "Network"
+   ],
+   [
+    "1 或 2 块 ConnectX-7",
+    "1 or 2 ConnectX-7 NICs"
+   ]
+  ]
+ ],
+ "ice-lake": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "2U · 四节点",
+    "2U · four nodes"
+   ]
+  ],
+  [
+   [
+    "每节点处理器",
+    "CPU per Node"
+   ],
+   [
+    "2 × Xeon Gold 6326",
+    "2 × Xeon Gold 6326"
+   ]
+  ],
+  [
+   [
+    "每节点内存",
+    "Memory per Node"
+   ],
+   [
+    "256 GB DDR4-3200",
+    "256 GB DDR4-3200"
+   ]
+  ],
+  [
+   [
+    "网卡组合",
+    "Network Options"
+   ],
+   [
+    "ConnectX-6 / CX-7",
+    "ConnectX-6 / CX-7"
+   ]
+  ]
+ ],
+ "cascade-lake": [
+  [
+   [
+    "机箱",
+    "Chassis"
+   ],
+   [
+    "四个 CNode",
+    "Four CNodes"
+   ]
+  ],
+  [
+   [
+    "统一网络",
+    "Unified Network"
+   ],
+   [
+    "1 × ConnectX-5",
+    "1 × ConnectX-5"
+   ]
+  ],
+  [
+   [
+    "拆分网络",
+    "Split Networks"
+   ],
+   [
+    "2 × CX-5 / CX-5 + CX-6",
+    "2 × CX-5 / CX-5 + CX-6"
+   ]
+  ]
+ ],
+ "broadwell": [
+  [
+   [
+    "处理器平台",
+    "Processor Platform"
+   ],
+   [
+    "Intel Broadwell",
+    "Intel Broadwell"
+   ]
+  ],
+  [
+   [
+    "网卡",
+    "Network Adapter"
+   ],
+   [
+    "1 块双端口卡",
+    "1 dual-port adapter"
+   ]
+  ]
+ ]
+}};
 })();

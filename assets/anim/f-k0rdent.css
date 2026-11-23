@@ -1,0 +1,19 @@
+.f-k0rdent-scene{display:block;width:100%;height:auto;font-family:var(--f)}
+.f-k0rdent-card{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:4px 7px;border:1px solid var(--rule2);border-radius:5px;background:var(--surface);color:var(--ink);text-align:center;line-height:1.2}
+.f-k0rdent-focus{background:color-mix(in srgb,var(--l8) 10%,var(--surface));border-color:var(--l8)}
+.f-k0rdent-title{font-size:18px;font-weight:600;white-space:nowrap}
+.f-k0rdent-detail{font-size:15px;color:var(--ink2)}
+.f-k0rdent-route{fill:none;stroke:var(--l8);stroke-width:1.5;stroke-linejoin:round}
+.f-k0rdent-secondary{stroke:var(--l6)}
+.f-k0rdent-return{stroke-dasharray:4 3}
+.f-k0rdent-arrow,.f-k0rdent-signal{fill:var(--l8)}
+.f-k0rdent-alternate{fill:var(--l6)}
+.f-k0rdent-label,.f-k0rdent-note{font-size:15px;fill:var(--ink3)}
+@media (641px <= width <= 720px){main[data-station="f-k0rdent"] .mhost{aspect-ratio:var(--ar)}}
+@media (max-width:640px){
+  body.topic-f-k0rdent.present .stage .figbox{margin:0}
+  body.topic-f-k0rdent.present .stage .cap{display:block;margin-top:0}
+  body.topic-f-k0rdent.present .stage h2{font-size:24px}
+  body.topic-f-k0rdent.present .stage .desc{font-size:16px;line-height:1.5}
+}

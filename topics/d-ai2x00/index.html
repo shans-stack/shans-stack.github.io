@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI2000 与 AI2200 如何承载 Infinia · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 AI2000 与 AI2200 在 Infinia 中的角色、硬件组成和选型。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-ai2x00.css?v=c9d67915">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-ai2x00">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="How AI2000 and AI2200 Run Infinia">AI2000 与 AI2200 如何承载 Infinia</h1>
+        <p class="meta"><span data-en="6 steps · Infinia, NVMe, inference">6 步 · Infinia、NVMe、推理</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://ddn.co.jp/wp/wp-content/uploads/2025/08/InfiniaAI2000-date-sheet.pdf&quot;&gt;DDN Japan AI2000 Datasheet&lt;/a&gt;"><a class="gen-source" href="https://ddn.co.jp/wp/wp-content/uploads/2025/08/InfiniaAI2000-date-sheet.pdf">DDN 日本 AI2000 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/download/ai2200-datasheet/&quot;&gt;DDN AI2200 Datasheet&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/download/ai2200-datasheet/">DDN AI2200 数据表</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/products/infinia/&quot;&gt;DDN Infinia Product Page&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/products/infinia/">DDN Infinia 产品页</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-tech-brief-operational-simplicity-rebrand-2024.pdf&quot;&gt;DDN Infinia Distributed Deployment Brief&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/wp-content/uploads/2024/09/ddn-infinia-tech-brief-operational-simplicity-rebrand-2024.pdf">DDN Infinia 分布式部署技术简报</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.ddn.com/blog/1-billion-scale-rag-out-of-the-box-with-ddn-infinia/&quot;&gt;DDN Infinia RAG Technical Article&lt;/a&gt;"><a class="gen-source" href="https://www.ddn.com/blog/1-billion-scale-rag-out-of-the-box-with-ddn-infinia/">DDN Infinia RAG 技术文章</a></li>
+      <li data-en="Animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-ai2x00.js?v=7b418b54"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-ai2x00",
+ "ar": [
+  2.710843373493976,
+  0.9361702127659575
+ ],
+ "steps": [
+  {
+   "t": [
+    "推理系统中的存储节点",
+    "Storage Nodes in an Inference System"
+   ],
+   "d": [
+    "在 Infinia 部署中，AI2000 与 AI2200 为推理和数据处理应用提供存储服务。",
+    "In Infinia deployments, the AI2000 and AI2200 provide storage services for inference and data-processing applications."
+   ],
+   "b": [
+    [
+     "<p>AI2000 和 AI2200 是 DDN 面向 Infinia 的全闪存储一体机。Infinia 是 DDN 的分布式数据平台，可通过 S3 兼容接口存取对象。推理服务器运行模型，通过存储网络读取模型或检索数据。</p>"
+    ],
+    [
+     "<p>The AI2000 and AI2200 are DDN all-flash appliances for Infinia. Infinia is DDN’s distributed data platform, which can store and retrieve objects through an S3-compatible interface. Inference servers run the model and fetch model or retrieval data over the storage network.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "硬件配置",
+    "Hardware Configurations"
+   ],
+   "d": [
+    "AI2200 在 12 盘位机箱内配置 Turin 处理器、DDR5 内存和 PCIe Gen5 NVMe。",
+    "The AI2200 pairs a Turin processor and DDR5 memory with PCIe Gen5 NVMe in a 12-bay chassis."
+   ],
+   "b": [
+    [
+     "<p>DDN 将 AI2200 列为后续一代 Infinia 一体机。43 毫米高的机箱内有 AMD EPYC 9005（Turin）处理器、384 GB DDR5 内存和 12 个 PCIe Gen5 U.2 盘位。U.2 定义了固态盘的外形和连接器。</p>",
+     "<p>数据网络每台可配最多两块双端口 200GbE 网卡，另有独立的管理和 IPMI 接口。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 数据表</a>。</p>"
+    ],
+    [
+     "<p>DDN identifies the AI2200 as the next Infinia appliance. Its 43 mm chassis houses an AMD EPYC 9005 (Turin) processor, 384 GB of DDR5 memory, and 12 PCIe Gen5 U.2 bays. U.2 defines the SSD form factor and connector.</p>",
+     "<p>Each server supports up to two dual-port 200GbE adapters for data traffic, with separate management and IPMI ports. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 Datasheet</a>.</p>"
+    ]
+   ],
+   "tabs": [
+    {
+     "key": "ai2200",
+     "t": [
+      "AI2200",
+      "AI2200"
+     ],
+     "d": [
+      "AI2200 在 12 盘位机箱内配置 Turin 处理器、DDR5 内存和 PCIe Gen5 NVMe。",
+      "The AI2200 pairs a Turin processor and DDR5 memory with PCIe Gen5 NVMe in a 12-bay chassis."
+     ],
+     "b": [
+      [
+       "<p>DDN 将 AI2200 列为后续一代 Infinia 一体机。43 毫米高的机箱内有 AMD EPYC 9005（Turin）处理器、384 GB DDR5 内存和 12 个 PCIe Gen5 U.2 盘位。U.2 定义了固态盘的外形和连接器。</p>",
+       "<p>数据网络每台可配最多两块双端口 200GbE 网卡，另有独立的管理和 IPMI 接口。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 数据表</a>。</p>"
+      ],
+      [
+       "<p>DDN identifies the AI2200 as the next Infinia appliance. Its 43 mm chassis houses an AMD EPYC 9005 (Turin) processor, 384 GB of DDR5 memory, and 12 PCIe Gen5 U.2 bays. U.2 defines the SSD form factor and connector.</p>",
+       "<p>Each server supports up to two dual-port 200GbE adapters for data traffic, with separate management and IPMI ports. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 Datasheet</a>.</p>"
+      ]
+     ]
+    },
+    {
+     "key": "ai2000",
+     "t": [
+      "AI2000",
+      "AI2000"
+     ],
+     "d": [
+      "AI2000 在 43 毫米机箱内提供 12 个 U.2 盘位和两块 PCIe 双端口网卡。",
+      "The AI2000 provides 12 U.2 bays and two dual-port PCIe adapters in a 43 mm chassis."
+     ],
+     "b": [
+      [
+       "<p>AI2000 使用与 AI2200 相同的机箱高度和 U.2 盘位数。DDN 日本的数据表列出两块 PCIe 双端口网卡、独立管理和 IPMI 接口，以及两只可热插拔的冗余电源。</p>",
+       "<p>这份 AI2000 数据表列出了机箱和 I/O 规格。AI2200 数据表还给出了处理器、内存配置和盘位的 PCIe 代际。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://ddn.co.jp/wp/wp-content/uploads/2025/08/InfiniaAI2000-date-sheet.pdf\">DDN 日本 AI2000 数据表</a>、<a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 数据表</a>。</p>"
+      ],
+      [
+       "<p>The AI2000 has the same chassis height and U.2 bay count as the AI2200. DDN Japan lists two dual-port PCIe adapters, separate management and IPMI ports, and two redundant hot-swappable power supplies.</p>",
+       "<p>The AI2000 sheet specifies the chassis and I/O. The AI2200 sheet also specifies the processor, memory configuration, and PCIe generation of the drive bays. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://ddn.co.jp/wp/wp-content/uploads/2025/08/InfiniaAI2000-date-sheet.pdf\">DDN Japan AI2000 Datasheet</a>, <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 Datasheet</a>.</p>"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "t": [
+    "AI2200 的硬件更新",
+    "Hardware Updates in the AI2200"
+   ],
+   "d": [
+    "AI2200 延续 AI2000 的 Infinia 一体机角色，更新了处理器、内存和 NVMe 接口。",
+    "The AI2200 retains the AI2000’s role as an Infinia appliance and updates the processor, memory, and NVMe interface."
+   ],
+   "b": [
+    [
+     "<p>DDN 将 AI2200 定位为后续一代 Infinia 一体机。AI2200 数据表列出 AMD Turin 处理器、DDR5 内存和 PCIe Gen5 NVMe 盘位。PCIe Gen5 是主机与设备之间 PCI Express 总线的第五代规范。设备代际决定可用硬件，应用访问方式由部署的 Infinia 服务决定。</p>"
+    ],
+    [
+     "<p>DDN positions the AI2200 as the next generation of its Infinia appliance. Its datasheet lists AMD Turin processors, DDR5 memory, and PCIe Gen5 NVMe bays. PCIe Gen5 is the fifth generation of the PCI Express bus between a host and a device. The appliance generation determines the hardware, while the deployed Infinia service determines how applications access data.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "从一台节点到一个存储集群",
+    "From a Node to a Storage Cluster"
+   ],
+   "d": [
+    "多台存储节点可以作为一个 Infinia 集群提供共享数据服务。",
+    "Multiple storage nodes can serve shared data as one Infinia cluster."
+   ],
+   "b": [
+    [
+     "<p>Infinia 的底层是分布式键值存储，用键定位值，一个集群可由多台存储节点共同承载。对象客户端使用集群提供的接口访问逻辑对象。数据在底层由集群管理，应用通过对象标识访问。</p>"
+    ],
+    [
+     "<p>Infinia is built on a distributed key-value store, which locates values by key and can run across multiple storage nodes. Object clients access logical objects through the cluster interface. The cluster manages the underlying data, and applications address it by object identifier.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "RAG 检索的数据路径",
+    "The RAG Retrieval Data Path"
+   ],
+   "d": [
+    "检索服务可以从 Infinia 读取共享索引，再把检索结果提供给生成模型。",
+    "A retrieval service can read a shared index from Infinia and pass the retrieved context to the generative model."
+   ],
+   "b": [
+    [
+     "<p>检索增强生成（RAG）在生成回答之前先检索相关资料。在 DDN 公开的参考方案中，检索应用通过 S3 兼容接口从 Infinia 读取向量索引数据。索引用于查找语义相近的条目，检索结果可作为模型生成时的上下文。</p>"
+    ],
+    [
+     "<p>Retrieval-augmented generation (RAG) retrieves relevant material before a model generates a response. In DDN’s published reference design, the retrieval application reads vector index data from Infinia over an S3-compatible interface. The index helps find semantically similar items, and the retrieved context can inform generation.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "AI2000 与 AI2200 怎么选",
+    "Choosing Between AI2000 and AI2200"
+   ],
+   "d": [
+    "两款均承载 Infinia。硬件要求明确到 Turin、DDR5 或 PCIe Gen5 时，AI2200 数据表给出对应配置。",
+    "Both run Infinia. The AI2200 datasheet specifies the configuration for deployments that require Turin, DDR5, or PCIe Gen5."
+   ],
+   "b": [
+    [
+     "<p>DDN 将 AI2000 用于数据分析、模型准备与加载和推理，将 AI2200 定位为后续一代，面向推理、检索增强生成（RAG）及数据密集型负载。</p>",
+     "<p>两款均采用 12 个 U.2 盘位。AI2200 的数据表明确列出 PCIe Gen5 盘位和双端口 200GbE 网卡，适合据此核对新的介质与网络要求。 截至 2026-11-23，出自 <a class=\"gen-source\" href=\"https://ddn.co.jp/wp/wp-content/uploads/2025/08/InfiniaAI2000-date-sheet.pdf\">DDN 日本 AI2000 数据表</a>、<a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 数据表</a>。</p>"
+    ],
+    [
+     "<p>DDN positions the AI2000 for analytics, model preparation and loading, and inference. It positions the next-generation AI2200 for inference, retrieval-augmented generation (RAG), and data-intensive workloads.</p>",
+     "<p>Both have 12 U.2 bays. The AI2200 datasheet explicitly lists PCIe Gen5 bays and dual-port 200GbE adapters, which can be checked against new media and network requirements. As of 2026-11-23, from <a class=\"gen-source\" href=\"https://ddn.co.jp/wp/wp-content/uploads/2025/08/InfiniaAI2000-date-sheet.pdf\">DDN Japan AI2000 Datasheet</a>, <a class=\"gen-source\" href=\"https://www.ddn.com/download/ai2200-datasheet/\">DDN AI2200 Datasheet</a>.</p>"
+    ]
+   ],
+   "fig": "choice"
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuralMesh：WekaFS 并行文件系统 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明NeuralMesh 以 WekaFS 为核心，在多台服务器上并行处理文件数据与元数据，并向应用提供共享命名空间。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/w-nm.css?v=5ae45e95">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="w-nm-topic">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="w-nm">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NeuralMesh: The WekaFS Parallel File System">NeuralMesh：WekaFS 并行文件系统</h1>
+        <p class="meta"><span data-en="5 steps · Parallel file systems, service roles, NVMe">5 步 · 并行文件系统、服务角色、NVMe</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.weka.io/weka-system-overview/about&quot;&gt;WEKA Documentation · Introduction to NeuralMesh&lt;/a&gt;"><a href="https://docs.weka.io/weka-system-overview/about">WEKA 文档 · NeuralMesh 简介</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf&quot;&gt;WEKA · NeuralMesh Architecture White Paper&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/resources/2025/06/neuralmesh-architecture-weka.pdf">WEKA · NeuralMesh 架构白皮书</a></li>
+      <li data-en="&lt;a href=&quot;https://www.weka.io/wp-content/uploads/files/2026/04/WEKA-Qualified-Program-Nitro-Reference-Design-for-NVIDIA-HGX-H200-B200-B300.pdf&quot;&gt;WEKA · NeuralMesh Reference Design, Page 3&lt;/a&gt;"><a href="https://www.weka.io/wp-content/uploads/files/2026/04/WEKA-Qualified-Program-Nitro-Reference-Design-for-NVIDIA-HGX-H200-B200-B300.pdf">WEKA · NeuralMesh 参考设计，第 3 页</a></li>
+      <li data-en="Animations are schematic and do not show measured figures.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/w-nm.js?v=b5816b74"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "w-nm",
+ "ar": [
+  2.2564102564102564,
+  0.7307692307692307
+ ],
+ "steps": [
+  {
+   "t": [
+    "一套共享文件布局",
+    "A Shared File System"
+   ],
+   "d": [
+    "不同应用服务器挂载同一个 WekaFS 文件系统，使用相同路径访问同一份文件。",
+    "Applications on different servers mount the same WekaFS file system and use the same paths to access shared files."
+   ],
+   "b": [
+    [
+     "<p>NeuralMesh 是 WEKA 的纯软件存储系统。其核心 WekaFS 是分布式并行文件系统，可让多个客户端并发访问共享文件。命名空间是应用看到的文件、目录和路径的组织方式。</p>"
+    ],
+    [
+     "<p>NeuralMesh is WEKA’s software-only storage system. At its core, WekaFS is a distributed parallel file system that lets multiple clients access shared files concurrently. A namespace organizes the files, directories, and paths visible to applications.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "前端、计算和盘服务",
+    "Frontend, Compute, and Drive Services"
+   ],
+   "d": [
+    "前端接收文件请求，计算服务处理文件布局和元数据，盘服务读写 NVMe SSD。",
+    "Frontends accept file requests, Compute services handle placement and metadata, and Drive services read and write NVMe SSDs."
+   ],
+   "b": [
+    [
+     "<p>这些服务是 Linux 容器中的逻辑角色。前端处理客户端接口，计算服务负责文件系统逻辑与数据保护，盘服务管理物理盘 I/O。角色可以部署在同一台服务器，或分布在多台服务器。NeuralMesh 可运行在受支持的标准 x86 或 ARM 服务器上。</p>"
+    ],
+    [
+     "<p>These are logical roles that run in Linux containers. Frontends handle client access, Compute services run file system and data protection logic, and Drive services handle physical I/O. A server can host several roles, and the roles can span multiple servers. NeuralMesh runs on supported standard x86 or ARM servers.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "文件读取的并行路径",
+    "A Parallel File Read"
+   ],
+   "d": [
+    "前端按文件范围找到对应的计算服务，各计算服务协调盘服务读取数据。",
+    "The frontend routes file ranges to the appropriate Compute services, which coordinate reads from Drive services."
+   ],
+   "b": [
+    [
+     "<p>文件范围由文件中的偏移和长度表示。对于跨多个范围的一次读请求，示意图中的两个范围由不同计算服务处理，所需数据可从不同盘服务并行读取。</p>"
+    ],
+    [
+     "<p>A file range is identified by an offset and length. In the illustrated read, separate Compute services handle two ranges of the same request, allowing the corresponding Drive services to read in parallel.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "数据条带与故障域",
+    "Data Stripes and Failure Domains"
+   ],
+   "d": [
+    "数据块和校验块分散到不同故障域，其他节点可用剩余块重建受影响的数据。",
+    "Data and parity chunks span failure domains so surviving nodes can rebuild affected data from the remaining chunks."
+   ],
+   "b": [
+    [
+     "<p>故障域是一组可能一起失效的资源，典型示例是一台存储服务器。条带是按保护策略组织的一组数据块与校验块。校验块由数据计算得出，在保护范围内可参与重建丢失的数据块。</p>"
+    ],
+    [
+     "<p>A failure domain is a set of resources that can fail together, such as one storage server. A stripe groups data and parity chunks under a protection policy. Parity is derived from the data and can help reconstruct a missing chunk within the protection limits.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "应用与存储服务的部署",
+    "Application and Storage Placement"
+   ],
+   "d": [
+    "应用客户端可以部署在独立主机，也可以与后端服务部署在同一主机。",
+    "Application clients can run on separate hosts or share hosts with backend services."
+   ],
+   "b": [
+    [
+     "<p>独立部署把应用和存储后端放在不同主机。标准融合部署允许同一主机运行应用客户端、计算服务和盘服务。两种部署沿用相同的文件系统角色与访问模型。</p>"
+    ],
+    [
+     "<p>A dedicated deployment places applications and storage backends on separate hosts. A standard converged deployment can run the application client, Compute service, and Drive service on one host. Both layouts use the same file system roles and access model.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

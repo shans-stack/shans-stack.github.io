@@ -1,0 +1,23 @@
+.f-policy-figure {
+  display: block;
+  width: 100%;
+  text-anchor: middle;
+  font: 500 16px var(--f);
+}
+.f-policy-figure [data-tone="normal"] { --edge: var(--l4); }
+.f-policy-figure [data-tone="allowed"] { --edge: var(--l5); }
+.f-policy-figure [data-tone="denied"] { --edge: var(--l1); }
+.f-policy-box { fill: var(--bg); stroke: var(--rule2); stroke-width: 1.25; }
+.f-policy-figure [data-node][data-active="true"] .f-policy-box { stroke: var(--edge); stroke-width: 2; }
+.f-policy-title { fill: var(--ink); font-size: 18px; font-weight: 600; }
+.f-policy-detail, .f-policy-note { fill: var(--ink2); }
+.f-policy-wire { fill: none; stroke: var(--rule2); stroke-width: 1.5; stroke-linejoin: round; }
+.f-policy-figure [data-active="true"] .f-policy-wire { stroke: var(--edge); stroke-width: 2; }
+.f-policy-packet { fill: var(--edge); stroke: var(--bg); stroke-width: 1; }
+.topic-f-policy .mhost { aspect-ratio: var(--ar); }
+.topic-f-policy .src a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .topic-f-policy .mhost { aspect-ratio: var(--arm); }
+  .topic-f-policy .stage .figbox { margin-block: 8px; }
+  .f-policy-title { font-size: 17px; }
+}

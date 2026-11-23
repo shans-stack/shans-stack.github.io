@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE2420 如何扩展 EXAScaler 的闪存容量 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 SE2420 通过以太网上的 NVMe-oF 链路，为配套的 EXAScaler 系统增加 QLC 固态盘。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-se2420.css?v=95a2654e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-se2420">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="How SE2420 Adds Flash Capacity to EXAScaler">SE2420 如何扩展 EXAScaler 的闪存容量</h1>
+        <p class="meta"><span data-en="5 steps · QLC, NVMe-oF, expansion shelf">5 步 · QLC、NVMe-oF、扩展柜</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/08/ddn-se2420-data-sheet-2024-1.pdf&quot;&gt;DDN SE2420 Datasheet, ES400NVX2, Back-End Link, and Hardware&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/08/ddn-se2420-data-sheet-2024-1.pdf">DDN SE2420 数据表，ES400NVX2、后端链路和硬件</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/resources/brochures-and-datasheets/se2420-datasheet/&quot;&gt;DDN SE2420 Specifications and EXAScaler Configuration&lt;/a&gt;"><a href="https://www.ddn.com/resources/brochures-and-datasheets/se2420-datasheet/">DDN SE2420 技术规格与 EXAScaler 配套说明</a></li>
+      <li data-en="&lt;a href=&quot;https://oss-tsukuba.org/wp-content/uploads/2023/02/GfarmWS2023_DDN-Update-2023.pdf#page=5&quot;&gt;DDN Japan Gfarm Workshop Product Presentation, SS9024 SAS-4 Attachment&lt;/a&gt;"><a href="https://oss-tsukuba.org/wp-content/uploads/2023/02/GfarmWS2023_DDN-Update-2023.pdf#page=5">DDN 日本 Gfarm Workshop 产品资料，SS9024 的 SAS-4 连接</a></li>
+      <li data-en="Diagrams are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-se2420.js?v=ee32f451"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-se2420",
+ "ar": [
+  2.710843373493976,
+  0.9361702127659575
+ ],
+ "steps": [
+  {
+   "t": [
+    "扩展柜在系统中的位置",
+    "Where the Shelf Fits"
+   ],
+   "d": [
+    "SE2420 位于存储控制器的后端，为配套的 EXAScaler 系统提供闪存盘位。",
+    "SE2420 sits behind the storage controller and provides flash drive bays for a compatible EXAScaler system."
+   ],
+   "b": [
+    [
+     "<p>SE2420 是 DDN 的 QLC 闪存扩展柜，数据表以 ES400NVX2 为配套系统。客户端通过 EXAScaler 的文件接口访问存储，ES400NVX2 通过后端链路访问柜中的固态盘。扩展柜提供介质及后端连接，文件系统服务运行在配套系统上。</p>"
+    ],
+    [
+     "<p>SE2420 is DDN’s QLC flash expansion shelf. Its datasheet shows it paired with the ES400NVX2. Clients reach storage through the EXAScaler file interface, and the ES400NVX2 reaches the shelf’s SSDs over a back-end link. The shelf provides media and back-end connectivity, while the attached system runs the file services.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "QLC 盘位和 I/O 模块",
+    "QLC Bays and I/O Modules"
+   ],
+   "d": [
+    "SE2420 在 2U 机箱中提供 24 个 U.2 盘位及两个 I/O 模块。",
+    "SE2420 provides 24 U.2 drive bays and two I/O modules in a 2U chassis."
+   ],
+   "b": [
+    [
+     "<p>U.2 是固态盘的外形和连接器规格，QLC 指每个闪存单元存储四位数据。SE2420 将这类高密度 NVMe 固态盘集中在一个机箱内，并通过两块输入输出（I/O）模块对外连接。盘位数量为数据表所列的硬件规格。</p>"
+    ],
+    [
+     "<p>U.2 specifies the drive form factor and connector, and QLC means that each flash cell stores four bits. SE2420 groups these high-density NVMe SSDs in one chassis and provides external connectivity through two input/output (I/O) modules. The bay count is a hardware specification from the datasheet.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "后端以太网承载 NVMe 命令",
+    "NVMe Commands over Back-End Ethernet"
+   ],
+   "d": [
+    "存储控制器经以太网上的 NVMe-oF 链路读写柜内介质。",
+    "Storage controllers read and write shelf media over NVMe-oF on Ethernet."
+   ],
+   "b": [
+    [
+     "<p>NVMe over Fabrics（NVMe-oF）将 NVMe 命令传输到外部互连网络。SE2420 的后端接口采用以太网，数据表列有两个 I/O 模块上的 QSFP 端口。客户端文件协议在上游结束，柜侧链路承载的是存储设备访问。</p>"
+    ],
+    [
+     "<p>NVMe over Fabrics (NVMe-oF) carries NVMe commands across an external interconnect. SE2420 uses Ethernet at the shelf interface, with QSFP ports across two I/O modules as listed in the datasheet. The client-facing file protocol terminates upstream, and the shelf link carries storage-device access.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "EXAScaler 管理文件数据",
+    "EXAScaler Manages File Data"
+   ],
+   "d": [
+    "文件布局和压缩由 EXAScaler 管理，SE2420 提供后端闪存。",
+    "EXAScaler manages file layout and compression, and SE2420 provides the back-end flash."
+   ],
+   "b": [
+    [
+     "<p>DDN 将具备数据压缩功能的 EXAScaler 与 SE2420 闪存组合在同一方案中。压缩以更少的字节表示可压缩的数据。这项文件系统功能和介质容量属于不同层，应用继续使用 EXAScaler 文件路径。</p>"
+    ],
+    [
+     "<p>DDN combines EXAScaler’s data compression with SE2420 flash in the same solution. Compression represents compressible data with fewer bytes. The file system feature and physical media serve different roles, and applications continue to use EXAScaler file paths.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "与 SAS 扩展柜的分工",
+    "How It Differs from a SAS Shelf"
+   ],
+   "d": [
+    "SE2420 提供 NVMe-oF 闪存扩展，SS9024 面向兼容系统的 SAS 盘扩展。",
+    "SE2420 expands flash over NVMe-oF, while SS9024 expands SAS drive capacity on compatible systems."
+   ],
+   "b": [
+    [
+     "<p>两类柜都是后端介质扩展件。SE2420 对应以太网 NVMe-oF 和 QLC 固态盘。SS9024 对应 SAS（Serial Attached SCSI）后端链路，可装兼容的 SAS 硬盘或固态盘。两者分别搭配支持其后端接口和介质的存储平台。</p>"
+    ],
+    [
+     "<p>Both shelves add back-end media. SE2420 pairs Ethernet NVMe-oF with QLC SSDs. SS9024 uses a SAS (Serial Attached SCSI) back end and accepts compatible SAS hard drives or SSDs. Each shelf pairs with a storage platform that supports its back-end interface and media.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SS9024 如何为存储系统增加 SAS 盘位 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 SS9024 为兼容的 DDN 控制器提供高密度 SAS 硬盘或固态盘盘位以及冗余后端路径。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/d-ss9024.css?v=f6ab1bc9">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="d-ss9024">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="How SS9024 Adds SAS Drive Bays to a Storage System">SS9024 如何为存储系统增加 SAS 盘位</h1>
+        <p class="meta"><span data-en="5 steps · SAS-4, redundant paths, Hot Pools">5 步 · SAS-4、冗余路径、Hot Pools</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/08/ddn-ss9012-ss9024-data-sheet-2024-rebrand.pdf#page=1&quot;&gt;DDN SS9012 / SS9024 Datasheet, Family Role and SAS Media (Page 1)&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/08/ddn-ss9012-ss9024-data-sheet-2024-rebrand.pdf#page=1">DDN SS9012 / SS9024 数据表，系列用途与 SAS 介质（第 1 页）</a></li>
+      <li data-en="&lt;a href=&quot;https://oss-tsukuba.org/wp-content/uploads/2023/02/GfarmWS2023_DDN-Update-2023.pdf#page=4&quot;&gt;DDN Japan Gfarm Workshop Product Presentation, SS9024 and ES400NVX2 (Pages 4–5)&lt;/a&gt;"><a href="https://oss-tsukuba.org/wp-content/uploads/2023/02/GfarmWS2023_DDN-Update-2023.pdf#page=4">DDN 日本 Gfarm Workshop 产品资料，SS9024 规格与 ES400NVX2（第 4–5 页）</a></li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/blog/building-an-ai-data-platform-for-the-unexpected/&quot;&gt;DDN Hot Pools Technical Article, File Copies and Access Activity&lt;/a&gt;"><a href="https://www.ddn.com/blog/building-an-ai-data-platform-for-the-unexpected/">DDN Hot Pools 技术文章，文件副本与访问热度</a></li>
+      <li data-en="Diagrams are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Personal study notes. Not affiliated with any vendor mentioned.">个人学习笔记，与文中提到的厂商无关。</span><span data-en=" Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/d-ss9024.js?v=0a38b234"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "d-ss9024",
+ "ar": [
+  2.710843373493976,
+  0.9361702127659575
+ ],
+ "steps": [
+  {
+   "t": [
+    "后端 SAS 扩展柜",
+    "A Back-End SAS Expansion Shelf"
+   ],
+   "d": [
+    "SS9024 通过 SAS 连接兼容的 DDN 存储控制器，为系统增加盘位。",
+    "SS9024 connects over SAS to compatible DDN storage controllers and adds drive bays to the system."
+   ],
+   "b": [
+    [
+     "<p>SAS（Serial Attached SCSI）是主机与存储设备之间的串行接口。DDN 公开的 ES400NVX2 配置将 SS9024 接在控制器后端。应用访问上游的文件服务，控制器再向柜中的盘发起设备读写。</p>"
+    ],
+    [
+     "<p>SAS (Serial Attached SCSI) is a serial interface between hosts and storage devices. In DDN’s published ES400NVX2 configuration, the SS9024 connects to the controller back end. Applications use the file service upstream, and the controller issues device reads and writes to the drives in the shelf.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "高密度盘位和介质",
+    "High-Density Bays and Media"
+   ],
+   "d": [
+    "DDN 将 SS9024 规格列为 4U、90 个盘位，支持兼容的 SAS 硬盘和固态盘。",
+    "DDN specifies a 4U chassis with 90 bays for compatible SAS HDDs and SSDs."
+   ],
+   "b": [
+    [
+     "<p>DDN 的硬件规格列有两个 SAS-4 I/O 模块，以及冗余电源和风扇。机械硬盘（HDD）适合汇集大量盘位的容量层。兼容的 SAS 固态盘（SSD）也可用于该机箱，介质选择取决于容量和访问需求。</p>"
+    ],
+    [
+     "<p>DDN’s hardware specification lists two SAS-4 I/O modules, as well as redundant power and cooling. Hard disk drives (HDDs) suit capacity tiers that aggregate many drives. The chassis also accepts compatible SAS solid-state drives (SSDs), allowing media selection to reflect capacity and access requirements.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "两条路径通往同一组盘",
+    "Two Paths to the Same Drive Set"
+   ],
+   "d": [
+    "冗余的 SAS 路径让兼容配置在丢失一路连接后仍有另一条访问路径。",
+    "Redundant SAS paths give a compatible configuration another route to the drives after one path is lost."
+   ],
+   "b": [
+    [
+     "<p>I/O 模块是扩展柜与控制器之间的输入输出接口。两块模块为柜内驱动器提供冗余访问路径。图中停用一路链路后，同一组盘仍可通过健康路径访问。这里的冗余对象是后端连接。</p>"
+    ],
+    [
+     "<p>The I/O modules connect the shelf to its controller platform. The two modules provide redundant paths to the drives in the shelf. In the diagram, one path becomes unavailable and the same drive set remains reachable through the surviving path. This redundancy covers the back-end connection.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "文件分层由软件执行",
+    "Software Controls File Tiering"
+   ],
+   "d": [
+    "当 EXAScaler 配置 Hot Pools 时，软件可在闪存和硬盘池之间按访问热度调整文件副本。",
+    "When EXAScaler is configured with Hot Pools, the software can adjust file copies across flash and disk pools based on access activity."
+   ],
+   "b": [
+    [
+     "<p>Hot Pools 是 EXAScaler 的文件分层能力。某个文件访问减少时，Hot Pools 可在硬盘池创建副本，再按策略清理闪存副本。SS9024 可作为兼容配置中的盘柜，文件热度判断和副本策略由 EXAScaler 执行。</p>"
+    ],
+    [
+     "<p>Hot Pools is an EXAScaler feature for tiering files. When a file is accessed less often, Hot Pools can create a copy in the disk pool and then remove the flash copy under its policy. In a compatible configuration, SS9024 supplies drive bays, while EXAScaler evaluates access activity and applies the copy policy.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "SS9024 与 SS9012 的定位",
+    "Where SS9024 and SS9012 Fit"
+   ],
+   "d": [
+    "SS9024 与 SS9012 同属高密度 SAS 扩展柜，控制器和后端接口决定适配关系。",
+    "SS9024 and SS9012 are high-density SAS shelves whose fit depends on the controllers and back-end interfaces."
+   ],
+   "b": [
+    [
+     "<p>DDN 将两个型号列入同一扩展柜系列。SS9024 的 SAS-4 配置可用于 DDN 公开的 ES400NVX2 后端方案。选型时需要以具体控制器和 I/O 模块组合的支持范围为准。两者承担的系统角色都是为控制器增加盘位。</p>"
+    ],
+    [
+     "<p>DDN groups the two models in one enclosure family. Its published ES400NVX2 back-end design uses the SAS-4 configuration of SS9024. Compatibility depends on the specific controller and I/O module combination. Both models serve the same system role of adding drive bays behind the controller.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

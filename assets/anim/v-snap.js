@@ -5,15 +5,13 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-snap.css，全部限定在 .ssa-v-snap 容器之内。
-   厂商字标引用 assets/brand/ 里的原件（<image>，浅色用黑字、深色用白字），不内嵌。 */
+   样式在 assets/anim/v-snap.css，全部限定在 .ssa-v-snap 容器之内。 */
 (function(){
 var EN={"VAST 快照：改写写进空闲空间，快照留住旧指针，按全局 snaptime 一致，按保护策略分层保留，可建克隆，可设为不可删除": "VAST snapshots: overwrites go to free space, a snapshot keeps the old pointers, snapshots are consistent by a global snaptime, kept in policy tiers, clonable and optionally indestructible", "数据块": "Chunks", "（闪存）": "(flash)", "当前版本": "Current", "写入": "Write", "管理员": "Admin", "克隆": "Clone", "快照 @ 42": "Snapshot @ 42", ".snapshot · 只读": ".snapshot · read-only", "快照 @ 42 · 不可删除": "Snapshot @ 42 · indestructible", "新数据写进空闲空间，旧块暂不覆盖": "New data goes to free space; the old chunk is not overwritten", "新数据写进空闲空间": "New data goes to free space", "指针改指新块，旧块等待回收": "The pointer moves to the new chunk; the old one awaits cleanup", "指针改指新块，旧块待回收": "Pointer moves; old chunk awaits cleanup", "打快照：复制了 0 个数据块": "Snapshot taken: 0 chunks copied", "打快照：复制 0 个数据块": "Snapshot: 0 chunks copied", "改写只影响当前版本，快照仍指旧块": "The overwrite changes only the current version; the snapshot still points to the old chunk", "快照仍指旧块": "Snapshot keeps the old chunk", "快照独占：": "Held only by the snapshot: ", " 块": " chunks", "不预留空间，不计入配额": "No reserved space, not counted against quota", "同一个 snaptime，三个路径一致": "One snaptime, three consistent paths", "三个路径各自不断写入": "Each path keeps receiving writes", "同一个 snaptime，三路径一致": "One snaptime, all consistent", "三个路径各自写入": "Each path receives writes", "每 15 分钟": "Every 15 min", "留 4 小时": "keep 4 hours", "每小时": "Hourly", "留 1 周": "keep 1 week", "每天": "Daily", "留 40 天": "keep 40 days", "每月": "Monthly", "留 1 年": "keep 1 year", "到期删除": "Expires", "现在": "Now", "四层计划同一时刻起算，到期的快照自动删除": "Four tiers start at the same moment; expired snapshots are deleted automatically", "四层计划，到期自动删除": "Four tiers, auto-expiry", "克隆与快照共用数据块": "Clone shares the snapshot's chunks", "写进克隆的新数据只属于克隆": "New data written to the clone belongs to the clone only", "新数据只属于克隆": "New data is the clone's only", "删除：拒绝": "Delete: refused", "延长保留：允许": "Extend: allowed", "可写克隆与快照共享数据块": "The writable clone shares data chunks with the snapshot.", "机制锁定时拒绝删除，允许延长保留期": "While locked: deletion blocked, retention can be extended.", "锁定时拒绝删除，允许延长": "While locked: block delete, allow extension", "延长后的保留期已到": "Extended retention ended", "延长后的保留期到期，释放快照引用": "The extended retention expires and releases snapshot references.", "保留期到期，释放引用": "Retention ends, releasing references", "示意，时间轴未按比例绘制": "Schematic timelines, not to scale"};
 var ENM={"快照 @ 42 · 不可删除": "Snapshot · indestructible", "快照独占：": "Snapshot: ", "延长后的保留期已到": "Retention ended"};
 var ARIA="VAST 快照：改写写进空闲空间，快照留住旧指针，按全局 snaptime 一致，按保护策略分层保留，可建克隆，可设为不可删除";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function asset(p){return window.SS&&window.SS.url?window.SS.url(p):(window.SS_ROOT||'')+p}
 function mount(host,opts){
 opts=opts||{};
 host.classList.add('ssa-v-snap');host.innerHTML='';
@@ -40,15 +38,6 @@ function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i].x-p
 function at(pts,u){u=clamp(u,0,1);let d=u*plen(pts);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(d<=l||i===pts.length-1){const k=l?Math.min(1,d/l):0;return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}d-=l}return pts[pts.length-1]}
 function rev(pts){return pts.slice().reverse()}
 function cat(...ps){const o=[];ps.forEach(p=>p.forEach(q=>{const l=o[o.length-1];if(!l||l.x!==q.x||l.y!==q.y)o.push(q)}));return o}
-/* 文字宽度估计（中文按一字宽，西文按 0.6 字宽） */
-function tw(s,fs){s=T(s);let w=0;for(const ch of s)w+=/[⺀-￿]/.test(ch)?fs:fs*0.6;return w}
-/* VAST 字标：(x,y) 为字标竖直中线上的锚点，h 为高度；浅色黑字、深色白字，两张图由 CSS 切换 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'vwm','aria-label':'VAST'},p);
-  ['black','white'].forEach((c,i)=>el('image',{href:asset('assets/brand/vast-wordmark-'+c+'.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:i?'vwm-d':'vwm-l'},g));return g}
-/* NVIDIA 横版 logo（裁边版，宽高比 2090:414）；深色模式垫浅灰底 */
-function nvmark(x,y,h,p,anchor){const w=h*2090/414;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;const g=el('g',{class:'nvm','aria-label':'NVIDIA'},p);
-  el('rect',{x:(x-h*0.25).toFixed(1),y:(y-h/2-h*0.2).toFixed(1),width:(w+h*0.5).toFixed(1),height:(h*1.4).toFixed(1),rx:2,class:'nvbk'},g);
-  el('image',{href:asset('assets/brand/nvidia-logo-horz-trim.svg'),x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h},g);return g}
 let L=null,E,S,step=0,T0=0,raf=0,last=0,paused=!!opts.paused,dead=false,pausedAt=0;
 function pk(c){const r=el('rect',{x:-L.pw/2,y:-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'pkt '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}
 function dot(c){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(c||'')},E.pk);const o={el:r};S.items.push(o);put(o,-99,-99,0);return o}

@@ -5,23 +5,15 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-mpath.css，全部限定在 .ssa-v-mpath 容器之内。
-   VAST 字标取自 assets/brand/vast-wordmark-*.svg（路径原样内嵌为 symbol，浅色纯黑、深色纯白）。 */
+   样式在 assets/anim/v-mpath.css，全部限定在 .ssa-v-mpath 容器之内。 */
 (function(){
 var EN={"客户端服务器": "Client server", "应用": "App", "NFS 客户端": "NFS client", "多路径组件": "Multipath", "VAST 提供，开源": "Open source", "网卡 0": "NIC 0", "网卡 1": "NIC 1", "地址 1": "IP 1", "地址 2": "IP 2", "地址 3": "IP 3", "地址 4": "IP 4", "占用很高": "High", "占用升高": "Rising", "占用较低": "Low", "挂载时多写两项：ClientIP=本机地址列表，ServerIP=各 CNode 地址列表": "Two extra mount options: ClientIP = local addresses, ServerIP = CNode addresses", "挂载多写两项：ClientIP、ServerIP 地址列表": "Two extra mount options: ClientIP, ServerIP", "一条连接": "One connection", "多路径": "Multipath", "客户端": "Client", "已送达": "Delivered", "示意，不代表实测数字": "Schematic, not measured", "一条连接：一个地址，一台 CNode": "One connection: one IP, one CNode", "nconnect：四条连接，还是同一台 CNode": "nconnect: four connections, still one CNode", "多路径：四条连接，四台 CNode": "Multipath: four connections, four CNodes", "两块网卡一起发，按 NUMA 走就近的网卡": "Both NICs send; each CPU uses its nearest NIC (NUMA)", "协议仍是标准 NFS": "Still standard NFS", "NFS 多路径：从一条连接、nconnect 多条连接到同一台 CNode，再到多路径摊到多块网卡和多台 CNode": "NFS multipath: from one connection, to nconnect's several connections to one CNode, to multipath spreading across several NICs and CNodes"};
 var ENM={"两块网卡一起发，按 NUMA 走就近的网卡": "Both NICs send; nearest NIC per CPU (NUMA)", "VAST 提供，开源": "VAST, open source"};
 var ARIA="NFS 多路径：从一条连接、nconnect 多条连接到同一台 CNode，再到多路径摊到多块网卡和多台 CNode";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
-function sprite(){
-  if(document.getElementById('ssa-vast-wm'))return;
-  var d=document.createElementNS(NS,'svg');d.setAttribute('width','0');d.setAttribute('height','0');d.setAttribute('aria-hidden','true');d.setAttribute('focusable','false');d.style.position='absolute';
-  d.innerHTML='<symbol id="ssa-vast-wm" viewBox="0 0 66 14"><path d="m11.918.916-.783-.375a.919.919 0 0 0-1.23.444l-.22.414L6.235 8.77 2.788 1.4l-.22-.414a.917.917 0 0 0-1.23-.444L.556.916c-.466.219-.69.804-.474 1.273l.195.383 4.689 10.024a1.383 1.383 0 0 0 1.248.797h.042a1.385 1.385 0 0 0 1.248-.797l4.689-10.024.195-.383c.217-.469-.007-1.054-.47-1.273ZM19.311 12.926l.784.375a.918.918 0 0 0 1.23-.444l.22-.414 3.451-7.371 3.448 7.371.22.414a.918.918 0 0 0 1.23.444l.785-.375c.462-.221.687-.804.469-1.271l-.195-.383-4.689-10.024a1.384 1.384 0 0 0-1.248-.797h-.041a1.386 1.386 0 0 0-1.25.797l-4.688 10.024-.195.383c-.219.467.006 1.05.47 1.27ZM47.275 3.212a.918.918 0 0 0 .966-.882l.03-.868c.02-.512-.393-.982-.908-1.006L46.887.45h-5.413c-.03 0-.059 0-.092.004-1.433.095-3.565 1.126-3.565 3.572 0 2.487 2.104 3.599 3.236 3.846l2.823.677c.041.009.082.017.124.023.15.022.896.176.896 1.014 0 .504-.253.801-.754.885h-5.318l-.362.005a.918.918 0 0 0-.966.883l-.03.868c-.02.512.393.982.908 1.006l.45.005h5.413c.043 0 .086 0 .128-.005 1.327-.123 3.301-1.196 3.301-3.647 0-2.539-2.051-3.547-3.195-3.742l-2.787-.668-.039-.008c-.042-.01-1.058-.235-1.058-1.142 0-.606.578-.769.953-.81h5.347l.388-.004ZM66 1.365a.916.916 0 0 0-.938-.914H55.5a.919.919 0 0 0-.938.914v.878c0 .513.427.968.942.976H58.897v9.086a.914.914 0 0 0 .56.864.919.919 0 0 0 .355.073h.879c.512 0 .968-.426.976-.94V3.217H65.06c.515-.007.943-.463.942-.975l-.003-.878Z"/></symbol>';
-  document.body.appendChild(d);
-}
 function mount(host,opts){
 opts=opts||{};
-sprite();
 host.classList.add('ssa-v-mpath');host.innerHTML='';
 const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','ssa-scene');svg.setAttribute('role','img');host.appendChild(svg);
 const tgl=document.createElement('button');tgl.className='tgl';tgl.type='button';tgl.hidden=true;host.appendChild(tgl);
@@ -53,10 +45,6 @@ function dot(cls){const r=el('circle',{r:L.dr,cx:0,cy:0,class:'dot '+(cls||'')},
 function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a==null?1:a;o.el.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);o.el.style.opacity=o.a}
 function cls(o,c,on){o.el.classList.toggle(c,!!on)}
 /* ---------- 场景（画面内容与原动画稿一致） ---------- */
-/* 厂商 logo：VAST 字标放在部件角上。(x,y) 为字标竖直中线上的锚点，h 为高度 */
-function vmark(x,y,h,p,anchor){const w=h*66/14;if(anchor==='end')x-=w;else if(anchor==='middle')x-=w/2;return el('use',{href:'#ssa-vast-wm',x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:'vwm brand-part'},p)}
-/* 部件名 + VAST 字标排成一行，整体居中于 (cx,cy)；lw 为部件名估计宽度 */
-function vpair(cx,cy,s,fs,cls,p,h,lw){lw=lw||fs*0.63*s.length;const w=h*66/14,gap=Math.round(fs*0.4),x0=cx-(lw+gap+w)/2;const t=tx(x0+lw,cy,s,fs,cls,'end',p);const m=vmark(x0+lw+gap,cy,h,p,'start');return {t,m}}
 /* NFS 多路径：一条连接 → nconnect → 多路径（多地址、多网卡） */
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,u),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 function toward(o,x,y,d){const dx=x-o.x,dy=y-o.y,l=Math.hypot(dx,dy);if(l<=d){o.x=x;o.y=y;return true}o.x+=dx/l*d;o.y+=dy/l*d;return false}
@@ -122,10 +110,9 @@ const SCENE={
   E.cn.forEach((r,k)=>{E.cnB.push(box(r,g));const c=C(r);
    if(M){tx(c.x,r.y+20,'CNode',f.lbl,'lbl b7','middle',g);tx(c.x,r.y+46,'地址 '+(k+1),f.sm,'ink3-t','middle',g);
     el('rect',{x:r.x+12,y:r.y+66,width:r.w-24,height:10,rx:4,class:'track'},g);E.fill.push(el('rect',{x:r.x+12,y:r.y+66,width:0,height:10,rx:4,class:'fill'},g));E.st.push(null)}
-   else{tx(r.x+16,c.y-12,'CNode',f.lbl,'lbl b7','start',g);/* VAST 字标：只标第一台，紧跟「CNode」 */if(k===0)vmark(r.x+16+f.lbl*3.15+8,c.y-12,13,g,'start');tx(r.x+r.w-14,c.y-12,'地址 '+(k+1),f.sm,'ink3-t','end',g);
+   else{tx(r.x+16,c.y-12,'CNode',f.lbl,'lbl b7','start',g);tx(r.x+r.w-14,c.y-12,'地址 '+(k+1),f.sm,'ink3-t','end',g);
     el('rect',{x:r.x+16,y:c.y+12,width:124,height:10,rx:4,class:'track'},g);E.fill.push(el('rect',{x:r.x+16,y:c.y+12,width:0,height:10,rx:4,class:'fill'},g));
     E.st.push(tx(r.x+r.w-14,c.y+17,'',f.sm,'st','end',g))}});
-  /* 手机上 CNode 只有 104 宽，字标放不进标题行，改放这一排下方右端（铭牌） */if(M){const z=E.cn[3];vmark(z.x+z.w,z.y+z.h+12,12,g,'end')}
   E.cap=tx(L.cap.x,L.cap.y,'',f.cap,'st',L.cap.a,g);
   /* ---- 第 5 步：两条路同时跑 ---- */
   const gr=grp('5');const R=L.race;E.race={};
@@ -133,9 +120,8 @@ const SCENE={
    tx(ln.lbl.x,ln.lbl.y,k==='T'?'一条连接':'多路径',f.lbl+3,'lbl b7','start',gr);
    o.cl=ln.cl;box(ln.cl,gr,'box');tx(ln.cl.x+ln.cl.w/2,ln.cl.y+ln.cl.h-14,'客户端',f.sm,'ink3-t','middle',gr);
    o.exits=ln.ys.map(y=>P(ln.cl.x+ln.cl.w,y));o.ends=ln.ys.map(y=>P(ln.cn.x,y));
-   ln.ys.forEach((y,j)=>{line(o.exits[j],o.ends[j],'cx',gr);const r={x:ln.cn.x,y:y-ln.cnH/2,w:ln.cn.w,h:ln.cnH};box(r,gr,'box',8);if(k==='T'&&!M)vpair(r.x+r.w/2,y,'CNode',f.lbl,'lbl',gr,11,f.lbl*3.15);else tx(r.x+r.w/2,y,'CNode',ln.cnH>40?f.lbl:f.sm,'lbl','middle',gr)});
+   ln.ys.forEach((y,j)=>{line(o.exits[j],o.ends[j],'cx',gr);const r={x:ln.cn.x,y:y-ln.cnH/2,w:ln.cn.w,h:ln.cnH};box(r,gr,'box',8);tx(r.x+r.w/2,y,'CNode',ln.cnH>40?f.lbl:f.sm,'lbl','middle',gr)});
    tx(ln.cnt.x,ln.cnt.ly,'已送达',f.sm,'ink3-t','middle',gr);o.n=tx(ln.cnt.x,ln.cnt.ny,'0',f.big,'num '+(k==='T'?'rose-t':'sage-t'),'middle',gr);
-   /* 手机第 5 步：框太窄，字标放在上方那条路的 CNode 框外左上角（铭牌） */if(k==='T'&&M){const y0=ln.ys[0]-ln.cnH/2;vmark(ln.cn.x+2,y0-11,12,gr,'start')}
    const qy=k==='T'?ln.ys[0]:ln.cl.y+ln.cl.h/2-14;o.slot=i=>P(ln.cl.x+ln.cl.w-16-i*R.gap,qy)});
   el('line',{x1:M?16:32,y1:R.sep,x2:L.W-(M?16:32),y2:R.sep,class:'sep'},gr);
   tx(R.note.x,R.note.y,'示意，不代表实测数字',f.sm,'ink3-t','start',gr);

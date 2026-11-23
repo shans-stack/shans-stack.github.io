@@ -1,0 +1,41 @@
+.b-imax-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  --diagram-rule: var(--ink3);
+  --diagram-accent: var(--lc, var(--l4));
+}
+
+.b-imax-diagram text {
+  fill: var(--ink);
+  font: 500 21px var(--f);
+  dominant-baseline: central;
+}
+
+.b-imax-diagram .b-imax-note,
+.b-imax-diagram .b-imax-muted { fill: var(--ink2); font-size: 17px; }
+.b-imax-diagram .b-imax-rule { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; }
+.b-imax-diagram .b-imax-guide { fill: none; stroke: var(--diagram-rule); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.b-imax-diagram .b-imax-node { fill: var(--surface); stroke: var(--diagram-rule); stroke-width: 1.4; }
+.b-imax-diagram .b-imax-active { fill: var(--diagram-accent); }
+.b-imax-diagram .b-imax-pass { fill: var(--l5); }
+.b-imax-diagram .b-imax-warn { fill: var(--l1); }
+.b-imax-diagram .b-imax-quiet { fill: var(--blk); }
+.b-imax-diagram .b-imax-active-line,
+.b-imax-diagram .b-imax-pass-line,
+.b-imax-diagram .b-imax-warn-line,
+.b-imax-diagram .b-imax-quiet-line { fill: none; stroke-width: 3; stroke-linecap: round; }
+.b-imax-diagram .b-imax-active-line { stroke: var(--diagram-accent); }
+.b-imax-diagram .b-imax-pass-line { stroke: var(--l5); }
+.b-imax-diagram .b-imax-warn-line { stroke: var(--l1); }
+.b-imax-diagram .b-imax-quiet-line { stroke: var(--blk); }
+
+body.topic-b-imax .mhost { aspect-ratio: var(--ar); }
+
+@media (max-width: 640px) {
+  body.topic-b-imax .mhost { aspect-ratio: var(--arm); }
+  .b-imax-diagram text { font-size: 16px; }
+  .b-imax-diagram .b-imax-note,
+  .b-imax-diagram .b-imax-muted { font-size: 16px; }
+}

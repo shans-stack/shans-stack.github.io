@@ -1,0 +1,23 @@
+.f-plat-diagram {
+  --ok: var(--l5);
+  --alt: var(--l6);
+  --alert: var(--l1);
+  display: block;
+  width: 100%;
+  font: 500 17px var(--f);
+}
+.f-plat-diagram [data-tone="ok"] { --tone: var(--ok); }
+.f-plat-diagram [data-tone="alt"] { --tone: var(--alt); }
+.f-plat-diagram [data-tone="alert"] { --tone: var(--alert); }
+.f-plat-card { fill: var(--bg); stroke: var(--tone, var(--rule2)); stroke-width: 1.5; }
+.f-plat-node[data-tone] .f-plat-card { stroke-width: 2.5; }
+.f-plat-line { fill: none; stroke: var(--tone, var(--rule2)); stroke-width: 2; stroke-linejoin: round; }
+.f-plat-packet { fill: var(--tone); stroke: var(--bg); stroke-width: 1.2; }
+.f-plat-title, .f-plat-caption { fill: var(--ink); font-weight: 600; }
+.f-plat-title { font-size: 19px; }
+.f-plat-detail, .f-plat-note { fill: var(--ink2); }
+@media (max-width: 640px) {
+  .f-plat-title { font-size: 16.5px; }
+  .f-plat-detail, .f-plat-caption, .f-plat-note { font-size: 16.5px; }
+}
+.f-plat-boundary { fill: none; stroke: var(--ink3); stroke-width: 1.4; stroke-dasharray: 4 5; }

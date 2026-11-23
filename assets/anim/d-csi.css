@@ -1,0 +1,28 @@
+.d-csi-diagram {
+  display:block; width:100%; height:auto; overflow:hidden;
+  font-family:var(--f); --diagram-data:var(--l5); --diagram-native:var(--l6);
+  --diagram-request:var(--l4); --diagram-key:var(--l3); --diagram-sealed:var(--l8);
+}
+.d-csi-box {fill:var(--bg); stroke:var(--rule2); stroke-width:1.25}
+.d-csi-node[data-state=idle] .d-csi-box {stroke-dasharray:4 4; fill:var(--surface)}
+.d-csi-node[data-state=blocked] .d-csi-box {stroke:var(--l1); fill:color-mix(in srgb,var(--l1) 13%,var(--surface))}
+.d-csi-node[data-state=done] .d-csi-box {stroke:var(--l5); fill:color-mix(in srgb,var(--l5) 13%,var(--surface))}
+.d-csi-title,.d-csi-detail,.d-csi-note {dominant-baseline:central}
+.d-csi-title {fill:var(--ink); font-size:20px; font-weight:600}
+.d-csi-detail {fill:var(--ink2); font-size:18px}
+.d-csi-note {fill:var(--ink3); font-size:16px}
+.d-csi-route {color:var(--rule2)}
+.d-csi-route[data-state=active] {color:var(--route-tone)}
+.d-csi-wire,.d-csi-arrow {fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.d-csi-route[data-state=idle] .d-csi-wire {stroke-dasharray:4 5}
+.d-csi-data {--route-tone:var(--diagram-data)}
+.d-csi-native {--route-tone:var(--diagram-native)}
+.d-csi-key {--route-tone:var(--diagram-key)}
+.d-csi-request {--route-tone:var(--diagram-request)}
+.d-csi-sealed {--route-tone:var(--diagram-sealed)}
+.d-csi-packet,.d-csi-stored {fill:var(--route-tone); stroke:var(--surface); stroke-width:1}
+@media (max-width:640px) {
+  .d-csi-title {font-size:16.5px}
+  .d-csi-detail {font-size:15.5px}
+  .d-csi-note {font-size:15px}
+}

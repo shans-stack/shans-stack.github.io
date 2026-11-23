@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ConnectX SuperNIC：GPU 服务器的网络端点 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 ConnectX SuperNIC 的板卡接口、GPU 显存路径、包处理与端口模式。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-cx.css?v=892f0d08">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-cx">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-cx">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="ConnectX SuperNIC: The Network Endpoint for GPU Servers">ConnectX SuperNIC：GPU 服务器的网络端点</h1>
+        <p class="meta"><span data-en="5 steps · network adapters, PCIe, GPUDirect RDMA">5 步 · 网络适配器、PCIe、GPUDirect RDMA</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html&quot;&gt;DGX GB Rack Scale Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html">DGX GB 整柜系统硬件指南</a></li>
+      <li data-en="&lt;a href=&quot;https://networking-docs.nvidia.com/connectx8hw/supported-interfaces&quot;&gt;ConnectX-8 Manual: Components and Interfaces&lt;/a&gt;"><a href="https://networking-docs.nvidia.com/connectx8hw/supported-interfaces">ConnectX-8 手册：部件与接口</a></li>
+      <li data-en="&lt;a href=&quot;https://networking-docs.nvidia.com/connectx8hw/introduction&quot;&gt;ConnectX-8 Manual: Hardware Features&lt;/a&gt;"><a href="https://networking-docs.nvidia.com/connectx8hw/introduction">ConnectX-8 手册：硬件功能</a></li>
+      <li data-en="&lt;a href=&quot;https://networking-docs.nvidia.com/connectx8ocphw/introduction&quot;&gt;ConnectX-8 OCP 3.0 Manual&lt;/a&gt;"><a href="https://networking-docs.nvidia.com/connectx8ocphw/introduction">ConnectX-8 OCP 3.0 手册</a></li>
+      <li data-en="&lt;a href=&quot;https://networking-docs.nvidia.com/connectx9hw/introduction&quot;&gt;ConnectX-9 SuperNIC Manual&lt;/a&gt;"><a href="https://networking-docs.nvidia.com/connectx9hw/introduction">ConnectX-9 SuperNIC 手册</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/networking/products/ethernet/&quot;&gt;NVIDIA Ethernet Platform&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/networking/products/ethernet/">NVIDIA 以太网平台</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/multi-node-nvlink-systems/grace-blackwell-cx8-gpudirect-rdma-guide/&quot;&gt;Grace Blackwell and ConnectX-8 GPUDirect RDMA Reference&lt;/a&gt;"><a href="https://docs.nvidia.com/multi-node-nvlink-systems/grace-blackwell-cx8-gpudirect-rdma-guide/">Grace Blackwell 与 ConnectX-8 的 GPUDirect RDMA 参考设计</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html&quot;&gt;DGX Vera Rubin NVL72 Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">DGX Vera Rubin NVL72 硬件指南</a></li>
+      <li data-en="The animations are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-cx.js?v=6ba163e4"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "n-cx",
+ "ar": [
+  2.6470588235294117,
+  0.8181818181818182
+ ],
+ "steps": [
+  {
+   "t": [
+    "ConnectX 位于服务器和交换网络之间",
+    "ConnectX Sits Between the Server and the Fabric"
+   ],
+   "d": [
+    "适配器通过 PCIe 接入服务器，通过网络端口连接交换机。",
+    "The adapter connects to the server over PCIe and to the switch through its network port."
+   ],
+   "b": [
+    [
+     "<p>以插卡式 ConnectX-8 为例，板卡包含 ConnectX 芯片、PCIe 主机接口和外部网络端口。PCIe 是服务器内部连接处理器、GPU 和外设的互联标准。外部端口通过兼容的线缆或光模块接入交换网络。</p>",
+     "<p>SuperNIC 是 NVIDIA 面向高强度 AI 通信的适配器类别。芯片内的网络引擎承担数据搬运和包处理，是 GPU 服务器接入机外网络的端点。</p>"
+    ],
+    [
+     "<p>A stand-up ConnectX-8 card includes a ConnectX chip, a PCIe host interface, and external network ports. PCIe is the interconnect that links processors, GPUs, and peripherals within a server. The external ports connect to the fabric through compatible cables or optical modules.</p>",
+     "<p>SuperNIC is NVIDIA’s adapter class for network-intensive AI workloads. On-chip networking engines move data and process packets at the endpoint between a GPU server and the external fabric.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "网卡直接访问 GPU 显存",
+    "The Adapter Accesses GPU Memory Directly"
+   ],
+   "d": [
+    "在支持 GPUDirect RDMA 的配置中，ConnectX 可经 PCIe 在 GPU 显存与网络之间搬运数据。",
+    "With GPUDirect RDMA support, ConnectX can move data between GPU memory and the fabric over PCIe."
+   ],
+   "b": [
+    [
+     "<p>RDMA 是由网络适配器直接访问已注册内存的传输机制。GPUDirect RDMA 将这种访问延伸到 GPU 显存。主机软件仍参与缓冲区注册和传输提交，典型的数据路径可省去主机内存中转。</p>",
+     "<p>这一能力依赖适配器、GPU、驱动和 PCIe 拓扑的配合。公开的 Grace Blackwell 与 ConnectX-8 参考设计展示了一种支持组合。</p>"
+    ],
+    [
+     "<p>Remote direct memory access (RDMA) lets a network adapter access registered memory directly. GPUDirect RDMA extends this access to GPU memory. Host software still registers buffers and submits work, and the payload path can bypass host memory staging.</p>",
+     "<p>Support depends on the adapter, GPU, drivers, and PCIe topology. NVIDIA’s Grace Blackwell and ConnectX-8 reference design documents one supported combination.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "发送端硬件负责网络处理",
+    "Adapter Hardware Processes Outgoing Traffic"
+   ],
+   "d": [
+    "主机提交传输描述，ConnectX 读取数据并执行配置的报文处理和发送节奏控制。",
+    "The host submits a transfer descriptor, and ConnectX reads the data and applies configured packet processing and pacing."
+   ],
+   "b": [
+    [
+     "<p>传输描述记录待处理的缓冲区与操作。硬件卸载（offload）是将特定处理步骤交给适配器芯片执行。ConnectX-8 的公开功能包括网络包处理和硬件发送节奏控制。</p>",
+     "<p>发送节奏控制（packet pacing）是按配置安排数据包的发出间隔。GPU 仍负责计算，连接外部网络和执行这些发送动作由适配器完成。</p>"
+    ],
+    [
+     "<p>A transfer descriptor records the buffer and the operation to perform. Offload assigns specific processing steps to the adapter chip. The published ConnectX-8 features include packet processing and hardware packet pacing.</p>",
+     "<p>Pacing schedules outgoing packet intervals. The GPU continues to perform computation, while the adapter connects to the external network and handles these transmit operations.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "以太网与 InfiniBand 使用各自的网络",
+    "Ethernet and InfiniBand Use Their Own Fabrics"
+   ],
+   "d": [
+    "以太网配置可用 RoCE 传输 RDMA，InfiniBand 配置使用 InfiniBand 的原生 RDMA。",
+    "Ethernet configurations can carry RDMA using RoCE, while InfiniBand configurations use native InfiniBand RDMA."
+   ],
+   "b": [
+    [
+     "<p>ConnectX-8 和 ConnectX-9 的手册列有不同协议和板卡配置。RoCE（RDMA over Converged Ethernet）在以太网上承载 RDMA。InfiniBand 是包含原生 RDMA 的网络架构。</p>",
+     "<p>每条物理链路的端口模式要与对端交换机和链路部件相匹配。支持列表适用于具体型号及配置。</p>"
+    ],
+    [
+     "<p>The ConnectX-8 and ConnectX-9 manuals list different protocols and card configurations. RoCE, or RDMA over Converged Ethernet, carries RDMA over Ethernet. InfiniBand is a network architecture with native RDMA.</p>",
+     "<p>The port mode of a physical link must match the peer switch and the link components. Support depends on the specific model and configuration.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "ConnectX-8 与 ConnectX-9 的部署角色",
+    "Deployment Roles for ConnectX-8 and ConnectX-9"
+   ],
+   "d": [
+    "DGX GB300 使用 ConnectX-8，DGX Vera Rubin NVL72 使用 ConnectX-9，两者都承担扩展网络连接。",
+    "DGX GB300 uses ConnectX-8 and DGX Vera Rubin NVL72 uses ConnectX-9 for scale-out networking."
+   ],
+   "b": [
+    [
+     "<p>ConnectX-8 有插卡和 OCP 3.0 等形态。OCP 3.0 是服务器可采用的一种模块化网卡规范。NVIDIA 的 Grace Blackwell 参考设计以 ConnectX-8 说明 GPU 显存如何接入服务器外的网络。DGX GB300 的计算托盘也用它连接计算网络。</p>",
+     "<p>ConnectX-9 延续 SuperNIC 的网络端点角色。NVIDIA 的 DGX Vera Rubin NVL72 硬件指南也列出了 ConnectX-9 在计算托盘中的实际用途。适配器的形态和端口配置由系统设计决定。</p>"
+    ],
+    [
+     "<p>ConnectX-8 comes in stand-up and OCP 3.0 form factors. OCP 3.0 is a modular NIC specification that servers can adopt. NVIDIA uses ConnectX-8 in its Grace Blackwell reference design to show how GPU memory connects to an external fabric. DGX GB300 compute trays also use it for their compute network.</p>",
+     "<p>ConnectX-9 continues the SuperNIC role as a network endpoint. NVIDIA’s DGX Vera Rubin NVL72 hardware guide also documents its use in compute trays. Adapter form factor and port configuration depend on the system design.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

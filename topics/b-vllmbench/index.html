@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vllm bench：离线引擎与在线服务 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明 vLLM bench 的吞吐、批时延和在线服务命令，以及各自的测量边界。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/b-vllmbench.css?v=2dcfecad">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-b-vllmbench">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="b-vllmbench">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="vllm bench: Offline Engine and Online Serving">vllm bench：离线引擎与在线服务</h1>
+        <p class="meta"><span data-en="6 steps · engine throughput, batch latency, serving benchmarks">6 步 · 引擎吞吐、批时延、在线压测</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://github.com/vllm-project/vllm/releases/tag/v0.34.0&quot;&gt;vLLM v0.34.0 Release&lt;/a&gt;"><a href="https://github.com/vllm-project/vllm/releases/tag/v0.34.0">vLLM v0.34.0 发布记录</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vllm.ai/en/stable/cli/bench/serve/&quot;&gt;Online Serving CLI&lt;/a&gt;"><a href="https://docs.vllm.ai/en/stable/cli/bench/serve/">在线服务命令</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vllm.ai/en/stable/cli/bench/throughput/&quot;&gt;Throughput CLI&lt;/a&gt;"><a href="https://docs.vllm.ai/en/stable/cli/bench/throughput/">吞吐命令</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.vllm.ai/en/stable/cli/bench/latency/&quot;&gt;Batch Latency CLI&lt;/a&gt;"><a href="https://docs.vllm.ai/en/stable/cli/bench/latency/">单批时延命令</a></li>
+      <li data-en="&lt;a href=&quot;https://raw.githubusercontent.com/vllm-project/vllm/v0.34.0/vllm/benchmarks/serve.py&quot;&gt;v0.34.0 Online Metric Implementation&lt;/a&gt;"><a href="https://raw.githubusercontent.com/vllm-project/vllm/v0.34.0/vllm/benchmarks/serve.py">v0.34.0 在线指标实现</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/b-vllmbench.js?v=b79b26e6"></script>
+<script>
+window.SS_TOPIC_CFG={
+ "anim": "b-vllmbench",
+ "ar": [
+  2.2222222222222223,
+  0.9230769230769231
+ ],
+ "steps": [
+  {
+   "t": [
+    "三个命令的测量边界",
+    "Three Measurement Boundaries"
+   ],
+   "d": [
+    "vllm bench 用独立命令测离线吞吐、单批时延与在线服务。",
+    "vllm bench separates offline throughput, single-batch latency, and online serving."
+   ],
+   "b": [
+    [
+     "<p><code>throughput</code> 测离线工作负载，<code>latency</code> 反复计量单个批次，<code>serve</code> 从客户端经 API 压测运行中的服务。API 是客户端与服务交换请求的接口。</p>",
+     "<p>截至 2026-11-23，包含这些命令的最近公开稳定版为 vLLM v0.34.0，于 2026-11-16 UTC 发布。</p>"
+    ],
+    [
+     "<p><code>throughput</code> measures an offline workload, <code>latency</code> repeatedly times one batch, and <code>serve</code> load-tests a running service from an API client. The API is the interface used to exchange requests and responses.</p>",
+     "<p>As of November 23, 2026, the latest public stable vLLM release containing these commands is v0.34.0, published on November 16, 2026 UTC.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "离线吞吐测试",
+    "Measuring Offline Throughput"
+   ],
+   "d": [
+    "vllm bench throughput 让本地推理后端处理一组输入并统计处理速率。",
+    "vllm bench throughput gives a collection of inputs to a local inference backend and reports processing rates."
+   ],
+   "b": [
+    [
+     "<p>测试的工作量由模型、数据集、提示词数量及输入输出长度决定。离线运行在引擎侧生成结果，计时边界不经过 HTTP 请求和流式响应传输。输出中的请求每秒与 Token 每秒使用不同计数。</p>"
+    ],
+    [
+     "<p>The model, dataset, prompt count, and input and output lengths define the work. Offline generation takes place at the engine and its measurement boundary excludes HTTP dispatch and streamed transport. Requests per second and tokens per second count different units.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "单个批次的时延",
+    "Timing a Single Batch"
+   ],
+   "d": [
+    "vllm bench latency 在预热后重复测量同一尺寸的批次并统计批时延。",
+    "vllm bench latency repeatedly measures a batch of a defined size after warmup and summarizes batch latency."
+   ],
+   "b": [
+    [
+     "<p>预热是正式计时前的运行，用于先启动引擎和相关执行路径。批大小、输入输出长度和迭代次数定义这项试验。批次完成时延对应整组请求，本身无法描述在线排队或逐 Token 的时延。</p>"
+    ],
+    [
+     "<p>Warmup runs precede measurement so the engine and relevant execution paths have started. Batch size, input and output lengths, and the number of iterations define this test. Batch completion time describes the group of requests. Online queueing and per-token timing are separate measurements.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "在线 API 的负载",
+    "Driving an Online API"
+   ],
+   "d": [
+    "vllm bench serve 通过指定端点发出请求，并观测客户端收到的响应。",
+    "vllm bench serve sends requests to a configured endpoint and measures responses at the client."
+   ],
+   "b": [
+    [
+     "<p>工作负载参数包括模型、数据集、请求数量和请求长度。有限的 <code>--request-rate</code> 控制平均发起速率，<code>--max-concurrency</code> 限制执行中的请求数。二者同时设置时，实际发出速率可能低于目标速率。</p>"
+    ],
+    [
+     "<p>Workload parameters include the model, dataset, request count, and request lengths. A finite <code>--request-rate</code> controls the average initiation rate, and <code>--max-concurrency</code> caps executing requests. With both enabled, the achieved send rate can fall below the target.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "统计时延与达标吞吐",
+    "Latency Statistics and Goodput"
+   ],
+   "d": [
+    "在线报告可同时显示请求与 Token 吞吐、时延百分位，以及满足服务目标的请求速率。",
+    "Online reports can show request and token throughput, latency percentiles, and the rate of requests that meet service targets."
+   ],
+   "b": [
+    [
+     "<p>TTFT 是从请求发出到收到首 Token 的时延，TPOT 是请求中首 Token 之后平均到每个输出 Token 的时间，ITL 描述相邻输出间隔。P99 是约 99% 的观测值不超过的时延。设置 <code>--goodput</code> 后，满足全部指定 TTFT、TPOT 或端到端时延门槛的请求才计入 goodput。</p>"
+    ],
+    [
+     "<p>Time to first token (TTFT) measures the wait from dispatch to the first token. Time per output token (TPOT) averages time over the tokens after the first within a request. Inter-token latency (ITL) describes gaps between outputs. P99 is the latency at or below which roughly 99% of observations fall. With <code>--goodput</code>, only requests meeting every selected TTFT, TPOT, or end-to-end latency threshold contribute to goodput.</p>"
+    ]
+   ]
+  },
+  {
+   "t": [
+    "用相同命令比较相同问题",
+    "Matching Command and Workload"
+   ],
+   "d": [
+    "可比的结果需要对齐命令、模型、数据、服务配置与流量条件。",
+    "Comparable runs use the same command, workload, and serving configuration."
+   ],
+   "b": [
+    [
+     "<p>离线吞吐可用于检查引擎更改，在线结果可衡量 API 路径与请求模式。把离线的 Token 每秒当作在线容量会遗漏传输、到达节奏和排队。在线报告中的输出 Token 与输入加输出 Token 也要分别解读。</p>"
+    ],
+    [
+     "<p>Offline throughput can help evaluate engine changes, while online results capture the API path and request pattern. Using offline tokens per second as online capacity omits transport, arrival pacing, and queueing. Online output-token rates and combined input-plus-output token rates also have distinct meanings.</p>"
+    ]
+   ]
+  }
+ ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

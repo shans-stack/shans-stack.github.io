@@ -1,0 +1,281 @@
+(() => {
+"use strict";
+
+const ID = "n-nemotron";
+const SCENES = [
+  {
+    caption: ["运行时持有任务状态，模型返回生成结果", "The runtime holds task state and the model returns output"],
+    bands: [
+      [{"key": "app", "name": ["智能体运行时", "Agent Runtime"], "sub": ["保留任务状态", "Retains task state"], "tiles": ["file", "fixed"]}],
+      [{"key": "model", "name": ["Nemotron", "Nemotron"], "sub": ["执行模型推理", "Runs model inference"], "tiles": ["layers"]}]
+    ],
+    edges: [
+      ["app", "model", 0.18, "data", -15],
+      ["model", "app", 1.11, "ok", 15]
+    ]
+  },
+  {
+    caption: ["工具执行和结果回传都经过运行时", "The runtime executes tools and returns results"],
+    bands: [
+      [{"key": "nano", "name": ["Nemotron 3 Nano", "Nemotron 3 Nano"], "sub": ["生成调用参数", "Generates arguments"], "state": [3.32, "读取工具结果", "Reads tool result"]}],
+      [{"key": "runtime", "name": ["智能体运行时", "Agent Runtime"], "sub": ["解析并执行调用", "Dispatches the call"]}],
+      [{"key": "tool", "name": ["目录工具", "Catalog Tool"], "sub": ["返回目录结果", "Returns catalog data"]}]
+    ],
+    edges: [
+      ["nano", "runtime", 0.17, "data", -12],
+      ["runtime", "tool", 0.99, "data", -12],
+      ["tool", "runtime", 1.81, "ok", 12],
+      ["runtime", "nano", 2.63, "ok", 12]
+    ]
+  },
+  {
+    caption: ["多模态输入汇入同一个模型", "Several input types feed the same model"],
+    bands: [
+      [{"key": "input", "name": ["多模态输入", "Multimodal Inputs"], "sub": ["文字、图像、视频和音频", "Text, image, video, and audio"], "tiles": ["file", "image", "video", "sound"]}],
+      [{"key": "omni", "name": ["Nano Omni", "Nano Omni"], "sub": ["共享上下文", "Shared context"]}],
+      [{"key": "output", "name": ["文本输出", "Text Output"], "tiles": ["file"]}]
+    ],
+    edges: [
+      ["input", "omni", 0.14, "data", -18],
+      ["input", "omni", 0.26, "control", -6],
+      ["input", "omni", 0.38, "ok", 6],
+      ["input", "omni", 0.5, "review", 18],
+      ["omni", "output", 1.36, "ok", 0]
+    ]
+  },
+  {
+    caption: ["模型卡记录各变体的开放交付物", "The model card documents the published artifacts"],
+    bands: [
+      [{"key": "card", "name": ["Nemotron 模型卡", "Nemotron Model Card"], "sub": ["具体模型变体", "A specific model variant"]}],
+      [{"key": "weights", "name": ["权重", "Weights"], "tiles": ["layers"]}, {"key": "recipes", "name": ["训练资料", "Training"], "tiles": ["file"]}, {"key": "terms", "name": ["许可", "License"], "tiles": ["checks"]}]
+    ],
+    edges: [
+      ["card", "weights", 0.18, "data", -22],
+      ["card", "recipes", 0.4, "data", 0],
+      ["card", "terms", 0.62, "control", 22]
+    ]
+  },
+  {
+    caption: ["推理引擎加载权重，应用调用服务", "The engine loads weights and the application calls the service"],
+    bands: [
+      [{"key": "weights", "name": ["Nemotron 权重", "Nemotron Weights"], "tiles": ["layers", "layers"]}],
+      [{"key": "engine", "name": ["推理服务", "Inference Service"], "sub": ["兼容推理引擎", "Compatible engine"]}],
+      [{"key": "app", "name": ["应用", "Application"], "sub": ["模型 API", "Model API"]}]
+    ],
+    edges: [
+      ["weights", "engine", 0.18, "control", 0],
+      ["app", "engine", 1.06, "data", -14],
+      ["engine", "app", 1.89, "ok", 14]
+    ]
+  }
+];
+const ICONS = {
+  "file": "M2 0H12l4 4v13H2Z M12 0v4h4 M5 8h8 M5 12h8",
+  "layers": "M1 5L9 0l8 5-8 5Z M1 9l8 5 8-5 M1 13l8 5 8-5",
+  "checks": "M2 4l3 3 4-5 M2 13l3 3 4-5 M12 5h6m-6 9h6",
+  "fixed": "M1 4h16v13H1Z M4 12l4-4m1 5 4-4",
+  "image": "M1 1h17v16H1Z M3 14l5-5 3 2 2-3 3 6 M5 5h2",
+  "video": "M1 1h17v16H1Z M7 5v8l6-4Z",
+  "sound": "M1 9h2l2-4 3 8 2-12 2 15 2-7h4"
+};
+
+function mount(host, options = {}) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const compact = matchMedia("(max-width: 640px)");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const T = pair => pair[window.SS_LANG === "en" ? 1 : 0];
+  const clamp = value => Math.min(1, Math.max(0, value));
+  let index = 0;
+  let elapsed = 0;
+  let last = 0;
+  let request = 0;
+  let paused = Boolean(options.paused);
+  let paint;
+  let end;
+  let view;
+
+  host.replaceChildren(svg);
+  svg.setAttribute("class", ID + "-scene");
+  svg.setAttribute("role", "img");
+
+  function add(tag, attrs, parent = svg) {
+    const element = document.createElementNS(svg.namespaceURI, tag);
+    for (const [key, value] of Object.entries(attrs)) element.setAttribute(key, value);
+    parent.append(element);
+    return element;
+  }
+
+  function label(x, y, content, className, parent) {
+    const element = add("text", {x, y, class: className}, parent);
+    element.textContent = content;
+    return element;
+  }
+
+  function drawTile(tile, x, y, parent) {
+    const group = add("g", {class: "tile " + tile, transform: `translate(${x},${y})`}, parent);
+    
+    const icon = ICONS[tile];
+    if (icon) add("path", {d: icon}, group);
+    else {
+      add("path", {d: "M0 0H18V16H0Z"}, group);
+      label(9, 12.5, tile, "tile-text", group).setAttribute("text-anchor", "middle");
+    }
+  }
+
+  function build() {
+    const mobile = compact.matches;
+    const [width, height] = mobile ? [360, 410] : [860, 260];
+    const {caption, bands, edges} = SCENES[index];
+    view = width / height;
+    svg.replaceChildren();
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.dataset.step = index + 1;
+
+    const boxes = new Map();
+    bands.forEach((band, column) => {
+      band.forEach(({key}, row) => {
+        const rank = row - (band.length - 1) / 2;
+        const x = mobile
+          ? width / 2 + rank * (band.length === 3 ? 112 : 176)
+          : width / 2 + (column - (bands.length - 1) / 2) * 280;
+        const y = mobile
+          ? 211 + (column - (bands.length - 1) / 2) * 109
+          : 132 + rank * (band.length === 3 ? 82 : 96);
+        const w = mobile ? (band.length === 3 ? 106 : band.length === 2 ? 165 : 246) : 232;
+        const h = band.length === 3 ? 66 : 82;
+        boxes.set(key, {x, y, w, h});
+      });
+    });
+
+    const routes = edges.map(([source, target, start, kind, offset]) => {
+      const a = boxes.get(source), b = boxes.get(target);
+      const direction = Math.sign(mobile ? b.y - a.y : b.x - a.x);
+      const x = mobile ? a.x + offset : a.x + direction * a.w / 2;
+      const y = mobile ? a.y + direction * a.h / 2 : a.y + offset;
+      const tx = mobile ? b.x + offset : b.x - direction * b.w / 2;
+      const ty = mobile ? b.y - direction * b.h / 2 : b.y + offset;
+      const bend = mobile ? (y + ty) / 2 + offset / 3 : (x + tx) / 2 + offset / 3;
+      const d = mobile ? `M${x},${y} V${bend} H${tx} V${ty}` : `M${x},${y} H${bend} V${ty} H${tx}`;
+      const tip = mobile
+        ? `M${tx - 4},${ty - direction * 8} L${tx},${ty - direction} L${tx + 4},${ty - direction * 8}`
+        : `M${tx - direction * 8},${ty - 4} L${tx - direction},${ty} L${tx - direction * 8},${ty + 4}`;
+      const group = add("g", {class: "route " + kind, "data-route": source + "-" + target});
+      const path = add("path", {d}, group);
+      add("path", {d: tip}, group);
+      return {target, start, kind, group, path, length: path.getTotalLength()};
+    });
+
+    const cards = bands.flat().map(node => {
+      const {key, name, sub, state, kind = "", tiles = []} = node;
+      const {x, y, w, h} = boxes.get(key);
+      const left = x - w / 2;
+      const top = y - h / 2;
+      const group = add("g", {class: "node " + kind, "data-node": key});
+      add("rect", {x: left, y: top, width: w, height: h, rx: 4, class: "panel"}, group);
+      const textX = left + 12;
+      const nameY = top + (!sub && tiles.length === 0 ? 44 : 25);
+      label(textX, nameY, T(name), "name", group);
+      const subtitle = sub || state ? label(textX, nameY + 20, sub ? T(sub) : "", "sub", group) : null;
+      const offsets = tiles.map((tile, i) => drawTile(tile, textX + i * 22, nameY + (sub ? 26 : 8), group));
+      return {
+        group, subtitle, sub, state, offsets,
+        incoming: routes.filter(route => route.start !== null && route.target === key)
+      };
+    });
+
+    for (const route of routes) {
+      if (route.start === null) continue;
+      route.packet = add("rect", {x: -4, y: -4, width: 8, height: 8, rx: 1.5, class: "packet " + route.kind});
+    }
+
+    const heading = add("foreignObject", {x: mobile ? 16 : 24, y: 9, width: width - (mobile ? 32 : 48), height: 48});
+    const captionText = document.createElement("div");
+    captionText.className = "caption";
+    captionText.textContent = T(caption);
+    heading.append(captionText);
+    const note = ["示意，不代表实测数字", "Schematic. No measured data."];
+    label(mobile ? 16 : 24, height - 12, T(note), "note");
+    const summary = bands.flat().map(({name, sub, state}) => [T(name), sub && T(sub), state && T(state.slice(1))].filter(Boolean).join(", "));
+    svg.setAttribute("aria-label", [T(caption), ...summary, T(note)].join(". "));
+
+    end = Math.max(...routes.map(route => route.start || 0)) + 1.86;
+    paint = (time, still = false) => {
+      for (const route of routes) {
+        if (!route.packet) continue;
+        const age = time - route.start;
+        const progress = clamp(age / .72);
+        const point = route.path.getPointAtLength(4 + progress * (route.length - 8));
+        route.group.classList.toggle("active", age >= 0);
+        route.packet.setAttribute("transform", `translate(${point.x},${point.y})`);
+        route.packet.setAttribute("opacity", still ? 0 : clamp(Math.min(age * 12, (.85 - age) * 10)));
+      }
+      for (const {group, subtitle, sub, state, offsets, incoming} of cards) {
+        const arrival = incoming.length ? Math.min(...incoming.map(route => route.start + .72)) : 0;
+        const arrived = time >= arrival;
+        const outcome = incoming.find(route => route.kind === "ok" || route.kind === "review");
+        group.classList.toggle("arrived", arrived && incoming.length > 0);
+        group.classList.toggle("accepted", arrived && outcome?.kind === "ok");
+        group.classList.toggle("review", arrived && outcome?.kind === "review");
+        if (state) {
+          const value = time >= state[0] ? T(state.slice(1)) : sub ? T(sub) : "";
+          if (subtitle.textContent !== value) subtitle.textContent = value;
+        }
+        for (const update of offsets) update?.(time - arrival);
+      }
+    };
+    options.onLayout?.(view, mobile);
+  }
+
+  function tick(now) {
+    elapsed += Math.min(.05, Math.max(0, (now - last) / 1000));
+    last = now;
+    const time = elapsed % end;
+    paint(time);
+    request = requestAnimationFrame(tick);
+  }
+
+  function run() {
+    cancelAnimationFrame(request);
+    if (paused || reduced.matches) return;
+    last = performance.now();
+    request = requestAnimationFrame(tick);
+  }
+
+  function draw() {
+    build();
+    elapsed = 0;
+    paint(reduced.matches ? end : 0, reduced.matches);
+    run();
+  }
+
+  const events = [[compact, "change"], [reduced, "change"], [document, "ss-lang"]];
+  for (const [target, name] of events) target.addEventListener(name, draw);
+  draw();
+
+  const control = {
+    show(i) {
+      index = Math.max(0, Math.min(SCENES.length - 1, i));
+      draw();
+    },
+    pause() { paused = true; cancelAnimationFrame(request); },
+    resume() {
+      if (!paused) return;
+      paused = false;
+      run();
+    },
+    destroy() {
+      control.pause();
+      for (const [target, name] of events) target.removeEventListener(name, draw);
+      svg.remove();
+      delete host.__anim;
+    },
+    ratio: () => view,
+    step: () => index
+  };
+  host.__anim = control;
+  return control;
+}
+
+window.SSAnim = window.SSAnim || {};
+window.SSAnim[ID] = {steps: 5, mount};
+})();

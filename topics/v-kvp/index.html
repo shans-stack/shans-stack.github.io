@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VAST KV Cache 方案 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 VAST DataStore 上的 KV Cache 文件路径，以及 vLLM、SGLang 和 NVIDIA Dynamo 如何读写缓存。" data-en-content="Five steps on how vLLM, SGLang, and NVIDIA Dynamo save and reload KV cache files on VAST DataStore.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/v-kvp.css?v=929dc7e8">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body>
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <div class="langs" role="group" aria-label="语言" data-en-label="Language" data-noconv>
+      <button type="button" data-lang-set="zh" data-en="SC" aria-label="简体中文" data-en-label="Simplified Chinese" onclick="ssSetLang('zh')">简</button>
+      <button type="button" data-lang-set="tw" data-en="TC" aria-label="繁體中文" data-en-label="Traditional Chinese" onclick="ssSetLang('tw')">繁</button>
+      <button type="button" data-lang-set="en" aria-label="English" onclick="ssSetLang('en')">EN</button>
+    </div>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="v-kvp">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="VAST KV Cache Solution">VAST KV Cache 方案</h1>
+        <p class="meta"><span data-en="5 steps · vLLM, SGLang, Dynamo, DataStore">5 步 · vLLM、SGLang、Dynamo、DataStore</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.vastdata.com/platform/datastore&quot;&gt;VAST DataStore&lt;/a&gt;"><a class="gen-source" href="https://www.vastdata.com/platform/datastore">VAST DataStore 产品页</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/develop/docs/inference&quot;&gt;VAST Inference Documentation&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/develop/docs/inference">VAST 推理对接文档</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/develop/docs/vllm-lmcache-in-process-nvidia&quot;&gt;VAST vLLM and LMCache In-Process Guide&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/develop/docs/vllm-lmcache-in-process-nvidia">vLLM 与 LMCache 进程内配置</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/develop/docs/vllm-mooncake-store-nvidia&quot;&gt;VAST vLLM and Mooncake Store Guide&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/develop/docs/vllm-mooncake-store-nvidia">VAST vLLM 与 Mooncake Store 指南</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/develop/docs/sglang-hicache-using-nixl-nvidia&quot;&gt;VAST SGLang HiCache and NIXL Guide&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/develop/docs/sglang-hicache-using-nixl-nvidia">VAST SGLang HiCache 与 NIXL 指南</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vastdata.com/develop/docs/dynamo-using-vllm&quot;&gt;VAST Dynamo and vLLM Deployment Guide&lt;/a&gt;"><a class="gen-source" href="https://docs.vastdata.com/develop/docs/dynamo-using-vllm">VAST Dynamo 与 vLLM 部署指南</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://www.vastdata.com/blog/accelerating-inference&quot;&gt;VAST Inference Architecture and NIXL&lt;/a&gt;"><a class="gen-source" href="https://www.vastdata.com/blog/accelerating-inference">VAST 推理架构与 NIXL 说明</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.nvidia.com/dynamo/v1.2.0/design-docs/component-design/kvbm-design&quot;&gt;NVIDIA Dynamo KVBM Design&lt;/a&gt;"><a class="gen-source" href="https://docs.nvidia.com/dynamo/v1.2.0/design-docs/component-design/kvbm-design">NVIDIA Dynamo KVBM 架构</a></li>
+      <li data-en="&lt;a class=&quot;gen-source&quot; href=&quot;https://docs.vllm.ai/en/latest/design/prefix_caching/&quot;&gt;vLLM Automatic Prefix Caching&lt;/a&gt;"><a class="gen-source" href="https://docs.vllm.ai/en/latest/design/prefix_caching/">vLLM 前缀缓存</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span><span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span></span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/v-kvp.js?v=09fbf6fa"></script>
+<script>
+const stationMeta = SS.stations["v-kvp"];
+stationMeta.t ??= ["VAST KV Cache 方案", "VAST KV Cache Solution"];
+stationMeta.prev ??= ["kvoff"];
+stationMeta.next ??= ["v-datastore", "v-nfsrdma"];
+window.SS_TOPIC_CFG = {
+  "anim": "v-kvp",
+  "ar": [
+    2.8486646884273,
+    0.9012875536480687
+  ],
+  "steps": [
+    {
+      "t": [
+        "DataStore 上的缓存文件",
+        "Cache Files on DataStore"
+      ],
+      "d": [
+        "推理服务器把选中的 KV 块写到 DataStore 的 NFS 目录，需要复用时再读回。",
+        "The inference server writes selected KV blocks to an NFS directory on DataStore and reads them back for reuse."
+      ],
+      "b": [
+        [
+          "<p>KV Cache 是模型处理输入时生成的注意力键和值。在这里，VAST DataStore 提供共享文件存储。推理服务器把 NFS 导出的缓存目录挂载到本地，连接器通过这个目录保存和加载 KV 块。</p>"
+        ],
+        [
+          "<p>The KV cache holds the attention keys and values a model creates while processing its input. VAST DataStore supplies shared file storage. The inference server mounts an NFS export as a local directory, and its connector saves and reloads KV blocks through that directory.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从显存写到挂载目录",
+        "Writing from GPU Memory to the Mounted Directory"
+      ],
+      "d": [
+        "经过主机内存的写入路径把 KV 从显存复制到 DRAM，再通过 NFS 写成文件。",
+        "A host-staged write copies KV from GPU memory to DRAM before saving it as a file over NFS."
+      ],
+      "b": [
+        [
+          "<p>在 VAST 公开的主机中转配置中，框架在 GPU 的高带宽显存（HBM）里生成 KV。卸载时，连接器将选中的数据复制到主机 DRAM，再把数据写到 DataStore 上的缓存文件。DRAM 可以兼作本机缓存，也可以只为文件读写提供临时缓冲。</p>",
+          "<p>VAST 的配置示例使用 NFS over RDMA，也就是让 NFS 客户端通过支持远程直接内存访问的网络收发数据。框架仍通过挂载路径发起文件读写。</p>"
+        ],
+        [
+          "<p>In VAST’s documented host-staged configurations, the framework creates KV in the GPU’s high-bandwidth memory (HBM). The connector copies selected data into host DRAM and writes it into cache files on DataStore. DRAM can retain a local cache or serve as a temporary I/O buffer.</p>",
+          "<p>VAST’s example configurations use NFS over RDMA, where the NFS client uses a network that supports remote direct memory access. The framework still reads and writes files through the mounted path.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "推理框架如何接入",
+        "How the Inference Framework Connects"
+      ],
+      "d": [
+        "LMCache 通过 vLLM 的连接器保存 KV，文件后端指向 DataStore 的 NFS 挂载目录。",
+        "LMCache attaches to vLLM through a connector and uses a file backend pointed at the NFS mount."
+      ],
+      "b": [
+        [
+          "<p>VAST 的进程内示例给 vLLM 配置 LMCacheConnectorV1，并为 LMCache 配置主机 DRAM 与文件后端。写入时 KV 从显存复制到 DRAM，再由 LMCache 将缓存块写入 DataStore 上的目录。文件命中时，LMCache 把对应块读入主机内存并装回显存。</p>",
+          "<p>这条路径需要 vLLM、LMCache、启用的文件后端和 DataStore 的 NFS 挂载。VAST 也给出了 vLLM 原生 OffloadingConnector 和 Mooncake Store 的配置。前者由 vLLM 管理主机内存与文件层，后者由单独的 Mooncake 进程管理 DRAM 池，再写到 NFS。</p>"
+        ],
+        [
+          "<p>VAST’s in-process example configures LMCacheConnectorV1 in vLLM and gives LMCache a host DRAM tier and a file backend. On write, KV is copied from GPU memory into DRAM and LMCache saves the chunks to a directory on DataStore. On a file hit, LMCache reads the chunks into host memory and loads them back into GPU memory.</p>",
+          "<p>This path uses vLLM, LMCache, its enabled file backend, and a DataStore NFS mount. VAST also documents vLLM’s native OffloadingConnector and Mooncake Store. With OffloadingConnector, vLLM manages the host memory and file tiers. With Mooncake Store, a separate process manages the DRAM pool and writes to NFS.</p>"
+        ]
+      ],
+      "tabs": [
+        {
+          "t": [
+            "vLLM",
+            "vLLM"
+          ],
+          "d": [
+            "LMCache 通过 vLLM 的连接器保存 KV，文件后端指向 DataStore 的 NFS 挂载目录。",
+            "LMCache attaches to vLLM through a connector and uses a file backend pointed at the NFS mount."
+          ],
+          "b": [
+            [
+              "<p>VAST 的进程内示例给 vLLM 配置 LMCacheConnectorV1，并为 LMCache 配置主机 DRAM 与文件后端。写入时 KV 从显存复制到 DRAM，再由 LMCache 将缓存块写入 DataStore 上的目录。文件命中时，LMCache 把对应块读入主机内存并装回显存。</p>",
+              "<p>这条路径需要 vLLM、LMCache、启用的文件后端和 DataStore 的 NFS 挂载。VAST 也给出了 vLLM 原生 OffloadingConnector 和 Mooncake Store 的配置。前者由 vLLM 管理主机内存与文件层，后者由单独的 Mooncake 进程管理 DRAM 池，再写到 NFS。</p>"
+            ],
+            [
+              "<p>VAST’s in-process example configures LMCacheConnectorV1 in vLLM and gives LMCache a host DRAM tier and a file backend. On write, KV is copied from GPU memory into DRAM and LMCache saves the chunks to a directory on DataStore. On a file hit, LMCache reads the chunks into host memory and loads them back into GPU memory.</p>",
+              "<p>This path uses vLLM, LMCache, its enabled file backend, and a DataStore NFS mount. VAST also documents vLLM’s native OffloadingConnector and Mooncake Store. With OffloadingConnector, vLLM manages the host memory and file tiers. With Mooncake Store, a separate process manages the DRAM pool and writes to NFS.</p>"
+            ]
+          ],
+          "key": "vllm"
+        },
+        {
+          "t": [
+            "SGLang",
+            "SGLang"
+          ],
+          "d": [
+            "HiCache 通过主机缓冲区和 NIXL 的 POSIX 后端，把 KV 页存入 DataStore。",
+            "HiCache saves KV pages to DataStore through a host buffer and the NIXL POSIX backend."
+          ],
+          "b": [
+            [
+              "<p>HiCache 是 SGLang 内置的分层 KV Cache。VAST 的公开配置使用显存、主机 DRAM 缓冲区和外部文件层。写入时，HiCache 将 KV 页复制到主机缓冲区，NIXL 是数据传输库，其 POSIX 后端再将页写到 NFS 挂载目录。读回时，HiCache 先从目录预取命中的页到主机，再装回显存。</p>",
+              "<p>所需组件包括 SGLang HiCache、NIXL 的 POSIX 文件插件和 DataStore 的 NFS 挂载。VAST 示例将主机层设为临时缓冲，写入确认后即可释放页。</p>"
+            ],
+            [
+              "<p>HiCache is SGLang’s built-in hierarchical KV cache. The VAST recipe uses GPU memory, a host DRAM buffer, and an external file tier. HiCache copies pages into the host buffer and the NIXL POSIX backend writes them to the NFS directory. On a hit, HiCache prefetches pages from the directory into host memory before loading them into GPU memory.</p>",
+              "<p>The components are SGLang HiCache, NIXL’s POSIX file plugin, and a DataStore NFS mount. In VAST’s example the host tier is a staging buffer whose pages can be freed after the write is acknowledged.</p>"
+            ]
+          ],
+          "key": "sglang"
+        },
+        {
+          "t": [
+            "NVIDIA Dynamo",
+            "NVIDIA Dynamo"
+          ],
+          "d": [
+            "Dynamo 编排推理服务，VAST 指南中的 vLLM worker 通过原生连接器读写 NFS 文件层。",
+            "Dynamo orchestrates serving, and the vLLM worker in VAST’s guide uses its native connector for the NFS file tier."
+          ],
+          "b": [
+            [
+              "<p>VAST 的 Kubernetes 指南由 Dynamo 前端接收请求，vLLM worker 用 OffloadingConnector 管理卸载。KV 写出时经过主机 DRAM 落到 NFS 上的 DataStore，命中文件后沿主机 DRAM 读回 GPU。部署包含 Dynamo 前端与 worker、vLLM 连接器和挂载的缓存卷。</p>",
+              "<p>NVIDIA 另有 KVBM（KV 块管理器）架构，将显存、主机内存和外部存储纳入分层，并使用 NIXL 搬运块，远端文件系统可经 POSIX 插件访问。图中是 VAST 指南列出的 OffloadingConnector 路径。Dynamo 也可用 NIXL 在分开的预填充与解码 worker 间传 KV。</p>"
+            ],
+            [
+              "<p>In VAST’s Kubernetes guide, the Dynamo frontend receives requests and the vLLM worker uses OffloadingConnector to manage offload. Writes go through host DRAM to DataStore over NFS. A file hit brings the block back through host DRAM to the GPU. The deployment includes the Dynamo frontend and worker, the vLLM connector, and a mounted cache volume.</p>",
+              "<p>NVIDIA separately documents KVBM, its KV Block Manager, for tiering across GPU memory, host memory, and external storage. KVBM uses NIXL to move blocks and can use its POSIX plugin for mounted remote filesystems. The diagram follows the OffloadingConnector path in VAST’s guide. Dynamo can also use NIXL to hand off KV between separate prefill and decode workers.</p>"
+            ]
+          ],
+          "key": "dynamo"
+        }
+      ]
+    },
+    {
+      "t": [
+        "命中后将块装回显存",
+        "Loading a Hit Back into GPU Memory"
+      ],
+      "d": [
+        "当匹配的 KV 在文件层而本机没有可用副本时，框架通过连接器把块读回显存。",
+        "When matching KV is on the file tier and unavailable locally, the framework loads the blocks back into GPU memory."
+      ],
+      "b": [
+        [
+          "<p>连接器按框架的缓存标识查找输入前缀。远端命中时，文件层交回所需的块。图中的主机中转路径先读入 DRAM，再复制到 GPU。DataStore 上的文件在读回时仍可保留，供后续请求复用。</p>"
+        ],
+        [
+          "<p>The connector looks up the input prefix using the framework’s cache identifiers. On a remote hit, the file tier returns the requested blocks. The host-staged path shown here reads into DRAM and copies the blocks to the GPU. The files on DataStore can remain available for later requests.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "复用已有前缀，计算新内容",
+        "Reusing the Prefix and Computing New Tokens"
+      ],
+      "d": [
+        "GPU 使用已加载的前缀 KV，并为未命中的输入计算新的 KV。",
+        "The GPU uses the restored prefix KV and computes KV for the input that did not hit."
+      ],
+      "b": [
+        [
+          "<p>预填充（prefill）是推理引擎处理输入并生成 KV 的阶段。如果只命中开头一段，后面的输入仍由 GPU 做预填充。没有可用缓存时，GPU 计算完整输入。</p>",
+          "<p>共享目录提供共同的存放位置。框架仍按自己的缓存键和布局判断能否读取和复用，切换框架时需要考虑格式兼容性。</p>"
+        ],
+        [
+          "<p>Prefill is the stage in which the engine processes the input and creates its KV. On a partial hit, the GPU still performs prefill for the rest of the input. It computes the entire input when no usable cache is available.</p>",
+          "<p>A shared directory provides a common storage location. Each framework uses its own cache keys and layout to determine what it can load and reuse; switching frameworks requires compatible cache formats.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script>
+document.addEventListener('ss-lang', function () {
+  document.title = document.querySelector('h1').textContent + " · Shan's Stack";
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.zhContent ??= description.content;
+  description.content = window.SS_LANG === 'en' ? description.dataset.enContent : description.dataset.zhContent;
+});
+</script>
+</body>
+</html>

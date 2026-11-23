@@ -5,8 +5,7 @@
    动画自己不带翻页控件和步骤说明，页面翻到哪一步就调 show(i)。
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
-   样式在 assets/anim/v-ie.css，全部限定在 .ssa-v-ie 容器之内。
-   VAST 字标用 <image> 引用 assets/brand/vast-wordmark-black.svg 与 -white.svg 原件（浅色黑字、深色白字），每个画面只标一处。 */
+   样式在 assets/anim/v-ie.css，全部限定在 .ssa-v-ie 容器之内。 */
 (function(){
 var ID='v-ie',NSTEP=7;
 var EN={"合同.pdf":"Contract.pdf","会议.mp4":"Meeting.mp4","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","手册.pdf":"Manual.pdf","存储":"Storage","嵌入流水线":"Embedding pipeline","向量库":"Vector database","权限系统":"Permission system","应用":"App","复制数据":"Copy data","同步权限":"Sync permissions","定制代码":"Custom code","分置架构：通过接口连通":"Separate components connected through interfaces","InsightEngine：事件驱动的入库流水线":"InsightEngine: event-driven ingestion pipeline","换成 InsightEngine":"Switch to InsightEngine","切到分置架构":"Switch to separate components","切换对比，当前 ":"Switch comparison, now ","分置架构":"separate components","DataEngine 函数":"DataEngine functions","DataBase 表":"DataBase table","检索接口":"Search API",
@@ -63,12 +62,6 @@ function put(o,x,y,a){if(typeof x==='object'){a=y;y=x.y;x=x.x}o.x=x;o.y=y;o.a=a=
 function setText(o,s){const v=T(s);if(o.t.textContent!==v)o.t.textContent=v}
 function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-99,-99,0);return -1}const u=(t-t0)/dur;if(u<=1){put(o,at(pts,sm(u)),1);return u}put(o,pts[pts.length-1],1-(t-t0-dur)/fo);return 1.5}
 const dur=(pts,sp)=>plen(pts)/(sp||L.sp);
-/* VAST 字标：<image> 引用 assets/brand/ 里的原件，浅色模式黑字、深色模式白字；(x,y) 为左端、竖直居中 */
-function vlogo(x,y,h,p){const w=h*66/14,g=el('g',{class:'vlogo'},p),base=(window.SS_ROOT||'')+'assets/brand/';
-  ['black','white'].forEach(c=>{const i=el('image',{x:x.toFixed(1),y:(y-h/2).toFixed(1),width:w.toFixed(1),height:h,class:c==='black'?'vwm-l':'vwm-d',preserveAspectRatio:'xMinYMid meet'},g);i.setAttribute('href',base+'vast-wordmark-'+c+'.svg')});
-  g.w=w;return g}
-/* 带 VAST 字标的标题：字标在前，名字紧跟其后，同一行 */
-function vtitle(x,y,s,fs,cls,p,h){const g=vlogo(x,y,h||L.lg,p);return tx(x+g.w+Math.round(fs*0.4),y,s,fs,cls||'ttl','start',p)}
 function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
 function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.toggle(c,!!on))}
 /* ---------- 场景 ---------- */
@@ -78,8 +71,8 @@ const SCENE={
           5:{param:'api',values:['rag','vec'],label:v=>v==='rag'?'换成向量检索接口':'换成 RAG 检索接口',aria:'切换接口，当前 ',name:v=>v==='rag'?'RAG 检索接口':'向量检索接口'},
           6:{param:'case',values:['del','mod'],label:v=>v==='del'?'换成就地修改':'换成删除',aria:'切换场景，当前 ',name:v=>v==='del'?'删除':'就地修改'}},
  layout(m){
-  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17},pw:22,ph:16,dr:7,sp:330,lg:15,cap:{x:480,y:480},tgl:{x:840,y:440}};
-  return {W:480,H:660,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17},pw:18,ph:14,dr:6,sp:240,lg:13,cap:{x:240,y:640},tgl:{x:240,y:600}};
+  if(!m)return {W:960,H:500,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17},pw:22,ph:16,dr:7,sp:330,cap:{x:480,y:480},tgl:{x:840,y:440}};
+  return {W:480,H:660,mobile:true,f:{lbl:19,sm:17,cap:17,xs:17},pw:18,ph:14,dr:6,sp:240,cap:{x:240,y:640},tgl:{x:240,y:600}};
  },
  build(){
   const f=L.f,m=L.mobile;
@@ -102,7 +95,7 @@ const SCENE={
    s.ap=m?R(140,410,200,56):R(380,350,200,64);
    s.pb=[0,1,2].map(i=>[out_(s.c[i]),in_(s.c[i+1])]);s.pb.forEach(p=>poly(p,'',lb));
    s.pq=m?[P(C(s.ap).x,s.ap.y),P(C(s.c[3]).x,s.c[3].y+s.c[3].h)]:[P(s.ap.x+s.ap.w,C(s.ap).y),P(C(s.c[3]).x,C(s.ap).y),P(C(s.c[3]).x,s.c[3].y+s.c[3].h)];poly(s.pq,'',lb);
-   box(s.fr,B,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'InsightEngine',f.sm,'ttl',B);
+   box(s.fr,B,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'InsightEngine',f.sm,'ttl','start',B);
    s.bB=[nb(s.c[0],'DataStore','',B),nb(s.c[1],'Event Broker','',B),nb(s.c[2],'DataEngine 函数','',B),nb(s.c[3],'DataBase 表','',B)];
    nb(s.ap,'应用','',B);tx(m?C(s.ap).x+110:C(s.ap).x+ s.ap.w/2+30,m?s.ap.y-14:C(s.ap).y-16,'检索接口',f.xs,'ink3-t st',m?'start':'start',B);
   }
@@ -113,7 +106,7 @@ const SCENE={
    s.fn=[0,1,2].map(k=>m?R([84,240,396][k]-66,400,132,56):R(740,90+k*100,170,60));
    s.p1=[out_(s.cl),in_(s.bk)];poly(s.p1,'',ln);s.p2=[out_(s.bk),in_(s.tp)];poly(s.p2,'',ln);
    s.p3=s.fn.map(r=>m?elbowV(P(C(s.tp).x,s.tp.y+s.tp.h),P(C(r).x,r.y),360):elbowH(P(s.tp.x+s.tp.w,C(s.tp).y),P(r.x,C(r).y),705));s.p3.forEach(p=>poly(p,'',ln));
-   box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'AI OS',f.sm,'ttl',g);
+   box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'AI OS',f.sm,'ttl','start',g);
    nb(s.cl,'客户端','',g);s.bkB=nb(s.bk,'DataStore bucket','',g);s.bkB.t.setAttribute('y',s.bk.y+22);
    s.tpB=nb(s.tp,'Event Broker','topic',g,'box och');s.fnB=s.fn.map((r,k)=>nb(r,T('函数实例 ')+(k+1),'',g,'box'));
    s.files=['报告.pdf','会议.mp4','手册.pdf'].map((name,k)=>{
@@ -148,7 +141,7 @@ const SCENE={
      s.ins=k=>[P(s.in.x+s.in.w,C(s.in).y),P(bx,C(s.in).y),P(bx,s.rowY[k]),P(s.tb.x+40,s.rowY[k])];}
    else{const by=s.tb.y-14,bx=14;line(P(240,s.in.y+s.in.h),P(240,by),'',ln);line(P(bx,by),P(240,by),'thin',ln);poly([P(bx,by),P(bx,s.rowY[3])],'thin',ln);s.rowY.forEach(y=>line(P(bx,y),P(s.tb.x,y),'thin',ln));
      s.ins=k=>[P(240,s.in.y+s.in.h),P(240,by),P(bx,by),P(bx,s.rowY[k]),P(s.tb.x+30,s.rowY[k])];}
-   nb(s.in,'切块 + 向量','',g,'box fillv');box(s.fr,g,'box frame',16);vtitle(s.fr.x+16,s.fr.y+22,'DataBase 表',f.sm,'ttl',g);
+   nb(s.in,'切块 + 向量','',g,'box fillv');box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'DataBase 表',f.sm,'ttl','start',g);
    box(s.tb,g,'box',8);let x=s.tb.x;cols.forEach(c=>{el('rect',{x,y:s.tb.y,width:c.w,height:hh,class:'cell hd'},g);tx(x+c.w/2,s.tb.y+hh/2,c.k,f.xs,'ink2-t st','middle',g);c.x=x;x+=c.w});
    const D=[['正文','[0.21, …]','合同.pdf','页 3'],['表格','[0.64, …]','合同.pdf','页 4'],['视频片段 A','[0.08, …]','会议.mp4','02:10'],['视频片段 B','[0.77, …]','会议.mp4','05:40']];
    s.rows=D.map((d,k)=>{const y=s.rowY[k];const r=el('rect',{x:s.tb.x+3,y:y-rh/2+3,width:s.tb.w-6,height:rh-6,rx:4,class:'cell'},g);

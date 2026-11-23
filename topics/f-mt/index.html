@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>多租户 · Shan's Stack</title>
+<meta name="description" content="分 6 步说明共享 GPU 基础设施中的身份、网络、存储、配额和节点隔离。" data-description-en="Six steps explain identity, network, storage, quota, and node isolation on shared GPU infrastructure.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/f-mt.css?v=6bc4499e">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-f-mt">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="f-mt">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="Multi-Tenancy">多租户</h1>
+        <p class="meta"><span data-en="6 steps · Tenant Isolation, Shared GPUs">6 步 · 租户隔离、共享 GPU</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/security/multi-tenancy/&quot;&gt;Kubernetes · Multi-Tenancy and Isolation&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/security/multi-tenancy/">Kubernetes · 多租户与隔离</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/reference/access-authn-authz/rbac/&quot;&gt;Kubernetes · Role-Based Access Control&lt;/a&gt;"><a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">Kubernetes · 基于角色的访问控制</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/run-ai/self-hosted/documentation/platform-management/runai-scheduler/scheduling/concepts-and-principles&quot;&gt;NVIDIA Run:ai · Scheduler Concepts and Quotas&lt;/a&gt;"><a href="https://docs.nvidia.com/run-ai/self-hosted/documentation/platform-management/runai-scheduler/scheduling/concepts-and-principles">NVIDIA Run:ai · 调度器概念与配额</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/f-mt.js?v=2f6ca60e"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "f-mt",
+  "ar": [920/310, 356/430],
+  "steps": [
+    {
+      "t": [
+        "共享底座与租户边界",
+        "Shared Infrastructure and Tenant Boundaries"
+      ],
+      "d": [
+        "多个团队或客户可以共用 GPU 基础设施，每个租户有自己的管理范围。",
+        "Teams or customers can share GPU infrastructure while retaining separate administrative scopes."
+      ],
+      "b": [
+        [
+          "<p>租户是平台划定的管理单位，可以代表组织、客户或团队。多租户平台可以在同一集群为多个租户运行工作负载，同时分别管理各租户的对象、数据访问和资源用量。共享底座可提高闲置资源复用率，各层的隔离设置决定共享到什么程度。</p>"
+        ],
+        [
+          "<p>A tenant is an administrative unit that can represent an organization, customer, or team. A multi-tenant platform can run workloads for several tenants in one cluster while managing each tenant’s objects, data access, and resource usage separately. Sharing makes idle capacity available for reuse. Isolation controls at each layer determine how much the tenants share.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "身份与管理范围",
+        "Identity and Administrative Scope"
+      ],
+      "d": [
+        "平台将用户或服务身份绑定到权限范围，限定其能操作的对象。",
+        "The platform binds users or service identities to permissions over a defined set of objects."
+      ],
+      "b": [
+        [
+          "<p>身份验证确认调用者是谁，授权判断该身份能对哪些对象执行哪些操作。以 Kubernetes 为例，命名空间为同一集群内的对象划定管理范围，角色绑定可授予指定用户或服务账号在该命名空间内的权限。共享集群中的平台级管理权限可由运营方保留。</p>"
+        ],
+        [
+          "<p>Authentication establishes who is making the request. Authorization determines what that identity can do to which objects. In Kubernetes, a namespace groups objects within one cluster. A role binding can grant selected users or service accounts permissions within that namespace. The operator can retain platform-wide administrative privileges in a shared cluster.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "工作负载网络",
+        "Workload Network Isolation"
+      ],
+      "d": [
+        "网络策略限定工作负载之间可建立的连接和可访问的服务。",
+        "Network policy limits which connections workloads can establish and which services they can reach."
+      ],
+      "b": [
+        [
+          "<p>管理权限与工作负载网络分别受控。Pod 是 Kubernetes 部署工作负载的单位，一个 Pod 可以包含一个或多个容器。集群的 Pod 默认可以互通，平台可以采用默认拒绝规则，再为明确需要的连接放行。Kubernetes 的 NetworkPolicy 依赖支持该功能的网络插件执行。</p>"
+        ],
+        [
+          "<p>Administrative permissions and workload network access are controlled separately. A pod is Kubernetes’ deployable unit and can contain one or more containers. Pods in a cluster can communicate by default. A platform can apply default-deny rules and allow explicitly required connections. A compatible network plugin enforces Kubernetes NetworkPolicy.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "数据与存储边界",
+        "Data and Storage Boundaries"
+      ],
+      "d": [
+        "存储卷及其访问凭据按租户分配，数据服务继续执行自己的访问规则。",
+        "Tenants receive their own volumes and credentials, and data services enforce their access rules."
+      ],
+      "b": [
+        [
+          "<p>在 Kubernetes 中，租户可以通过持久卷声明申请存储卷，平台可为不同声明动态创建不同的卷。持久卷声明是工作负载挂载存储的申请对象。卷由当前租户的工作负载使用，访问对象存储等外部数据服务时，则由数据服务根据所用身份或凭据执行授权。</p>"
+        ],
+        [
+          "<p>In Kubernetes, a tenant can request storage through a persistent volume claim, an object that requests storage for a workload to mount. The platform can provision separate volumes dynamically for separate claims. Workloads use the volumes assigned to their tenant. External data services such as object stores authorize access using the identity or credentials they receive.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "配额与 GPU 竞争",
+        "Quotas and GPU Contention"
+      ],
+      "d": [
+        "配额约束租户可申请或占用的资源，调度器在可用节点上安排工作负载。",
+        "Quotas constrain what tenants can request or consume, and the scheduler places workloads on available nodes."
+      ],
+      "b": [
+        [
+          "<p>配额是一段管理范围内的资源用量约束，例如对 GPU、CPU 或内存的限制。它能约束单个租户使用的容量。任务是否能运行还取决于节点上的实际可用资源和调度规则。NVIDIA Run:ai 的项目可按节点池分配 GPU 配额，并通过调度策略管理额外容量的使用。</p>"
+        ],
+        [
+          "<p>A quota constrains resource usage within an administrative scope. It can limit a tenant’s GPU, CPU, or memory allocation. Whether a workload can run also depends on actual capacity on eligible nodes and the scheduling rules. NVIDIA Run:ai can assign GPU quotas to projects by node pool and use scheduling policy to govern access to spare capacity.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "隔离可以深入到节点",
+        "Isolation Can Extend to Nodes"
+      ],
+      "d": [
+        "租户可共用集群的控制平面，也可采用独立控制平面或专用节点，分别加强管理和运行隔离。",
+        "Tenants can share a control plane or use separate control planes or dedicated nodes to isolate management or execution."
+      ],
+      "b": [
+        [
+          "<p>控制平面负责管理集群对象和调度任务。Kubernetes 多租户可以在共享控制平面内按命名空间分隔，也可以为租户提供虚拟控制平面。后一种方式仍可共用工作节点，因此工作负载网络和存储需要各自的隔离机制。需要限制工作负载共驻时，平台还可划分专用节点。</p>"
+        ],
+        [
+          "<p>The control plane manages cluster objects and schedules workloads. Kubernetes multi-tenancy can divide a shared control plane into namespaces or provide a virtual control plane per tenant. Virtual control planes can still share worker nodes, so workload networks and storage require their own isolation controls. Dedicated nodes can also limit which tenants’ workloads share a host.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name=description]');
+  description.content = english ? description.dataset.descriptionEn : "分 6 步说明共享 GPU 基础设施中的身份、网络、存储、配额和节点隔离。";
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

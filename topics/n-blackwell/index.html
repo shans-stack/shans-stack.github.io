@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA Blackwell：双裸片 GPU 与 GB200 · Shan's Stack</title>
+<meta name="description" content="分 5 步说明 Blackwell 的双裸片 GPU、低精度计算、GB200 Superchip 和 NVL72 整柜。" data-description-en="Five steps explain Blackwell’s dual-die GPU, low-precision compute, the GB200 Superchip, and the NVL72 rack..">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
+<link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
+<link rel="stylesheet" href="../../assets/anim/n-blackwell.css?v=27f02ea9">
+<script>window.SS_ROOT='../../';</script>
+<link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
+</head>
+<body class="topic-n-blackwell">
+<script src="../../assets/symbols.js?v=01f317a9"></script>
+
+<header class="hd"><div class="wrap">
+  <a class="brand" href="../../index.html"><svg><use href="#i-mark"/></svg>Shan's Stack</a>
+  <nav class="nav" aria-label="主导航" data-en-label="Main">
+    <a href="../../index.html#map" data-en="Main Map">总图</a><a href="../../index.html#maps" data-en="Topics">专题</a>
+    <button class="lang" type="button" data-lang-toggle>EN</button>
+  </nav>
+</div></header>
+
+<main class="wrap" data-station="n-blackwell">
+  <div class="top">
+    <div class="crumb" id="crumb"></div>
+    <div class="tt">
+      <div><h1 data-en="NVIDIA Blackwell: Dual-Die GPUs and GB200">NVIDIA Blackwell：双裸片 GPU 与 GB200</h1>
+        <p class="meta"><span data-en="5 steps · B200, GB200, NVFP4">5 步 · B200、GB200、NVFP4</span><span id="intalks"></span></p></div>
+      <div class="modes" role="group" aria-label="阅读方式" data-en-label="Reading mode">
+        <button type="button" data-mode="doc" aria-pressed="true" data-en="Read">文档</button><button type="button" data-mode="present" aria-pressed="false"><span data-en="Present">演示</span> <kbd>P</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc"><article id="art"></article></div>
+
+  <div class="rel">
+    <div><h3 data-en="Read First">先看</h3><ul id="relprev"></ul></div>
+    <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
+    <div class="src"><h3 data-en="Sources">出处</h3><ul>
+      <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing&quot;&gt;NVIDIA Blackwell Platform Announcement&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing">NVIDIA Blackwell 发布公告</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/gb200-nvl72/&quot;&gt;NVIDIA GB200 NVL72&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">NVIDIA GB200 NVL72 产品页</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html&quot;&gt;NVIDIA DGX GB Rack Hardware Guide&lt;/a&gt;"><a href="https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html">NVIDIA DGX GB 整柜硬件指南</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/dsx/ncp/software-reference-guide/data-center-architecture&quot;&gt;NVIDIA DSX Data Center Architecture&lt;/a&gt;"><a href="https://docs.nvidia.com/dsx/ncp/software-reference-guide/data-center-architecture">NVIDIA DSX 数据中心架构</a></li>
+      <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/&quot;&gt;NVIDIA Blackwell Ultra Technical Overview and Generational Comparison&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/">NVIDIA Blackwell Ultra 技术说明（含 Blackwell 代际对照）</a></li>
+    </ul></div>
+  </div>
+</main>
+
+<section class="stage" id="stage" aria-label="演示" data-en-label="Presentation">
+  <div class="figbox" id="pfig"><div id="animPres"></div></div>
+  <div class="cap" aria-live="polite"><span class="cnt" id="pcnt"></span><div><h2 id="ptitle"></h2><p class="desc" id="pdesc"></p></div></div>
+  <div class="ctl">
+    <button class="btn" type="button" id="pprev" data-en="Previous">上一步</button>
+    <div class="prog" id="prog" aria-label="进度" data-en-label="Progress"></div>
+    <button class="btn" type="button" id="pnext" data-en="Next">下一步</button>
+    <button class="btn" type="button" id="pexit" data-en="Back to reading (Esc)">回到文档（Esc）</button>
+  </div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <span data-en="Trademarks belong to their respective owners.">文中商标归各自所有者。</span>
+  <span>© 2026 Lin Shan</span>
+</div></footer>
+
+<script src="../../data/lines.js?v=ea549bad"></script>
+<script src="../../data/stations.js?v=680c575f"></script>
+<script src="../../data/maps.js?v=3919b7c0"></script>
+<script src="../../data/talks.js?v=1f9fd966"></script>
+<script src="../../data/vendors.js?v=0be6555a"></script>
+<script src="../../assets/core.js?v=288a2763"></script>
+<script src="../../assets/anim/n-blackwell.js?v=47e0b442"></script>
+<script>
+window.SS_TOPIC_CFG={
+  "anim": "n-blackwell",
+  "ar": [
+    2.392638036809816,
+    0.9836065573770492
+  ],
+  "steps": [
+    {
+      "t": [
+        "从 GPU 到 Superchip",
+        "From GPU to Superchip"
+      ],
+      "d": [
+        "B200 采用的 GPU 架构，GB200 Superchip 将两颗 B200 GPU 与一颗 Grace CPU 相连。",
+        "The GPU architecture used by B200. The GB200 Superchip connects two B200 GPUs to one Grace CPU."
+      ],
+      "b": [
+        [
+          "<p>Blackwell 接替 Hopper。B200 是采用这代架构的 GPU，计算裸片与 HBM3E 高带宽显存位于同一封装。GB200 则在 Superchip 这一组合层级上加入 Grace CPU：一颗 CPU 通过 NVLink-C2C 分别连接两颗 Blackwell GPU。NVLink-C2C 是芯片到芯片的互联。</p>"
+        ],
+        [
+          "<p>Blackwell succeeds Hopper. B200 is a GPU based on this architecture, with compute dies and high-bandwidth HBM3E memory in one package. GB200 adds a Grace CPU at the Superchip level. That CPU connects to both Blackwell GPUs over NVLink-C2C, a chip-to-chip interconnect.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "两颗裸片组成一个 GPU",
+        "Two Dies Form One GPU"
+      ],
+      "d": [
+        "Blackwell 用封装内的 NV-HBI 连接两颗计算裸片，软件将其作为一个 GPU 使用。",
+        "Blackwell uses the in-package NV-HBI to connect two compute dies that software uses as one GPU."
+      ],
+      "b": [
+        [
+          "<p>裸片是从晶圆切下、尚待封装的芯片。与 H100 的单个主计算裸片相比，B200 将两颗计算裸片放在一个 GPU 封装内，以 NV-HBI 高带宽接口交换数据。程序看到的是一个 GPU，芯片之间的这段路径留在封装内。</p>"
+        ],
+        [
+          "<p>A die is a piece of silicon cut from a wafer for packaging. Compared with H100’s single main compute die, B200 places two compute dies in one GPU package and exchanges data between them over NV-HBI, a high-bandwidth interface. Software sees one GPU, and this connection stays inside the package.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从 FP8 扩展到 NVFP4",
+        "From FP8 to NVFP4"
+      ],
+      "d": [
+        "第二代 Transformer Engine 增加了 4 位浮点推理路径，并用小块缩放管理数值范围。",
+        "The second-generation Transformer Engine adds a 4-bit floating-point inference path and uses small-block scaling to manage numerical range."
+      ],
+      "b": [
+        [
+          "<p>Hopper 的 Transformer Engine 已支持 FP8。Blackwell 在此基础上加入 NVFP4，即 NVIDIA 的 4 位浮点表示，配套缩放因子让一小块数值使用适合自己的量化范围。可用低精度的运算减少了权重的表示体积，精度敏感的部分仍可使用较高精度。</p>"
+        ],
+        [
+          "<p>Hopper’s Transformer Engine already supported FP8. Blackwell adds NVFP4, NVIDIA’s 4-bit floating-point representation, with scaling factors that adapt the quantization range to small groups of values. Where lower precision is suitable, it makes weights more compact. Precision-sensitive parts can retain higher precision.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "从第四代到第五代 NVLink",
+        "From Fourth- to Fifth-Generation NVLink"
+      ],
+      "d": [
+        "第五代 NVLink 经交换芯片连接 GPU，供分布在不同 GPU 上的模型分片交换数据。",
+        "Fifth-generation NVLink connects GPUs through switches so model shards on different GPUs can exchange data."
+      ],
+      "b": [
+        [
+          "<p>NVLink 域是通过 NVLink 互联可彼此通信的一组 GPU。Blackwell 将 Hopper 的第四代 GPU 互联升级至第五代。NV-HBI 连接同一 GPU 内的裸片，NVLink-C2C 连接 Grace 与 GPU，第五代 NVLink 交换网络连接多个 GPU。三者的端点和使用范围各有层级。</p>"
+        ],
+        [
+          "<p>An NVLink domain is a group of GPUs that can communicate over the NVLink fabric. Blackwell moves the GPU fabric from Hopper’s fourth generation to the fifth. NV-HBI joins dies within one GPU, NVLink-C2C connects Grace to GPUs, and the fifth-generation switched NVLink fabric links multiple GPUs.</p>"
+        ]
+      ]
+    },
+    {
+      "t": [
+        "GB200 NVL72 的整柜组成",
+        "Inside the GB200 NVL72 Rack"
+      ],
+      "d": [
+        "GB200 NVL72 在液冷整柜中用第五代 NVLink 把 72 颗 Blackwell GPU 接入同一互联域。",
+        "GB200 NVL72 uses fifth-generation NVLink to connect 72 Blackwell GPUs in one domain within a liquid-cooled rack."
+      ],
+      "b": [
+        [
+          "<p>以 DGX GB200 为例，计算托盘装载含 Grace 和 Blackwell GPU 的计算板，独立的交换托盘经背部无源铜缆连接计算托盘。供电组件与液冷歧管分别负责供电和散热。NVLink 域为柜内 GPU 通信提供路径，跨柜通信另用集群网络。</p>"
+        ],
+        [
+          "<p>In DGX GB200, compute trays house boards with Grace CPUs and Blackwell GPUs. Separate switch trays connect to the compute trays through a passive copper backplane. Power components and liquid-cooling manifolds provide power and cooling. The NVLink domain carries GPU traffic within the rack, and a separate cluster network connects racks.</p>"
+        ]
+      ]
+    }
+  ]
+};
+</script>
+<script>
+document.addEventListener('ss-lang', ({detail}) => {
+  const controls = document.querySelector('.nav .langs');
+  const english = detail === 'en';
+  const description = document.querySelector('meta[name="description"]');
+  description.dataset.descriptionZh ??= description.content;
+  description.content = english ? description.dataset.descriptionEn : description.dataset.descriptionZh;
+  const labels = english ? ['ZH-CN', 'ZH-TW', 'EN'] : ['简', '繁', 'EN'];
+  const names = english ? ['Simplified Chinese', 'Traditional Chinese', 'English'] : ['简体中文', '繁體中文', 'English'];
+  controls.setAttribute('aria-label', english ? 'Language' : '语言');
+  controls.querySelectorAll('button').forEach((button, i) => {
+    button.textContent = labels[i];
+    button.title = names[i];
+    button.lang = english ? 'en' : ['zh-Hans', 'zh-Hant', 'en'][i];
+    button.setAttribute('aria-label', names[i]);
+  });
+});
+</script>
+<script src="../../assets/topic.js?v=a5f330c1"></script>
+</body>
+</html>

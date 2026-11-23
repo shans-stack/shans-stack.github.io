@@ -2,10 +2,6 @@
    颜色全部取自 assets/palette.css：玫瑰 l1、赭黄 l2、灰紫 l3、石板蓝 l4、鼠尾草绿 l5，卡片底色 surface。 */
 .ssa-v-block{--card:var(--surface);--rose:var(--l1);--ochre:var(--l2);--violet:var(--l3);--slate:var(--l4);--sage:var(--l5);position:relative;width:100%;margin:0 auto}
 .ssa-v-block .ssa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
-.ssa-v-block .vwm-d{display:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ssa-v-block .vwm-l{display:none}:root:not([data-theme=light]) .ssa-v-block .vwm-d{display:inline}}
-:root[data-theme=dark] .ssa-v-block .vwm-l{display:none}
-:root[data-theme=dark] .ssa-v-block .vwm-d{display:inline}
 .ssa-v-block .tgl{position:absolute;transform:translate(-50%,-50%);font:inherit;font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;line-height:1.4}
 .ssa-v-block .tgl[hidden]{display:none}
 .ssa-v-block .tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
