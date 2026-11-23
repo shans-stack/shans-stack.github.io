@@ -34,8 +34,7 @@ process.stdout.write(JSON.stringify(out));
 FIXED = {
     'index.html': ("Shan's Stack · AI Infrastructure, One Station at a Time",
                    'AI infrastructure explained one station at a time: a metro map of six general lines, '
-                   'plus maps for VAST, DDN, WEKA, NVIDIA, AI token factories and performance benchmarks. '
-                   'Each station is a short step-by-step explainer you can present full screen.'),
+                   'plus maps for VAST, DDN, WEKA, NVIDIA, AI token factories and performance benchmarks.'),
     'glossary/index.html': ("Glossary · Shan's Stack",
                             'Plain-language definitions of the AI infrastructure terms used across Shan\'s Stack.'),
     'present.html': ("Presentation · Shan's Stack",
@@ -61,8 +60,6 @@ def pages():
     for sid, s in sorted(data['stations'].items()):
         title = (s.get('t') or [None, None])[1] or s.get('en') or sid
         d = (s.get('d') or [None, None])[1] or ''
-        if s.get('steps'):
-            d = d.rstrip() + ' Explained in %d steps.' % s['steps']
         out.append((s['page'], '%s · %s' % (title, NAME), d))
     return out
 
