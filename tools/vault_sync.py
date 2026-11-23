@@ -78,7 +78,7 @@ def cfg_span(text):
 
 # ---------- HTML ⇄ Markdown（正文只用 p / b / code / ul / li / a） ----------
 def inline_h2m(s):
-    s = re.sub(r'<a href="([^"]*)"[^>]*>(.*?)</a>', lambda m: '[' + m.group(2) + '](' + html.unescape(m.group(1)) + ')', s)
+    s = re.sub(r'<a(\s[^>]*?)>(.*?)</a>', lambda m: '[' + m.group(2) + '](' + html.unescape(re.search(r'href="([^"]*)"', m.group(1)).group(1)) + (' "出处"' if 'gen-source' in m.group(1) else '') + ')', s)
     s = re.sub(r'<b>(.*?)</b>', r'**\1**', s)
     s = re.sub(r'<code>(.*?)</code>', lambda m: '`' + html.unescape(m.group(1)) + '`', s)
     return html.unescape(s)
@@ -86,14 +86,14 @@ def inline_h2m(s):
 
 def inline_m2h(s):
     out, i = [], 0
-    for m in re.finditer(r'`([^`]*)`|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)', s):
+    for m in re.finditer(r'`([^`]*)`|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)( "出处")?\)', s):
         out.append(html.escape(s[i:m.start()], quote=False))
         if m.group(1) is not None:
             out.append('<code>' + html.escape(m.group(1), quote=False) + '</code>')
         elif m.group(2) is not None:
             out.append('<b>' + inline_m2h(m.group(2)) + '</b>')
         else:
-            out.append('<a href="' + html.escape(m.group(4)) + '">' + inline_m2h(m.group(3)) + '</a>')
+            out.append('<a ' + ('class="gen-source" ' if m.group(5) else '') + 'href="' + html.escape(m.group(4)) + '">' + inline_m2h(m.group(3)) + '</a>')
         i = m.end()
     out.append(html.escape(s[i:], quote=False))
     return ''.join(out)
@@ -133,6 +133,17 @@ def page_parts(sid):
     return text, cfg, (html.unescape(h1.group(2)), html.unescape(h1.group(1))), sources
 
 
+def extra_lines(o):
+    r = []
+    if 'scene' in o:
+        r += ['**画面**：%d' % o['scene']]
+    if o.get('fig'):
+        r += ['**图**：' + o['fig']]
+    if o.get('figNote'):
+        r += ['**图注**：' + o['figNote'][0], '**Figure note**: ' + o['figNote'][1]]
+    return r
+
+
 def to_block(sid):
     _, cfg, title, sources = page_parts(sid)
     url = 'https://shans-stack.github.io/topics/%s/' % sid
@@ -143,12 +154,22 @@ def to_block(sid):
         out += ['### 第 %d 步' % i, '**标题**：' + s['t'][0], '**Title**: ' + s['t'][1]]
         if s.get('s'):
             out += ['**短名**：' + s['s'][0], '**Short**: ' + s['s'][1]]
-        out += ['**一句话**：' + s['d'][0], '**One line**: ' + s['d'][1], '']
+        out += ['**一句话**：' + s['d'][0], '**One line**: ' + s['d'][1]]
+        out += extra_lines(s) + ['']
         for p in s['b'][0]:
             out += [para_h2m(p), '']
         out += ['<!-- en -->', '']
         for p in s['b'][1]:
             out += [para_h2m(p), '']
+        for tb in s.get('tabs', []):
+            out += ['#### 代际：' + tb['key'], '**标题**：' + tb['t'][0], '**Title**: ' + tb['t'][1],
+                    '**一句话**：' + tb['d'][0], '**One line**: ' + tb['d'][1]]
+            out += extra_lines(tb) + ['']
+            for p in tb['b'][0]:
+                out += [para_h2m(p), '']
+            out += ['<!-- en -->', '']
+            for p in tb['b'][1]:
+                out += [para_h2m(p), '']
     out += ['### 出处']
     for z, e in sources:
         out += ['- ' + z, '  - ' + e]
@@ -166,19 +187,41 @@ def parse_block(block):
             for m in re.finditer(r'^- (.*)\n  - (.*)$', body, re.M):
                 sources.append((m.group(1).strip(), m.group(2).strip()))
             continue
-        def field(k):
-            m = re.search(r'^\*\*' + re.escape(k) + r'\*\*[：:] ?(.*)$', body, re.M)
+        tparts = re.split(r'^#### 代际：', body, flags=re.M)
+        body = tparts[0]
+        def field(k, txt):
+            m = re.search(r'^\*\*' + re.escape(k) + r'\*\*[：:] ?(.*)$', txt, re.M)
             return m.group(1).strip() if m else None
-        st = {'t': [field('标题'), field('Title')], 'd': [field('一句话'), field('One line')]}
-        if field('短名') is not None:
-            st['s'] = [field('短名'), field('Short')]
-        rest = re.sub(r'^\*\*[^*]+\*\*[：:].*\n?', '', body, flags=re.M)
-        zh, _, en = rest.partition('<!-- en -->')
         def paras(t):
             return [para_m2h(b) for b in re.split(r'\n\s*\n', t.strip()) if b.strip()]
-        st['b'] = [paras(zh), paras(en)]
+        def extras(o, txt):
+            if field('画面', txt) is not None:
+                o['scene'] = int(field('画面', txt))
+            if field('图', txt):
+                o['fig'] = field('图', txt)
+            if field('图注', txt) is not None:
+                o['figNote'] = [field('图注', txt), field('Figure note', txt)]
+        def text_of(txt):
+            rest = re.sub(r'^\*\*[^*]+\*\*[：:].*\n?', '', txt, flags=re.M)
+            zh, _, en = rest.partition('<!-- en -->')
+            return [paras(zh), paras(en)]
+        st = {'t': [field('标题', body), field('Title', body)], 'd': [field('一句话', body), field('One line', body)]}
+        if field('短名', body) is not None:
+            st['s'] = [field('短名', body), field('Short', body)]
+        st['b'] = text_of(body)
+        extras(st, body)
         if None in st['t'] + st['d']:
             raise ValueError('step missing field: ' + head)
+        if len(tparts) > 1:
+            st['tabs'] = []
+            for tp in tparts[1:]:
+                key, _, tb = tp.partition('\n')
+                t = {'key': key.strip(), 't': [field('标题', tb), field('Title', tb)], 'd': [field('一句话', tb), field('One line', tb)]}
+                t['b'] = text_of(tb)
+                extras(t, tb)
+                if None in t['t'] + t['d']:
+                    raise ValueError('tab missing field: ' + head + ' / ' + t['key'])
+                st['tabs'].append(t)
         steps.append(st)
     return title, steps, sources
 
@@ -217,7 +260,9 @@ def render(sid, title, steps, sources):
 def public_text(title, steps, sources):
     bits = list(title)
     for st in steps:
-        bits += st['t'] + st['d'] + st['b'][0] + st['b'][1]
+        bits += st['t'] + st['d'] + st['b'][0] + st['b'][1] + list(st.get('figNote', []))
+        for tb in st.get('tabs', []):
+            bits += tb['t'] + tb['d'] + tb['b'][0] + tb['b'][1] + list(tb.get('figNote', []))
     for z, e in sources:
         bits += [z, e]
     return '\n'.join(bits)
@@ -248,6 +293,10 @@ def norm_steps(sts):
         d['t'], d['d'] = [html.unescape(x) for x in st['t']], [html.unescape(x) for x in st['d']]
         if 's' in st:
             d['s'] = [html.unescape(x) for x in st['s']]
+        if 'figNote' in st:
+            d['figNote'] = [html.unescape(x) for x in st['figNote']]
+        if 'tabs' in st:
+            d['tabs'] = norm_steps(st['tabs'])
         out.append(d)
     return out
 
@@ -444,7 +493,7 @@ def main():
             title, steps, sources = parse_block(inner)
             _, cfg, t0, s0 = page_parts(sid)
             def norm(sts):
-                return [dict(st, b=[html.unescape(''.join(st['b'][0])), html.unescape(''.join(st['b'][1]))]) for st in sts]
+                return norm_steps(sts)
             if norm(steps) != norm(cfg['steps']) or tuple(title) != t0 or [tuple(x) for x in sources] != [tuple(x) for x in s0]:
                 bad += 1
                 for i, (a, c) in enumerate(zip(norm(steps), norm(cfg['steps']))):
