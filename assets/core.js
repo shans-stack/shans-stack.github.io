@@ -15,7 +15,7 @@ if(q.get('theme')==='dark'||q.get('theme')==='light')document.documentElement.se
    SS.lang() 只回 zh 或 en（内容用哪套），繁体时也是 zh；window.SS_LANG 记实际选的那一个。 */
 var LANGS=[['zh','简','简体中文'],['tw','繁','繁體中文'],['en','EN','English']];
 function okLang(v){return v==='zh'||v==='tw'||v==='en'}
-function getLang(){var v=q.get('lang');if(okLang(v)){putLang(v);return v}try{v=localStorage.getItem('ss-lang');return okLang(v)?v:'zh'}catch(e){return 'zh'}}
+function getLang(){var v=q.get('lang');if(okLang(v)){putLang(v);return v}try{v=localStorage.getItem('ss-lang');return okLang(v)?v:'en'}catch(e){return 'en'}}
 function putLang(v){try{localStorage.setItem('ss-lang',v)}catch(e){}}
 var conv=null,obs=null,loading=null;
 function loadT2(){
