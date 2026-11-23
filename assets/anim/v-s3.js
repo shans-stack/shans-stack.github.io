@@ -10,16 +10,16 @@
 var ID='v-s3',NSTEPS=5;
 var EN={"NFS 客户端":"NFS client","SMB 客户端":"SMB client","S3 客户端":"S3 client","Element Store":"Element Store","NVMe-oF":"NVMe-oF",
 "地址 1":"IP 1","地址 2":"IP 2","地址 3":"IP 3","地址 4":"IP 4","地址 5":"IP 5","地址 6":"IP 6",
-"src/":"src/","component":"component","src/component":"src/component","文件：/dev":"Files: /dev","S3 桶：dev":"S3 bucket: dev","桶：dev":"Bucket: dev",
-"权限位 rwxr-x---":"Mode bits rwxr-x---","rwxr-x---":"rwxr-x---","身份策略 · 桶策略 · ACL":"Identity · bucket policies · ACL",
+"元素":"Element","文件路径":"File path","桶 dev":"Bucket dev","键 src/component":"Key src/component",
+"权限位 rwxr-x---":"Mode bits rwxr-x---","身份策略 · 桶策略 · ACL":"Identity · bucket policies · ACL",
 "PUT 存对象，GET 取对象：桶加键":"PUT stores an object, GET fetches it: bucket plus key","HTTP / HTTPS · 签名 v2 / v4":"HTTP(S) · signatures v2 / v4","PUT":"PUT","GET":"GET","已写入":"Stored","已读取":"Read",
 "CNode 处理发往 VIP 的请求":"CNodes handle requests sent to VIPs","多协议 view 使用共享命名空间":"Multiprotocol views share a namespace",
-"component 与 src/component 是同一个元素":"component and src/component are one element","一个 view 可以同时开 NFS、SMB、S3":"One view can open NFS, SMB and S3 at once",
-"NFS 写文件，S3 按相对路径读取":"NFS writes; S3 reads by relative path","键首、键尾的 / 或键中的 //：仅 S3":"Leading, trailing or repeated /: S3 only","写入":"Written","读取成功":"Read OK",
+"同一个元素有两个名字":"Two names for one element","一个 view 可以同时开 NFS、SMB、S3":"One view can open NFS, SMB and S3 at once",
+"NFS 写文件，S3 按相对路径读取":"NFS writes; S3 reads by relative path","键首、键尾的 / 或键中的 //：仅 S3":"Leading, trailing or repeated /: S3 only","写入中":"Writing","读取成功":"Read OK",
 "flavor = NFS：S3 请求也按权限位检查":"Flavor = NFS: S3 requests are checked against mode bits","S3 Native：优先检查身份和桶策略":"S3 Native: identity and bucket policies first",
 "权限未修改":"Change ignored","不用于检查":"Not used","换成 S3 Native":"Switch to S3 Native","换成 NFS":"Switch to NFS","切换 security flavor，当前 ":"Switch security flavor, now ","NFS flavor":"NFS flavor","S3 Native flavor":"S3 Native flavor",
 "VAST 上的 S3：CNode 直接处理 S3 请求，同一份数据既是目录里的文件，也是桶里的对象":"S3 on VAST: CNodes serve S3 directly, and the same data is both a file in a directory and an object in a bucket"};
-var ENM={"PUT 存对象，GET 取对象：桶加键":"PUT stores, GET fetches: bucket plus key","HTTP / HTTPS · 签名 v2 / v4":"HTTP(S) · signatures v2 / v4","CNode 处理发往 VIP 的请求":"CNodes handle requests sent to VIPs","多协议 view 使用共享命名空间":"Multiprotocol views share a namespace","component 与 src/component 是同一个元素":"component = src/component: one element","一个 view 可以同时开 NFS、SMB、S3":"One view, NFS + SMB + S3","NFS 写文件，S3 按相对路径读取":"NFS writes; S3 reads by relative path","键首、键尾的 / 或键中的 //：仅 S3":"Leading, trailing or repeated /: S3 only","flavor = NFS：S3 请求也按权限位检查":"NFS flavor: S3 checked against mode bits","S3 Native：优先检查身份和桶策略":"S3 Native: identity and bucket policies first","权限未修改":"Ignored","文件：/dev":"Files: /dev","S3 桶：dev":"Bucket: dev","身份策略 · 桶策略 · ACL":"Identity · bucket policies · ACL"};
+var ENM={"PUT 存对象，GET 取对象：桶加键":"PUT stores, GET fetches: bucket plus key","HTTP / HTTPS · 签名 v2 / v4":"HTTP(S) · signatures v2 / v4","CNode 处理发往 VIP 的请求":"CNodes handle requests sent to VIPs","一个 view 可以同时开 NFS、SMB、S3":"One view, NFS + SMB + S3","flavor = NFS：S3 请求也按权限位检查":"NFS flavor: S3 checked against mode bits","S3 Native：优先检查身份和桶策略":"S3 Native: identity and bucket policies first","权限未修改":"Ignored","身份策略 · 桶策略 · ACL":"Identity · bucket · ACL"};
 var ARIA="VAST 上的 S3：CNode 直接处理 S3 请求，同一份数据既是目录里的文件，也是桶里的对象";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg',CLS='ssa-'+ID;
@@ -64,14 +64,14 @@ const dur=pts=>plen(pts)/L.sp;
 /* ---------- 协议站共用画面：上排客户端与侧框、网络总线、三台 CNode（带地址牌）、NVMe-oF、存储带 ---------- */
 function protoLayout(mobile){
  if(!mobile)return {W:960,H:520,mobile:false,f:{lbl:20,sm:17,cap:18,chip:17,big:32},pw:22,ph:16,dr:7,sp:330,
-  cl:{xs:[170,400,630],y:16,w:178,h:60},side:{x:792,y:16,w:146,h:60},busY:102,
+  cl:{xs:[200,480,760],y:16,w:178,h:60},side:{x:792,y:16,w:146,h:60},busY:102,
   cn:{xs:[200,480,760],y:124,w:220,h:106},chipW:68,chipH:28,fabY:256,fabX:[70,900],
-  band:{x:60,y:276,w:840,h:172},bl:{x:84,y:312,w:250,h:120},br:{x:352,y:312,w:526,h:120},fileW:132,slotX:120,slotW:220,
+  band:{x:60,y:276,w:840,h:172},elementY:338,aliasDX:174,
   cap:{x:480,y:478},note:{x:480,y:506}};
- return {W:480,H:520,mobile:true,f:{lbl:19,sm:17,cap:17,chip:17,big:28},pw:18,ph:14,dr:6,sp:230,
-  cl:{xs:[70,194,318],y:10,w:114,h:60},side:{x:388,y:10,w:84,h:60},busY:92,
+ return {W:480,H:520,mobile:true,f:{lbl:19,sm:18,cap:18,chip:18,big:28},pw:18,ph:14,dr:6,sp:230,
+  cl:{xs:[85,240,395],y:10,w:136,h:60},side:{x:388,y:10,w:84,h:60},busY:92,
   cn:{xs:[85,240,395],y:112,w:146,h:106},chipW:62,chipH:28,fabY:240,fabX:[12,468],
-  band:{x:12,y:262,w:456,h:170},bl:{x:24,y:300,w:152,h:120},br:{x:188,y:300,w:268,h:120},fileW:104,slotX:84,slotW:172,
+  band:{x:12,y:262,w:456,h:170},elementY:318,aliasDX:110,
   cap:{x:240,y:460},note:{x:240,y:504}};
 }
 function protoBuild(o){
@@ -101,7 +101,7 @@ function protoBuild(o){
   [[-1,-1,1,1],[-1,1,1,-1]].forEach(([p,q,r,s])=>el('line',{x1:c.x+p*b,y1:cy+q*a,x2:c.x+r*b,y2:cy+s*a,class:'xmark'},gx));gx.style.opacity=0;return gx});
  /* NVMe-oF 与存储带 */
  E.fab=line(P(L.fabX[0],L.fabY),P(L.fabX[1],L.fabY),'',g);
- const B=L.band;box(B,g,'box soft',16);tx(B.x+(M?160:16),B.y+20,o.band,f.sm,'ttl','start',g);
+ const B=L.band;box(B,g,'box soft',16);tx(B.x+16,B.y+20,o.band,f.sm,'ttl','start',g);
  if(!M)tx(L.fabX[0]+4,L.fabY-14,'NVMe-oF',f.sm,'ink3-t','start',g);
  E.cap=tx(L.cap.x,L.cap.y,'',f.cap,'st','middle');E.note=tx(L.note.x,L.note.y,'',f.sm,'st','middle');
  /* 路线 */
@@ -118,9 +118,9 @@ function seq(o,segs,t,t0){let tt=t-t0;if(tt<0){hide(o);return -1}
   if(tt<=d){if(s.p)put(o,at(s.p,d?tt/d:1),1);else if(s.at)put(o,s.at,1);else hide(o);return i+(d?tt/d:1)*0.999}tt-=d}
  const s=segs[segs.length-1];if(tt<0.3&&(s.p||s.at)){put(o,s.p?s.p[s.p.length-1]:s.at,1-tt/0.3)}else hide(o);return segs.length}
 function seqLen(segs){return segs.reduce((a,s)=>a+(s.p?(s.d||dur(s.p)):s.w),0)}
-/* 客户端经地址进 CNode（停顿处理）再到存储带 (x,y)；back=true 时再原路返回 */
-function viaCn(i,k,x,y){return [{p:E.R.toCn(i,k)},{w:0.35,k},{p:E.R.cnTo(k,x,y)}]}
-function backCn(i,k,x,y){return [{p:rev(E.R.cnTo(k,x,y))},{w:0.25,k},{p:rev(E.R.toCn(i,k))}]}
+/* 每种协议经 CNode 访问同一个元素 */
+function viaCn(i,k){const {x,y}=E.elementPort;return [{p:E.R.toCn(i,k)},{w:0.35,k},{p:E.R.cnTo(k,x,y)}]}
+function backCn(i,k){const {x,y}=E.elementPort;return [{p:rev(E.R.cnTo(k,x,y))},{w:0.25,k},{p:rev(E.R.toCn(i,k))}]}
 /* 段里带 k 的停顿：那台 CNode 亮 */
 function cnLit(segs,r,base){E.cn.forEach(c=>c.b.classList.remove('on'));if(r<0)return;const i=Math.floor(r);const s=segs[i];if(s&&s.k!=null)E.cn[s.k].b.classList.add('on')}
 function protoReset(){
@@ -137,31 +137,27 @@ function failCn(k,u){E.cn[k].g.classList.add('dead');E.xm[k].style.opacity=clamp
  E.chips.filter(c=>c.k===k).forEach((c,n)=>{const tk=(k+1+n)%3,tgt=E.cn[tk].slots[2];if(c.g.parentNode!==E.base)E.base.appendChild(c.g);c.g.classList.add('mv');
   const v=sm(clamp((u-0.35)/0.5,0,1));c.mv(c.home.x+(tgt.x-c.home.x)*v,c.home.y+(tgt.y-c.home.y)*v)})}
 const SCENE={
- still:[4.5,3.2,2.5,7,7],
+ still:[6.8,1.7,2.5,7,7],
  layout(m){const L=protoLayout(m);L.tgl={x:L.W/2,y:L.cap.y-(m?0:5)};return L},
  build(){
-  const f=L.f,M=L.mobile;
-  protoBuild({clients:['NFS 客户端','SMB 客户端','S3 客户端'],side:null,band:'Element Store',dimCl:['1 3','1 3 4 5','3']});
-  const g=E.base,bl=L.bl,br=L.br;
-  /* 左：文件视角 */
-  const gl=el('g',{},g);gl.dataset.dim='1';box(bl,gl,'box',12);
-  tx(bl.x+14,bl.y+bl.h-18,'文件：/dev',f.sm,'ttl','start',grp('1 2 3 4',gl));
-  tx(bl.x+16,bl.y+26,'src/',f.sm,'ink2-t','start',grp('1 2 3 4',gl));
-  tx(bl.x+14,bl.y+26,'文件：/dev',f.sm,'ttl','start',grp('5',gl));
-  E.ruleL=tx(bl.x+14,bl.y+bl.h-18,M?'rwxr-x---':'权限位 rwxr-x---',f.sm,'st ink2-t','start',grp('5',gl));
-  const lw=M?112:150,lx=bl.x+bl.w-14-lw/2,cy=bl.y+64;E.lX=lx+lw/2-16;E.lTop=cy-19;
-  line(P(E.lX,L.fabY),P(E.lX,E.lTop),'',gl);E.lf=chip(lx,cy,lw,38,'component',f.chip,'file',gl);
-  /* 右：对象视角 */
-  box(br,g,'box',12);
-  tx(br.x+14,br.y+br.h-18,'S3 桶：dev',f.sm,'ttl','start',grp('1 2 3 4',g));
-  tx(br.x+14,br.y+26,'S3 桶：dev',f.sm,'ttl','start',grp('5',g));
-  E.ruleR=tx(br.x+14,br.y+br.h-18,'身份策略 · 桶策略 · ACL',f.sm,'st ink2-t','start',grp('5',g));
-  const rw=M?150:190,rx=br.x+16+rw/2;E.rX=rx+rw/2-16;E.rTop=cy-19;
-  line(P(E.rX,L.fabY),P(E.rX,E.rTop),'',g);E.rf=chip(rx,cy,rw,38,'src/component',f.chip,'file',g);
-  /* 同一份数据：两个牌子之间的虚线 */
-  const gd=grp('3 4',g);E.link=[P(lx+lw/2,cy),P(rx-rw/2,cy)];E.dash=line(E.link[0],E.link[1],'dash',gd);
+  const f=L.f;
+  protoBuild({clients:['NFS 客户端','SMB 客户端','S3 客户端'],side:null,band:'Element Store',dimCl:['1','1 4 5','']});
+  const g=E.base,x=L.W/2,y=L.elementY;
+  E.elementPort=P(x,y-20);
+  line(P(x,L.fabY),E.elementPort,'',g);
+  E.element=chip(x,y,144,40,'元素',f.chip,'file',g);
+  const aliasY=y+55,left=x-L.aliasDX,right=x+L.aliasDX;
+  const names=[[left,x-48,'文件路径','/dev/src/component'],[right,x+48,'桶 dev','键 src/component']];
+  names.forEach(([labelX,anchorX,title,value])=>{
+   poly([P(anchorX,y+20),P(anchorX,y+32),P(labelX,y+32),P(labelX,aliasY-14)],'alias',g);
+   tx(labelX,aliasY,title,f.sm,'ttl','middle',g);
+   tx(labelX,aliasY+22,value,f.sm,'ink2-t','middle',g);
+  });
+  const rules=grp('5',g);
+  E.ruleL=tx(left,aliasY+44,'权限位 rwxr-x---',f.sm,'st ink2-t','middle',rules);
+  E.ruleR=tx(right,aliasY+44,'身份策略 · 桶策略 · ACL',f.sm,'st ink2-t','middle',rules);
  },
- reset(){protoReset();[E.lf,E.rf].forEach(c=>{c.g.setAttribute('class','chip file');c.g.style.opacity=1});  E.ruleL.setAttribute('class','st ink2-t');E.ruleR.setAttribute('class','st ink2-t');E.dash.classList.remove('lit')},
+ reset(){protoReset();E.element.g.setAttribute('class','chip file')},
  toggle:{step:4,param:'flavor',values:['nfs','s3'],def:'nfs',next:v=>v==='nfs'?'s3':'nfs',
   label:v=>v==='nfs'?'换成 S3 Native':'换成 NFS',aria:v=>T('切换 security flavor，当前 ')+T(v==='nfs'?'NFS flavor':'S3 Native flavor')},
  modes:[]
@@ -169,42 +165,41 @@ const SCENE={
 function lit(list){E.cn.forEach(c=>c.b.classList.remove('on'));list.forEach(([segs,r])=>{if(r<0)return;const s=segs[Math.floor(r)];if(s&&s.k!=null)E.cn[s.k].b.classList.add('on')})}
 /* 第 1 步：PUT 与 GET */
 SCENE.modes[0]={enter(){cap('PUT 存对象，GET 取对象：桶加键','slate-t');note('HTTP / HTTPS · 签名 v2 / v4');
-  const v=S.v;v.a=viaCn(2,2,E.rX,E.rTop);v.b=viaCn(2,2,E.rX,E.rTop);v.c=backCn(2,2,E.rX,E.rTop);v.p=pk();v.g=dot();v.q=pk('ok');
+  const v=S.v;v.a=viaCn(2,2);v.b=viaCn(2,2);v.c=backCn(2,2);v.p=pk();v.g=dot();v.q=pk('ok');
   v.t2=0.3+seqLen(v.a)+0.9;v.t3=v.t2+seqLen(v.b)+0.2;v.per=v.t3+seqLen(v.c)+2.2},
  frame(t){const v=S.v,u=t%v.per;const a=seq(v.p,v.a,u,0.3),b=seq(v.g,v.b,u,v.t2),c=seq(v.q,v.c,u,v.t3);lit([[v.a,a],[v.b,b],[v.c,c]]);
   E.chips[2].g.classList.toggle('on',a>=0&&a<1.5||b>=0&&b<1.5||c>=1.5&&c<3);
-  E.rf.g.style.opacity=a>=3?1:0;E.rf.g.classList.toggle('w',a>=3&&u<v.t2+0.6);E.rf.g.classList.toggle('on',b>=2.9&&c<0.5);
-  csub(2,c>=3?'GET':a>=3?'PUT':'',c>=3?'sage-t':'slate-t')}};
+  E.element.g.classList.toggle('pending',a<3);E.element.g.classList.toggle('w',a>=3&&u<v.t2+0.6);E.element.g.classList.toggle('on',b>=2.9&&c<0.5);
+  csub(2,b>=0?'GET':a>=0?'PUT':'',c>=3?'sage-t':'slate-t')}};
 /* 第 2 步：三种协议都由 CNode 处理 */
 SCENE.modes[1]={enter(){cap('CNode 处理发往 VIP 的请求','slate-t');note('多协议 view 使用共享命名空间');
-  const v=S.v;v.r=[viaCn(0,0,E.lX,E.lTop),viaCn(1,1,E.lX,E.lTop),viaCn(2,2,E.rX,E.rTop)];v.p=[pk(),pk(),pk()];v.per=Math.max(...v.r.map(seqLen))+1.6},
+  const v=S.v;v.r=[viaCn(0,0),viaCn(1,1),viaCn(2,2)];v.p=[dot(),dot(),dot()];v.per=Math.max(...v.r.map(seqLen))+1.6},
  frame(t){const v=S.v,u=t%v.per;const rs=v.r.map((r,i)=>seq(v.p[i],r,u,0.3+i*0.12));lit(v.r.map((r,i)=>[r,rs[i]]));
   [0,1,2].forEach(i=>E.chips[i].g.classList.toggle('on',rs[i]>=0&&rs[i]<1.5));
-  E.lf.g.classList.toggle('on',rs[0]>=3||rs[1]>=3);E.rf.g.classList.toggle('on',rs[2]>=3)}};
-/* 第 3 步：同一个元素，两种样子 */
-SCENE.modes[2]={enter(){cap('component 与 src/component 是同一个元素','slate-t');note('一个 view 可以同时开 NFS、SMB、S3');S.v.d=dot();E.dash.classList.add('lit');E.lf.g.classList.add('on');E.rf.g.classList.add('on')},
- frame(t){const u=t%3.2,k=u<1.6?u/1.6:(3.2-u)/1.6;put(S.v.d,at(E.link,sm(k)),1)}};
+  E.element.g.classList.toggle('on',rs.some(r=>r>=3))}};
+/* 第 3 步：同一元素的两个名字 */
+SCENE.modes[2]={enter(){cap('同一个元素有两个名字','slate-t');note('一个 view 可以同时开 NFS、SMB、S3');E.element.g.classList.add('on')},
+ frame(){}};
 /* 第 4 步：文件写进去，对象读出来 */
 SCENE.modes[3]={enter(){cap('NFS 写文件，S3 按相对路径读取','sage-t');note('键首、键尾的 / 或键中的 //：仅 S3');
-  const v=S.v;v.a=viaCn(0,0,E.lX,E.lTop);v.b=viaCn(2,2,E.rX,E.rTop);v.c=backCn(2,2,E.rX,E.rTop);v.p=pk();v.g=dot();v.q=pk('ok');v.d=dot('ok');
+  const v=S.v;v.a=viaCn(0,0);v.b=viaCn(2,2);v.c=backCn(2,2);v.p=pk();v.g=dot();v.q=pk('ok');
   v.t2=0.3+seqLen(v.a)+1.2;v.t3=v.t2+seqLen(v.b)+0.2;v.per=v.t3+seqLen(v.c)+2.2},
  frame(t){const v=S.v,u=t%v.per;const a=seq(v.p,v.a,u,0.3),b=seq(v.g,v.b,u,v.t2),c=seq(v.q,v.c,u,v.t3);lit([[v.a,a],[v.b,b],[v.c,c]]);
   E.chips[0].g.classList.toggle('on',a>=0&&a<1.5);E.chips[2].g.classList.toggle('on',b>=0&&b<1.5||c>=1.5&&c<3);
-  const w=a>=3;E.lf.g.classList.toggle('w',w);E.rf.g.classList.toggle('w',w&&u>=v.t2-0.6);E.dash.classList.toggle('lit',w);
-  if(w&&u<v.t2)put(v.d,at(E.link,clamp((u-(0.3+seqLen(v.a)))/0.6,0,1)),1);else hide(v.d);
-  csub(0,w?'写入':'',w?'sage-t':'');csub(2,c>=3?'读取成功':'',c>=3?'sage-t':'')}};
+  const w=a>=3;E.element.g.classList.toggle('pending',!w);E.element.g.classList.toggle('w',w);
+  csub(0,w?'已写入':a>=0?'写入中':'',w?'sage-t':'slate-t');csub(2,c>=3?'读取成功':b>=0?'GET':'',c>=3?'sage-t':'slate-t')}};
 /* 第 5 步：security flavor（一个按钮切换） */
 SCENE.modes[4]={enter(){const s3=SCENE.toggle.state==='s3';
   E.cap.textContent='';note(s3?'S3 Native：优先检查身份和桶策略':'flavor = NFS：S3 请求也按权限位检查','slate-t');
   E.ruleL.setAttribute('class','st '+(s3?'ink3-t off':'slate-t b7'));E.ruleR.setAttribute('class','st '+(s3?'slate-t b7':'ink3-t off'));
   const v=S.v;v.s3=s3;
-  v.a=viaCn(2,2,E.rX,E.rTop);v.b=backCn(2,2,E.rX,E.rTop);
-  v.ci=s3?0:2;v.c=s3?viaCn(0,0,E.lX,E.lTop):viaCn(2,2,E.rX,E.rTop);
-  v.p=pk();v.q=pk('ok');v.x=pk('v');v.t2=0.3+seqLen(v.a)+0.3;v.t3=v.t2+seqLen(v.b)+0.8;v.per=v.t3+seqLen(v.c)+2.6},
+  v.a=viaCn(2,2);v.b=backCn(2,2);
+  v.c=s3?viaCn(0,0):viaCn(2,2);
+  v.p=dot();v.q=pk('ok');v.x=dot('v');v.t2=0.3+seqLen(v.a)+0.3;v.t3=v.t2+seqLen(v.b)+0.8;v.per=v.t3+seqLen(v.c)+2.6},
  frame(t){const v=S.v,u=t%v.per;const a=seq(v.p,v.a,u,0.3),b=seq(v.q,v.b,u,v.t2),c=seq(v.x,v.c,u,v.t3);lit([[v.a,a],[v.b,b],[v.c,c]]);
-  E.rf.g.classList.toggle('on',a>=2.8&&b<0.6);
+  E.element.g.classList.toggle('on',a>=2.8&&b<0.6);
   E.chips[2].g.classList.toggle('on',a>=0&&a<1.5||b>=1.5&&b<3||!v.s3&&c>=0&&c<1.5);E.chips[0].g.classList.toggle('on',v.s3&&c>=0&&c<1.5);
-  (v.s3?E.lf:E.rf).g.classList.toggle('hot',c>=3);
+  E.element.g.classList.toggle('hot',c>=3);
   if(v.s3){csub(2,b>=3?'读取成功':'',b>=3?'sage-t':'');csub(0,c>=3?'权限未修改':'',c>=3?'rose-t':'')}
   else csub(2,c>=3?'权限未修改':b>=3?'读取成功':'',c>=3?'rose-t':'sage-t')}};
 /* ---------- 引擎 ---------- */

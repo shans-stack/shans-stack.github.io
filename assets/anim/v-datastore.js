@@ -5,18 +5,24 @@
     ({mobile, label, box, track, tile, move}) => {
       const top = mobile ? 75 : 76, bottom = mobile ? 240 : 194;
       const rows = [
-        [['文件', 'File'], ['NFS / SMB', 'NFS / SMB'], ['目录', 'Directory']],
-        [['对象', 'Object'], ['S3', 'S3'], ['存储桶', 'Bucket']],
-        [['块', 'Block'], ['NVMe/TCP', 'NVMe/TCP'], ['卷', 'Volume']]
+        [['文件', 'File'], ['NFS / SMB', 'NFS / SMB']],
+        [['对象', 'Object'], ['S3', 'S3']],
+        [['块', 'Block'], ['NVMe/TCP', 'NVMe/TCP']]
       ];
       const xs = mobile ? [61, 175, 289] : [150, 420, 690];
-      const motions = rows.map(([title, protocol, data], i) => {
+      const shared = (xs[0] + xs[1]) / 2;
+      const motions = rows.map(([title, protocol], i) => {
         const x = xs[i];
         box(x, top, mobile ? 104 : 176, title, protocol);
-        label(x, bottom + 28, data);
-        tile(x, bottom);
-        return move(track([[x, top + 30], [x, bottom]]), 0.5 + i * 0.6, 2 + i * 0.6, false, true);
+        const path = i === 2
+          ? [[x, top + 30], [x, bottom]]
+          : [[x, top + 30], [x, bottom - 84], [shared, bottom - 30], [shared, bottom]];
+        return move(track(path), 0.5 + i * 0.6, 2 + i * 0.6, false, true);
       });
+      tile(shared, bottom);
+      tile(xs[2], bottom);
+      label(shared, bottom + 28, ['共享文件与对象元素', 'Shared File/Object Element']);
+      label(xs[2], bottom + 28, ['卷', 'Volume']);
       const y = bottom + 50;
       track([[xs[0], y - 7], [xs[0], y], [xs[2], y], [xs[2], y - 7]]);
       label(xs[1], y + 28, ['共享集群存储', 'Shared Cluster Storage'], 'title');

@@ -34,7 +34,7 @@
 .ssa-v-s3 .ln.lit{stroke:var(--slate)}
 .ssa-v-s3 .ln.ok{stroke:var(--sage)}
 .ssa-v-s3 .ln.hot{stroke:var(--rose)}
-.ssa-v-s3 .ln.dash{stroke-dasharray:8 7;stroke-width:3}
+.ssa-v-s3 .ln.alias{stroke-width:1.5}
 .ssa-v-s3 .chip rect{fill:var(--card);stroke:var(--rule2);stroke-width:1.5;transition:stroke .3s,fill .3s}
 .ssa-v-s3 .chip text{fill:var(--ink2);font-weight:500}
 .ssa-v-s3 .chip.on rect{stroke:var(--slate);stroke-width:2.5}
@@ -42,6 +42,7 @@
 .ssa-v-s3 .chip.mv rect{stroke:var(--sage);stroke-width:2.5}
 .ssa-v-s3 .chip.mv text{fill:color-mix(in srgb,var(--sage) 76%,var(--ink));font-weight:600}
 .ssa-v-s3 .chip.file rect,.ssa-v-s3 .chip.blk rect{stroke:var(--rule2);stroke-width:2}
+.ssa-v-s3 .chip.file.pending rect{fill:var(--bg)}
 .ssa-v-s3 .chip.file.on rect{stroke:var(--slate);stroke-width:3}
 .ssa-v-s3 .chip.file.w rect,.ssa-v-s3 .chip.w rect{stroke:var(--sage);stroke-width:3.5}
 .ssa-v-s3 .chip.vio rect{stroke:var(--violet);stroke-width:2.5}
