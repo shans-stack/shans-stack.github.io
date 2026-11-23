@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/f-hicache.css?v=725a4e83">
+<link rel="stylesheet" href="../../assets/anim/f-hicache.css?v=6265bbde">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/f-hicache.js?v=fda0cf99"></script>
+<script src="../../assets/anim/f-hicache.js?v=c429da0a"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "f-hicache",
@@ -156,15 +156,15 @@ window.SS_TOPIC_CFG={
         "Retaining Copies According to the Write Policy"
       ],
       "d": [
-        "写入策略决定缓存何时向下一层复制，包括即时写入、按访问频率选择，以及驱逐时回写。",
-        "The write policy determines when KV data moves down a tier, such as on access, after repeated access, or on eviction."
+        "写入策略决定何时在主机内存保留副本，包括入缓存时写入、按命中次数选择，或在显存驱逐时回写。",
+        "The write policy determines when to copy KV to host memory: on cache insertion, selectively based on hit counts, or on eviction from GPU memory."
       ],
       "b": [
         [
-          "<p>即时写入（write-through）在访问时将缓存写到下一层，选择性即时写入在访问频率达到条件后写入。回写（write-back）把写入推迟到上层驱逐时。策略决定保留副本的时机，也会改变下层的写入流量。</p>"
+          "<p>即时写入（write-through）在新 KV 进入显存缓存时把它复制到主机内存。选择性即时写入按命中次数选择前缀备份。回写（write-back）把备份推迟到显存驱逐时。配置 L3 后端后，HiCache 还可在外部存储保留副本。</p>"
         ],
         [
-          "<p>Write-through writes cache to the next tier on access. Selective write-through writes after an access frequency threshold is reached. Write-back defers the write until upper-tier eviction. The policy changes when copies become available and how much write traffic lower tiers receive.</p>"
+          "<p>Write-through copies new KV to host memory when it enters the GPU cache. Selective write-through uses hit counts to choose prefixes to back up. Write-back defers the backup until eviction from GPU memory. With an L3 backend configured, HiCache can also retain a copy in external storage.</p>"
         ]
       ]
     }
@@ -186,6 +186,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

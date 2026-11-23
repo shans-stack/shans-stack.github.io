@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/n-gb300.js?v=0fc63122"></script>
+<script src="../../assets/anim/n-gb300.js?v=9a1f77bd"></script>
 <script>
 window.SS_TOPIC_CFG={
   "anim": "n-gb300",
@@ -110,10 +110,10 @@ window.SS_TOPIC_CFG={
       ],
       "b": [
         [
-          "<p>NVIDIA 的参考配置在一个机柜中安装 18 个计算托盘。托盘内的 NVLink-C2C 是芯片之间的互联，连接 Grace CPU 和 GPU。ConnectX-8 提供计算网络接口，BlueField-3 可处理存储网络流量。这些接口和柜内 GPU 互联承担不同的通信任务。</p>"
+          "<p>截至 2026-11-23，NVIDIA 的参考配置在一个机柜中安装 18 个计算托盘。托盘内的 NVLink-C2C 是芯片之间的互联，连接 Grace CPU 和 GPU。每颗 Grace CPU 各配一块 ConnectX-8 夹层板接入计算网络。参考设计为托盘配置 BlueField-3 DPU 接入存储网络。这些接口和柜内 GPU 互联承担不同的通信任务。</p>"
         ],
         [
-          "<p>NVIDIA’s reference configuration has 18 compute trays in one rack. Inside a tray, NVLink-C2C is a chip-to-chip interconnect linking Grace CPUs and GPUs. ConnectX-8 provides compute-network interfaces, and BlueField-3 can handle storage-network traffic. These interfaces serve different communication paths from the GPU fabric inside the rack.</p>"
+          "<p>As of November 23, 2026, NVIDIA’s reference configuration has 18 compute trays in one rack. Inside a tray, NVLink-C2C is a chip-to-chip interconnect linking Grace CPUs and GPUs. Each Grace CPU is paired with a ConnectX-8 mezzanine board for the compute network. In this design, a BlueField-3 DPU connects the tray to the storage network. These interfaces serve different communication paths from the GPU fabric inside the rack.</p>"
         ]
       ]
     },
@@ -207,6 +207,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

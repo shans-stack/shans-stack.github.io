@@ -40,11 +40,11 @@
       routes: [[0, 1, "copy"]]
     },
     {
-      note: ["示例采用即时写入", "Example uses write-through"],
+      note: ["L3 副本取决于后端配置", "L3 backup requires a configured backend"],
       nodes: [
-        [0, 0, ["L1 · 显存", "L1 · GPU Memory"], ["缓存被访问", "Cache is accessed"], ""],
+        [0, 0, ["L1 · 显存", "L1 · GPU Memory"], ["新 KV 进入缓存", "New KV enters cache"], ""],
         [1, 0, ["L2 · 主机内存", "L2 · Host Memory"], ["即时写入", "Write-through"], "active"],
-        [2, 0, ["L3 · 外部存储", "L3 · External Store"], ["保留下层副本", "Keeps a lower-tier copy"], "active"]
+        [2, 0, ["L3 · 外部存储", "L3 · External Store"], ["启用时可备份", "Backup if enabled"], "active"]
       ],
       routes: [[0, 1, "copy"], [1, 2, "copy"]]
     }

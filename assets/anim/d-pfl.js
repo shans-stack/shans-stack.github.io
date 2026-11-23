@@ -205,65 +205,21 @@
     ]
   },
   {
-    "shape": "fork",
+    "shape": "components",
     "nodes": [
-      {
-        "title": [
-          "EXAScaler 客户端",
-          "EXAScaler Client"
-        ],
-        "detail": [
-          "跨边界写入",
-          "Write Across Boundary"
-        ],
-        "blocks": "B C",
-        "tone": "data"
-      },
-      {
-        "title": "OST 1",
-        "detail": [
-          "前段",
-          "Early Range"
-        ],
-        "blocks": "A",
-        "tone": "data"
-      },
-      {
-        "title": [
-          "后段池",
-          "Later Pool"
-        ],
-        "detail": "OST 2 / OST 3",
-        "blocks": "",
-        "tone": "meta"
-      }
+      {"title": ["EXAScaler 客户端", "EXAScaler Client"], "detail": ["跨边界写入", "Write Across Boundary"], "blocks": "B C", "tone": "data"},
+      {"title": "OST 1", "detail": ["前段组件", "Component 1"], "blocks": "A", "tone": "data"},
+      {"title": "OST 2", "detail": ["后段组件", "Component 2"], "blocks": "", "tone": "meta"},
+      {"title": "OST 3", "detail": ["后段组件", "Component 2"], "blocks": "", "tone": "meta"}
     ],
     "edges": [
-      {
-        "from": 0,
-        "to": 1,
-        "blocks": "",
-        "tone": "idle",
-        "start": 0.4,
-        "duration": 1.25
-      },
-      {
-        "from": 0,
-        "to": 2,
-        "blocks": "B C",
-        "tone": "meta",
-        "start": 0.4,
-        "duration": 1.25
-      }
+      {"from": 0, "to": 1, "blocks": "", "tone": "idle", "start": 0.4, "duration": 1.25},
+      {"from": 0, "to": 2, "blocks": "B", "tone": "meta", "start": 0.4, "duration": 1.25},
+      {"from": 0, "to": 3, "blocks": "C", "tone": "meta", "start": 0.55, "duration": 1.25}
     ],
     "updates": [
-      {
-        "node": 2,
-        "at": 1.65,
-        "detail": "OST 2 / OST 3",
-        "blocks": "B | C",
-        "tone": "meta"
-      }
+      {"node": 2, "at": 1.65, "detail": ["后段组件", "Component 2"], "blocks": "B", "tone": "meta"},
+      {"node": 3, "at": 1.8, "detail": ["后段组件", "Component 2"], "blocks": "C", "tone": "meta"}
     ]
   },
   {
@@ -292,8 +248,8 @@
       },
       {
         "title": [
-          "后段池",
-          "Later Pool"
+          "后段组件",
+          "Later Component"
         ],
         "detail": [
           "后续段",
@@ -345,6 +301,7 @@
     pair: [[[247, 157, 236], [653, 157, 236]], [[180, 78, 230], [180, 219, 230]]],
     chain: [[[143, 157, 230], [450, 157, 230], [757, 157, 230]], [[180, 47, 230], [180, 147, 230], [180, 247, 230]]],
     fork: [[[238, 157, 252], [673, 79, 246], [673, 235, 246]], [[180, 63, 230], [91, 217, 160], [269, 217, 160]]],
+    components: [[[238, 163, 252], [673, 54, 246], [673, 163, 246], [673, 272, 246]], [[180, 63, 230], [61, 217, 110], [180, 217, 110], [299, 217, 110]]],
     dual: [[[236, 79, 236], [236, 235, 236], [664, 79, 236], [664, 235, 236]], [[91, 63, 160], [269, 63, 160], [91, 217, 160], [269, 217, 160]]]
   };
 
@@ -418,7 +375,7 @@
     }
     function render() {
       const scene = scenes[current], targets = layouts[scene.shape][Number(narrow.matches)];
-      const height = narrow.matches ? 82 : 104;
+      const height = narrow.matches ? 82 : scene.shape === 'components' ? 94 : 104;
       svg.replaceChildren();
       svg.setAttribute('viewBox', narrow.matches ? '0 0 360 320' : '0 0 900 342');
       const alt = window.SS_TOPIC_CFG.steps[current];
@@ -426,7 +383,7 @@
       svg.setAttribute('aria-label', alt.t[lang] + '. ' + alt.d[lang]);
       packets = scene.edges.map(edge => {
         const g = draw('g', {'data-tone': edge.tone});
-        const path = draw('path', {d: route(targets[edge.from], targets[edge.to], height, scene.shape === 'dual'), class: id + '-link'}, g);
+        const path = draw('path', {d: route(targets[edge.from], targets[edge.to], height, scene.shape !== 'pair' && scene.shape !== 'chain'), class: id + '-link'}, g);
         const length = path.getTotalLength();
         if (edge.tone !== 'idle' && edge.tone !== 'failed') {
           const p = path.getPointAtLength(length - 8);

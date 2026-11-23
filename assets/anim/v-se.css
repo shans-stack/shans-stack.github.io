@@ -39,6 +39,7 @@
 .ssa-v-se .ln.dash{stroke-dasharray:8 7;stroke-width:3}
 .ssa-v-se .ln.dead{opacity:.3}
 .ssa-v-se .disk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .25s,fill .25s,opacity .3s}
+.ssa-v-se .disk.parity{stroke:var(--ochre);stroke-width:3.5;stroke-dasharray:4 3}
 .ssa-v-se .disk.w{stroke:var(--sage);stroke-width:3.5}
 .ssa-v-se .disk.lit{stroke:var(--slate)}
 .ssa-v-se .disk.off{opacity:.3;stroke-dasharray:4 4}

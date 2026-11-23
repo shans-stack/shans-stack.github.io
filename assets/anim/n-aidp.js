@@ -53,9 +53,16 @@
       });
     }
 
-    function route(points, start, duration = 0.9, tone = '') {
+    function route(points, start, duration = 0.9, tone = '', directed = false) {
       const d = 'M' + points.map(p => p.join(' ')).join(' L');
-      const path = el('path', {d}, tone ? 'wire ' + tone : 'wire');
+      const style = tone ? 'wire ' + tone : 'wire';
+      const path = el('path', {d}, style);
+      if (directed) {
+        const [x, y] = points.at(-1);
+        const [prevX, prevY] = points.at(-2);
+        const angle = Math.atan2(y - prevY, x - prevX) * 180 / Math.PI;
+        el('path', {d: 'M-7 -4L0 0L-7 4', transform: `translate(${x} ${y}) rotate(${angle})`}, style);
+      }
       if (start === undefined) return;
       const block = el('rect', {x: -5, y: -4, width: 10, height: 8, rx: 1}, 'block');
       const length = path.getTotalLength();
@@ -150,16 +157,26 @@
         highlight(box([...g, 156, 54], [model]), 3.15);
       },
       m => {
-        const [a, b, c, d] = m ? [[180, 97], [180, 194], [90, 307], [270, 307]]
-          : [[144, 155], [389, 155], [640, 100], [640, 210]];
-        route(m ? [[180, 123], [180, 168]] : [[221, 155], [312, 155]], .25);
-        [c, d].forEach(([x, y], i) => route(m
-          ? [[180, 220], [180, 254], [x, 254], [x, y - 26]]
-          : [[466, 155], [510, 155], [510, y], [x - 77, y]], 1.65 + i * .65));
+        const [a, b, c, d] = m ? [[180, 87], [180, 184], [90, 313], [270, 313]]
+          : [[122, 149], [363, 149], [648, 96], [648, 207]];
+        route(m ? [[180, 113], [180, 157]] : [[199, 149], [279, 149]], .25, .65, '', true);
+        [c, d].forEach(([x, y], i) => {
+          const side = i ? 1 : -1;
+          const start = 1.34 + i * 1.85;
+          const query = m
+            ? [[x + side * 18, y - 26], [x + side * 18, 237], [180 + side * 67, 237], [180 + side * 67, 211]]
+            : [[570, y - 11], [522 + side * 33, y - 11], [522 + side * 33, 149 + side * 17 - 8], [447, 149 + side * 17 - 8]];
+          const result = m
+            ? [[180 + side * 37, 211], [180 + side * 37, 259], [x - side * 18, 259], [x - side * 18, y - 26]]
+            : [[447, 149 + side * 17 + 8], [522 + side * 13, 149 + side * 17 + 8], [522 + side * 13, y + 11], [570, y + 11]];
+          route(query, start, .72, '', true);
+          route(result, start + .81, .72, 'external', true);
+        });
         box([...a, 154, 52], [['新增内容', 'New Content'], ['数据摄取', 'Ingestion']]);
-        highlight(box([...b, 154, 52], [index]), .95, 2.2);
-        highlight(box([...c, 154, 52], [['问答应用', 'Q&A App']]), 2.35);
-        highlight(box([...d, 154, 52], [['研究智能体', 'Research Agent']]), 3.05);
+        highlight(box([...b, 168, 54], [index]), .91, 3.8);
+        highlight(box([...c, 156, 52], [['问答应用', 'Q&A App']]), 2.9);
+        highlight(box([...d, 156, 52], [['研究智能体', 'Research Agent']]), 4.72);
+        text(m ? 180 : 498, m ? 350 : 264, ['查询 → 索引 · 结果 → 应用', 'Query → Index · Results → App'], 'secondary');
       }
     ];
 

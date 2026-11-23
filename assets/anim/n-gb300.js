@@ -179,17 +179,20 @@
     const scenes = [
       rack,
       m => {
-        const pivots = m ? [[93, 128], [267, 128]] : [[224, 130], [556, 130]];
-        const width = m ? 151 : 194;
-        pivots.forEach(([x, y], i) => {
-          route([[x, y - 7], [x, y + 19]], .55 + i * 1.5, .79);
-          highlight(box([x, y - 31, width, 48], [[cpu, cpu]]), .25 + i * 1.5);
-          highlight(box([x, y + 43, width, 48], [['2 × ' + gpu, '2 × ' + gpu]]), 1.13 + i * 1.5);
+        const xs = m ? [91, 269] : [166, 390];
+        const y = m ? 99 : 107;
+        const w = m ? 158 : 203;
+        rect(m ? 5 : 37, 49, m ? 350 : 706, m ? 302 : 226, 'boundary');
+        text(m ? 180 : 390, 67, ['GB300 计算托盘', 'GB300 Compute Tray'], 'secondary');
+        xs.forEach((x, i) => {
+          route([[x, y + 17], [x, y + 45]], .42 + i * .55, .65);
+          highlight(box([x, y, w, 34], [[cpu, cpu]]), .14 + i * .55);
+          highlight(box([x, y + 65, w, 40], [['2 × ' + gpu, '2 × ' + gpu]]), 1.04 + i * .55);
+          highlight(box([x, y + 129, w, 52], [[nic, nic], ['计算网夹层板', 'Compute Mezzanine']]), 2.28 + i * .48);
         });
-        text(m ? 180 : 390, m ? 212 : 140, ['NVLink-C2C', 'NVLink-C2C'], 'secondary');
-        const y = m ? 278 : 232;
-        highlight(box([m ? 93 : 224, y, width, 49], [[nic, nic], ['计算网络', 'Compute Network']]), 3.3);
-        highlight(box([m ? 267 : 556, y, width, 49], [[dpu, dpu], ['存储网络', 'Storage Network']]), 3.95);
+        text(m ? 180 : 275, m ? 132 : 141, ['NVLink-C2C', 'NVLink-C2C'], 'secondary');
+        highlight(box(m ? [180, 308, 244, 54] : [616, 166, 196, 66],
+          [[dpu, dpu], ['托盘存储网接口', 'Tray Storage Adapter']]), 3.55);
       },
       m => {
         const [a, b, c] = m ? [[180, 100], [180, 199], [180, 297]]

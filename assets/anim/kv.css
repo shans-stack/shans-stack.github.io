@@ -65,3 +65,11 @@
 .an-kv .pkt.out{fill:var(--sage)}
 .an-kv .blk.kvon{stroke:var(--violet);stroke-width:3}
 .an-kv .thin{stroke:var(--rule);stroke-width:2}
+
+@media (max-width: 640px) {
+  body.present .stage { padding: 12px 14px; }
+  body.present .stage .figbox { margin-block: 8px; }
+  body.present .stage .cap { margin-top: 8px; }
+  body.present .stage h2 { font-size: 23px; }
+  body.present .stage .desc { font-size: 16px; }
+}

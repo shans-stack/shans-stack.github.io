@@ -6,7 +6,7 @@
   font: 500 17px var(--f);
 }
 .an-topo-label, .an-topo-note { fill: var(--ink); dominant-baseline: central; }
-.an-topo-note { fill: var(--ink2); font-size: 16px; }
+.an-topo-note { fill: var(--ink2); font-size: 16.2px; }
 .an-topo-node { fill: var(--surface); stroke: var(--rule2); stroke-width: 1.5; }
 .an-topo-node.an-topo-green { stroke: var(--l5); }
 .an-topo-node.an-topo-rose { stroke: var(--l1); }

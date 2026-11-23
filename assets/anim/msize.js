@@ -2,6 +2,8 @@
 (() => {
 const ID = 'msize';
 const EN = {
+  "返回归约梯度": "Return reduced gradients",
+  "更新副本": "Update replica",
   "示意，不代表实测数字": "Schematic, not measured",
   "同格式权重按每项字节数计": "Weight storage follows bytes per value",
   "可学习参数": "Learned parameters",
@@ -69,21 +71,23 @@ const SCENES = [
     const links = mobile
       ? [[[200, 137], [200, 195]], [[200, 311], [200, 369]]]
       : [[[290, 166], [344, 166]], [[616, 166], [670, 166]]];
+    const compute = 0.85, transfer = 0.42;
+    const starts = positions.map((_, i) => [0, 1.15].map(t => t + i * (compute + transfer)));
     links.forEach((points, i) => {
       const track = wire(points);
-      travel(track, 0.32 + i * 1.02, 0.83 + i * 1.02);
-      travel(track, 1.62 + i * 1.02, 2.13 + i * 1.02, 'cool');
+      starts[i].forEach((start, batch) => {
+        travel(track, start + compute, starts[i + 1][batch], batch ? 'cool' : '');
+      });
     });
     positions.forEach(([x, y], i) => {
       const group = card([x, y], ['GPU A', 'GPU B', 'GPU C'][i], '', [
         "首组层", "中间层", "末组层"
       ][i]);
       const status = label(x, y + 1, '', 'value', group);
-      const starts = [i * 1.02, 1.3 + i * 1.02];
       update(t => {
-        const at = starts.findIndex(start => t >= start && t < start + 1.02);
+        const at = starts[i].findIndex(start => t >= start && t < start + compute);
         const message = at === 0 ? "计算 A" : at === 1 ? "计算 B" : "空闲";
-        status.textContent = T(t > 3.85 ? "已完成" : message);
+        status.textContent = T(t >= starts[i][1] + compute ? "已完成" : message);
       });
     });
     note("A、B 是先后进入的微批次");
@@ -105,22 +109,30 @@ const SCENES = [
   }]
 ];
 
-function parallel({ mobile, card, box, label, wire, travel, reveal, step, note }) {
+function parallel({ mobile, card, box, label, wire, travel, reveal, step, note, update }) {
   const dp = step === 2;
   const source = mobile ? [200, 79] : [154, 166];
   const target = mobile ? [200, 427] : [806, 166];
-  const gpus = mobile ? [[111, 253], [289, 253]] : [[480, 92], [480, 240]];
+  const gpus = mobile ? [[111, 253], [289, 253]] : [[480, 92], [480, dp ? 229 : 240]];
   gpus.forEach(([x, y], i) => {
     const enter = mobile
       ? [[200, 137], [200, 165], [x, 165], [x, 207]]
       : [[290, 166], [312, 166], [312, y], [365, y]];
     const exit = mobile
-      ? [[x, 299], [x, 340], [200, 340], [200, 369]]
-      : [[595, y], [648, y], [648, 166], [670, 166]];
+      ? (dp ? [[x, 299], [x, 369]] : [[x, 299], [x, 340], [200, 340], [200, 369]])
+      : (dp ? [[595, y], [649, y], [649, i ? 198 : 134], [670, i ? 198 : 134]]
+        : [[595, y], [648, y], [648, 166], [670, 166]]);
     const tone = i ? 'cool' : 'active';
     travel(wire(enter, tone), 0.4 + i * 0.18, 1.65 + i * 0.18, tone);
     travel(wire(exit, tone), 1.8 + i * 0.17, 2.9 + i * 0.17, tone);
-    if (dp) travel(wire(exit.toReversed(), 'ready', false), 3.1, 4.0, 'ready');
+    if (dp) {
+      const returnX = x + (i ? -30 : 30);
+      const returnY = i ? 174 : 158;
+      const back = mobile
+        ? [[returnX, 369], [returnX, 299]]
+        : [[670, returnY], [627, returnY], [627, i ? y - 24 : y + 24], [595, i ? y - 24 : y + 24]];
+      travel(wire(back, 'ready'), 3.15, 4.15, 'ready');
+    }
   });
   card(source, dp ? "拆分训练批次" : "切分同层矩阵",
     dp ? [["A", 48], ["B", 48, "cool"]] : [["W₁", 54], ["W₂", 54, "cool"]]);
@@ -129,10 +141,11 @@ function parallel({ mobile, card, box, label, wire, travel, reveal, step, note }
     box(x - w / 2, y - 46, w, 92, i ? 'cool' : 'active');
     label(x, y - 21, i ? 'GPU B' : 'GPU A', 'heading');
     label(x, y + 4, dp ? "完整权重 W" : i ? "W₂" : "W₁");
-    label(x, y + 27, dp ? "局部梯度" : "局部结果", 'muted');
+    const status = label(x, y + 27, dp ? "局部梯度" : "局部结果", 'muted');
+    if (dp) update(t => { status.textContent = T(t >= 4.15 ? "更新副本" : "局部梯度"); });
   });
   reveal(card(target, dp ? "梯度归约" : "拼接结果",
-    dp ? "同步更新两个副本" : "Y = [Y₁  Y₂]", undefined, 'ready'), 2.25);
+    dp ? "返回归约梯度" : "Y = [Y₁  Y₂]", undefined, 'ready'), 2.25);
   note(dp ? "归约后的梯度回到两张卡" : "此例沿输出列切分");
 }
 const duration = 5.4;

@@ -7,7 +7,7 @@
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
    样式在 assets/anim/v-se.css，全部限定在 .ssa-v-se 容器之内。 */
 (function(){
-var EN={"客户端":"Client","NVMe-oF 网络":"NVMe-oF network","DBox 1":"DBox 1","DBox 2":"DBox 2","SCM":"SCM","大容量闪存":"High-capacity flash","节点 1":"Node 1","节点 2":"Node 2","节点 3":"Node 3",
+var EN={"查询共享 SCM 元数据":"Read shared SCM metadata","读取容量盘并返回客户端":"Read capacity flash and reply","CNode 沿树查元数据":"CNode follows metadata tree","方块：数据片 · 圆点：校验片（块数为示意）":"Squares: data · Dots: parity (schematic)","客户端":"Client","NVMe-oF 网络":"NVMe-oF network","DBox 1":"DBox 1","DBox 2":"DBox 2","SCM":"SCM","大容量闪存":"High-capacity flash","节点 1":"Node 1","节点 2":"Node 2","节点 3":"Node 3",
 "已挂载":"Drives mounted","每台 CNode 开机都挂上每一块盘":"Every CNode mounts every drive at start-up",
 "哪台 CNode 接到请求，就由哪台直接去盘上取":"Whichever CNode gets the request reads the drive itself","请求到了不持有数据的节点，要转给持有它的那台":"A request at the wrong node is passed to the node that holds the data",
 "换成盘归节点":"Switch to drives owned by nodes","换成全共享":"Switch to shared everything","切换对比，当前 ":"Switch comparison, now showing ","全共享":"shared everything","盘归节点":"drives owned by nodes",
@@ -59,7 +59,7 @@ function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-
 function xmark(c,a,b,p){const g=el('g',{class:'xm'},p);line(P(c.x-b,c.y-a),P(c.x+b,c.y+a),'xmark',g);line(P(c.x-b,c.y+a),P(c.x+b,c.y-a),'xmark',g);return g}
 const dur=pts=>plen(pts)/L.sp;
 const SCENE={
- still:[6.0,1.9,3.0,6.0,5.6,1.6],
+ still:[6.0,4.85,4.8,6.0,5.6,2.8],
  layout(mobile){
   if(!mobile)return {W:960,H:520,mobile:false,f:{lbl:20,sm:17,cap:18},pw:22,ph:16,dr:7,sp:340,
    client:{x:400,y:10,w:160,h:42},busY:70,topY:72,
@@ -124,12 +124,12 @@ const SCENE={
   E.toBox=(i,b)=>{const c=D.xs[b];return [P(xs[i],ncy),P(xs[i],L.fabY),P(c,L.fabY),P(c,D.y+D.barDy*0.45)]};
   E.inBox=(b,d0,d1)=>{const a=E.drx[b][d0],z=E.drx[b][d1],yd=E.drY+D.drH/2;return [P(a,yd),P(a,E.barY),P(z,E.barY),P(z,yd)]};
   /* 底部 */
-  tx(L.note.x,L.note.y,'示意，块数不代表实际条带宽度',f.sm,'ink3-t','middle',grp('6'));
+  tx(L.note.x,L.note.y,'方块：数据片 · 圆点：校验片（块数为示意）',f.sm,'ink3-t','middle',grp('6'));
   E.cap=tx(L.cap.x,L.cap.y,'',f.cap,'st','middle');
  },
  reset(){
   svg.querySelectorAll('.ln').forEach(l=>l.classList.remove('lit','ok','dead','hot'));
-  svg.querySelectorAll('.disk').forEach(d=>d.classList.remove('w','lit','off'));
+  svg.querySelectorAll('.disk').forEach(d=>d.classList.remove('w','lit','off','parity'));
   svg.querySelectorAll('.box').forEach(d=>d.classList.remove('on','ok','dead','hot','vio','ochre'));
   E.cnSub.forEach((s,i)=>sub(i,''));E.stat.forEach(s=>{s.textContent=''});E.cap.textContent='';
   E.xCN.forEach(g=>g.style.opacity=0);
@@ -154,7 +154,7 @@ SCENE.modes[1]={enter(){const own=SCENE.toggle.state==='own';S.v.own=own;
   E.gD.classList.toggle('hid',own);E.gT.classList.toggle('hid',!own);
   cap(own?'请求到了不持有数据的节点，要转给持有它的那台':'哪台 CNode 接到请求，就由哪台直接去盘上取',own?'rose-t':'sage-t');
   S.v.a=pk();S.v.b=pk('vio');S.v.c=pk()},
- frame(t){const per=2.8,k=Math.floor(t/per),u=t-k*per,i=k%3;
+ frame(t){const per=S.v.own?2.8:5.5,k=Math.floor(t/per),u=t-k*per,i=k%3;
   if(S.v.own){const a=E.front(i),da=dur(a);
    const fw=i!==2?[P(L.cn.xs[i]+L.cn.w/2,E.ncy),P(L.cn.xs[2]-L.cn.w/2,E.ncy)]:null,df=fw?Math.min(dur(fw),1.0):0,t1=da+df;
    const d=E.tdown(2,1),dd=dur(d);
@@ -162,19 +162,26 @@ SCENE.modes[1]={enter(){const own=SCENE.toggle.state==='own';S.v.own=own;
    if(fw)run(S.v.b,fw,u,da,df,0);else put(S.v.b,-99,-99,0);
    E.ew.forEach(l=>l.classList.toggle('hot',!!fw&&u>da&&u<t1));
    const p=run(S.v.c,d,u,t1,dd);E.tDisk[2][1].classList.toggle('w',p>1)}
-  else{const r=cat(E.front(i),E.down(i,1,5)),d=dur(r);const p=run(S.v.a,r,u,0,Math.min(d,2.2));put(S.v.b,-99,-99,0);put(S.v.c,-99,-99,0);
-   E.cn.forEach((c,j)=>c.classList.toggle('on',j===i&&u>0.5));E.dr[1][5].classList.toggle('w',p>1)}}};
+  else{
+   const req=E.front(i),meta=E.down(i,0,0),data=E.down(i,1,5);
+   run(S.v.a,req,u,0.1,0.7,0);
+   run(S.v.b,cat(meta,rev(meta)),u,0.85,1.55,0.1);
+   const p=run(S.v.c,cat(data,rev(data),rev(req)),u,2.55,2.15,0.35);
+   cap(u<2.5?'查询共享 SCM 元数据':'读取容量盘并返回客户端','sage-t');
+   E.cn.forEach((c,j)=>c.classList.toggle('on',j===i&&u>0.5));
+   E.dr[0][0].classList.toggle('lit',u>=1.55&&u<2.55);
+   E.dr[1][5].classList.toggle('w',p>0.35)}}};
 /* 第 3 步：算哈希找到树根，再顺着树找到数据 */
 SCENE.modes[2]={enter(){cap('一致性哈希定位 V-Tree 根','slate-t');S.v.a=dot('ochre');S.v.b=dot('ok')},
- frame(t){const per=7.2,k=Math.floor(t/(per/2)),u=t-k*(per/2),pair=k%2===0?[0,1,4]:[2,0,6],[i,b,d]=pair,o=1-b;
-  const r=E.toBox(i,b).slice(0,3).concat([P(L.db.xs[b],E.barY),P(E.drx[b][0],E.barY),P(E.drx[b][0],E.drY+L.db.drH/2)]),dr=Math.min(dur(r),1.6);
+ frame(t){const per=6,k=Math.floor(t/per),u=t-k*per,[i,b,d]=k%2===0?[0,1,4]:[2,0,6],o=1-b;
+  const root=E.down(i,b,0),meta=E.down(i,b,1),data=E.down(i,b,d);
   sub(i,u>0.15?(b?'哈希 → DBox 2':'哈希 → DBox 1'):'','slate-t');sub(2-i,'');
   E.cn.forEach((c,j)=>c.classList.toggle('on',j===i));
-  const p=run(S.v.a,r,u,0.6,dr,0.2);const arr=u>0.6+dr;
+  run(S.v.a,cat(root,rev(root),meta,rev(meta)),u,0.6,2.7,0.2);const arr=u>1.25;
   E.dr[b][0].classList.toggle('lit',arr);E.dr[o][0].classList.remove('lit');
-  const r2=E.inBox(b,0,d),p2=run(S.v.b,r2,u,0.6+dr+0.5,1.0,0.3);
+  const p2=run(S.v.b,cat(data,rev(data)),u,3.45,1.5,0.3);
   E.dr[b][d].classList.toggle('w',p2>1);E.dr[o].forEach(x=>x.classList.remove('w'));
-  stat(b,arr?(p2>1?'顺着树找到数据':'读取一份 V-Tree 根'):'',p2>1?'sage-t':'ochre-t');stat(o,'')}};
+  stat(b,arr?(u>=3.45?'顺着树找到数据':u>=1.95?'CNode 沿树查元数据':'读取一份 V-Tree 根'):'',p2>1?'sage-t':'ochre-t');stat(o,'')}};
 /* 第 4 步：两台 CNode 写同一处，锁签着 CNode 的 ID */
 SCENE.modes[3]={enter(){cap('锁签着 CNode 的 ID，不需要中心锁管理器','slate-t');
   const lk=i=>E.toBox(i,0),dl=Math.min(dur(lk(0)),1.3),w=i=>cat(E.toBox(i,0).slice(0,3),[P(L.db.xs[0],E.barY),P(E.drx[0][1],E.barY),P(E.drx[0][1],E.drY+L.db.drH/2)]),dw=Math.min(dur(w(0)),1.5),q=E.top(2,0),dq=Math.min(dur(q),1.2);
@@ -210,9 +217,9 @@ SCENE.modes[4]={enter(){cap('事务未提交：读取先前的元数据','slate-
   E.cn[2].classList.toggle('on',u>=T_.b0)}};
 /* 第 6 步：条带的各块铺满两台 DBox */
 SCENE.modes[5]={enter(){cap('纠删码条带跨共享盘','sage-t');S.v.r=[];S.v.o=[];
-  [0,1].forEach(b=>{for(let d=2;d<8;d++){S.v.r.push([b,d,E.down(1,b,d)]);S.v.o.push(pk('ok'))}})},
+  [0,1].forEach(b=>{for(let d=2;d<8;d++){S.v.r.push([b,d,E.down(1,b,d)]);S.v.o.push(d===7?dot('ochre'):pk('ok'))}})},
  frame(t){const per=4.6,u=t%per;E.cn[1].classList.add('on');E.fab.classList.add('lit');
-  S.v.r.forEach(([b,d,r],j)=>{const p=run(S.v.o[j],r,u,0.15+j*0.07,Math.min(dur(r),1.7),0.3);E.dr[b][d].classList.toggle('w',p>1||(p<0&&u>0.15+j*0.07))})}};
+  S.v.r.forEach(([b,d,r],j)=>{const p=run(S.v.o[j],r,u,0.15+j*0.07,Math.min(dur(r),1.7),0.3);const landed=u>=0.15+j*0.07+Math.min(dur(r),1.7);E.dr[b][d].classList.toggle(d===7?'parity':'w',landed)})}};
 /* ---------- 引擎 ---------- */
 function applyVis(){
   svg.setAttribute('data-step',step+1);

@@ -74,10 +74,10 @@
       label(source[0], source[1] - 85, T('网格切片', 'Grid Slice'), 'heading');
       label(matrix[0], matrix[1] - 85, T('稀疏矩阵', 'Sparse Matrix'), 'heading');
       lattice(...source, 27, 4, 5, (x, y) => Math.abs(x - 2) <= 1 && Math.abs(y - 1) <= 1, 0.2);
-      lattice(...matrix, 19, 5, 9, (x, y) => y === 2 && [2, 4, 5].includes(x), 1.55);
-      const route = mobile ? [[200, 190], [200, 219]] : [[298, 193], [539, 193]];
+      lattice(...matrix, 19, 5, 13, (x, y) => y === 2 && x % 5 < 3, 1.55);
+      const route = mobile ? [[200, 190], [200, 219]] : [[298, 193], [514, 193]];
       pulse(path(route, true), 0.7, 1.5);
-      label(matrix[0], matrix[1] + 68, T('所选行的非零项', 'Nonzeros in the Selected Row'), 'note');
+      label(matrix[0], matrix[1] + 68, T('仅显示当前切片的 9 个非零项', 'Only the 9 nonzeros from this slice'), 'note');
     }
 
     function halo() {

@@ -164,21 +164,21 @@
   const scenes = [
     {
       caption: 'Prefill 保留源 KV Cache，NIXL 将其复制到 Decode|Prefill keeps its KV cache while NIXL copies it to decode',
-      draw({ box, connect }) {
-        box('prefill', [170, 148, 180, 67], 'Prefill GPU', { art: kvTiles });
-        box('transfer', [450, 148, 180, 196], 'NIXL', { note: '点对点传输|Peer Transfer', tone: 'active' });
-        box('decode', [730, 148, 180, 325], 'Decode GPU', { art: art => kvTiles(art, true) });
-        connect('prefill', 'transfer', { start: 0.35 });
-        connect('transfer', 'decode', { start: 1.1 });
+      draw({ box, connect, cards, label, mobile }) {
+        box('prefill', [170, 148, 180, 82], 'Prefill GPU', { art: kvTiles });
+        box('decode', [730, 148, 180, 310], 'Decode GPU', { art: art => kvTiles(art, true) });
+        connect('prefill', 'decode', { start: 0.35, duration: 1.4 });
+        label(cards, mobile ? 193 : 450, mobile ? 196 : 115,
+          (mobile ? 'NIXL 后端|NIXL Backend' : 'NIXL 后端 · 点对点传输|NIXL Backend · Peer Transfer'), 'detail', mobile ? 'start' : 'middle');
       }
     },
     {
       caption: '两个代理各自在本地登记 GPU 缓冲区|Each agent registers its local GPU buffer',
       draw({ box, connect }) {
         box('prefill', [230, 86, 92, 85], 'Prefill GPU', { art: kvTiles });
-        box('decode', [670, 86, 268, 85], 'Decode GPU', { art: kvTiles });
+        box('decode', [670, 86, 268, 85], 'Decode GPU', { art: art => kvTiles(art, true) });
         box('left', [230, 225, 92, 272], 'NIXL', { note: '源代理|Source Agent' });
-        box('right', [670, 225, 268, 272], '目标代理|Target Agent', { note: '本地注册|Local Registration' });
+        box('right', [670, 225, 268, 272], '目标代理|Target Agent', { note: '登记空缓冲区|Registers Buffer' });
         connect('prefill', 'left', { style: 'control', start: 0.35 });
         connect('decode', 'right', { style: 'control', start: 0.35 });
       }

@@ -6,7 +6,7 @@
    系统开了「减少动态效果」时每步只画一帧静态结果。文字有中英两套（EN 表 + T()），跟着 ss-lang 事件重画。
    样式在 assets/anim/nvmeof.css，类名都在 .an-nvmeof 之内。 */
 (function(){
-var EN={"服务器 A": "Server A", "服务器 B": "Server B", "内存": "Memory", "NVMe 盘": "NVMe SSD", "网卡": "NIC", "远端盘": "Remote", "在 B 看来：本地盘": "To B: a local drive", "看起来像本地盘": "Looks local", "交换机": "Switch", "普通以太网": "Ethernet", "存储箱": "Storage box", "转发": "Forward", "盘 1": "SSD 1", "盘 2": "SSD 2", "盘 3": "SSD 3", "盘 4": "SSD 4", "只转发": "Forwards only", "文件系统、数据保护在服务器上": "Servers run file system, protection", "文件系统、数据保护": "Servers run the", "在服务器上": "file system, protection", "示意，不代表实测数字": "Schematic, not measured", "CPU：发命令": "CPU: sends a command", "数据进了内存": "Data is in memory", "CPU：替 B 转交": "CPU: relaying for B", "CPU：请 A 帮忙": "CPU: asks A", "收到": "Received", "CPU：发 NVMe 命令": "CPU: sends an NVMe command", "CPU：不参与": "CPU: not involved", "CPU：只发起": "CPU: starts it only", "CPU：不搬数据": "CPU: moves no data", "服务器 A 停机": "Server A is down", "写入": "Writing", "照样读到": "Still readable", "CPU：复制数据 · 占用较低": "CPU: copying · light load", "CPU：复制数据 · 占用升高": "CPU: copying · getting busy", "CPU：复制数据 · 占用很高": "CPU: copying · very busy", "⇄ 换成 TCP": "⇄ To TCP", "⇄ 换成 RDMA": "⇄ To RDMA", "切换传输方式，当前 RDMA": "Switch transport, now RDMA", "切换传输方式，当前 TCP": "Switch transport, now TCP"};
+var EN={"CPU 核心":"CPU Core","内存控制器":"Memory Controller","PCIe 根复合体":"PCIe Root Complex","已注册":"Registered","I/O 缓冲区":"I/O buffer","目标控制器":"Controller","命名空间":"Namespace","后端 I/O":"Back-end I/O","软件栈示例 · 占用很高":"Example stack: high load","软件栈示例 · 占用升高":"Example stack: rising load","软件栈示例 · 占用较低":"Example stack: low load","远端命名空间":"Remote namespace","服务器 A": "Server A", "服务器 B": "Server B", "内存": "Memory", "NVMe 盘": "NVMe SSD", "网卡": "NIC", "远端盘": "Remote", "在 B 看来：本地盘": "To B: a local drive", "看起来像本地盘": "Looks local", "交换机": "Switch", "普通以太网": "Ethernet", "存储箱": "Storage box", "转发": "Forward", "盘 1": "SSD 1", "盘 2": "SSD 2", "盘 3": "SSD 3", "盘 4": "SSD 4", "只转发": "Forwards only", "文件系统、数据保护在服务器上": "Servers run file system, protection", "文件系统、数据保护": "Servers run the", "在服务器上": "file system, protection", "示意，不代表实测数字": "Schematic, not measured", "CPU：发命令": "CPU: sends a command", "数据进了内存": "Data is in memory", "CPU：替 B 转交": "CPU: relaying for B", "CPU：请 A 帮忙": "CPU: asks A", "收到": "Received", "CPU：发 NVMe 命令": "CPU: sends an NVMe command", "CPU：不参与": "CPU: not involved", "CPU：只发起": "CPU: starts it only", "CPU：不搬数据": "CPU: moves no data", "服务器 A 停机": "Server A is down", "写入": "Writing", "照样读到": "Still readable", "CPU：复制数据 · 占用较低": "CPU: copying · light load", "CPU：复制数据 · 占用升高": "CPU: copying · getting busy", "CPU：复制数据 · 占用很高": "CPU: copying · very busy", "⇄ 换成 TCP": "⇄ To TCP", "⇄ 换成 RDMA": "⇄ To RDMA", "切换传输方式，当前 RDMA": "Switch transport, now RDMA", "切换传输方式，当前 TCP": "Switch transport, now TCP"};
 var ARIA=["服务器、交换机和存储箱：NVMe 命令怎样经网络直达远端的盘", "Servers, a switch and a storage box: how NVMe commands reach remote drives over the network"];
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&typeof s==='string'&&EN[s]!==undefined?EN[s]:s}
@@ -122,7 +122,7 @@ function enter(i){
   if(reduce){const lim=(SC.reduceAt||[])[i]||2;for(let t=0;t<lim;t+=1/60)tick(1/60);render();return}
   render();run();
 }
-function build(){L=SC.layout(mq.matches);if(L.mobile)for(const k in L.f)if(L.f[k]<16.5)L.f[k]=16.5;/* 400 宽下最小字不低于 12px */svg.innerHTML='';E={};svg.setAttribute('viewBox',`0 0 ${L.W} ${L.H}`);SC.build();if(!E.pk)E.pk=el('g',{});
+function build(){L=SC.layout(mq.matches);if(L.mobile)for(const k in L.f)if(L.f[k]<18.3)L.f[k]=18.3;svg.innerHTML='';E={};svg.setAttribute('viewBox',`0 0 ${L.W} ${L.H}`);SC.build();if(!E.pk)E.pk=el('g',{});
   svg.setAttribute('aria-label',ARIA[lang()==='en'?1:0]);if(opts.onLayout)opts.onLayout(L.W/L.H,L.mobile)}
 function rebuild(){build();enter(step)}
 
@@ -132,27 +132,26 @@ let mode='rdma';
 if(qs.get('tr')==='tcp')mode='tcp';
 const SC={
 layout(mobile){
-  const host=(fr,blk)=>({fr,blk});
   if(!mobile){
     const W=960,H=476;
     const mk=oy=>{const by=oy+52,bh=64;return {fr:{x:16,y:oy,w:440,h:200},title:{x:36,y:oy+30},st:{x:150,y:oy+30},cap:{x:440,y:oy+30},
-      cpu:{x:36,y:by,w:100,h:bh},mem:{x:152,y:by,w:96,h:bh},disk:{x:264,y:by,w:96,h:bh},nic:{x:372,y:by,w:76,h:bh},bus:oy+164,pcie:{x:310,y:oy+184}}};
+      cpu:{x:36,y:by,w:100,h:bh},mem:{x:152,y:by,w:96,h:bh},disk:{x:264,y:by,w:96,h:bh},nic:{x:372,y:by,w:76,h:bh},root:{x:52,y:oy+142,w:384,h:45}}};
     const A=mk(16),B=mk(256);
     const sw={x:496,y:72,w:120,h:330},swc={x:516,y:236};
-    const box={x:640,y:16,w:304,h:440},fwd={x:660,y:196,w:92,h:80};
+    const box={x:640,y:16,w:304,h:440},fwd={x:650,y:196,w:112,h:80};
     const drv=[76,166,256,346].map(y=>({x:800,y,w:124,h:64}));
     return {mobile,W,H,A,B,sw,swc,box,fwd,drv,pw:24,ph:18,gap:26,qmax:2,dr:7,f:{ttl:22,lbl:20,st:18,sm:17,note:16},
       boxTitle:{x:660,y:46},trunk:{x:780},
       net:{A:[{x:448,y:117},{x:496,y:117},{x:516,y:117},swc],B:[{x:448,y:357},{x:496,y:357},{x:516,y:357},swc]},
-      swToFwd:[swc,{x:616,y:236},{x:660,y:236},{x:706,y:236}],
-      fwdOut:[{x:706,y:236},{x:752,y:236},{x:780,y:236}],
+      swToFwd:[swc,{x:616,y:236},{x:650,y:236},{x:706,y:236}],
+      fwdOut:[{x:706,y:236},{x:762,y:236},{x:780,y:236}],
       swLbl:{x:566,y:184},swType:{x:566,y:296},
-      fwdNote:{x:706,y:304,a:'middle'},boxNote:[{x:792,y:436,a:'middle'}],
+      fwdNote:{x:707,y:298,a:'middle'},boxNote:[{x:792,y:436,a:'middle'}],
       btn:{x:556,y:438}};
   }
   const W=480,H=748;
   const mk=oy=>{const by=oy+46,bh=60;return {fr:{x:12,y:oy,w:428,h:196},title:{x:26,y:oy+26},st:{x:112,y:oy+26},cap:{x:428,y:oy+26},
-    cpu:{x:24,y:by,w:96,h:bh},mem:{x:128,y:by,w:88,h:bh},disk:{x:224,y:by,w:88,h:bh},nic:{x:328,y:by,w:96,h:bh},bus:oy+152,pcie:{x:270,y:oy+174}}};
+    cpu:{x:24,y:by,w:96,h:bh},mem:{x:128,y:by,w:88,h:bh},disk:{x:224,y:by,w:88,h:bh},nic:{x:328,y:by,w:96,h:bh},root:{x:38,y:oy+129,w:382,h:49}}};
   const A=mk(12),B=mk(224);
   const sw={x:290,y:436,w:178,h:56},swc={x:378,y:464};
   const box={x:12,y:520,w:456,h:216},fwd={x:300,y:540,w:124,h:64};
@@ -163,8 +162,8 @@ layout(mobile){
     swToFwd:[swc,{x:378,y:492},{x:378,y:540},{x:378,y:572}],
     fwdOut:[{x:378,y:572},{x:378,y:604},{x:378,y:632}],
     swLbl:{x:332,y:464},swType:{x:276,y:464,a:'end'},
-    fwdNote:{x:290,y:572,a:'end'},boxNote:[{x:28,y:586,a:'start'},{x:28,y:608,a:'start'}],
-    btn:{x:100,y:464}};/* 手机上按钮左移一点，不压住交换机类型文字 */
+    fwdNote:{x:288,y:566,a:'end'},boxNote:[{x:28,y:586,a:'start'},{x:28,y:608,a:'start'}],
+    btn:{x:85,y:465}};
 },
 build(){
   const f=L.f;
@@ -175,31 +174,34 @@ build(){
     rect(h.fr,'frame',g,22);
     tx(h.title.x,h.title.y,'服务器 '+k,f.ttl,'ttl','start',g);
     const at=b=>({x:b.x+b.w/2,y:b.y+b.h});
-    // 总线（PCIe）：每个部件一根竖线接到同一条横线
-    const cx=['cpu','mem','disk','nic'].map(n=>at(h[n]).x);
-    o.stub={};o.bus={};
-    const bg=grp(null,g);
-    o.bus.cm=line({x:cx[0],y:h.bus},{x:cx[1],y:h.bus},'wire',bg);
-    o.bus.md=line({x:cx[1],y:h.bus},{x:cx[2],y:h.bus},'wire',bg);
-    o.bus.dn=line({x:cx[2],y:h.bus},{x:cx[3],y:h.bus},'wire',bg);
-    ['cpu','mem','nic'].forEach(n=>{o.stub[n]=line(at(h[n]),{x:at(h[n]).x,y:h.bus},'wire',bg)});
-    const dg=grp(k==='A'?'1 2':'',g);if(k==='B')dg.dataset.show='0';
-    o.stub.disk=line(at(h.disk),{x:at(h.disk).x,y:h.bus},'wire',dg);
-    tx(h.pcie.x,h.pcie.y,'PCIe',f.note,'ink3-t','middle',g);
-    // 方块
-    const lab=(b,s)=>tx(b.x+b.w/2,b.y+(L.mobile?21:24),s,f.lbl,'lbl','middle');
-    o.cpu=rect(h.cpu,'blk',g);tx(h.cpu.x+12,h.cpu.y+(L.mobile?20:24),'CPU',f.lbl,'cpul','start',g);
-    o.bar=bar(h.cpu.x+12,h.cpu.y+h.cpu.h-(L.mobile?20:22),h.cpu.w-24,L.mobile?10:12,g);
-    o.mem=rect(h.mem,'blk',g);g.appendChild(lab(h.mem,'内存'));
-    rect(h.disk,'blk',dg);dg.appendChild(lab(h.disk,'NVMe 盘'));
-    o.nic=rect(h.nic,'blk',g);g.appendChild(lab(h.nic,'网卡'));
+    const dg=grp(k==='A'?'1 2':'0',g);
+    const pcie=grp(k==='A'?'1 2':'0',g);
     o.at={cpu:at(h.cpu),mem:at(h.mem),disk:at(h.disk),nic:at(h.nic)};
-    o.in=n=>n==='cpu'?at(h.cpu):({x:at(h[n]).x,y:h[n].y+h[n].h-(L.mobile?13:15)});
+    o.stub={};
+    for (const n of ['cpu','mem','disk','nic']) {
+      o.stub[n]=line(o.at[n],{x:o.at[n].x,y:h.root.y},n==='cpu'?'cmdl':'wire',n==='disk'?dg:g);
+    }
+    tx(o.at.disk.x+9,h.root.y-9,'PCIe',f.note,'ink3-t','start',pcie);
+    tx(o.at.nic.x+9,h.root.y-9,'PCIe',f.note,'ink3-t','start',g);
+    rect(h.root,'blk',g,8);
+    const split=o.at.mem.x+h.mem.w/2+8;
+    line({x:split,y:h.root.y+16},{x:split,y:h.root.y+h.root.h},'wire',g);
+    tx((h.root.x+split)/2,h.root.y+31,'内存控制器',f.note,'lbl','middle',g);
+    tx((split+h.root.x+h.root.w)/2,h.root.y+31,'PCIe 根复合体',f.note,'lbl','middle',g);
+    const lab=(b,s,parent)=>tx(b.x+b.w/2,b.y+(L.mobile?21:24),s,f.lbl,'lbl','middle',parent);
+    o.cpu=rect(h.cpu,'blk',g);lab(h.cpu,'CPU 核心',g);
+    o.bar=bar(h.cpu.x+12,h.cpu.y+h.cpu.h-(L.mobile?20:22),h.cpu.w-24,L.mobile?10:12,g);
+    o.mem=rect(h.mem,'blk',g);
+    o.memText=lab(h.mem,'内存',g);
+    o.memFlag=tx(C(h.mem).x,h.mem.y+35,'',f.note,'ink2-t','middle',g);
+    rect(h.disk,'blk',dg);lab(h.disk,'NVMe 盘',dg);
+    o.nic=rect(h.nic,'blk',g);lab(h.nic,'网卡',g);
+    o.in=n=>n==='cpu'?at(h.cpu):({x:o.at[n].x,y:h[n].y+h[n].h-(L.mobile?13:15)});
   });
   // B 的「远端盘」（第 3 步）
   {const h=L.B,g=grp('3',hosts);el('rect',{x:h.disk.x,y:h.disk.y,width:h.disk.w,height:h.disk.h,rx:12,class:'ghost sage'},g);
-   tx(h.disk.x+h.disk.w/2,h.disk.y+h.disk.h/2,'远端盘',f.lbl,'sage-t','middle',g);
-   tx(h.cap.x,h.cap.y,L.mobile?'看起来像本地盘':'在 B 看来：本地盘',f.st,'sage-t st','end',g);}
+   tx(h.disk.x+h.disk.w/2,h.disk.y+h.disk.h/2,'命名空间',f.note,'sage-t','middle',g);
+   tx(h.cap.x,h.cap.y,'远端命名空间',f.st,'sage-t st','end',g);}
   // 网络与交换机
   const net=grp(null,null,'1');
   E.netA=wire(L.net.A.slice(0,-1),'wire',net);E.netB=wire(L.net.B.slice(0,-1),'wire',net);
@@ -212,9 +214,13 @@ build(){
   rect(L.box,'frame',boxG,22);
   tx(L.boxTitle.x,L.boxTitle.y,'存储箱',f.ttl,'ttl','start',boxG);
   E.fwd=rect(L.fwd,'blk',boxG);
-  if(L.mobile){tx(L.fwd.x+12,L.fwd.y+22,'转发',f.lbl,'lbl','start',boxG);E.fbar=bar(L.fwd.x+12,L.fwd.y+40,50,10,boxG,'sage')}
-  else{tx(L.fwd.x+L.fwd.w/2,L.fwd.y+18,'转发',f.lbl,'lbl','middle',boxG);E.fbar=bar(L.fwd.x+14,L.fwd.y+L.fwd.h-22,L.fwd.w-28,12,boxG,'sage')}
-  // 转发 → 每块盘
+  const target=C(L.fwd);
+  tx(target.x,L.fwd.y+15,'NVMe-oF',f.lbl,'lbl','middle',boxG);
+  tx(target.x,L.fwd.y+37,'目标控制器',f.note,'lbl','middle',boxG);
+  E.fbar=bar(L.fwd.x+14,L.fwd.y+L.fwd.h-16,L.fwd.w-28,7,boxG,'sage');
+  tx(L.fwdNote.x,L.fwdNote.y,'命名空间',f.note,'sage-t st',L.fwdNote.a,boxG);
+  tx(L.mobile?226:863,L.mobile?548:56,'后端 I/O',f.note,'ink3-t','middle',boxG);
+  // 目标控制器终止 fabric 命令，并访问后端介质。
   E.dpt=[];
   if(!L.mobile){
     const tx0=L.trunk.x,ys=L.drv.map(d=>d.y+d.h/2);
@@ -231,7 +237,6 @@ build(){
     if(L.mobile)tx(d.x+d.w/2,d.y+20,'盘 '+(i+1),f.lbl,'lbl','middle',boxG);
     else tx(d.x+16,d.y+d.h/2,'盘 '+(i+1),f.lbl,'lbl','start',boxG)});
   // 注释
-  E.fwdNote=tx(L.fwdNote.x,L.fwdNote.y,'只转发',f.st,'sage-t st',L.fwdNote.a,grp('5'));
   const n5=grp('5');
   if(L.boxNote.length===1)tx(L.boxNote[0].x,L.boxNote[0].y,'文件系统、数据保护在服务器上',f.note,'ink3-t',L.boxNote[0].a,n5);
   else{tx(L.boxNote[0].x,L.boxNote[0].y,'文件系统、数据保护',f.note,'ink3-t','start',n5);tx(L.boxNote[1].x,L.boxNote[1].y,'在服务器上',f.note,'ink3-t','start',n5)}
@@ -244,16 +249,18 @@ build(){
   // 路线
   const R={};E.R=R;
   ['A','B'].forEach(k=>{const o=E.h[k],h=L[k];
-    const down=n=>n==='cpu'?[o.at.cpu,{x:o.at.cpu.x,y:h.bus}]:[o.in(n),o.at[n],{x:o.at[n].x,y:h.bus}];
-    const bus=(a,b)=>cat(down(a),rev(down(b)));
+    const down=n=>[o.in(n),o.at[n],{x:o.at[n].x,y:h.root.y},{x:o.at[n].x,y:h.root.y+8}];
+    const hostPath=(a,b)=>cat(down(a),rev(down(b)));
     const toSw=cat([o.in('nic')],L.net[k]);
-    R[k]={down,bus,toSw,memToSw:cat(bus('mem','nic'),toSw)};
+    R[k]={hostPath,toSw,memToSw:cat(hostPath('mem','nic'),toSw)};
   });
   R.swToDrv=i=>cat(L.swToFwd,E.dpt[i]);
 },
 reset(){
   ['A','B'].forEach(k=>{const o=E.h[k];o.g.classList.remove('down');o.cpu.setAttribute('class','blk');
-    Object.values(o.stub).forEach(l=>l.setAttribute('class','ln wire'));Object.values(o.bus).forEach(l=>l.setAttribute('class','ln wire'))});
+    for (const [n,l] of Object.entries(o.stub)) l.setAttribute('class',n==='cpu'?'ln cmdl':'ln wire');
+    o.memText.textContent=T('内存');o.memText.setAttribute('y',L[k].mem.y+(L.mobile?21:24));
+    o.memFlag.textContent='';});
   E.stA.textContent='';E.stB.textContent='';E.swType.textContent='';
   E.fwd.setAttribute('class','blk');setBar(E.fbar,0);
 },
@@ -268,7 +275,7 @@ function cpuBox(k,c){E.h[k].cpu.setAttribute('class','blk'+(c?' '+c:''))}
 function barSync(){setBar(E.h.A.bar,lv('A'));setBar(E.h.B.bar,lv('B'))}
 const wi=(l,c)=>l.setAttribute('class','ln wire'+(c?' '+c:''));
 /* 1：本机 CPU → 盘，盘 → 内存 */
-SC.modes[0]={enter(){const o=E.h.A,R=E.R.A;S.v.cmd=dot();S.v.d=pk();S.v.c1=R.bus('cpu','disk');S.v.c2=R.bus('disk','mem')},
+SC.modes[0]={enter(){const o=E.h.A,R=E.R.A;S.v.cmd=dot();S.v.d=pk();S.v.c1=R.hostPath('cpu','disk');S.v.c2=R.hostPath('disk','mem')},
   pre(){const T=4.4,t=S.t%T,v=S.v;
     v.cmd.a=t>0.2&&t<1.15?1:0;mv(v.cmd,v.c1,t,0.25,1.1);
     v.d.a=fade(t,1.15,1.3)*(1-fade(t,3.7,4.1));mv(v.d,v.c2,t,1.3,2.5);
@@ -277,8 +284,8 @@ SC.modes[0]={enter(){const o=E.h.A,R=E.R.A;S.v.cmd=dot();S.v.d=pk();S.v.c1=R.bus
 /* 2：B 要数据，A 的 CPU 转交 */
 SC.modes[1]={enter(){const RA=E.R.A,RB=E.R.B,v=S.v;
     v.req=dot();v.cmd=dot();v.o=pk();v.c=pk();
-    v.p1=cat(RB.bus('cpu','nic'),RB.toSw,rev(RA.toSw),RA.bus('nic','cpu'));
-    v.p2=RA.bus('cpu','disk');v.p3=RA.bus('disk','mem');v.p4=cat(RA.memToSw,rev(RB.memToSw))},
+    v.p1=cat(RB.hostPath('cpu','nic'),RB.toSw,rev(RA.toSw),RA.hostPath('nic','cpu'));
+    v.p2=RA.hostPath('cpu','disk');v.p3=RA.hostPath('disk','mem');v.p4=cat(RA.memToSw,rev(RB.memToSw))},
   pre(){const T=8.6,t=S.t%T,v=S.v;
     v.req.a=t>0.2&&t<2.1?1:0;mv(v.req,v.p1,t,0.25,2.05);
     v.cmd.a=t>2.2&&t<2.95?1:0;mv(v.cmd,v.p2,t,2.25,2.9);
@@ -292,11 +299,13 @@ SC.modes[1]={enter(){const RA=E.R.A,RB=E.R.B,v=S.v;
   render:barSync};
 /* 3：存储箱，B 直接发 NVMe 命令 */
 SC.modes[2]={enter(){const RB=E.R.B,v=S.v;v.cmd=dot();v.d=pk();
-    v.p1=cat(RB.bus('cpu','nic'),RB.toSw,E.R.swToDrv(1));
-    v.p2=cat(rev(E.R.swToDrv(1)),rev(RB.toSw),RB.bus('nic','mem'))},
+    v.back=dot();v.back.el.classList.add('backend');
+    v.p1=cat(RB.hostPath('cpu','nic'),RB.toSw,L.swToFwd);
+    v.p2=cat(rev(E.R.swToDrv(1)),rev(RB.toSw),RB.hostPath('nic','mem'))},
   pre(){const T=6.4,t=S.t%T,v=S.v;
-    v.cmd.a=t>0.2&&t<2.15?1:0;mv(v.cmd,v.p1,t,0.25,2.1);
-    v.d.a=fade(t,2.2,2.35)*(1-fade(t,5.6,6.0));mv(v.d,v.p2,t,2.3,4.5);
+    v.cmd.a=t>0.2&&t<1.85?1:0;mv(v.cmd,v.p1,t,0.25,1.85);
+    v.back.a=t>=1.9&&t<2.43?1:0;mv(v.back,E.dpt[1],t,1.9,2.43);
+    v.d.a=fade(t,2.48,2.63)*(1-fade(t,5.6,6.0));mv(v.d,v.p2,t,2.48,4.75);
     const b=t>0.2&&t<0.9;S.tg.B=b?0.12:0;cpuBox('B',b?'ask':'');
     setSt('B',b?'CPU：发 NVMe 命令':'',b?'slate-t':'');setSt('A','CPU：不参与','sage-t');cpuBox('A','ok')},
   render:barSync};
@@ -304,13 +313,17 @@ SC.modes[2]={enter(){const RB=E.R.B,v=S.v;v.cmd=dot();v.d=pk();
 SC.modes[3]={enter(){const RB=E.R.B,v=S.v;v.cyc=-1;v.k=0;
     E.swType.textContent=T(mode==='rdma'?'IB / RoCE':'普通以太网');
     const o=E.h.B;
-    if(mode==='rdma'){[o.stub.nic,o.stub.mem,o.bus.md,o.bus.dn].forEach(l=>wi(l,'ok'))}
-    else{[o.stub.nic,o.stub.mem,o.stub.cpu,o.bus.cm,o.bus.md,o.bus.dn].forEach(l=>wi(l,'on'))}
-    v.cpuSt=P(o.at.cpu.x,o.at.cpu.y+(L.mobile?12:14),'CPU');
-    v.route=i=>{const head=cat(rev(E.R.swToDrv(i)),rev(RB.toSw));
-      if(mode==='rdma')return cat(head,RB.bus('nic','mem'));
-      const by=L.B.bus;return cat(head,[o.at.nic,{x:o.at.nic.x,y:by},{x:o.at.cpu.x,y:by},v.cpuSt,{x:o.at.cpu.x,y:by},{x:o.at.mem.x,y:by},o.at.mem,o.in('mem')])};
-    v.cmdP=cat(RB.bus('cpu','nic'),RB.toSw,E.R.swToDrv(0));
+    const rdma=mode==='rdma';
+    [o.stub.nic,o.stub.mem].forEach(l=>wi(l,rdma?'ok':'on'));
+    o.memText.textContent=T('I/O 缓冲区');
+    if(rdma){o.memText.setAttribute('y',L.B.mem.y+15);o.memFlag.textContent=T('已注册');}
+    const memPath=RB.hostPath('nic','mem');
+    if (!rdma) {
+      const port=memPath.findLast(p=>p.x===o.at.nic.x);
+      port.st='CPU';
+    }
+    v.route=i=>cat(rev(E.R.swToDrv(i)),rev(RB.toSw),memPath);
+    v.cmdP=cat(RB.hostPath('cpu','nic'),RB.toSw,L.swToFwd);
     S.tau.up=0.7;S.tau.dn=0.9},
   pre(dt){const v=S.v,T=9,c=Math.floor(S.t/T),t=S.t-c*T;
     if(c!==v.cyc){S.pk.forEach(p=>kill(p));S.pk=[];S.st={};v.cyc=c;v.spawnT=1.0;v.t0=S.t;v.cmd=dot();
@@ -324,20 +337,25 @@ SC.modes[3]={enter(){const RB=E.R.B,v=S.v;v.cyc=-1;v.k=0;
     v.f=t>8.6?Math.max(0,(9-t)/0.4):t<0.3?t/0.3:1},
   render(){const v=S.v;E.pk.style.opacity=v.f==null?1:v.f;barSync();
     if(mode==='rdma'){cpuBox('B',lv('B')>0.06?'ask':'ok');setSt('B',v.word,v.word==='CPU：只发起'?'slate-t':'sage-t')}
-    else{const x=lv('B'),busy=S.st.CPU&&S.st.CPU.cur;cpuBox('B',x>0.42||busy?'on':'');setSt('B','CPU：复制数据 · '+loadWord(x),x>0.42?'rose-t':'ink3-t')}}};
-/* 5：存储箱只转发 */
+    else{const x=lv('B'),busy=S.st.CPU&&S.st.CPU.cur;cpuBox('B',x>0.42||busy?'on':'');setSt('B','软件栈示例 · '+loadWord(x),x>0.42?'rose-t':'ink3-t')}}};
+/* 5：目标控制器提供命名空间 */
 SC.modes[4]={enter(){S.v.next=0.2;S.v.k=0;S.v.j=[]},
   pre(dt){const v=S.v;v.next-=dt;
     if(v.next<=0){v.next+=0.9;const k=v.k%2?'A':'B',i=(v.k*3+1)%4,R=E.R[k];v.k++;
-      const cmd=dot(),d=pk();v.j.push({t0:S.t,cmd,d,p1:cat(R.bus('cpu','nic'),R.toSw,E.R.swToDrv(i)),p2:cat(rev(E.R.swToDrv(i)),rev(R.toSw),R.bus('nic','mem'))})}
-    v.j=v.j.filter(j=>{const t=S.t-j.t0;j.cmd.a=t<1.5?1:0;mv(j.cmd,j.p1,t,0,1.5);
-      j.d.a=t<1.55?0:1-fade(t,3.6,3.9);mv(j.d,j.p2,t,1.55,3.5);if(t>3.95){kill(j.cmd);kill(j.d);return false}return true});
+      const cmd=dot(),back=dot(),d=pk();
+      back.el.classList.add('backend');
+      v.j.push({t0:S.t,cmd,back,d,i,p1:cat(R.hostPath('cpu','nic'),R.toSw,L.swToFwd),
+        p2:cat(rev(E.R.swToDrv(i)),rev(R.toSw),R.hostPath('nic','mem'))})}
+    v.j=v.j.filter(j=>{const t=S.t-j.t0;j.cmd.a=t<1.17?1:0;mv(j.cmd,j.p1,t,0,1.17);
+      j.back.a=t>=1.2&&t<1.55?1:0;mv(j.back,E.dpt[j.i],t,1.2,1.55);
+      j.d.a=t<1.6?0:1-fade(t,3.6,3.9);mv(j.d,j.p2,t,1.6,3.5);
+      if(t>3.95){kill(j.cmd);kill(j.back);kill(j.d);return false}return true});
     const inFwd=S.pk.some(p=>p.a>0.5&&Math.abs(p.x-(L.fwd.x+L.fwd.w/2))<L.fwd.w/2&&Math.abs(p.y-(L.fwd.y+L.fwd.h/2))<L.fwd.h/2);
     S.tg.F=inFwd?0.12:0.05},
   render(){setBar(E.fbar,lv('F'));E.fwd.setAttribute('class','blk ok');barSync()}};
 /* 6：A 停机，B 照样读 A 写的数据 */
 SC.modes[5]={enter(){const RA=E.R.A,RB=E.R.B,v=S.v;v.w=pk();v.cmd=dot();v.c=pk();
-    v.p1=cat(RA.memToSw,E.R.swToDrv(1));v.p2=cat(RB.bus('cpu','nic'),RB.toSw,E.R.swToDrv(1));v.p3=cat(rev(E.R.swToDrv(1)),rev(RB.toSw),RB.bus('nic','mem'))},
+    v.p1=cat(RA.memToSw,E.R.swToDrv(1));v.p2=cat(RB.hostPath('cpu','nic'),RB.toSw,E.R.swToDrv(1));v.p3=cat(rev(E.R.swToDrv(1)),rev(RB.toSw),RB.hostPath('nic','mem'))},
   pre(){const T=9.4,t=S.t%T,v=S.v,f=t>8.9?Math.max(0,(9.4-t)/0.4):t<0.3?t/0.3:1;
     v.w.a=f;mv(v.w,v.p1,t,0.4,2.4);
     const down=t>2.9;E.h.A.g.classList.toggle('down',down);

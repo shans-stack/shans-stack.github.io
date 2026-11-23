@@ -7,7 +7,7 @@
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
    样式在 assets/anim/v-cnode.css，全部限定在 .ssa-v-cnode 容器之内。 */
 (function(){
-var EN={"NFS 客户端": "NFS client", "SMB 客户端": "SMB client", "S3 客户端": "S3 client", "NVMe-oF 网络": "NVMe-oF network", "协议": "Protocols", "纠删码": "EC", "数据缩减": "Reduce", "启动盘": "Boot drive only", "没有数据盘": "", "不在内存攒写入": "No RAM write buffer", "不缓存": "No cache", "地址 1": "IP 1", "地址 2": "IP 2", "地址 3": "IP 3", "协议、纠删码、数据缩减都在 CNode 上算": "Protocols, erasure coding and data reduction all run on the CNode", "数据都在 DBox 的盘上": "All data lives on the DBox drives", "两块 SCM 都写好，才回确认": "Both SCM drives written, then the ACK", "第 1 次读": "1st read", "第 2 次读：照样去盘上取": "2nd read: still goes to the drive", "三台 CNode 读到同一个文件": "Three CNodes read the same file", "SMB 客户端连着地址 2": "SMB client is on IP 2", "第 2 台坏了，地址 2 漂走": "CNode 2 fails; IP 2 moves", "地址 2 由第 3 台接手": "CNode 3 takes over IP 2", "VAST CNode：处理全部协议与存储逻辑，自己不存数据，写入落到两块 SCM 盘才确认，任何一台都能接任何请求": "VAST CNode: runs all protocol and storage logic, keeps no data, acknowledges a write only once it is on two SCM drives, and any CNode can take any request"};
+var EN={"Classic 双镜像示例：数据与元数据持久化后确认":"Classic mirroring: persist data and metadata before ACK","写入持久化":"Durable write","从共享 SCM 恢复 SMB 会话":"Restore SMB state from shared SCM","NFS 客户端": "NFS client", "SMB 客户端": "SMB client", "S3 客户端": "S3 client", "NVMe-oF 网络": "NVMe-oF network", "协议": "Protocols", "纠删码": "EC", "数据缩减": "Reduce", "启动盘": "Boot drive only", "没有数据盘": "", "不在内存攒写入": "No RAM write buffer", "不缓存": "No cache", "地址 1": "IP 1", "地址 2": "IP 2", "地址 3": "IP 3", "协议、纠删码、数据缩减都在 CNode 上算": "Protocols, erasure coding and data reduction all run on the CNode", "数据都在 DBox 的盘上": "All data lives on the DBox drives", "两块 SCM 都写好，才回确认": "Both SCM drives written, then the ACK", "第 1 次读": "1st read", "第 2 次读：照样去盘上取": "2nd read: still goes to the drive", "三台 CNode 读到同一个文件": "Three CNodes read the same file", "SMB 客户端连着地址 2": "SMB client is on IP 2", "第 2 台坏了，地址 2 漂走": "CNode 2 fails; IP 2 moves", "地址 2 由第 3 台接手": "CNode 3 takes over IP 2", "VAST CNode：处理全部协议与存储逻辑，自己不存数据，写入落到两块 SCM 盘才确认，任何一台都能接任何请求": "VAST CNode: runs all protocol and storage logic, keeps no data, acknowledges a write only once it is on two SCM drives, and any CNode can take any request"};
 var ENM={"启动盘": "Boot drive", "没有数据盘": "No data drive", "不在内存攒写入": "No RAM buffer", "协议、纠删码、数据缩减都在 CNode 上算": "Protocols, EC and reduction run on CNodes"};
 var ARIA="VAST CNode：处理全部协议与存储逻辑，自己不存数据，写入落到两块 SCM 盘才确认，任何一台都能接任何请求";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
@@ -161,7 +161,7 @@ SCENE.modes[1]={enter(){cap('数据都在 DBox 的盘上','slate-t');chips([['�
   E.drs.forEach((a,bb)=>a.forEach((x,dd)=>x.classList.toggle('lit',bb===b&&dd===d&&u<0.9)));
   E['clB'+i].classList.toggle('ok',p>1)}};
 /* 第 3 步：写入落到两块 SCM，才确认 */
-SCENE.modes[2]={enter(){cap('两块 SCM 都写好，才回确认','sage-t');chips([['不在内存攒写入']]);S.v.b=pk();S.v.c=[pk(),pk()];S.v.a=[dot('ok'),dot('ok'),dot('ok')]},
+SCENE.modes[2]={enter(){cap('Classic 双镜像示例：数据与元数据持久化后确认','sage-t');chips([['写入持久化']]);S.v.b=pk();S.v.c=[pk(),pk()];S.v.a=[dot('ok'),dot('ok'),dot('ok')]},
  frame(t){const r0=E.toCN(1,1),d0=dur(r0)*1.2,r=[E.toDr(1,0,0),E.toDr(1,1,1)],d1=Math.max(dur(r[0]),dur(r[1]))*1.2;
   const t1=0.2+d0+0.35,t2=t1+d1,t3=t2+0.5,t4=t3+d1*0.8,t5=t4+0.2,per=t5+d0+1.6,u=t%per;
   if(u<0.2+d0)run(S.v.b,r0,u,0.2,d0,0);else put(S.v.b,E.core(E.cn[1]),u<t1?1:Math.max(0,1-(u-t1)/0.25));
@@ -183,20 +183,22 @@ SCENE.modes[4]={enter(){cap('三台 CNode 读到同一个文件','sage-t');chips
    const o=S.v.b[j],R=E.cn[k];E.cnB[k].classList.toggle('on',o.a>0.5&&o.x>=R.x&&o.x<=R.x+R.w&&o.y>=R.y&&o.y<=R.y+R.h)});
   E.drs[1][3].classList.toggle('w',u>2.6&&u<per-0.4)}};
 /* 第 6 步：坏了一台，地址漂走 */
-SCENE.modes[5]={enter(){S.v.cs=chips(k=>[['地址 '+(k+1)]]);S.v.b=pk();
+SCENE.modes[5]={enter(){S.v.cs=chips(k=>[['地址 '+(k+1)]]);S.v.b=pk();S.v.state=dot('ok');
   const c=S.v.cs[1][0],g=el('g',{},E.tagG);el('rect',{x:-c.w/2,y:-c.h/2,width:c.w,height:c.h,rx:7,class:'chip tag'},g);tx(0,0,'地址 2',L.f.chip,'lbl','middle',g);S.v.tag=g;
   const c3=S.v.cs[2][0],src=P(c.x+c.w/2,c.y+c.h/2),dst=L.mobile?P(c3.x+c3.w/2,c3.y+c3.h+8+c3.h/2):P(c3.x+c3.w+8+c.w/2,c3.y+c3.h/2);
   S.v.tp=[src,C(E.cn[1]),E.inPt(E.cn[1]),E.busPt(E.cn[1]),E.busPt(E.cn[2]),E.inPt(E.cn[2]),C(E.cn[2]),dst]},
- frame(t){const per=9.4,u=t%per,dead=u>1.9,moved=u>2.4,ff=u>8.8?Math.max(0,(per-u)/0.6):u<0.3?u/0.3:1;
+ frame(t){const per=11.6,u=t%per,dead=u>1.9,moved=u>2.4,ff=u>11?Math.max(0,(per-u)/0.6):u<0.3?u/0.3:1;
   E.cnB[1].classList.toggle('dead',dead);E.cnT[1].style.opacity=dead?0.35:1;E.x.style.opacity=dead?ff:0;
   E.cnIn[1].classList.toggle('dead',dead);E.cnOut[1].classList.toggle('dead',dead);
   const c=S.v.cs[1][0];c.r.style.opacity=moved?0:1;c.t.style.opacity=moved?0:1;
   const tp=S.v.tp,q=u<2.4?tp[0]:at(tp,sm((u-2.4)/1.8));S.v.tag.setAttribute('transform',`translate(${q.x} ${q.y})`);S.v.tag.style.opacity=moved?ff:0;
-  cap(u<1.9?'SMB 客户端连着地址 2':u<4.2?'第 2 台坏了，地址 2 漂走':'地址 2 由第 3 台接手',u<1.9?'slate-t':u<4.2?'rose-t':'sage-t');
+  cap(u<1.9?'SMB 客户端连着地址 2':u<4.2?'第 2 台坏了，地址 2 漂走':u<6.4?'从共享 SCM 恢复 SMB 会话':'地址 2 由第 3 台接手',u<1.9?'slate-t':u<4.2?'rose-t':'sage-t');
   const r=u<4?cat(E.toCN(1,1),E.toDr(1,0,3)):cat(E.toCN(1,2),E.toDr(2,0,3));
-  if(u<4)run(S.v.b,E.toCN(1,1),u,0.1,dur(E.toCN(1,1)),0.4);else run(S.v.b,r,u,4.5,Math.min(dur(r),2.6));
+  if(u<4)run(S.v.b,E.toCN(1,1),u,0.1,dur(E.toCN(1,1)),0.4);else run(S.v.b,r,u,6.6,Math.min(dur(r),2.6));
+  run(S.v.state,rev(E.toDr(2,0,0)),u,4.25,1.9,0.35);
+  E.drs[0][0].classList.toggle('lit',u>=4.25&&u<6.4);
   S.v.b.el.style.opacity*=ff;
-  E.drs[0][3].classList.toggle('w',u>4.5+Math.min(dur(r),2.6)&&u<8.8)}};
+  E.drs[0][3].classList.toggle('w',u>6.6+Math.min(dur(r),2.6)&&u<11)}};
 /* ---------- 引擎 ---------- */
 function applyVis(){
   svg.setAttribute('data-step',step+1);

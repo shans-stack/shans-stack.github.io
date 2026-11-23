@@ -7,7 +7,7 @@
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
    样式在 assets/anim/v-ncp.css，全部限定在 .ssa-v-ncp 容器之内。 */
 (function(){
-var EN={"扩容": "Expand", "VAST 的 NVIDIA NCP 高性能存储参考设计：NVL72 机柜、SN5600 / SN5610 叶交换机、CNode 与 DBox，按 GPU 规模配带宽，三个 VLAN，多租户网络隔离，NVIDIA 验证": "VAST's NVIDIA NCP high-performance storage reference design: NVL72 racks, SN5600 / SN5610 leaf switches, CNodes and DBoxes, bandwidth by GPU count, three VLANs, multi-tenant network isolation and NVIDIA validation", "GPU 机柜": "GPU racks", "NVL72": "NVL72", "SN5600 / SN5610 叶交换机": "SN5600 / SN5610 leaf switches", "CNode": "CNode", "DBox": "DBox", "新设备": "New node", "读带宽": "Read", "写带宽": "Write", "GPU 数": "GPUs", "读 ": "Read ", "写 ": "Write ", "写带宽是读带宽的一半": "Write is half of read", "6 台 CNode、4 台 DBox，占叶交换机 14 个 400GbE 端口": "6 CNodes and 4 DBoxes use 14 leaf-switch 400GbE ports", "6 台 CNode、4 台 DBox": "6 CNodes, 4 DBoxes", "CNode 占 6 个端口（12 条 200GbE），DBox 占 8 个（16 条 200GbE）": "CNodes use 6 ports (12 × 200GbE); DBoxes use 8 (16 × 200GbE)", "客户端访问、集群内部、发现与扩容各走一个 VLAN": "Client access, internal traffic, and discovery and expansion each use their own VLAN", "三类流量，三个 VLAN": "Three kinds of traffic, three VLANs", "VLAN 号均为参考设计中的默认值": "VLAN numbers are the reference design's defaults", "VLAN 号为默认值": "Default VLAN numbers", "VLAN 100 · 客户端访问 VIP": "VLAN 100 · client VIPs", "VLAN 69 · CNode 到 DBox": "VLAN 69 · CNode to DBox", "VLAN 10 · 发现与扩容": "VLAN 10 · discovery, expansion", "租户 A · GPU 主机": "Tenant A · GPU hosts", "租户 B · GPU 主机": "Tenant B · GPU hosts", "集群": "Cluster", "密钥 A · 配额 · QoS": "Key A · quota · QoS", "密钥 B · 配额 · QoS": "Key B · quota · QoS", "VIP 池（共享）": "Shared VIP pool", "按来源 IP 放行": "Gated by source IP", "VIP 池 A": "VIP pool A", "VIP 池 B": "VIP pool B", "VLAN / VRF": "VLAN / VRF", "换成共享 VIP 池": "Switch to a shared pool", "共享 VIP 池": "shared VIP pool", "切换对比，当前 ": "Switch comparison, now showing ", "共享 VIP 池：按来源 IP 区分租户，适合大规模": "Shared VIP pool: tenants told apart by source IP, suited to large scale", "共享 VIP 池，按来源 IP 区分": "Shared pool, by source IP", "示意，不代表实测数字": "Schematic, not measured", "VAST 存储经叶交换机接入 NVL72 系统": "The leaf fabric connects VAST storage to NVL72 systems.", "叶交换机连接 NVL72 与 VAST 存储": "Leaf fabric connects NVL72 to storage", "表列各档的写带宽为读带宽的一半": "At each listed scale, write bandwidth is half of read.", "VAST NCP HPS 参考设计 · 表 1 · 2026 年 6 月": "VAST NCP HPS reference design · Table 1 · June 2026", "VAST NCP 参考设计 · 表 1 · 2026 年 6 月": "VAST NCP design · Table 1 · June 2026", "400GbE 端口 · CNode 6 · DBox 8": "400GbE ports · CNodes 6 · DBoxes 8", "专用 VIP 池可配合 VRF 或 VLAN 隔离": "Dedicated VIP pools can use VRF or VLAN isolation.", "专用 VIP 池 · VRF / VLAN 隔离": "Dedicated VIP pools · VRF / VLAN", "专用 VIP 池": "dedicated VIP pools", "换成专用 VIP 池": "Switch to dedicated pools", "验证项目：部件失效": "Validation: component failure", "验证项目：在线扩容": "Validation: online expansion", "NVIDIA 基准套件 · VAST 5.4": "NVIDIA benchmarks · VAST 5.4"};
+var EN={"CNode 按来源 IP 匹配租户，再访问对应视图":"CNode matches source IP to tenant, then accesses its view","CNode 按来源 IP 匹配租户":"CNode matches source IP to tenant","冗余叶交换网络":"Redundant leaf fabric","叶交换机 A":"Leaf A","叶交换机 B":"Leaf B","共享 VIP 池":"Shared VIP pool","CNode · 来源 IP 检查":"CNode · source IP","扩容": "Expand", "VAST 的 NVIDIA NCP 高性能存储参考设计：NVL72 机柜、SN5600 / SN5610 叶交换机、CNode 与 DBox，按 GPU 规模配带宽，三个 VLAN，多租户网络隔离，NVIDIA 验证": "VAST's NVIDIA NCP high-performance storage reference design: NVL72 racks, SN5600 / SN5610 leaf switches, CNodes and DBoxes, bandwidth by GPU count, three VLANs, multi-tenant network isolation and NVIDIA validation", "GPU 机柜": "GPU racks", "NVL72": "NVL72", "SN5600 / SN5610 叶交换机": "SN5600 / SN5610 leaf switches", "CNode": "CNode", "DBox": "DBox", "新设备": "New node", "读带宽": "Read", "写带宽": "Write", "GPU 数": "GPUs", "读 ": "Read ", "写 ": "Write ", "写带宽是读带宽的一半": "Write is half of read", "6 台 CNode、4 台 DBox，占叶交换机 14 个 400GbE 端口": "6 CNodes and 4 DBoxes use 14 leaf-switch 400GbE ports", "6 台 CNode、4 台 DBox": "6 CNodes, 4 DBoxes", "CNode 占 6 个端口（12 条 200GbE），DBox 占 8 个（16 条 200GbE）": "CNodes use 6 ports (12 × 200GbE); DBoxes use 8 (16 × 200GbE)", "客户端访问、集群内部、发现与扩容各走一个 VLAN": "Client access, internal traffic, and discovery and expansion each use their own VLAN", "三类流量，三个 VLAN": "Three kinds of traffic, three VLANs", "VLAN 号均为参考设计中的默认值": "VLAN numbers are the reference design's defaults", "VLAN 号为默认值": "Default VLAN numbers", "VLAN 100 · 客户端访问 VIP": "VLAN 100 · client VIPs", "VLAN 69 · CNode 到 DBox": "VLAN 69 · CNode to DBox", "VLAN 10 · 发现与扩容": "VLAN 10 · discovery, expansion", "租户 A · GPU 主机": "Tenant A · GPU hosts", "租户 B · GPU 主机": "Tenant B · GPU hosts", "集群": "Cluster", "密钥 A · 配额 · QoS": "Key A · quota · QoS", "密钥 B · 配额 · QoS": "Key B · quota · QoS", "VIP 池（共享）": "Shared VIP pool", "按来源 IP 放行": "Gated by source IP", "VIP 池 A": "VIP pool A", "VIP 池 B": "VIP pool B", "VLAN / VRF": "VLAN / VRF", "换成共享 VIP 池": "Switch to a shared pool", "共享 VIP 池": "shared VIP pool", "切换对比，当前 ": "Switch comparison, now showing ", "CNode 按来源 IP 匹配租户，再访问对应视图": "Shared VIP pool: tenants told apart by source IP, suited to large scale", "CNode 按来源 IP 匹配租户": "CNode matches source IP", "示意，不代表实测数字": "Schematic, not measured", "VAST 存储经叶交换机接入 NVL72 系统": "The leaf fabric connects VAST storage to NVL72 systems.", "叶交换机连接 NVL72 与 VAST 存储": "Leaf fabric connects NVL72 to storage", "表列各档的写带宽为读带宽的一半": "At each listed scale, write bandwidth is half of read.", "VAST NCP HPS 参考设计 · 表 1 · 2026 年 6 月": "VAST NCP HPS reference design · Table 1 · June 2026", "VAST NCP 参考设计 · 表 1 · 2026 年 6 月": "VAST NCP design · Table 1 · June 2026", "400GbE 端口 · CNode 6 · DBox 8": "400GbE ports · CNodes 6 · DBoxes 8", "专用 VIP 池可配合 VRF 或 VLAN 隔离": "Dedicated VIP pools can use VRF or VLAN isolation.", "专用 VIP 池 · VRF / VLAN 隔离": "Dedicated VIP pools · VRF / VLAN", "专用 VIP 池": "dedicated VIP pools", "换成专用 VIP 池": "Switch to dedicated pools", "验证项目：部件失效": "Validation: component failure", "验证项目：在线扩容": "Validation: online expansion", "NVIDIA 基准套件 · VAST 5.4": "NVIDIA benchmarks · VAST 5.4"};
 var ENM={"新设备": "Node", "SN5600 / SN5610 叶交换机": "SN5600 / SN5610 leaf", "VLAN 10 · 发现与扩容": "VLAN 10 · expansion", "按来源 IP 放行": "By source IP"};
 var ARIA="VAST 的 NVIDIA NCP 高性能存储参考设计：NVL72 机柜、SN5600 / SN5610 叶交换机、CNode 与 DBox，按 GPU 规模配带宽，三个 VLAN，多租户网络隔离，NVIDIA 验证";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
@@ -61,7 +61,7 @@ const SCENE={
     cap:{x:480,y:358},note:{x:480,y:383},
     B5:{x0:180,st:114,bw:28,base:290,hmax:196,lab:314,leg:{x:180,y:36},ax:{x:150,y:314}},
     C5:{tA:{x:40,y:60},tB:{x:40,y:236},tw:200,th:56,pS:{x:390,y:148},pA:{x:390,y:60},pB:{x:390,y:236},pw:180,ph:56,
-     cl:{x:660,y:24,w:280,h:290},fA:{x:690,y:66},fB:{x:690,y:206},fw:220,fh:70,tgl:{x:480,y:322}}};
+     cl:{x:354,y:24,w:586,h:290},fA:{x:690,y:66},fB:{x:690,y:206},fw:220,fh:70,tgl:{x:480,y:322}}};
   }
   return {W:480,H:470,mobile:true,f:{lbl:18,sm:18,cap:18},pw:18,ph:14,dr:6,sp:200,
    rowLbl:{x:32,y:14},rack:{w:120,y:28,h:44,gi:[0,2,4]},cn:{x0:23,w:64,st:74,y:110,h:40,lk:[20,44]},
@@ -69,7 +69,7 @@ const SCENE={
    cap:{x:240,y:432},note:{x:240,y:456},
    B5:{x0:46,st:64,bw:18,base:330,hmax:220,lab:352,leg:{x:24,y:30},ax:null},
    C5:{tA:{x:12,y:20},tB:{x:252,y:20},tw:216,th:52,pS:{x:150,y:130},pA:{x:12,y:130},pB:{x:252,y:130},pw:180,ph:56,
-    cl:{x:12,y:236,w:456,h:136},fA:{x:24,y:270},fB:{x:264,y:270},fw:192,fh:62,tgl:{x:240,y:396}}};
+    cl:{x:12,y:105,w:456,h:267},fA:{x:24,y:270},fB:{x:264,y:270},fw:192,fh:62,tgl:{x:240,y:396}}};
  },
  build(){
   const f=L.f;
@@ -95,6 +95,17 @@ const SCENE={
   E.db=[];for(let j=0;j<4;j++){const r={x:db.x0+j*db.st,y:db.y,w:db.w,h:db.h};
    const lk=db.lk.map(dx=>line(P(r.x+dx,sw.y+sw.h),P(r.x+dx,r.y),'',gLk));
    const b=box(r,gA,'box soft',8);tx(r.x+r.w/2,r.y+r.h/2,'DBox',f.sm,'lbl b7','middle',gA);E.db.push({r,b,lk})}
+  const leaf=grp('3',gA);
+  E.leafy=[sw.y+6,sw.y+sw.h-5];
+  E.leafy.forEach((y,i)=>{
+   line(P(sw.x+8,y),P(sw.x+sw.w-8,y),i?'thin vio':'thin',leaf);
+   E.cn.forEach(({r})=>line(P(r.x+cn.lk[i],sw.y),P(r.x+cn.lk[i],y),'thin',leaf));
+   E.db.forEach(({r})=>db.lk.slice(i*2,i*2+2).forEach(dx=>line(P(r.x+dx,sw.y+sw.h),P(r.x+dx,y),'thin',leaf)));
+   const x=sw.x+sw.w/2+(i?100:-100);
+   box({x:x-63,y:y-11,w:126,h:22},leaf,'box sw',5);
+   tx(x,y,i?'叶交换机 B':'叶交换机 A',f.sm,'ink2-t st','middle',leaf);
+  });
+  tx(L.W/2,sw.y-23,'冗余叶交换网络',f.sm,'ink2-t','middle',leaf);
   /* 新加入的设备位（第 4 步新设备，第 6 步新 DBox） */
   const nw={x:L.nw.x,y:db.y,w:L.nw.w,h:db.h};E.nw={r:nw,g:grp('4 6',gA)};
   E.nw.ln=line(P(nw.x+nw.w/2,sw.y+sw.h),P(nw.x+nw.w/2,nw.y),'',E.nw.g);E.nw.b=box(nw,E.nw.g,'box dash',8);E.nw.t=tx(nw.x+nw.w/2,nw.y+nw.h/2,'',f.sm,'ink2-t st','middle',E.nw.g);
@@ -114,11 +125,11 @@ const SCENE={
   const Q=L.C5,gC=grp('5');E.Q={};
   const bx=(p,w,h,t1,t2,c,g)=>{const r={x:p.x,y:p.y,w,h};const b=box(r,g,'box '+(c||''),10);const a=tx(r.x+r.w/2,r.y+r.h/2-(t2?10:0),t1,f.sm,'lbl b7','middle',g);const s=t2?tx(r.x+r.w/2,r.y+r.h/2+12,t2,f.sm-1,'ink3-t','middle',g):null;return {r,b,a,s}};
   E.Q.tA=bx(Q.tA,Q.tw,Q.th,'租户 A · GPU 主机','','tA',gC);E.Q.tB=bx(Q.tB,Q.tw,Q.th,'租户 B · GPU 主机','','tB',gC);
-  box(Q.cl,gC,'box soft',16);
+  E.Q.cluster=box(Q.cl,gC,'box soft',16);
   const ct=L.mobile?[Q.cl.x+14,Q.cl.y+Q.cl.h-16]:[Q.cl.x+16,Q.cl.y+24];tx(ct[0],ct[1],'集群',f.lbl,'lbl b7','start',gC);
   E.Q.fA=bx(Q.fA,Q.fw,Q.fh,'/tenant-a','密钥 A · 配额 · QoS','tA',gC);E.Q.fB=bx(Q.fB,Q.fw,Q.fh,'/tenant-b','密钥 B · 配额 · QoS','tB',gC);
   const gS=grp('5',gC),gT=grp('5',gC);E.Q.gS=gS;E.Q.gT=gT;
-  E.Q.pS=bx(Q.pS,Q.pw,Q.ph,'VIP 池（共享）','按来源 IP 放行','',gS);
+  E.Q.pS=bx(Q.pS,Q.pw,Q.ph,'CNode · 来源 IP 检查','共享 VIP 池','',gS);
   E.Q.pA=bx(Q.pA,Q.pw,Q.ph,'VIP 池 A','VLAN / VRF','tA',gT);E.Q.pB=bx(Q.pB,Q.pw,Q.ph,'VIP 池 B','VLAN / VRF','tB',gT);
   const R=o=>o.r,cy=o=>o.r.y+o.r.h/2,cx=o=>o.r.x+o.r.w/2;
   if(!L.mobile){const mx1=(Q.tA.x+Q.tw+Q.pS.x)/2,mx2=(Q.pS.x+Q.pw+Q.fA.x)/2,pS=E.Q.pS;
@@ -143,16 +154,16 @@ const SCENE={
   svg.querySelectorAll('.box').forEach(d=>d.classList.remove('on','ok','dead','hot','vio'));
   svg.querySelectorAll('.ln').forEach(d=>d.classList.remove('lit','dead','ok','vio','ochre'));
   E.cn.forEach(o=>o.x.style.opacity=0);E.nw.g.style.opacity='';E.nw.t.textContent='';
-  E.v1.textContent='';E.v2.textContent='';E.cap.textContent='';E.note.textContent='';setT(E.swT,'SN5600 / SN5610 叶交换机','ink2-t st');
+  E.v1.textContent='';E.v2.textContent='';E.cap.textContent='';E.note.textContent='';E.swT.style.opacity=1;setT(E.swT,'SN5600 / SN5610 叶交换机','ink2-t st');
  },
  modes:[]
 };
 function cap(s,c,sm){E.cap.textContent=T(L.mobile&&sm?sm:s);E.cap.setAttribute('class','st '+(c||'ink2-t'))}
 function note(s,sm){E.note.textContent=T(L.mobile&&sm?sm:s)}
 /* 路线：经交换机内部横向走 */
-function viaSw(x1,y1,x2,y2,up1,up2){const sy=E.swc;return [P(x1,y1),P(x1,sy),P(x2,sy),P(x2,y2)]}
-function gpuToCn(r,i,k){const R=E.rack[r],c=E.cn[i].r,x=c.x+L.cn.lk[k||0];return viaSw(R.cx,R.r.y+R.r.h,x,c.y+c.h)}
-function cnToDb(i,j,k,m){const c=E.cn[i].r,d=E.db[j].r;return viaSw(c.x+L.cn.lk[k||1],c.y+c.h,d.x+L.db.lk[m||0],d.y)}
+function viaSw(x1,y1,x2,y2,up1,up2){const sy=step===2?E.leafy[up1||0]:E.swc;return [P(x1,y1),P(x1,sy),P(x2,sy),P(x2,y2)]}
+function gpuToCn(r,i,k){const R=E.rack[r],c=E.cn[i].r,x=c.x+L.cn.lk[k||0];return viaSw(R.cx,R.r.y+R.r.h,x,c.y+c.h,k)}
+function cnToDb(i,j,k,m){const c=E.cn[i].r,d=E.db[j].r;return viaSw(c.x+L.cn.lk[k],c.y+c.h,d.x+L.db.lk[m||0],d.y,k)}
 /* 第 1 步：三层：GPU、存储网络、高性能存储 */
 SCENE.modes[0]={enter(){S.v.b=[0,1,2].map(()=>pk());cap('VAST 存储经叶交换机接入 NVL72 系统','slate-t','叶交换机连接 NVL72 与 VAST 存储')},
  frame(t){const per=3.2,u=t%per,lit=Math.floor(t/1.1)%3;
@@ -166,11 +177,11 @@ SCENE.modes[1]={enter(){cap('表列各档的写带宽为读带宽的一半','sla
   const y1=B5.base-o.hr-(L.mobile?40:44);E.v1.setAttribute('x',x);E.v1.setAttribute('y',y1);E.v2.setAttribute('x',x);E.v2.setAttribute('y',y1+20);
   E.v1.textContent=T('读 ')+o.r[1].toLocaleString('en-US')+' GB/s';E.v2.textContent=T('写 ')+o.r[2].toLocaleString('en-US')+' GB/s'}};
 /* 第 3 步：1,152 GPU 一档：6 台 CNode、4 台 DBox */
-SCENE.modes[2]={enter(){S.v.a=[0,1,2,3].map(()=>pk());S.v.b=[0,1,2,3].map(()=>pk('vio'));
-  cap('6 台 CNode、4 台 DBox，占叶交换机 14 个 400GbE 端口','slate-t','6 台 CNode、4 台 DBox');note('CNode 占 6 个端口（12 条 200GbE），DBox 占 8 个（16 条 200GbE）','400GbE 端口 · CNode 6 · DBox 8')},
+SCENE.modes[2]={enter(){E.swT.style.opacity=0;S.v.a=[0,1,2,3].map(()=>pk());S.v.b=[0,1,2,3].map(()=>pk('vio'));
+  cap('6 台 CNode、4 台 DBox，占叶交换机 14 个 400GbE 端口','slate-t','6 台 CNode、4 台 DBox');note('CNode 占 6 个端口（12 条 200GbE），DBox 占 8 个（16 条 200GbE）','6 × 400G → 12 × 200G · 8 × 400G → 16 × 200G')},
  frame(t){const per=3.6;E.cn.forEach(o=>o.lk.forEach(l=>l.classList.add('lit')));E.db.forEach(o=>o.lk.forEach(l=>l.classList.add('lit')));
-  S.v.a.forEach((o,j)=>{const r=gpuToCn(j%E.rack.length,[0,2,3,5][j],0);run(o,r,(t+j*0.9)%per,0,Math.min(dur(r),2.0),0.25)});
-  S.v.b.forEach((o,j)=>{const r=cnToDb([1,2,4,5][j],j,1,j%4);run(o,r,(t+0.45+j*0.9)%per,0,Math.min(dur(r),2.0),0.25)})}};
+  S.v.a.forEach((o,j)=>{const r=gpuToCn(j%E.rack.length,[0,2,3,5][j],j%2);run(o,r,(t+j*0.9)%per,0,Math.min(dur(r),2.0),0.25)});
+  S.v.b.forEach((o,j)=>{const r=cnToDb([1,2,4,5][j],j,j%2,Math.floor(j/2)+2*(j%2));run(o,r,(t+0.45+j*0.9)%per,0,Math.min(dur(r),2.0),0.25)})}};
 /* 第 4 步：一张网，三个 VLAN：交换机上依次标出当前这类流量走的 VLAN */
 SCENE.modes[3]={enter(){S.v.a=pk();S.v.b=pk('vio');S.v.n=pk('ochre');E.nw.t.textContent=T('新设备');
   cap('客户端访问、集群内部、发现与扩容各走一个 VLAN','slate-t','三类流量，三个 VLAN');note('VLAN 号均为参考设计中的默认值','VLAN 号为默认值')},
@@ -180,9 +191,12 @@ SCENE.modes[3]={enter(){S.v.a=pk();S.v.b=pk('vio');S.v.n=pk('ochre');E.nw.t.text
   E.nw.b.classList.toggle('on',k===2);
   setT(E.swT,['VLAN 100 · 客户端访问 VIP','VLAN 69 · CNode 到 DBox','VLAN 10 · 发现与扩容'][k],'st '+['slate-t','violet-t','ochre-t'][k])}};
 /* 第 5 步：多租户 */
-SCENE.modes[4]={enter(){const sh=SCENE.toggles[0].state==='shared';S.v.sh=sh;E.Q.gS.classList.toggle('hid',!sh);E.Q.gT.classList.toggle('hid',sh);
+SCENE.modes[4]={enter(){const sh=SCENE.toggles[0].state==='shared';S.v.sh=sh;
+  const cl=E.Q.cluster;
+  cl.setAttribute(L.mobile?'y':'x',sh?(L.mobile?105:354):(L.mobile?236:660));
+  cl.setAttribute(L.mobile?'height':'width',sh?(L.mobile?267:586):(L.mobile?136:280));E.Q.gS.classList.toggle('hid',!sh);E.Q.gT.classList.toggle('hid',sh);
   S.v.a=pk();S.v.b=pk('ochre');
-  cap(sh?'共享 VIP 池：按来源 IP 区分租户，适合大规模':'专用 VIP 池可配合 VRF 或 VLAN 隔离','slate-t',sh?'共享 VIP 池，按来源 IP 区分':'专用 VIP 池 · VRF / VLAN 隔离')},
+  cap(sh?'CNode 按来源 IP 匹配租户，再访问对应视图':'专用 VIP 池可配合 VRF 或 VLAN 隔离','slate-t',sh?'CNode 按来源 IP 匹配租户':'专用 VIP 池 · VRF / VLAN 隔离')},
  frame(t){const per=3.2,u=t%per,rA=S.v.sh?E.Q.sA:E.Q.uA,rB=S.v.sh?E.Q.sB:E.Q.uB;
   const pa=run(S.v.a,rA,u,0.1,Math.min(dur(rA),2.2),0.25),pb=run(S.v.b,rB,(t+1.6)%per,0,Math.min(dur(rB),2.2),0.25);
   E.Q.fA.b.classList.toggle('on',pa>1);E.Q.fB.b.classList.toggle('on',pb>1)}};

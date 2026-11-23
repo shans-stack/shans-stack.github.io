@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/f-mooncake.css?v=c7ea53a9">
+<link rel="stylesheet" href="../../assets/anim/f-mooncake.css?v=7c68d2f0">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/f-mooncake.js?v=7c6ac498"></script>
+<script src="../../assets/anim/f-mooncake.js?v=3c85e0af"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "f-mooncake",
@@ -126,10 +126,10 @@ window.SS_TOPIC_CFG={
       ],
       "b": [
         [
-          "<p>论文把可复用的前缀保存在分布式缓存池。对示例请求，预填充节点先取得前缀键值，再补齐未命中的输入。论文描述的传输路径可按模型层流水交接，部分传输与预填充计算重叠，解码端利用收到的键值继续生成。</p>"
+          "<p>论文把可复用的前缀保存在分布式缓存池。对示例请求，预填充节点先取得前缀键值，再补齐未命中的输入。预填充节点可以按模型层交接已复用的前缀 KV 和新算出的 KV。先完成的层可在后续层补算时传输。解码节点取得该请求所需的完整 KV 后继续生成。</p>"
         ],
         [
-          "<p>The paper keeps reusable prefixes in a distributed cache pool. For the illustrated request, prefill obtains the prefix KV data and computes the uncached input. The paper’s transfer path can pipeline the handoff by model layer, overlapping some transfer with prefill computation. The decode side continues generation using the received KV data.</p>"
+          "<p>The paper keeps reusable prefixes in a distributed cache pool. For the illustrated request, prefill obtains the prefix KV data and computes the uncached input. The prefill node can hand off reused prefix KV and newly computed KV by model layer. A completed layer can transfer while later layers are still computing. The decode node continues generation after receiving the full KV needed for the request.</p>"
         ]
       ]
     },
@@ -187,6 +187,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

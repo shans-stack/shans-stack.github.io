@@ -58,15 +58,15 @@
       if (sub) label([p[0], p[1]+19], sub, {kind: 'note'});
     }
 
-    function wire(points, tone = 'neutral', dashed = false) {
+    function wire(points, tone = 'neutral', dashed = false, layer = 1) {
       const d = points.map(([x,y], i) => (i ? 'L' : 'M') + x + ' ' + y).join(' ');
       return element('path', {d, class: prefix + '-wire ' + prefix + '-' + tone,
-        'stroke-dasharray': dashed ? '5 6' : 'none'}, 1);
+        'stroke-dasharray': dashed ? '5 6' : 'none'}, layer);
     }
 
-    function send(path, start, end, tone = 'moving', reverse = false) {
+    function send(path, start, end, tone = 'moving', reverse = false, layer = 2) {
       const length = path.getTotalLength();
-      const chip = box([0, 0], 16, 11, tone, 2);
+      const chip = box([0, 0], 16, 11, tone, layer);
       tracks.push(p => {
         const fraction = (p-start)/(end-start);
         if (fraction <= 0 || fraction >= 1) {
@@ -143,9 +143,13 @@
       }
       [1,2,0,3].forEach(i => {
         const p = peers[i], active = i===0 || i===3;
-        const route = wire([p,mobile?[p[0],sw[1]]:[sw[0],p[1]],sw],active?'good':'neutral');
-        if (i===0) send(route,.09,.47);
-        if (i===3) send(route,.49,.88,'moving',true);
+        const top = i < 2;
+        const left = i % 2 === 0;
+        const port = [sw[0] + (left ? -40 : 40), sw[1] + (top ? -30 : 30)];
+        const bend = [port[0], (p[1] + port[1]) / 2];
+        const route = wire([p, [p[0], bend[1]], bend, port], active ? 'good' : 'neutral');
+        if (i===0) send(route,.09,.43);
+        if (i===3) send(route,.54,.88,'moving',true);
       });
       peers.forEach((p,i) => {
         node(p,['GPU A','GPU B','GPU C','GPU D'][i],{
@@ -155,7 +159,14 @@
         if (i===0) box([p[0],p[1]+43],23,12,'data');
         if (i===3) showAfter(box([p[0],p[1]+43],23,12,'moving'),.84);
       });
-      node(sw,'NVSwitch',{w:145,kind:'active',sub:"转发"});
+      node(sw,'NVSwitch',{w:145,kind:'active'});
+      [[-40,-30],[40,-30],[-40,30],[40,30]].forEach(([x,y],i) => {
+        box([sw[0]+x,sw[1]+y],9,6,i===0||i===3?'moving':'data',3);
+      });
+      const inside = wire([[sw[0] - 40, sw[1] - 30], [sw[0] - 40, sw[1] - 22],
+        [sw[0] - 59, sw[1] - 22], [sw[0] - 59, sw[1] + 23],
+        [sw[0] + 40, sw[1] + 23], [sw[0] + 40, sw[1] + 30]], 'good', false, 3);
+      send(inside, .43, .54, 'moving', false, 3);
     }
 
     function crossDomain() {
@@ -163,12 +174,12 @@
         [[101,173],[258,173],[420,173],[582,173],[739,173]];
       const [a,na,network,nb,b] = points;
       if(mobile) {
-        [a[1],b[1]].forEach(y => box([180,y+12],333,126,'frame',0));
+        [a[1],b[1]].forEach(y => box([180,y+6],333,135,'frame',0));
       } else {
         [180,660].forEach(x => box([x,173],312,183,'frame',0));
       }
-      label(mobile?[180,22]:[180,67],"NVLink 域 A",{kind:'note'});
-      label(mobile?[180,334]:[660,67],"NVLink 域 B",{kind:'note'});
+      label(mobile?[180,25]:[180,67],"节点 A",{kind:'note'});
+      label(mobile?[180,341]:[660,67],"节点 B",{kind:'note'});
       const uplink = mobile ? [[na[0],170],[180,170]] : [];
       const downlink = mobile ? [[180,311],[nb[0],311]] : [];
       const path = wire([a,na,...uplink,network,...downlink,nb,b],'good');
@@ -182,9 +193,9 @@
         if(i) showAfter(box(p,24,12,'moving'),.81); else box(p,24,12,'data');
       });
       [a,b].forEach(([x,y]) => {
-        wire([[x,y+31],[x,y+57]],'neutral',true);
-        label([mobile?x+13:x,mobile?y+62:y+84],"域内 NVLink",
-          {anchor:mobile?'start':'middle',kind:'note'});
+        const i = x === a[0] && y === a[1] ? 0 : 1;
+        label([x, y + (mobile ? 57 : 77)], i ? "NVLink 域 B" : "NVLink 域 A", {kind:'note'});
+        label([mobile ? 183 : (i ? 659 : 179), y - 15], 'PCIe', {kind:'note'});
       });
     }
 

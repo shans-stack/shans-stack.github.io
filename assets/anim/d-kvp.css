@@ -18,3 +18,6 @@
 .d-kvp-scene .packet {fill: var(--ink2)}
 .d-kvp-scene .fresh {fill: var(--l1); stroke: var(--ink3)}
 body:has([data-station="d-kvp"]) .stage .figbox {margin-block: 0}
+@media (max-width: 440px) {
+  body:has([data-station="d-kvp"]) .hd .nav {min-width: 0; flex-wrap: wrap; justify-content: flex-end}
+}

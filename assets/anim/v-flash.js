@@ -8,7 +8,7 @@
    样式在 assets/anim/v-flash.css，全部限定在 .ssa-v-flash 容器之内。 */
 (function(){
 var ID='v-flash';
-var EN={"擦除块 1":"Erase block 1","擦除块 2":"Erase block 2","擦除块 3":"Erase block 3","页：最小写入单位":"Page: smallest write unit","擦除块：最小擦除单位":"Smallest erase unit","写入空页":"Writing empty pages","改写：写到新的空页，旧页作废":"Overwrite: new page, old page stale","整块擦除":"Whole block erased","有效页":"Valid","作废页":"Stale","空页":"Empty","示意，不代表实测数字":"Schematic, not measured",
+var EN={"失效块保留至整段回收":"Invalid blocks await reclaim","CNode 迁出有效块":"CNode moves live blocks","迁移目标":"Destination","空闲低于下限":"Free space below threshold","迁出有效数据并回收":"Moving live data","回收后空闲恢复":"Free space restored","擦除块 1":"Erase block 1","擦除块 2":"Erase block 2","擦除块 3":"Erase block 3","页：最小写入单位":"Page: smallest write unit","擦除块：最小擦除单位":"Smallest erase unit","写入空页":"Writing empty pages","改写：写到新的空页，旧页作废":"Overwrite: new page, old page stale","整块擦除":"Whole block erased","有效页":"Valid","作废页":"Stale","空页":"Empty","示意，不代表实测数字":"Schematic, not measured",
 "把有效页搬到新块":"Copying valid pages to a new block","擦掉旧块":"Erasing old blocks","盘内多搬":"Moved inside drive","页":"pages","这些写入不来自用户":"None of these writes came from a user",
 "迁移至容量层":"Migration to capacity tier","1 MB 写入覆盖多个整页":"1 MB write spans full pages","SSD":"SSD","芯片":"Chip","多颗芯片同时写":"Chips written in parallel","长短不一的块紧挨着装":"Chunks packed tightly",
 "每盘 1 GB 条带段":"1 GB strip per drive","由 1 MB 写入组成":"Built from 1 MB writes","对齐一组擦除块":"Aligned with erase blocks","回收时释放整段":"Release the entire strip","整段对齐，减少盘内搬移":"Less internal copying","写入":"Writing",
@@ -80,8 +80,16 @@ const SCENE={
    if(M)tx(st.x+st.w/2,st.y+st.h+12,'由 1 MB 写入组成',f.sm,'ink3-t','middle',g);else tx(st.x+st.w+12,st.y+st.h-lh/2,'由 1 MB 写入组成',f.sm,'ink3-t','start',g);
    E.eb=[];for(let k=0;k<2;k++){const y=st.y+k*st.h/2;E.eb.push(el('path',{d:`M${s.br} ${y+4} H${s.br+12} V${y+st.h/2-4} H${s.br}`,class:'ln thin'},g))}
    tx(s.br+(M?18:24),st.y+st.h/2,'对齐一组擦除块',f.sm,'st rose-t','start',g);
-   E.m4=tx(M?L.W/2:C(s.ssd).x,s.ssd.y+s.ssd.h+28,'',f.sm,'st','middle',g);
-   E.c4=tx(M?L.W/2:830,M?s.ssd.y+s.ssd.h+58:C(s.ssd).y+40,'',f.lbl,'num ink-t','middle',g);
+   const target=M?{x:12,y:444,w:152,h:44}:{x:690,y:92,w:210,h:58};
+   E.copy4=[1,5].map((i,k)=>{
+    const y=st.y+st.h-(i+0.5)*lh, q=P(C(target).x+(k?25:-25),target.y+target.h-12);
+    const route=M?[P(st.x,y),P(86,y),P(86,target.y),P(q.x,target.y),q]:
+      [P(st.x+st.w,y),P(660,y),P(660,q.y),q];
+    line(route,'thin',g);return route;
+   });
+   rect(target,'box',g,8);tx(C(target).x,target.y+13,'迁移目标',f.sm,'lbl','middle',g);
+   E.m4=tx(M?L.W/2:C(s.ssd).x,s.ssd.y+s.ssd.h+(M?72:28),'',f.sm,'st','middle',g);
+   E.c4=tx(M?L.W/2:790,M?s.ssd.y+s.ssd.h+97:C(s.ssd).y+100,'',f.lbl,'num ink-t','middle',g);
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
   /* 第 5 步：按写入顺序 vs 按寿命 */
   {const s=L.s5,g=grp('5');E.s5=[];
@@ -153,11 +161,20 @@ SCENE.modes[2]={enter(S){S.v.p=[0,1,2,3].map(()=>pk('',L_().mobile?60:80,L_().mo
    const q=run(p,path,u,3.4,1.6,{post:0});if(q>=0&&q<=1)p.style.opacity=fa;o.pg.setAttribute('class','cel'+(q>1?' s':''));});
   E.par3.style.opacity=u>5.0?fa:0}};
 /* 第 4 步：1 MB 一层层叠满 1 GB；回收时整条一起删 */
-SCENE.modes[3]={frame(t){const E=E_(),per=9,u=t%per,fa=loopFade(u,per);
-  E.lay.forEach((r,i)=>{const on=u>0.3+i*0.4&&!(u>5.8);r.setAttribute('class','cel'+(on?' s':''))});
-  E.eb.forEach(p=>p.setAttribute('class','ln '+(u>5.2&&u<6.4?'hot thick':'thin')));
-  if(u<3.6)settx(E.m4,'写入','st slate-t');else if(u<5.2)settx(E.m4,'','st');else settx(E.m4,'回收时释放整段','st rose-t');E.m4.style.opacity=fa;
-  E.c4.textContent=u>6?H.T('整段对齐，减少盘内搬移'):'';E.c4.style.opacity=fa}};
+SCENE.modes[3]={enter(S){S.v.c=[pk('cp'),pk('cp')]},
+ frame(t,S){const E=E_(),per=9,u=t%per,fa=loopFade(u,per);
+  E.lay.forEach((r,i)=>{
+   const on=u>0.3+i*0.4&&u<6.8, invalid=u>3.55&&i!==1&&i!==5;
+   r.setAttribute('class','cel'+(on?(invalid?' o':' s'):''));
+  });
+  E.copy4.forEach((p,i)=>{
+   const arrived=run(S.v.c[i],p,u,4.25+i*0.4,1.15,{post:1});
+   if(arrived>1)S.v.c[i].style.opacity=fa;
+  });
+  E.eb.forEach(p=>p.setAttribute('class','ln '+(u>=6.8?'hot thick':'thin')));
+  const label=u<3.55?'写入':u<4.25?'失效块保留至整段回收':u<6.8?'CNode 迁出有效块':'回收时释放整段';
+  settx(E.m4,label,u<6.8?'st slate-t':'st rose-t');E.m4.style.opacity=fa;
+  E.c4.textContent=!L_().mobile&&u>6.8?H.T('整段对齐，减少盘内搬移'):'';E.c4.style.opacity=fa}};
 /* 第 5 步：写满三条 → 临时文件删除 → 回收：上路要搬、下路整条为空 */
 SCENE.modes[4]={frame(t){const E=E_(),per=10,u=t%per,fa=loopFade(u,per);const del=u>4.0;
   E.s5.forEach((o,k)=>{o.cells.forEach((c,i)=>{const w=u>0.2+i*0.13;const kind=o.seq[i];c.setAttribute('class','cel'+(w&&!(del&&kind==='o')?' '+kind:''));c.style.opacity=fa});
@@ -173,9 +190,10 @@ SCENE.modes[5]={enter(S){S.v.p=[];for(let i=0;i<22;i++)S.v.p.push(pk('',L_().mob
   let free=1;S.v.p.forEach((p,j)=>{const ts=0.6+j*0.55;let k=-1;for(let q=0;q<9;q++){if(q===8&&ts<4.2)continue;if(k<0||wear[q]+used[q]<wear[k]+used[k])k=q}
    const o=E.d6[k];const r=run(p,o.path,u,ts,0.7,{post:0});if(r>=0&&r<=1)p.style.opacity=fa;if(r>1){wear[k]+=0.5;used[k]+=1;free-=0.045}});
   /* 空闲空间：降到下限就回收一次 */
-  let fr=free;let gc=false;if(fr<0.25){gc=true;fr=fr+0.45}
+  const reclaimed=12.45;
+  const fr=free+0.45*ramp(u,reclaimed,13.35);
   E.gf.setAttribute('width',(L.s6.gauge.w*clamp(fr,0,1)).toFixed(1));E.gf.setAttribute('class','fill '+(fr<0.35?'ochre':'sage'));
-  settx(E.gm,gc?'低于下限才回收':'','st rose-t');E.gm.style.opacity=fa;
+  settx(E.gm,u<11.3?(free<0.25?'空闲低于下限':''):u<reclaimed?'迁出有效数据并回收':'回收后空闲恢复',u<reclaimed?'st rose-t':'st sage-t');E.gm.style.opacity=fa;
   E.d6.forEach((o,i)=>{const h=o.hh*Math.min(1,wear[i]/8)*fa;o.fl.setAttribute('y',(o.top+o.hh-h).toFixed(1));o.fl.setAttribute('height',h.toFixed(1))})}};
 return SCENE;
 }

@@ -25,3 +25,5 @@
   .topic-n-guard .stage .desc { font-size: 17px; line-height: 1.45; }
   .topic-n-guard .stage .ctl { gap: 8px; margin-top: 10px; }
 }
+
+.n-guard-diagram .route.idle { stroke: var(--rule2); stroke-dasharray: 4 4; }

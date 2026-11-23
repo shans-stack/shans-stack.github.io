@@ -4,7 +4,7 @@
 .an-d-hotpools .an-scene{display:block;width:100%;height:auto;font-family:var(--f)}
 .an-d-hotpools .an-scene text{dominant-baseline:central}
 .an-d-hotpools .an-scene .vis{transition:opacity .4s}
-.an-d-hotpools .an-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.an-d-hotpools .an-scene .hid{opacity:0;visibility:hidden;transition:none}
 .an-d-hotpools .an-scene .dim{opacity:.22}
 .an-d-hotpools .frame{fill:none;stroke:var(--rule2);stroke-width:2}
 .an-d-hotpools .blk{fill:var(--card);stroke:var(--rule2);stroke-width:2;transition:stroke .3s,opacity .4s}
@@ -27,3 +27,10 @@
 .an-d-hotpools .pkt.v{fill:var(--violet)}.an-d-hotpools .pkt.o{fill:var(--ochre)}.an-d-hotpools .pkt.s{fill:var(--sage)}.an-d-hotpools .pkt.r{fill:var(--rose)}
 .an-d-hotpools .ghost{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:5 4}
 .an-d-hotpools .tick{stroke:var(--ink3);stroke-width:2}
+@media (max-width:640px){
+  body.present:has(main[data-station="d-hotpools"]) .stage{padding:12px}
+  body.present:has(main[data-station="d-hotpools"]) .stage .figbox{margin-block:0}
+  body.present:has(main[data-station="d-hotpools"]) .stage .cap{display:block;margin-top:8px}
+  body.present:has(main[data-station="d-hotpools"]) .stage h2{font-size:24px}
+  body.present:has(main[data-station="d-hotpools"]) .stage .desc{font-size:16px;line-height:1.4}
+}

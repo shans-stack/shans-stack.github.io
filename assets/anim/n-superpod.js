@@ -35,14 +35,15 @@
     {
       title: ["共享存储与管理路径","Shared Storage and Management Paths"],
       panels: [
-        [["存储网络","Storage Fabric"],["以太网","Ethernet"],[163,85,236],[88,75,160],"primary"],
+        [["存储网段","Storage Segment"],["逻辑分段","Logical Segment"],[163,85,236],[88,75,160],"primary"],
         [["共享存储","Shared Storage"],["数据读写","Data Access"],[637,85,236],[272,75,160],"plain"],
-        [["带内管理","In-Band Mgmt."],["以太网","Ethernet"],[163,178,236],[88,186,160],"primary"],
+        [["带内管理网段","In-Band Mgmt."],["逻辑分段","Logical Segment"],[163,178,236],[88,186,160],"primary"],
         [["DGX 节点","DGX Nodes"],["节点部署","Provisioning"],[637,178,236],[272,186,160],"plain"],
-        [["带外管理","Out-of-Band"],["独立网络","Separate Fabric"],[163,271,236],[88,297,160],"primary"],
+        [["带外管理","Out-of-Band"],["专用 VXLAN","Dedicated VXLAN"],[163,271,236],[88,297,160],"primary"],
         [["BMC","BMC"],["设备管理","Device Management"],[637,271,236],[272,297,160],"plain"]
       ],
-      links: [[0,1,"data",0.2],[2,3,"control",1.15],[4,5,"control",2.1]]
+      links: [[0,1,"data",0.2],[2,3,"control",1.15],[4,5,"control",2.1]],
+      boundary: ["共享物理以太网","Shared Physical Ethernet"]
     },
     {
       title: ["集群运维与作业调度","Cluster Operations and Workload Scheduling"],
@@ -127,7 +128,7 @@
     const markerIndex = ++mountCount;
     function draw() {
       const [width, height] = size();
-      const {title, panels, links, focus = [], caption} = scenes[index];
+      const {title, panels, links, focus = [], caption, boundary} = scenes[index];
       const nodes = panels.map(([name, detail, desktop, mobile, tone]) => {
         const [x, y, w] = narrow.matches ? mobile : desktop;
         return {name, detail, x, y, w, tone};
@@ -140,6 +141,11 @@
       const marker = element("marker", {id: id + "-arrow-" + markerIndex, viewBox: "0 0 8 8", refX: 7,
         refY: 4, markerWidth: 7, markerHeight: 7, markerUnits: "userSpaceOnUse", orient: "auto"}, defs);
       element("path", {d: "M1 1 7 4 1 7", fill: "none", stroke: "context-stroke", "stroke-width": 1.4}, marker);
+      if (boundary) {
+        const [x, y, w, h] = narrow.matches ? [3, 16, 354, 212] : [28, 15, 744, 207];
+        element("rect", {x, y, width: w, height: h, rx: 6, fill: "none", stroke: "var(--rule2)", "stroke-dasharray": "5 4"});
+        label(width / 2, 34, boundary, "caption");
+      }
       const lines = element("g", {});
       const paths = links.map(([from, to, tone = "data"]) => link(nodes[from], nodes[to], tone, lines));
       boxes = nodes.map(panel);

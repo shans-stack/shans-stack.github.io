@@ -57,12 +57,12 @@ const SCENES = [
   {
     caption: ["请求格式可保持一致", "Compatible endpoints can accept the same request format"],
     bands: [
-      [{"key": "api", "name": ["应用请求", "Application Request"], "sub": ["相同 API 格式", "Same API format"], "tiles": ["file"]}],
-      [{"key": "hosted", "name": ["托管端点", "Hosted Endpoint"], "sub": ["服务提供方运行", "Provider operates"]}, {"key": "nim", "name": ["自管 NIM", "Self-Hosted NIM"], "sub": ["部署方管理 GPU", "Operator runs GPUs"]}]
+      [{"key": "api", "name": ["应用请求", "Application Request"], "sub": ["本次选择托管端点", "Selects hosted endpoint"], "tiles": ["file"]}],
+      [{"key": "hosted", "name": ["托管端点", "Hosted Endpoint"], "sub": ["服务提供方运行", "Provider operates"]}, {"key": "nim", "name": ["自管 NIM", "Self-Hosted NIM"], "sub": ["本次未选中", "Not selected"], "kind": "idle"}]
     ],
     edges: [
       ["api", "hosted", 0.18, "data", -17],
-      ["api", "nim", 0.18, "data", 17]
+      ["api", "nim", null, "idle", 17]
     ]
   }
 ];

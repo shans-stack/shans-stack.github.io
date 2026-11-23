@@ -39,3 +39,8 @@ body.topic-b-mlpi .mhost { aspect-ratio: var(--ar); }
   .b-mlpi-diagram .b-mlpi-note,
   .b-mlpi-diagram .b-mlpi-muted { font-size: 16px; }
 }
+
+@media (max-width: 440px) {
+  body.topic-b-mlpi .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-mlpi .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

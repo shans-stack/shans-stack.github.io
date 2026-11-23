@@ -39,3 +39,8 @@ body.topic-b-clickbench .mhost { aspect-ratio: var(--ar); }
   body.topic-b-clickbench.present .stage .figbox { margin-block: 0; }
   .b-clickbench-scene text { font-size: 19px; }
 }
+
+@media (max-width: 440px) {
+  body.topic-b-clickbench .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-clickbench .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

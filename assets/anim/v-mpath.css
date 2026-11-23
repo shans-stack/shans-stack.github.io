@@ -58,3 +58,11 @@
 .ssa-v-mpath .ochre-t{fill:var(--ochre)}
 .ssa-v-mpath .q{fill:var(--card);stroke:var(--slate);stroke-width:2}
 .ssa-v-mpath .fill.sl{fill:var(--slate)}
+
+@media(max-width:640px){
+  body.present .stage:has(#animPres.ssa-v-mpath){padding:12px}
+  .stage:has(#animPres.ssa-v-mpath) .figbox{margin-block:6px}
+  .stage:has(#animPres.ssa-v-mpath) .cap{display:block;margin-top:6px}
+  .stage:has(#animPres.ssa-v-mpath) h2{font-size:23px;line-height:1.2}
+  .stage:has(#animPres.ssa-v-mpath) .desc{font-size:16px;line-height:1.35}
+}

@@ -7,7 +7,7 @@
    文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/d-hotpools.css。 */
 (function(){
 var EN={"客户端":"Client","同一个目录":"One directory","闪存池":"Flash pool","快 · 容量小":"Fast · small","硬盘池":"Disk pool","容量大 · 便宜":"Large · cheap",
-  "硬盘上也有一份":"Also on disk","后台副本":"Background copy","这次不搬":"Not moved","临时跳过":"Skipped for now","改写到硬盘池":"Written to disk pool",
+  "已有有效 HDD 镜像":"Current HDD mirror","后台副本":"Background copy","这次不搬":"Not moved","临时跳过":"Skipped for now","改写到硬盘池":"Written to disk pool",
   "下水位":"Low mark","上水位":"High mark","溢出线":"Overflow","热度":"Heat",
   "占用很高":"Nearly full","占用升高":"Filling up","占用较低":"Usage low","过了门槛":"Past threshold","还没过门槛":"Below threshold",
   "这份来自闪存":"Served from flash","这份来自硬盘":"Served from disk",
@@ -88,7 +88,7 @@ function build(){
   L.hs.forEach(s=>el('rect',{x:s.x-L.pw/2,y:s.y-L.ph/2,width:L.pw,height:L.ph,rx:4,class:'ghost'}));
   // 标签
   const lb=(k,s,cls,show)=>{const p=L.lab[k];return tx(p.x,p.y,s,f.sm,cls,p.a,grp(show))};
-  {const p=L.lab.leg,g=grp('3 4 5 6 7');el('circle',{cx:p.x+6,cy:p.y,r:L.m?5:6,fill:'var(--ochre)'},g);tx(p.x+18,p.y,'硬盘上也有一份',f.note,'ink2-t','start',g)}
+  {const p=L.lab.leg,g=grp('3 4 5 6 7');el('circle',{cx:p.x+6,cy:p.y,r:L.m?5:6,fill:'var(--ochre)'},g);tx(p.x+18,p.y,'已有有效 HDD 镜像',f.note,'ink2-t','start',g)}
   lb('mir','后台副本','slate-t st','3 4 6');
   lb('nomv','这次不搬','ink3-t st','5');
   E.src=lb('src','','st','5 6');

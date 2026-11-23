@@ -33,3 +33,8 @@ body.topic-b-nccltest .rel .src li a{overflow-wrap:anywhere}
   body.topic-b-nccltest.present .stage h2{font-size:25px}
   .b-nccltest svg{font-size:14.5px}
 }
+
+@media (max-width: 440px) {
+  body.topic-b-nccltest .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-nccltest .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

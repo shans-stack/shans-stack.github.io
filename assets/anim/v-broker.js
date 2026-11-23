@@ -172,11 +172,12 @@
       },
 
       function consume() {
-        const topic = box([66, 78, 257], [38, 40, 284], ['主题表', 'Topic table'], [
+        const topic = box([44, 50, 308], [38, 18, 284], ['Broker · 主题表', 'Broker · topic table'], [
           ['分区 A · 已提交事件', 'Partition A · committed'],
-          ['分区 B · 已提交事件', 'Partition B · committed']
+          ['分区 B · 已提交事件', 'Partition B · committed'],
+          ['消费组偏移量 · A — / B —', 'Group offsets · A — / B —']
         ]);
-        const group = box([510, 78, 304], [38, 224, 284], ['消费组', 'Consumer group'], [
+        const group = box([538, 50, 298], [38, 245, 284], ['消费组', 'Consumer group'], [
           ['消费者 A · 读取分区 A', 'Consumer A · partition A'],
           ['消费者 B · 读取分区 B', 'Consumer B · partition B']
         ]);
@@ -189,11 +190,15 @@
           const end = start + 1.05;
           mark(topic.lines[i], 'v-broker-scope', start);
           flow(path, start, end);
-          change(line, i === 0 ? ['A · 已提交偏移量 15', 'A · committed offset 15'] :
-            ['B · 已提交偏移量 28', 'B · committed offset 28'], end + 0.35);
-          mark(line, 'v-broker-match', end + 0.35);
+          mark(line, 'v-broker-match', end);
         });
-        return 6;
+        const commit = link(group, topic, [['left', 113], ['right', 127]], [['top', 235], ['bottom', 235]]);
+        const [x, y] = narrow.matches ? [143, 205] : [446, 160];
+        note(x, y, ['提交偏移量', 'Commit offsets']);
+        flow(commit, 3.1, 4.25);
+        change(topic.lines[2], ['消费组偏移量 · A 15 / B 28', 'Group offsets · A 15 / B 28'], 4.25);
+        mark(topic.lines[2], 'v-broker-match', 4.25);
+        return 7;
       },
 
       function query() {

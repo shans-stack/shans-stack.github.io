@@ -133,11 +133,20 @@ function mount(host,{paused=false,onLayout}={}){
       if(!mobile)label(overlay,610,189,['以太网','Ethernet'],'muted','middle');
     }],
     [['EXAScaler 压缩文件数据再写入扩展柜','EXAScaler compresses file data before writing to the shelf'],()=>{
-      const client=node(xy([140,153],[220,66]),['客户端','Client'],{sub:['文件数据','File Data'],art:'file',w:xy(192,236)});
-      const exa=node(xy([450,153],[220,211]),'EXAScaler',{sub:['数据压缩','Data Compression'],w:xy(228,236),tone:'focus'});
+      const client=node(xy([140,153],[220,62]),['EXAScaler 客户端','EXAScaler Client'],{sub:['数据压缩','Data Compression'],w:xy(228,260),h:94,tone:'focus'});
+      const controller=node(xy([450,153],[220,209]),['存储控制器','Storage Controller'],{sub:'ES400NVX2',w:xy(218,260)});
       const shelf=node(xy([760,153],[220,353]),'SE2420',{sub:['QLC 固态盘','QLC SSDs'],art:'shelf',w:xy(208,236),tone:'accent'});
-      link(client,exa,{packet:30,duration:1.4});
-      link(exa,shelf,{packet:15,delay:1.75,duration:1.4});
+      link(client,controller,{packet:15,delay:1.05,rest:false,
+        tag:['存储网络','Storage Network'],at:xy([298,85,'middle'],[236,139,'start'])});
+      link(controller,shelf,{packet:15,delay:2.27,rest:false,
+        tag:'NVMe-oF',at:xy([603,85,'middle'],[236,279,'start'])});
+      const block=rect(overlay,client.x-16,client.y+30,32,10,'packet',2);
+      const written=rect(overlay,shelf.x+shelf.w/2-35,shelf.y+21,15,10,'packet',2);
+      effects.push((t,still)=>{
+        block.setAttribute('width',still?15:32-17*clamp((t-.25)/.65,0,1));
+        block.setAttribute('visibility',still||t<1.06?'visible':'hidden');
+        written.setAttribute('visibility',still||t>=3.47?'visible':'hidden');
+      });
     }],
     [['NVMe-oF 和 SAS 的后端适配关系','Back-end attachment for NVMe-oF and SAS'],()=>{
       const es=node(xy([210,94],[108,100]),'ES400NVX2',{sub:['文件系统端','File System'],w:xy(230,169)});

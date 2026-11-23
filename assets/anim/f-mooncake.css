@@ -16,5 +16,11 @@
 @media (max-width: 640px) {
   .f-mooncake-anim text { font-size: 15px; }
   .f-mooncake-anim .name { font-size: 17px; }
-  .f-mooncake-anim .detail { font-size: 14px; }
+  .f-mooncake-anim .detail { font-size: 15px; }
+}
+.f-mooncake-anim .chip.new-kv { fill: var(--surface); stroke: var(--l5); stroke-width: 2; }
+
+@media (max-width: 440px) {
+  body.topic-f-mooncake .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-f-mooncake .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
 }

@@ -48,6 +48,7 @@
       <li data-en="NVIDIA GTC 2025 session S73012, How to Get Data Between Storage and the GPU at the Speed of Light.">NVIDIA GTC 2025 演讲 S73012《How to Get Data Between Storage and the GPU at the Speed of Light》。</li>
       <li data-en="NVIDIA blog, As AI Increases Demands on Memory, Storage Steps Up (August 2026, cuFile open-sourced).">NVIDIA 官方博客《As AI Increases Demands on Memory, Storage Steps Up》（2026-08，cuFile 开源）。</li>
       <li data-en="cuFile open-source repository (github.com/xio-sig).">cuFile 开源仓库（github.com/xio-sig）。</li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/gpudirect-storage/overview-guide/functional-overview.html&quot;&gt;NVIDIA: GPUDirect Storage Paths and DMA&lt;/a&gt;"><a href="https://docs.nvidia.com/gpudirect-storage/overview-guide/functional-overview.html">NVIDIA：GPUDirect Storage 路径与 DMA</a></li>
     </ul></div>
   </div>
 </main>
@@ -74,7 +75,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/gds.js?v=2c0ae68f"></script>
+<script src="../../assets/anim/gds.js?v=389ca20c"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "gds",
@@ -95,10 +96,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>常规存储读取可以先将数据传到主机内存中的中转缓冲区（bounce buffer），再由主机发起到 GPU 显存的复制。模型文件、训练样本和检查点均可沿这一类路径传输。</p>"
+     "<p>常规存储读取可以先将数据传到主机内存中的中转缓冲区（bounce buffer），再由主机发起向 GPU 显存传输。以本地 NVMe 为例，NVMe 设备经 DMA 写入主机缓冲区，GPU 再经 DMA 从该缓冲区取数。CPU 核心提交操作，PCIe 根端口及内存控制器参与主存访问。模型文件、训练样本和检查点均可沿这一类路径传输。</p>"
     ],
     [
-     "<p>A conventional storage read can transfer data first to a bounce buffer in host memory. The host then initiates a separate copy to GPU memory. Model files, training samples, and checkpoints can all follow this path.</p>"
+     "<p>A conventional storage read can transfer data first to a bounce buffer in host memory. The host then initiates a separate copy to GPU memory. In the local NVMe example, the NVMe device writes the host buffer by DMA, then the GPU reads that buffer by DMA. CPU cores submit operations, while the PCIe root port and memory controller provide the path into host memory. Model files, training samples, and checkpoints can all follow this path.</p>"
     ]
    ]
   },
@@ -201,6 +202,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

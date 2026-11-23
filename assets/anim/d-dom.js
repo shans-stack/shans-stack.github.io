@@ -9,7 +9,8 @@
 var EN={"客户端":"Client","元数据服务器（MDS）":"Metadata server (MDS)","文件名 · 属性 · 布局":"Names · attributes · layout","MDT 闪存":"MDT flash",
   "服务器 1":"Server 1","服务器 2":"Server 2","服务器 3":"Server 3","服务器 4":"Server 4",
   "开头一小段：放在元数据层":"First chunk: on the metadata tier","后面：照常条带化到数据服务器":"The rest: striped over data servers as usual",
-  "DoM：只问元数据服务器一次":"DoM: one trip to the metadata server","普通布局：先问元数据，再找数据服务器":"Normal: metadata first, then data server",
+  "DoM：符合 read-on-open 条件":"DoM: eligible for read-on-open","普通 OST 布局":"Conventional OST layout",
+  "未命中客户端缓存":"Client cache misses in both cases","未命中缓存 · 单个 OST":"Client cache miss · Single OST","未命中缓存 · 打开并读取":"Client cache miss · Open and read","小文件 · 符合 read-on-open 条件":"Small file · Eligible for read-on-open",
   "元数据服务器":"Metadata server","数据服务器":"Data server","已读文件":"Files read","示意，不代表实测数字":"Schematic, not measured",
   "数据服务器：这次不用":"Data servers: not used this time","数据服务器：不参与":"Data servers: not involved",
   "小文件读写时客户端、元数据服务器和数据服务器之间的来回":"Round trips between the client, the metadata server and the data servers when reading and writing small files"};
@@ -69,7 +70,7 @@ function layout(m){
   let o;
   if(!m){
     const W=960,H=476;
-    o={m:false,W,H,f:{ttl:20,lbl:20,sm:17,note:16,big:34,pk:15,lane:21},pw:36,ph:26,rr:8,lw:30,lh:24,
+    o={m:false,W,H,f:{ttl:20,lbl:20,sm:17,note:17,big:34,pk:16,lane:21},pw:36,ph:26,rr:8,lw:30,lh:24,
       cl:{x:24,y:170,w:170,h:100},mds:{x:360,y:30,w:560,h:132},fl:{x:690,y:48,w:212,h:98},
       oss:[0,1,2,3].map(j=>({x:360+j*140,y:300,w:120,h:110})),busX:280,trunkY:250,
       cnt:[{x:24,y:308},{x:24,y:340}],skip:{x:640,y:444,a:'middle'},lab6:{x:796,y:192,a:'middle'},lab6b:{x:640,y:444,a:'middle'}};
@@ -124,6 +125,9 @@ function build(){
   L.wT.forEach(s=>wires(s,'data',gO));
   E.oss=L.oss.map((r,j)=>{wires([P(C(r).x,L.trunkY),P(C(r).x,r.y)],'data',gO);const b=rect(r,'blk',gO);
     tx(C(r).x,r.y+r.h-20,'服务器 '+(j+1),f.note,'lbl','middle',gO);return b});
+  tx(L.cnt[0].x,L.m?657:447,'未命中缓存 · 单个 OST',f.note,'ink2-t','start',grp('1',net));
+  tx(L.cnt[0].x,L.m?657:447,'未命中缓存 · 打开并读取',f.note,'ink2-t','start',grp('2',net));
+  tx(L.cnt[0].x,L.m?657:447,'小文件 · 符合 read-on-open 条件',f.note,'ink2-t','start',grp('4',net));
   // 计数 + 标注
   E.c1=tx(L.cnt[0].x,L.cnt[0].y,'',f.sm,'st ink2-t','start',grp('1 2 4',net));
   E.c2=tx(L.cnt[1].x,L.cnt[1].y,'',f.sm,'st rose-t','start',grp('2',net));
@@ -133,8 +137,9 @@ function build(){
   tx(L.lab6b.x,L.lab6b.y,'后面：照常条带化到数据服务器',f.sm,'slate-t st',L.lab6b.a,g6);
   // 第 5 步：两条通道
   const R=L.race,g=grp('5');
+  tx(R.note.x,R.note.y-29,'未命中客户端缓存',f.note,'ink2-t','start',g);
   E.rc=R.L.map((ln,k)=>{
-    tx(ln.t.x,ln.t.y,k?'DoM：只问元数据服务器一次':'普通布局：先问元数据，再找数据服务器',f.lane,'lblb','start',g);
+    tx(ln.t.x,ln.t.y,k?'DoM：符合 read-on-open 条件':'普通 OST 布局',f.lane,'lblb','start',g);
     const cy=C(ln.cl).y,my=C(ln.md).y,oy=C(ln.os).y,ce=ln.cl.x+ln.cl.w;
     wires([P(ce,cy),P(ln.fx,cy)],'',g);wires([P(ln.fx,my),P(ln.fx,oy)],'',g);
     wires([P(ln.fx,my),P(ln.md.x,my)],'meta',g);
@@ -170,10 +175,11 @@ function modes(){
   const J2=[1,3,0,2,1,3],at2=i=>L.sp(J2[i],i<4?-1:1);
   return {
   /* 1：两次来回 */
-  0:{still:4.5,frame(t){const tc=t%8;put('S',L.sp(1),{lab:'S'});setCls(E.mds,'blk');
+  0:{still:L.m?9.5:6.5,frame(t){const cycle=L.m?10.5:8,tc=t%cycle;put('S',L.sp(1),{lab:'S'});setCls(E.mds,'blk');
       const r=readNormal('n',1,'S',0.3,tc,spd);
       setCls(E.oss[1],tc>=r.a2&&tc<r.a2+0.3?'blk on':'blk');
-      if(tc>=r.end&&tc<7.6){put('nk',L.r.hold,{k:'lay',a:1-fade(tc,7.2,7.6)});put('nd',L.r.hold2,{lab:'S',a:1-fade(tc,7.2,7.6)})}
+      if(tc>=r.end&&tc<cycle-0.4){const opacity=1-fade(tc,cycle-0.8,cycle-0.4);
+        put('nk',L.r.hold,{k:'lay',a:opacity});put('nd',L.r.hold2,{lab:'S',a:opacity})}
       setTxt(E.c1,F('来回：'+r.trips+' 次','Round trips: '+r.trips))}},
   /* 2：一批小文件，来回是文件数的两倍 */
   1:{still:6,enter(){const sp=spd*3.4;let t0=0.3;const st=[];for(let i=0;i<6;i++){const r=readNormal('x',J2[i],'',t0,-1,sp,at2(i));st.push(t0);t0=r.end+0.12}E.s2={st,cyc:t0+1.4,sp}},
@@ -184,7 +190,7 @@ function modes(){
       for(let i=0;i<6;i++){if(S.st[i]>tc)break;
         const r=readNormal('f'+i,J2[i],'S'+(i+1),S.st[i],tc,S.sp,at2(i));trips+=r.trips;if(tc>=r.end)files++;
         if(tc>=r.end&&tc<r.end+0.4)put('f'+i+'d',L.r.hold2,{lab:'S'+(i+1),a:1-fade(tc,r.end,r.end+0.4)})}
-      setTxt(E.c1,F('已读文件 '+files,'Files read: '+files));setTxt(E.c2,F('来回 '+trips+' 次','Round trips: '+trips));E.c1.style.opacity=fa;E.c2.style.opacity=fa}},
+      setTxt(E.c1,F('已读文件 '+files,'Files read: '+files));setTxt(E.c2,F('本例往返 '+trips+' 次','Example round trips: '+trips));E.c1.style.opacity=fa;E.c2.style.opacity=fa}},
   /* 3：小文件写进 MDT 闪存 */
   2:{still:3,frame(t){const tc=t%6;setTxt(E.skip,'数据服务器：这次不用');
       put('S0',L.r.hold,{lab:'S',a:fade(tc,0,0.3)*(1-fade(tc,5.6,6))});
@@ -194,10 +200,10 @@ function modes(){
   /* 4：一次来回，属性和内容一起回来 */
   3:{still:3,frame(t){const tc=t%6.5;setTxt(E.skip,'数据服务器：不参与');put('S',L.fp(0),{lab:'S'});
       const d1=dur(toM);run('q',toM,0.3,d1,tc,{k:'req'});const a=0.3+d1;setCls(E.mds,tc>=a&&tc<a+0.35?'blk on':'blk');
-      const back=cat([L.fp(0)],rev(toM),[L.r.hold2]),bk=cat(rev(toM),[L.r.hold]),db=dur(back);
-      const u1=run('d',back,a+0.3,db,tc,{lab:'S'});const u2=run('k',bk,a+0.3+0.18,dur(bk),tc,{k:'lay'});
-      if(u1===2)put('d',L.r.hold2,{lab:'S',a:1-fade(tc,6,6.4)});if(u2===2)put('k',L.r.hold,{k:'lay',a:1-fade(tc,6,6.4)});
-      setTxt(E.c1,F('来回：'+(u1===2?1:0)+' 次','Round trips: '+(u1===2?1:0)))}},
+      const back=cat([L.fp(0)],rev(toM),[L.r.hold2]);
+      const u=run('d',back,a+0.3,dur(back),tc,{lab:'S'});
+      if(u===2){const opacity=1-fade(tc,6,6.4);put('d',L.r.hold2,{lab:'S',a:opacity});put('k',L.r.hold,{k:'lay',a:opacity})}
+      setTxt(E.c1,F('来回：'+(u===2?1:0)+' 次','Round trips: '+(u===2?1:0)))}},
   /* 5：两条通道比一批小文件 */
   4:{still:6.5,frame(t){const C5=10,tc=t%C5,sp=L.m?330:380,w=0.12;
       const fa=tc>9.6?(C5-tc)/0.4:tc<0.4?tc/0.4:1;
@@ -209,7 +215,6 @@ function modes(){
             if(tc>=e)n++;t0=e+0.08}
           else{const a=t0+dM+w,e=a+dM;
             run(`${k}q${i}`,ln.toM,t0,dM,tc,{k:'req',a:fa});run(`${k}d${i}`,rev(ln.toM),a,dM,tc,{a:fa});
-            run(`${k}k${i}`,rev(ln.toM),a+0.12,dM-0.12,tc,{k:'lay',a:fa});
             if(tc>=e)n++;t0=e+0.08}
           i++}
         setTxt(ln.n,String(n));ln.n.style.opacity=fa})}},

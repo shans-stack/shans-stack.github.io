@@ -2,6 +2,13 @@
   'use strict';
 
   const EN = {
+  "首次未提交": "Not committed",
+  "用同一标识重试": "Retry with same ID",
+  "重试提交": "Commit on retry",
+  "结果一份": "One result",
+  "已提交未确认": "Commit · No ACK",
+  "跳过重复写": "Skip duplicate",
+  "保留原结果": "Keep original result",
     "示意，不代表实测数字": "Schematic, not measured",
     "源文件": "Source file",
     "记录文件名": "File name",
@@ -77,12 +84,12 @@
       ["流式输入", "事件持续到达", "stream"],
       ["增量输出", "随事件更新", "rows", "good", "pending"]
     ], [[0, 1, 100, "batch"], [2, 3, 100, "stream"]]],
-    ["branch", [
-      ["输入批次 A", "范围固定", "files"],
-      ["写入作业", "按批次 A 重跑", "list"],
-      ["结果 A", "按标识覆盖", "rows", "good", "pending"],
-      ["首次尝试", "写入中断", "files", "warn", "pending"]
-    ], [[0, 1, 0], [1, 3, 730, "warn"], [0, 1, 1520], [1, 2, 2260, "good"]]]
+    ["lanes", [
+      ["首次未提交", "用同一标识重试", "list"],
+      ["重试提交", "结果一份", "rows", "good", "pending"],
+      ["已提交未确认", "用同一标识重试", "list"],
+      ["跳过重复写", "保留原结果", "rows", "good"]
+    ], [[0, 1, 0], [2, 3, 980, "good"]]]
   ];
 
   const desktop = {

@@ -37,10 +37,10 @@
       panels: [
         [["Grace CPU","Grace CPU"],["LPDDR5X 主机内存","LPDDR5X Host Memory"],[140,178,202],[180,78,236],"primary"],
         [["NVLink-C2C","NVLink-C2C"],["一致性访问","Coherent Access"],[400,178,202],[180,194,236],"primary",false],
-        [["Blackwell GPU","Blackwell GPU"],["HBM 显存","HBM GPU Memory"],[660,178,202],[180,310,236],"primary",false]
+        [["Hopper GPU","Hopper GPU"],["HBM 显存","HBM GPU Memory"],[660,178,202],[180,310,236],"primary",false]
       ],
       links: [[0,1,"data",0.2],[1,2,"data",1.6]],
-      caption: ["芯片间共享地址空间","Shared Address Space"]
+      caption: ["GH200 · 芯片间共享地址空间","GH200 · Shared Address Space"]
     },
     {
       title: ["Grace 与 Vera 的代际位置","Grace and Vera Across Generations"],

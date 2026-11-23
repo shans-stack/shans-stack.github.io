@@ -11,11 +11,11 @@ var ID='v-dedup';
 var EN={"写入":"Writes","算指纹":"Fingerprint","指纹表":"Fingerprint table","已存数据":"Stored data","只记指针":"Pointers only","新指纹：存下":"New: stored","见过：只记指针":"Seen: pointer only","写入":"Writes","实际存":"Stored","块":"blocks","示意，不代表实测数字":"Schematic, not measured",
 "大块":"Large blocks","小块":"Small blocks","已存的版本":"Stored","新版本":"New","要再存":"Stored again","格":"cells","指纹表":"Fingerprint table","行":"rows","只有一格不同":"One cell differs",
 "客户端":"Client","设备 1":"Appliance 1","设备 2":"Appliance 2","内存里的表":"Table in RAM","去重域 1":"Domain 1","去重域 2":"Domain 2","查不到：再存一份":"Not found: stored again","同一块存了两份":"Same block stored twice","存下":"stored",
-"NVMe-oF 网络":"NVMe-oF network","SCM：指纹表":"SCM: fingerprint table","QLC：数据":"QLC: data","CNode 1 写入：表里没有，存下":"CNode 1 writes: not in table, stored","CNode 3 写入：查到了，只记指针":"CNode 3 writes: found, pointer only","整套系统一个缩减范围":"One reduction realm for the whole system",
+"NVMe-oF 网络":"NVMe-oF network","SCM：指纹表":"SCM: fingerprint table","QLC：数据":"QLC: data","CNode 1 写入：表里没有，存下":"CNode 1 writes: not in table, stored","CNode 3 写入：查到了，只记指针":"CNode 3 writes: found, pointer only","同一加密组内跨 CNode 去重":"Deduplication within one encryption group",
 "确认":"ACK","去重":"Dedupe","压缩":"Compress","按固定块边界填充":"Padded to fixed block boundaries","变长块紧密装入":"Variable-length chunks packed tightly","凑整浪费":"padding","先确认，之后再缩减":"ACK first, reduce afterwards",
 "硬盘":"Hard drive","闪存":"Flash","逻辑数据块分布在不同位置":"Chunks at different locations","已读回":"Read back","磁头来回寻道":"Head seeks back and forth","无机械寻道":"No mechanical seeks",
 "去重：指纹与指针、块大小、去重范围、共享 SCM 上的指纹表与去重后的读取":"Deduplication: fingerprints and pointers, block size, dedupe domains, a shared SCM table and reading deduplicated data"};
-var ENM={"指纹表":"Fingerprints","CNode 1 写入：表里没有，存下":"CNode 1: new, stored","CNode 3 写入：查到了，只记指针":"CNode 3: found, pointer","整套系统一个缩减范围":"One realm for the system","逻辑数据块分布在不同位置":"Chunks at different locations","无机械寻道":"No mechanical seeks","磁头来回寻道":"Head seeks","先确认，之后再缩减":"ACK first, reduce later","查不到：再存一份":"Not found: stored again","压缩":"Compress"};
+var ENM={"指纹表":"Fingerprints","CNode 1 写入：表里没有，存下":"CNode 1: new, stored","CNode 3 写入：查到了，只记指针":"CNode 3: found, pointer","同一加密组内跨 CNode 去重":"Within one encryption group","逻辑数据块分布在不同位置":"Chunks at different locations","无机械寻道":"No mechanical seeks","磁头来回寻道":"Head seeks","先确认，之后再缩减":"ACK first, reduce later","查不到：再存一份":"Not found: stored again","压缩":"Compress"};
 var ARIA="去重：指纹与指针、块大小、去重范围、共享 SCM 上的指纹表与去重后的读取";
 function makeScene(H){
 const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade}=H;
@@ -110,7 +110,7 @@ const SCENE={
    line([P(ax,s.fab),P(ax,half.a.y)],'',g);line([P(bx2,s.fab),P(bx2,half.b.y)],'',g);
    E.h4=half;E.row4=el('rect',{x:half.a.x+20,y:half.a.y+44,width:34,height:30,rx:4,class:'pkt'},g);
    E.m4=tx(M?16:L.W/2,M?L.note.y-30:db.y+db.h+20,'',f.sm,'st',M?'start':'middle',g);
-   E.realm=tx(M?L.W-16:L.W-40,L.note.y,'整套系统一个缩减范围',f.sm,'st sage-t','end',g);
+   E.realm=tx(M?L.W-16:L.W-40,L.note.y,'同一加密组内跨 CNode 去重',f.sm,'st sage-t','end',g);
    if(M)E.realm.setAttribute('y',L.note.y-58);
    tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);}
   /* 第 5 步：确认之后再缩减；变长块紧密装入存 */

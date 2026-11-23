@@ -168,8 +168,13 @@
     const extraLinks = [[0, 2], [1, 4], [2, 3]];
     if (initial) links.push(...extraLinks);
     links.forEach(([a, b]) => {
+      const [ax, ay] = points[a], [bx, by] = points[b];
+      const length = Math.hypot(bx - ax, by - ay);
+      const ux = (bx - ax) / length, uy = (by - ay) / length;
+      const tx = bx - ux * 7, ty = by - uy * 7;
+      const backX = tx - ux * 6, backY = ty - uy * 6;
       add(group, 'path', {
-        d: 'M' + points[a].join(',') + 'L' + points[b].join(','),
+        d: `M${ax},${ay} L${tx},${ty} M${backX - uy * 3},${backY + ux * 3} L${tx},${ty} L${backX + uy * 3},${backY - ux * 3}`,
         class: extraLinks.some(link => link[0] === a && link[1] === b) ? 'n-cuvs-pruned' : 'n-cuvs-graph-edge'
       });
     });
@@ -230,10 +235,11 @@
     },
     {
       caption: 'CAGRA 保留节点，筛减初始近邻图的冗余边|CAGRA keeps the vertices and prunes redundant links from the initial graph',
-      draw({ box, connect }) {
+      draw({ box, connect, cards, label, mobile }) {
         box('initial', [215, 154, 180, 103], '候选近邻图|Candidate Graph', { height: 123, width: 206, mobileWidth: 199, art: art => neighborGraph(art, true) });
         box('final', [685, 154, 180, 286], 'CAGRA', { height: 123, width: 206, mobileWidth: 199, art: neighborGraph, tone: 'active' });
         connect('initial', 'final', { style: 'control', start: 0.5, duration: 1.25 });
+        label(cards, mobile ? 180 : 685, mobile ? 370 : 245, '各节点出度相同|Same Out-Degree at Each Node', 'detail');
       }
     },
     {
@@ -249,12 +255,13 @@
     {
       caption: '将两种候选池的近邻结果与精确结果对照|Two candidate pools are evaluated against the exact neighbors',
       draw({ box, connect, cards, label, mobile }) {
-        box('exact', [158, 143, 180, 70], '精确近邻|Exact Neighbors', { height: 81, art: art => resultTiles(art, [true, true, true]) });
-        box('small', [450, 143, 180, 192], '较小候选池|Smaller Pool', { height: 81, art: art => resultTiles(art, [true, false, true]) });
-        box('large', [742, 143, 180, 314], '较大候选池|Larger Pool', { height: 81, art: art => resultTiles(art, [true, true, true]), tone: 'active' });
-        connect('exact', 'small', { style: 'control', start: 0.35 });
-        connect('small', 'large', { style: 'control', start: 1.35 });
-        label(cards, mobile ? 180 : 450, mobile ? 382 : 235, '填实：命中　虚框：遗漏|Filled: Hit · Dashed: Missed', 'detail');
+        box('query', [450, 58, 180, 64], '同一查询与索引|Same Query and Index', { width: 232, mobileWidth: 231 });
+        box('small', [215, 153, 88, 189], '较小候选池|Smaller Pool', { height: 81, art: art => resultTiles(art, [true, false, true]) });
+        box('large', [685, 153, 272, 189], '较大候选池|Larger Pool', { height: 81, art: art => resultTiles(art, [true, true, true]) });
+        connect('query', 'small', { start: 0.35, offset: -26 });
+        connect('query', 'large', { start: 0.35, offset: 26 });
+        box('exact', [450, 242, 180, 319], '精确近邻参照|Exact Reference', { height: 81, art: art => resultTiles(art, [true, true, true]) });
+        label(cards, mobile ? 180 : 450, mobile ? 385 : 289, '填实：命中　虚框：遗漏|Filled: Hit · Dashed: Missed', 'detail');
       }
     }
   ];

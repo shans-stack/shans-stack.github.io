@@ -7,7 +7,7 @@
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
    样式在 assets/anim/v-mt.css，全部限定在 .ssa-v-mt 容器之内。 */
 (function(){
-var EN={"租户 A 客户端":"Tenant A clients","租户 B 客户端":"Tenant B clients","其他网段":"Other subnet","租户 A 管理员":"Tenant A admin","VIP 池 A":"VIP pool A","VIP 池 B":"VIP pool B",
+var EN={"CNode 检查租户与来源 IP":"CNode checks tenant and source IP","租户 A QoS 队列":"Tenant A QoS queue","集群密钥服务":"Cluster key service","加密组 A · 密文":"Group A · ciphertext","加密组 B · 密文":"Group B · ciphertext","VMS · 租户 A":"VMS · Tenant A","租户 A 审计":"Tenant A audit","租户 B 审计":"Tenant B audit","租户 A 客户端":"Tenant A clients","租户 B 客户端":"Tenant B clients","其他网段":"Other subnet","租户 A 管理员":"Tenant A admin","VIP 池 A":"VIP pool A","VIP 池 B":"VIP pool B",
 "CNode 1":"CNode 1","CNode 2":"CNode 2","CNode 3":"CNode 3","CNode 4":"CNode 4","共享的 DBox":"Shared DBoxes","租户 A":"Tenant A","租户 B":"Tenant B","默认租户":"Default tenant","/data":"/data","/logs":"/logs","审计记录":"Audit log",
 "同名路径 /data，互不相通":"Same path /data, kept apart","每个租户有自己隔离的数据路径":"Each tenant has its own isolated data path",
 "IP 在租户 A 的网段内：放行":"IP in tenant A's range: allowed","不在租户 A 的网段内：拒绝":"Not in tenant A's range: rejected","示例：VIP 池与来源 IP":"Example: VIP pool and source IP",
@@ -76,7 +76,6 @@ function build(){
   const f=L.f,g=grp(null);
   /* 存储区 */
   E.store=box(L.store,g,'box soft',14);tx(L.storeLbl.x,L.storeLbl.y,'共享的 DBox',f.sm,'ttl','start',g);
-  E.aud=['A','B'].map(k=>poly([P(FX(L.fold[k]),L.fold[k].y),P(FX(L.fold[k]),L.audY),P(FX(L.fold.D),L.audY),P(FX(L.fold.D),L.fold.D.y)],'thin dash',grp('6',g)));
   E.fab=poly([P(L.fab[0],L.fabY),P(L.fab[1],L.fabY)],'',g);
   E.drop={};['A','D','B'].forEach(k=>{E.drop[k]=poly([P(FX(L.fold[k]),L.fabY),P(FX(L.fold[k]),L.fold[k].y)],'',g)});
   E.fold={};E.items={};
@@ -94,18 +93,53 @@ function build(){
   E.grp=[[0,1],[2,3]].map(([a,b])=>{const p=L.grpPad,r={x:L.cn[a].x-p,y:L.cn[a].y-p,w:L.cn[b].x+L.cn[b].w-L.cn[a].x+2*p,h:L.cn[a].h+2*p};return box(r,grp('3 4',g),'box grpf',12)});
   E.cn=L.cn.map((r,i)=>{const b=box(r,g,'box',8);
     tx(C(r).x,C(r).y,'CNode '+(i+1),f.lbl,'lbl b7','middle',g);return b});
+  const nodeEnd=i=>P(C(L.cn[i]).x,L.cn[i].y+L.cn[i].h);
+  E.audit=[1,2].map(i=>[nodeEnd(i),P(nodeEnd(i).x,L.audY),P(FX(L.fold.D),L.audY),...toFolder('D',0)]);
+  E.audit.forEach(p=>poly(p.slice(0,4),'thin dash',grp('6',g)));
   /* VIP 池与客户端 */
-  E.vip={};['A','B'].forEach(k=>{const r=L.vip[k];poly([P(C(L.cl[k]).x,L.cl[k].y+L.cl[k].h),P(C(r).x,r.y)],'',g);poly([P(C(r).x,r.y+r.h),P(C(r).x,L.busY)],'',g);
-    E.vip[k]=box(r,g,'box vipc',r.h/2);tx(C(r).x,C(r).y,'VIP 池 '+k,f.sm,'st slate-t','middle',g)});
-  const gO=grp('2',g);const cO=L.cl.O,vA=L.vip.A,my=(cO.y+cO.h+vA.y)/2;poly([P(C(cO).x,cO.y+cO.h),P(C(cO).x,my),P(C(vA).x,my)],'',gO);
+  const clientEnd=k=>P(C(L.cl[k]).x,L.cl[k].y+L.cl[k].h);
+  const nodePath=(k,i,y)=>[clientEnd(k),P(clientEnd(k).x,y),P(C(L.cn[i]).x,y),P(C(L.cn[i]).x,L.cn[i].y)];
+  const toData=(i,k,j)=>[nodeEnd(i),P(nodeEnd(i).x,L.fabY),P(FX(L.fold[k]),L.fabY),...toFolder(k,j)];
+  E.vip={};['A','B'].forEach(k=>{
+    const r=L.vip[k],vg=grp(k==='A'?'1 3 4 5':'1 3 4 5 6',g);
+    poly([clientEnd(k),P(C(r).x,r.y)],'',vg);poly([P(C(r).x,r.y+r.h),P(C(r).x,L.busY)],'',vg);
+    E.vip[k]=box(r,vg,'box vipc',r.h/2);tx(C(r).x,C(r).y,'VIP 池 '+k,f.sm,'st slate-t','middle',vg);
+  });
+  const gGate=grp('2',g);
+  E.gateA=nodePath('A',0,L.busY);
+  E.gateO=nodePath('O',0,L.busY-30);
+  [E.gateA,E.gateO,nodePath('B',3,L.busY)].forEach(p=>poly(p,'',gGate));
+  [0,3].forEach((i,k)=>tx(C(L.cn[i]).x,L.cn[i].y-15,'VIP 池 '+'AB'[k],f.sm,'slate-t st','middle',gGate));
+  E.dataA=toData(0,'A',0);
+  const gO=grp('2 6',g);
   E.cl={};[['A','租户 A 客户端'],['O','其他网段'],['B','租户 B 客户端']].forEach(([k,s])=>{const r=L.cl[k],gg=k==='O'?gO:g;E.cl[k]={b:box(r,gg,'box',10),t:tx(C(r).x,C(r).y,s,f.lbl,'lbl','middle',gg)}});
-  E.lim=tx(L.vip.A.x+L.vip.A.w+9,C(L.vip.A).y,'上限',f.sm,'st rose-t','start',grp('4',g));
+  const q=L.cn[0], qy=L.fabY-13;
+  E.qEntry=route('A','A',0,'A',0).slice(0,6).concat([C(q),nodeEnd(0),P(C(q).x,qy)]);
+  E.qExit=[P(C(q).x,qy),...toData(0,'A',0).slice(1)];
+  const qg=grp('4',g);
+  poly([P(C(q).x,qy),P(C(q).x-48,qy)],'thin',qg);
+  tx(C(q).x+16,qy,'租户 A QoS 队列',f.sm,'st rose-t','start',qg);
+  const vms=L.vip.A, ga=grp('6',g);
+  E.admin=[clientEnd('A'),P(C(vms).x,vms.y)];
+  poly(E.admin,'',ga);box(vms,ga,'box',8);tx(C(vms).x,C(vms).y,'VMS · 租户 A',f.sm,'st slate-t','middle',ga);
+  E.auditReq=nodePath('O',1,L.busY-18);
+  poly(E.auditReq,'',ga);
   /* 叉号 */
   const xm=(c,a)=>{const g2=el('g',{class:'xm'},g);poly([P(c.x-a,c.y-a),P(c.x+a,c.y+a)],'xmark',g2);poly([P(c.x-a,c.y+a),P(c.x+a,c.y-a)],'xmark',g2);return g2};
-  E.xVip=xm(P(L.vip.A.x+L.vip.A.w+12,C(L.vip.A).y),7);E.xFa=xm(C(L.fold.A),L.fold.A.h*0.3);
+  E.xVip=xm(P(L.cn[0].x+L.cn[0].w-10,L.cn[0].y+5),7);E.xFa=xm(C(L.fold.A),L.fold.A.h*0.3);
   /* 密钥（第 5 步） */
-  const gK=grp('5',g);const ek=L.ekm;E.ekmL=['A','B'].map(k=>{const x=FX(L.fold[k]);return poly([P(k==='A'?ek.x:ek.x+ek.w,L.ekmY),P(x,L.ekmY),P(x,L.fold[k].y+L.fold[k].h)],'thin',gK)});
-  box(ek,gK,'box',10);tx(C(ek).x,C(ek).y,'外部密钥管理（EKM）',f.sm,'lbl','middle',gK);
+  const gK=grp('5',g), x=L.W/2, m=L.mobile;
+  const ek={x:x-86,y:m?70:35,w:172,h:32}, ks={x:x-86,y:m?113:90,w:172,h:33};
+  E.keyIn=[P(x,ek.y+ek.h),P(x,ks.y)];
+  poly(E.keyIn,'thin',gK);
+  E.keyOut=[1,2].map(i=>[P(x,ks.y+ks.h),P(x,L.busY+10),P(C(L.cn[i]).x,L.busY+10),P(C(L.cn[i]).x,L.cn[i].y)]);
+  E.ekmL=E.keyOut.map(p=>poly(p,'thin',gK));
+  [[ek,'外部密钥管理（EKM）'],[ks,'集群密钥服务']].forEach(([r,s])=>{box(r,gK,'box',8);tx(C(r).x,C(r).y,s,f.sm,'lbl','middle',gK)});
+  ['A','B'].forEach((k,i)=>{
+    const r=L.fold[k], y=r.y+r.h-9;
+    poly([P(r.x+5,y),P(r.x+r.w-5,y)],'thin dash',gK);
+    tx(C(r).x,r.y+r.h+16,i?'加密组 B · 密文':'加密组 A · 密文',f.sm,'violet-t st','middle',gK);
+  });
   E.cap=tx(L.cap.x,L.cap.y+(L.mobile?0:0),'',f.cap,'st','end');
   E.bot=tx(L.bot.x,L.bot.y,'',f.sm,'ink2-t','middle');
   E.pk=el('g',{});
@@ -119,7 +153,7 @@ function reset(){
   svg.querySelectorAll('.box').forEach(d=>d.classList.remove('on','ok','dead','hot','key','w'));
   Object.values(E.fold).forEach(o=>o.g.classList.remove('dim'));
   [E.xVip,E.xFa].forEach(x=>x.style.opacity=0);
-  E.busM.style.opacity=1;E.keyD.textContent='';E.cl.A.t.textContent=T('租户 A 客户端');cap('');bot('');
+  E.busM.style.opacity=1;E.keyD.textContent='';E.cl.A.t.textContent=T('租户 A 客户端');E.cl.O.t.textContent=T('其他网段');cap('');bot('');
 }
 const M=[];
 /* 1：数据路径隔离 */
@@ -129,12 +163,12 @@ M[0]={enter(){cap('同名路径 /data，互不相通','slate-t');bot('每个租�
   E.fold.A.it[0].classList.toggle('w',pa>1);E.fold.B.it[0].classList.toggle('w',pb>1)}};
 /* 2：按 VIP 池和客户端 IP 认出租户 */
 M[1]={enter(){S.v.a=pk();S.v.o=pk('rej')},
- frame(t){const u=t%7,ra=route('A','A',0,'A',0);const pa=run(S.v.a,ra,u,0.2,Math.min(dur(ra),3));E.fold.A.it[0].classList.toggle('w',pa>1);
-  const cO=L.cl.O,vA=L.vip.A,my=(cO.y+cO.h+vA.y)/2,ro=[P(C(cO).x,cO.y+cO.h),P(C(cO).x,my),P(C(vA).x,my),P(C(vA).x,vA.y)];
+ frame(t){const u=t%7,ra=cat(E.gateA,E.dataA);const pa=run(S.v.a,ra,u,0.2,Math.min(dur(ra),3));E.fold.A.it[0].classList.toggle('w',pa>1);
+  const ro=E.gateO;
   run(S.v.o,ro,u,3.8,Math.min(dur(ro),1.6),0.6);
   const ok=u<3.6,rej=u>=3.8+Math.min(dur(ro),1.6);
-  E.vip.A.classList.toggle('ok',ok&&u>0.5);E.vip.A.classList.toggle('hot',rej);E.xVip.style.opacity=rej?1:0;
-  cap(u<3.6?'IP 在租户 A 的网段内：放行':'不在租户 A 的网段内：拒绝',u<3.6?'sage-t':'rose-t');bot('示例：VIP 池与来源 IP')}};
+  E.cn[0].classList.toggle('ok',ok&&u>0.5);E.cn[0].classList.toggle('hot',rej);E.xVip.style.opacity=rej?1:0;
+  cap(u<3.6?'IP 在租户 A 的网段内：放行':'不在租户 A 的网段内：拒绝',u<3.6?'sage-t':'rose-t');bot('CNode 检查租户与来源 IP')}};
 /* 3：VIP 池绑定 CNode 组 */
 M[2]={enter(){E.busM.style.opacity=0;E.grp.forEach(g=>g.classList.add('on'));
   cap('VIP 池绑定指定 CNode 组','slate-t');bot('数据仍在共享的 DBox 上');S.v.a=pk();S.v.b=pk('b')},
@@ -147,18 +181,26 @@ M[2]={enter(){E.busM.style.opacity=0;E.grp.forEach(g=>g.classList.add('on'));
 /* 4：上限——多出的请求排队 */
 const NA=7,GAP=0.95;
 M[3]={enter(){E.busM.style.opacity=0;cap('租户 A 带宽限流','ochre-t');bot('示意，不代表实际限额','ink3-t');S.v.a=[];for(let k=0;k<NA;k++)S.v.a.push(pk());S.v.b=[pk('b'),pk('b'),pk('b')]},
- frame(t){const per=9.5,u=t%per,c=L.cl.A,vA=L.vip.A,x=C(vA).x,y0=c.y+c.h,top=vA.y-L.ph/2-2;
-  const e=[],a=[],r=[];for(let k=0;k<NA;k++){e[k]=0.3+k*0.28;a[k]=e[k]+(top-y0)/L.sp;r[k]=Math.max(a[k],k?r[k-1]+GAP:a[k])}
-  for(let k=0;k<NA;k++){const o=S.v.a[k];if(u<e[k]){put(o,-99,-99,0);continue}
-    if(u<r[k]){let ahead=0;for(let j=0;j<k;j++)if(r[j]>u)ahead++;const slot=top-ahead*(L.ph+3);put(o,x,Math.max(y0+L.ph/2,Math.min(y0+(u-e[k])*L.sp,slot)),1);continue}
-    const rt=cat([P(x,vA.y)],route('A','A',k%2,'A',k%2).slice(2)),d=Math.min(dur(rt),2.4),p=run(o,rt,u,r[k],d);if(p>1)E.fold.A.it[k%2].classList.add('w');}
+ frame(t){const per=9.5,u=t%per, end=E.qEntry.at(-1), travel=1.0;
+  const slots=L.mobile?16:18;
+  for(let k=0;k<NA;k++){
+    const o=S.v.a[k], start=0.3+k*0.28, arrived=start+travel, release=1.3+k*GAP;
+    if(u<arrived){run(o,E.qEntry,u,start,travel,0);continue}
+    if(u<release){
+      const ahead=Array.from({length:k},(_,j)=>j).filter(j=>u<1.3+j*GAP).length;
+      const x=end.x-(ahead%3)*slots;
+      put(o,x,end.y-Math.floor(ahead/3)*slots,1);continue;
+    }
+    const p=run(o,E.qExit,u,release,1.25);if(p>1)E.fold.A.it[0].classList.add('w');
+  }
   for(let k=0;k<3;k++){const rb=route('B','B',2+(k%2),'B',k%2);run(S.v.b[k],rb,u,0.3+k*GAP*2.2,Math.min(dur(rb),2.6))}
-  E.grp.forEach(g=>g.classList.add('on'));E.vip.A.classList.toggle('hot',u>0.6&&u<r[NA-1])}};
+  E.grp.forEach(g=>g.classList.add('on'));E.cn[0].classList.toggle('hot',u>1.5&&u<1.3+(NA-1)*GAP)}};
 /* 5：示例中两个租户选用不同加密组 */
-M[4]={enter(){E.keyD.textContent=T('内部密钥');S.v.k=[dot('v'),dot('v')];S.v.a=pk();S.v.b=pk('b')},
+M[4]={enter(){S.v.in=dot('v');S.v.k=[dot('v'),dot('v')];S.v.a=pk();S.v.b=pk('b')},
  frame(t){const u=t%9.5,rv=u>4.5;
   E.ekmL.forEach((l,i)=>{l.classList.toggle('vio',!(rv&&i===0));l.classList.toggle('hot',rv&&i===0)});
-  ['A','B'].forEach((k,i)=>{const pts=[P(i?L.ekm.x+L.ekm.w:L.ekm.x,L.ekmY),P(FX(L.fold[k]),L.ekmY),P(FX(L.fold[k]),L.fold[k].y+L.fold[k].h)];run(S.v.k[i],pts,u,0.3+i*0.2,1.2,0.3);
+  run(S.v.in,E.keyIn,u,0.35,0.6,0.15);
+  ['A','B'].forEach((k,i)=>{run(S.v.k[i],E.keyOut[i],u,1.0+i*0.24,0.9,0.1);
     E.fold[k].r.classList.toggle('key',u>1.6&&!(rv&&k==='A'))});
   E.fold.A.r.classList.toggle('hot',rv);E.fold.A.g.classList.toggle('dim',rv);E.xFa.style.opacity=rv?1:0;
   const ra=route('A','A',1,'A',0),rb=route('B','B',2,'B',1);
@@ -167,13 +209,16 @@ M[4]={enter(){E.keyD.textContent=T('内部密钥');S.v.k=[dot('v'),dot('v')];S.v
   const pb=run(S.v.b,rb,u,rv?5.5:2.1,Math.min(dur(rb),2.4));E.fold.B.it[1].classList.toggle('w',pb>1);
   cap(rv?'吊销 A 组密钥：A 的路径不可访问':'A 与 B 使用不同加密组',rv?'rose-t':'violet-t')}};
 /* 6：租户管理员只看自己的；审计记录统一存在默认租户 */
-M[5]={enter(){E.cl.A.t.textContent=T('租户 A 管理员');E.fold.B.g.classList.add('dim');S.v.d=[dot('v'),dot('o'),dot('v'),dot('o')]},
- frame(t){const u=t%7;E.aud.forEach(l=>l.classList.add('lit'));
-  const auA=cat([C(items('A')[0]),P(C(items('A')[0]).x,L.fold.A.y+L.ibDy),P(FX(L.fold.A),L.fold.A.y+L.ibDy)],[P(FX(L.fold.A),L.fold.A.y),P(FX(L.fold.A),L.audY),P(FX(L.fold.D),L.audY)],toFolder('D',0));
-  const auB=cat([C(items('B')[1]),P(C(items('B')[1]).x,L.fold.B.y+L.ibDy),P(FX(L.fold.B),L.fold.B.y+L.ibDy)],[P(FX(L.fold.B),L.fold.B.y),P(FX(L.fold.B),L.audY),P(FX(L.fold.D),L.audY)],toFolder('D',0));
-  let n=0;S.v.d.forEach((o,i)=>{const p=run(o,i%2?auB:auA,u,0.4+i*0.9,Math.min(dur(i%2?auB:auA),2),0.2);if(p>1)n++});
-  E.fold.D.it[0].classList.toggle('w',n>0);
-  cap(u<3.5?'租户 A 管理范围':'审计记录都存在默认租户',u<3.5?'slate-t':'violet-t')}};
+M[5]={enter(){E.cl.A.t.textContent=T('租户 A 管理员');E.cl.O.t.textContent=T('租户 A 客户端');
+  S.v.admin=dot('v');S.v.req=[pk(),pk('b')];S.v.d=[dot('v'),dot('o')]},
+ frame(t){const u=t%7;
+  run(S.v.admin,E.admin,u,0.35,0.8,0.3);
+  const a=E.auditReq,b=route('B','B',2,'B',1).slice(0,7);
+  run(S.v.req[0],a,u,1.6,1.05,0.13);run(S.v.req[1],b,u,2.3,1.25,0.13);
+  S.v.d.forEach((o,i)=>run(o,E.audit[i],u,2.7+i*0.95,1.25,0.3));
+  E.fold.D.it[0].classList.toggle('w',u>=3.95);
+  bot(u<2.7?'':u<3.65?'租户 A 审计':u<4.95?'租户 B 审计':'审计记录都存在默认租户','violet-t');
+  cap(u<1.6?'租户 A 管理范围':'','slate-t')}};
 /* ---------- 引擎 ---------- */
 function applyVis(){svg.setAttribute('data-step',step+1);svg.querySelectorAll('[data-show]').forEach(g=>g.classList.toggle('hid',!g.dataset.show.split(' ').includes(String(step+1))))}
 function newSim(){if(S)S.items.forEach(o=>o.el.remove());S={items:[],v:{}}}

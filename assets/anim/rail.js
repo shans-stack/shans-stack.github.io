@@ -188,7 +188,7 @@
         const a = flow(92, -93), l = flow(248, -93), r = flow(508, 94), b = flow(676, 94);
         const s = flow(378), peer = flow(676, -93);
         const localPath = link([a, l, peer], 'sage');
-        const cross = link([a, l, flow(378, -93), s, flow(378, 94), r, b]);
+        const cross = link([a, l, flow(248, 0), s, flow(508, 0), r, b]);
         [[a, portA], [l, leafA], [peer, portA], [r, leafB], [b, portB], [s, spine]]
           .forEach(([p, label]) => box(p, label, 95));
         send(localPath, {at: .45, duration: 2, from: .09, to: .88, hold: 1, tone: 'sage', still: .78});

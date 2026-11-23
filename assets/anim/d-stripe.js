@@ -8,7 +8,7 @@
    文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/d-stripe.css。
    四台数据服务器是 EXAScaler。 */
 (function(){
-var EN={"服务器 ": "Server ", "客户端": "Client", "示意，不代表实测数字": "Schematic, not measured", "文件 A": "File A", "在出数": "Sending", "空闲": "Idle", "条带大小：一块多大才换下一台": "Stripe size: chunk size before the next server", "应用要读的一条记录": "One record the app reads", "对齐：只找 1 台": "Aligned: only 1 server", "错位：要找 2 台，每块只用到一部分": "Misaligned: 2 servers, part of each chunk used", "大文件目录：条带数 4": "Big-file dir: count 4", "小文件目录：条带数 1": "Small-file dir: count 1", "布局在建文件时定好，之后改目录设置只影响新文件": "Layout is fixed when a file is created; later directory changes affect new files only", "布局建文件时定好，改设置只影响新文件": "Set at creation; changes affect new files only", "条带数 1：一台出数": "Stripe count 1: one server", "条带数 4：四台一起出数": "Stripe count 4: four servers", "已读回": "Read back", "⇄ 条带数换成 2": "⇄ Stripe count to 2", "⇄ 条带数换成 4": "⇄ Stripe count to 4", "⇄ 换成对齐": "⇄ Align it", "⇄ 换成错位": "⇄ Misalign it", "一个文件切成条带块，轮流放到多台数据服务器上": "A file is cut into stripe chunks placed in turn across data servers"};
+var EN={"服务器 ": "Server ", "客户端": "Client", "示意，不代表实测数字": "Schematic, not measured", "文件 A": "File A", "在出数": "Sending", "空闲": "Idle", "条带大小：切换 OST 前的字节数": "Stripe size: bytes before the next OST", "应用要读的一条记录": "One record the app reads", "对齐：只访问 1 个 OST": "Aligned: one OST", "跨界：访问 2 个 OST": "Crosses a boundary: two OSTs", "大文件目录：条带数 4": "Big-file dir: count 4", "小文件目录：条带数 1": "Small-file dir: count 1", "布局在建文件时定好，之后改目录设置只影响新文件": "Layout is fixed when a file is created; later directory changes affect new files only", "布局建文件时定好，改设置只影响新文件": "Set at creation; changes affect new files only", "条带数 1：一台出数": "Stripe count 1: one server", "条带数 4：四台一起出数": "Stripe count 4: four servers", "已读回": "Read back", "⇄ 条带数换成 2": "⇄ Stripe count to 2", "⇄ 条带数换成 4": "⇄ Stripe count to 4", "⇄ 换成对齐": "⇄ Align it", "⇄ 换成错位": "⇄ Misalign it", "一个文件切成条带块，轮流放到多台数据服务器上": "A file is cut into stripe chunks placed in turn across data servers"};
 /* 画面里的切换按钮：第几步（0 起）有按钮，两种状态各写什么 */
 var TG={"3": ["⇄ 条带数换成 2", "⇄ 条带数换成 4"], "4": ["⇄ 换成对齐", "⇄ 换成错位"]};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
@@ -114,12 +114,13 @@ function build(){
   E.ticks=[];for(let k=0;k<8;k++)E.ticks.push(line(P(L.sx(k),L.rowY+L.ph/2),P(L.sx(k),L.Dy),'thin',net));
   line(P(Math.min(L.sx(0),L.ox(0)),L.Dy),P(Math.max(L.sx(7),L.ox(3)),L.Dy),'data',net);
   E.oG=L.oss.map((r,j)=>{const g=el('g',{},net);line(P(L.ox(j),L.Dy),P(L.ox(j),r.y),'data',g);E['o'+j]=rect(r,'blk',g);
-    tx(C(r).x,r.y+r.h+L.labDy,T('服务器 ')+(j+1),f.note,'lbl','middle',g);return g});
+    tx(C(r).x,r.y+r.h+L.labDy,'OSS '+(j+1),f.note,'lbl','middle',g);
+    tx(C(r).x,r.y+r.h-48,'OST '+(j+1),f.note,'lbl','middle',grp('4 5',g));return g});
   E.st=L.oss.map((r,j)=>tx(C(r).x,L.stY,'',f.sm,'st','middle',net));
   // 第 4 步：两个括号
   const g4=grp('4',net);
   const bx=L.sx(0);E.brS=el('path',{d:`M${bx-L.pw/2} ${L.brS.y+8} V${L.brS.y} H${bx+L.pw/2} V${L.brS.y+8}`,class:'brk'},g4);
-  tx(bx-L.pw/2,L.brS.ly,'条带大小：一块多大才换下一台',f.note,'ink2-t','start',g4);
+  tx(bx-L.pw/2,L.brS.ly,'条带大小：切换 OST 前的字节数',f.note,'ink2-t','start',g4);
   E.brC=el('path',{d:'',class:'brk'},g4);
   E.cntT=tx(L.cnt.x,L.cnt.y,'',f.sm,'slate-t st','middle',g4);E.cntT.style.fontWeight=700;
   // 第 5 步：应用记录括号
@@ -157,6 +158,7 @@ function modes(){
   const putRow=(a,lab)=>{for(let k=0;k<8;k++)put('o'+k,row(k),{lab:(lab||'')+(k+1),a})};
   const putOss=(c,a)=>{for(let k=0;k<8;k++){const [j,s]=home(k,c);put('h'+k,L.sp(j,s),{lab:String(k+1),a})}};
   const deal=(c,tc,t0,gap)=>{for(let k=0;k<8;k++){const [j,s]=home(k,c),p=L.down(k,j,s),d=dur(p),ts=t0+gap*k;
+      if(tc<ts)put('o'+k,row(k),{lab:String(k+1)});
       const u=run('w'+k,p,ts,d,tc,{lab:String(k+1)});if(u===2)put('w'+k,L.sp(j,s),{lab:String(k+1),a:1-fade(tc,6.3,6.8)})}};
   return {
   /* 1：整个文件在服务器 1，一块接一块读回来 */
@@ -166,7 +168,7 @@ function modes(){
       for(let k=0;k<8;k++){const p=rev(L.down(k,0,k)),d=dur(p),ts=0.3+0.62*k;
         const u=run('r'+k,p,ts,d,tc,{lab:String(k+1)});if(u===2)put('r'+k,row(k),{lab:String(k+1),a:1-fade(tc,7.4,7.9)})}}},
   /* 2：切块，轮流落到 4 台 */
-  1:{still:5,frame(t){const tc=t%7;putRow(1);deal(4,tc,0.4,0.42)}},
+  1:{still:5,frame(t){deal(4,t%7,0.4,0.42)}},
   /* 3：一台对四台 */
   2:{still:6.5,frame(t){const R=L.race,C5=9,tc=t%C5,Ts=0.5,speed=L.m?300:330;
       const fa=tc>8.6?(C5-tc)/0.4:tc<0.4?tc/0.4:1;
@@ -177,9 +179,9 @@ function modes(){
           if(u>=1)cnt[k]++}}));
       E.cnt.forEach((e,k)=>{setTxt(e,String(cnt[k]));e.style.opacity=fa})}},
   /* 4：条带大小 + 条带数，按钮切 4 / 2 */
-  3:{still:5,frame(t,dt,tt){const c=tog?2:4,tc=tt%7;putRow(1);deal(c,tc,0.4,0.36);
+  3:{still:5,frame(t,dt,tt){const c=tog?2:4,tc=tt%7;deal(c,tc,0.4,0.36);
       for(let j=0;j<4;j++)E.oG[j].style.opacity=j<c?1:0.25;
-      setTxt(E.cntT,Z('条带数 = '+c+'：这个文件铺 '+c+' 台','Stripe count = '+c+': the file spans '+c+' servers'));
+      setTxt(E.cntT,Z('条带数 = '+c+'：文件使用 '+c+' 个 OST','Stripe count = '+c+': the file uses '+c+' OSTs'));
       const a=L.oss[0],b=L.oss[c-1],by=a.y+a.h+8;E.brC.setAttribute('d',`M${a.x} ${by-8} V${by} H${b.x+b.w} V${by-8}`);
       let cw=0;try{cw=E.cntT.getComputedTextLength()}catch(e){}E.cntT.setAttribute('x',clamp((a.x+b.x+b.w)/2,8+cw/2,L.W-8-cw/2))}},
   /* 5：对不齐要找两台 */
@@ -187,7 +189,7 @@ function modes(){
       const ks=al?[2]:[1,2];
       const x0=al?L.sx(2)-L.pw/2:L.sx(1),x1=al?L.sx(2)+L.pw/2:L.sx(2),y=L.rec.y;
       E.rec.setAttribute('d',`M${x0} ${y+8} V${y} H${x1} V${y+8}`);E.recT.setAttribute('x',x0);
-      setTxt(E.res5,al?'对齐：只找 1 台':'错位：要找 2 台，每块只用到一部分');setCls(E.res5,'st '+(al?'sage-t':'rose-t'));
+      setTxt(E.res5,al?'对齐：只访问 1 个 OST':'跨界：访问 2 个 OST');setCls(E.res5,'st '+(al?'sage-t':'rose-t'));
       ks.forEach((k,i)=>{const [j,s]=home(k,4),go=L.down(k,j,s).slice(0,4),d=dur(go),t0=0.3+0.1*i;
         run('q'+k,go,t0,d,tc,{k:'req'});const ta=t0+d;setCls(E['o'+j],tc>=ta&&tc<ta+0.4?'blk on':'blk');
         const back=rev(L.down(k,j,s)),db=dur(back);const u=run('c'+k,back,ta+0.3,db,tc,{lab:String(k+1),cls:al?'':'cp'});

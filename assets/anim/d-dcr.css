@@ -4,7 +4,7 @@
 .ddcr .ddcr-scene{display:block;width:100%;height:auto;font-family:var(--f)}
 .ddcr .ddcr-scene text{dominant-baseline:central}
 .ddcr .ddcr-scene .vis{transition:opacity .4s}
-.ddcr .ddcr-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ddcr .ddcr-scene .hid{opacity:0;visibility:hidden;transition:none}
 .ddcr .lbl{fill:var(--ink);font-weight:500}
 .ddcr .b7{font-weight:700}
 .ddcr .track{fill:var(--rule)}

@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-snap.js?v=f5686328"></script>
+<script src="../../assets/anim/v-snap.js?v=1d6861b4"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-snap",
@@ -180,11 +180,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>路径 <code>/a/b</code> 上名为 <code>MySnapshot_b</code> 的快照可从 <code>/a/b/.snapshot/MySnapshot_b</code> 访问。NFS 和 SMB 用户可从有权访问的快照复制所需文件。</p>",
-     "<p>可写克隆在后台建立。复制完成前，克隆的读取可由快照提供。相同的数据块可共享，写入克隆的新内容属于克隆。</p>"
+     "<p>可写克隆创建后即可访问。启用后台同步时逐步复制数据，尚未同步的数据可按需从快照读取。相同的数据块可共享，写入克隆的新内容属于克隆。</p>"
     ],
     [
      "<p>A snapshot named <code>MySnapshot_b</code> of <code>/a/b</code> is accessible at <code>/a/b/.snapshot/MySnapshot_b</code>. NFS and SMB users can copy files from snapshots they are authorized to access.</p>",
-     "<p>A writable clone is built in the background. The snapshot can serve clone reads while copying is in progress. Identical data chunks can be shared, and new writes to the clone belong to the clone.</p>"
+     "<p>A writable clone is accessible after creation. When background synchronization is enabled, data is copied incrementally. Data that has yet to synchronize can be read from the snapshot on demand. Identical data chunks can be shared, and new writes to the clone belong to the clone.</p>"
     ]
    ]
   },
@@ -209,6 +209,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

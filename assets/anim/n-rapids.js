@@ -195,15 +195,15 @@
       }
     },
     {
-      caption: 'pandas 代理按操作分派到 GPU 或 CPU|The pandas proxy dispatches each operation to GPU or CPU',
+      caption: '代理先尝试 GPU，本例不支持该操作并回退 CPU|The proxy tries the GPU first. This operation falls back to the CPU',
       draw({ box, connect }) {
         box('api', [120, 154, 180, 66], 'pandas API');
         box('proxy', [340, 154, 180, 168], 'cudf.pandas', { note: '代理分派|Proxy Dispatch', tone: 'active' });
-        box('gpu', [650, 87, 92, 293], 'cuDF', { note: 'GPU · 可加速|GPU · Eligible' });
-        box('cpu', [650, 221, 268, 293], 'pandas', { note: 'CPU · 回退|CPU · Fallback', tone: 'miss' });
+        box('gpu', [560, 154, 180, 269], 'cuDF', { note: '此操作不支持|Unsupported Here' });
+        box('cpu', [780, 154, 180, 370], 'pandas', { note: '按需转换后执行|Convert If Needed', tone: 'miss' });
         connect('api', 'proxy', { style: 'control', start: 0.3 });
-        connect('proxy', 'gpu', { desktop: 'h', start: 1.15, offset: -9 });
-        connect('proxy', 'cpu', { desktop: 'h', style: 'miss', start: 1.15, offset: 9 });
+        connect('proxy', 'gpu', { start: 1.15 });
+        connect('gpu', 'cpu', { style: 'miss', start: 2.02 });
       }
     },
     {

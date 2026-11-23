@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/w-csi.css?v=b380a996">
+<link rel="stylesheet" href="../../assets/anim/w-csi.css?v=bd776b3e">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -44,6 +44,7 @@
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin&quot;&gt;WEKA Documentation · CSI Plugin&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin">WEKA 文档 · CSI 插件</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes-csi.github.io/docs/external-provisioner.html&quot;&gt;Kubernetes CSI External Provisioner&lt;/a&gt;"><a href="https://kubernetes-csi.github.io/docs/external-provisioner.html">Kubernetes CSI 外部卷供应器</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin/storage-class-configurations&quot;&gt;WEKA Documentation · StorageClass Configurations&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin/storage-class-configurations">WEKA 文档 · StorageClass 配置</a></li>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin/dynamic-and-static-provisioning&quot;&gt;WEKA Documentation · Dynamic and Static Provisioning&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin/dynamic-and-static-provisioning">WEKA 文档 · 动态与静态配置</a></li>
       <li data-en="Schematic illustrations. No measured figures.">示意，不代表实测数字。</li>
@@ -73,7 +74,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-csi.js?v=9e514444"></script>
+<script src="../../assets/anim/w-csi.js?v=ac1e1f0a"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "w-csi",
@@ -111,10 +112,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>PVC（PersistentVolumeClaim，持久卷声明）描述应用需要的容量和访问模式。StorageClass（存储类别）定义如何为该声明配置卷，例如选择 WEKA 驱动及目录型卷所用的目标文件系统。相同类别可服务多个声明。</p>"
+     "<p>PVC（PersistentVolumeClaim，持久卷声明）描述应用需要的容量和访问模式。StorageClass（存储类别）定义如何为该声明配置卷，例如选择 WEKA 驱动及目录型卷所用的目标文件系统。相同类别可服务多个声明。CSI external-provisioner 观察 PVC，读取其 StorageClass，并用卷参数向 WEKA CSI 驱动发出 CreateVolume 请求。</p>"
     ],
     [
-     "<p>A PersistentVolumeClaim (PVC) describes the capacity and access mode the application needs. A StorageClass specifies how to satisfy the claim, for example by selecting the WEKA driver and the target filesystem for directory-backed volumes. Multiple claims can use the same class.</p>"
+     "<p>A PersistentVolumeClaim (PVC) describes the capacity and access mode the application needs. A StorageClass specifies how to satisfy the claim, for example by selecting the WEKA driver and the target filesystem for directory-backed volumes. Multiple claims can use the same class. The CSI external-provisioner watches PVCs, reads their StorageClass, and calls CreateVolume on the WEKA CSI driver with the volume parameters.</p>"
     ]
    ]
   },
@@ -129,10 +130,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>PV（PersistentVolume，持久卷）是 Kubernetes 对后端存储的表示。以目录型卷为例，WEKA 插件在指定文件系统内为声明创建目录，Kubernetes 将对应 PV 与 PVC 绑定。静态配置也可用一个预先定义的 PV 引用已有目录。</p>"
+     "<p>PV（PersistentVolume，持久卷）是 Kubernetes 对后端存储的表示。以目录型卷为例，WEKA CSI 驱动在指定文件系统内创建目录并返回卷信息。CSI external-provisioner 在 Kubernetes 中登记引用该目录的 PV，由 Kubernetes 控制面将 PV 与 PVC 绑定。静态配置也可用一个预先定义的 PV 引用已有目录。</p>"
     ],
     [
-     "<p>A PersistentVolume (PV) represents backing storage in Kubernetes. For example, the WEKA plugin provisions a directory in the selected filesystem for a directory-backed volume, and Kubernetes binds the corresponding PV to the PVC. With static provisioning, a predefined PV can reference an existing directory.</p>"
+     "<p>A PersistentVolume (PV) represents backing storage in Kubernetes. For example, the WEKA CSI driver creates a directory in the selected filesystem and returns the volume information. The CSI external-provisioner registers a PV referencing that directory, and the Kubernetes control plane binds the PV to the PVC. With static provisioning, a predefined PV can reference an existing directory.</p>"
     ]
    ]
   },
@@ -190,6 +191,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

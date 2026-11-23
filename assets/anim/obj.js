@@ -4,6 +4,9 @@
 const STATION = 'obj';
 const PREFIX = 'an-obj';
 const EN = {
+  "客户端": "Client",
+  "S3 上传会话": "S3 Upload Session",
+  "服务端组装": "Assemble on Server",
   "示意，不代表实测数字": "Schematic, not measured",
   "用桶名和对象键找到一个对象": "A bucket and full key select one object",
   "平铺的对象键前缀与文件系统目录树": "Flat object key prefixes and a file system directory tree",
@@ -77,20 +80,23 @@ const scenes = [
     at([[450,265],[279,266]], "GET 返回：区间 B",'secondary');
     return 4600;
   },
-  ({box, link, send, at, timed}) => {
+  ({mobile, box, link, send, at, timed}) => {
     const parts = [
       box([[144,81,170],[61,80,106]], "段 1",{slots:[['1','blue']]}),
       box([[144,193,170],[180,80,106]], "段 2",{slots:[['2','green']]}),
       box([[144,305,170],[299,80,106]], "段 3",{slots:[['3','violet']]})
     ];
-    const session = box([[450,193,206],[180,246,222]], "上传会话",{tone:'blue'});
-    const final = box([[758,193,205],[180,391,224]], "已组装的对象",{slots:[['1','blue',3100],['2','green',3100],['3','violet',3100]],tone:'green'});
+    const client = box([[445,58,206],[180,174,222]], "客户端");
+    const session = box([[445,206,206],[180,302,222]], "S3 上传会话",{tone:'blue'});
+    const final = box([[758,206,205],[180,412,224]], "已组装的对象",{slots:[['1','blue',3540],['2','green',3540],['3','violet',3540]],tone:'green'});
     parts.forEach((p,i) => {
       const color = ['blue','green','violet'][i];
       send(link(p,session,{axis:['x','y'],color,offset:(i-1)*19,bend:(i-1)*17}),380+i*150,[1720,1270,1520][i],color);
     });
-    send(link(session,final,{color:'green'}),2150,3080,'green');
-    timed(at([[603,160],[251,319]], "完成请求",'secondary'),2060);
+    send(link(client,session,{axis:'y',dashed:true,offset:19}),1830,2490);
+    timed(at([[466,129],[198,229]], "完成请求",'secondary','start'),1830);
+    send(link(session,final,{color:'green'}),2570,3520,'green');
+    timed(at([[601,163],[201,348]], "服务端组装",'secondary',mobile?'start':'middle'),2530);
     return 4650;
   },
   ({box, link, send, at}) => {

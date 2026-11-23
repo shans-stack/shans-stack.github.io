@@ -20,20 +20,29 @@
       caption: ["交付单位是一整台物理服务器", "One allocation, one physical server"]
     },
     {
+      kind: "vm",
       nodes: [
-        [["物理 GPU", "Physical GPU"], ["安装于主机", "Installed in the host"]],
-        [["虚拟化层", "Hypervisor"], ["直通或 vGPU", "Passthrough or vGPU"]],
-        [["虚拟机", "Virtual Machine"], ["来宾系统使用 GPU", "Guest OS has GPU access"]]
+        [["物理 GPU", "Physical GPU"], ["分配整卡", "Assigns whole GPU"]],
+        [["直通 VM", "Passthrough VM"], ["来宾直接访问", "Direct guest access"]],
+        [["物理 GPU", "Physical GPU"], ["承载 vGPU 实例", "Hosts instances"]],
+        [["vGPU 实例", "vGPU Instance"], ["呈现虚拟设备", "Virtual device"]],
+        [["vGPU VM", "VM With vGPU"], ["来宾使用虚拟设备", "Guest uses vGPU"]]
       ],
-      caption: ["虚拟机规格定义可用的 GPU 访问方式", "The VM profile sets GPU access"]
+      signals: [[0, .2, "ok"], [1, .2, "ok"], [2, 1.16, "ok"]],
+      caption: ["两种 GPU 配置方式", "Two GPU configuration options"]
     },
     {
+      kind: "pod",
       nodes: [
-        [["Pod", "Pod"], ["申请 GPU 资源", "Requests a GPU resource"]],
-        [["集群调度器", "Cluster Scheduler"], ["匹配节点资源", "Matches node resources"]],
-        [["GPU 节点", "GPU Node"], ["设备插件公布资源", "Plugin advertises GPUs"]]
+        [["设备插件", "Device Plugin"], ["列出可用设备", "Lists devices"]],
+        [["kubelet", "kubelet"], ["上报节点容量", "Reports capacity"]],
+        [["Kubernetes API", "Kubernetes API"], ["记录节点资源", "Records capacity"]],
+        [["Pod", "Pod"], ["申请 GPU", "Requests GPU"]],
+        [["调度器", "Scheduler"], ["匹配并绑定", "Matches and binds"]],
+        [["GPU 节点", "GPU Node"], ["分配 GPU", "Allocates GPU"]]
       ],
-      caption: ["容器任务随 Pod 调度到符合要求的节点", "Pod lands on an eligible node"]
+      signals: [[0, .1, "ok"], [1, 1, "ok"], [2, 1.9, "ok"], [3, 2.8, "ok"]],
+      caption: ["先发布资源，再绑定并运行 Pod", "Capacity first, then bind and run"]
     },
     {
       kind: "parallel",
@@ -48,11 +57,19 @@
     }
   ];
   const routes = {
-    parallel: [[0, 2], [1, 3]]
+    parallel: [[0, 2], [1, 3]],
+    vm: [[0, 1], [2, 3], [3, 4]],
+    pod: [[0, 1], [1, 2], [3, 4], [4, 5]]
   };
 
   function layout(kind, mobile) {
     const xs = mobile ? [175, 175, 175] : [144, 440, 736];
+    if (kind === 'vm') return mobile
+      ? [[87, 45, 160], [87, 145, 160], [263, 45, 160], [263, 145, 160], [263, 245, 160]]
+      : [[144, 64, 242], [736, 64, 242], [144, 164, 242], [440, 164, 242], [736, 164, 242]];
+    if (kind === 'pod') return Array.from({length: 6}, (_, i) => mobile
+      ? [i < 3 ? 87 : 263, 45 + i % 3 * 100, 160]
+      : [xs[i % 3], i < 3 ? 64 : 164, 242]);
     if (kind === 'parallel') return mobile
       ? [[89, 94, 164], [261, 94, 164], [89, 273, 164], [261, 273, 164]]
       : [[157, 79, 244], [157, 201, 244], [723, 79, 244], [723, 201, 244]];
@@ -65,7 +82,7 @@
     const size = () => mobile.matches ? [350, 410] : [880, 300];
     const ratio = () => size()[0] / size()[1];
     const local = pair => pair[window.SS.lang() === 'en' ? 1 : 0];
-    const loop = 3.9;
+    const loop = () => current === 3 ? 4.8 : 3.9;
     let current = 0, elapsed = 0, last, frame, balls, wires, cards;
     let paused = Boolean(options.paused);
 
@@ -116,6 +133,10 @@
         el(group, 'rect', {x: x - width / 2, y: y - 36, width, height: 72, rx: 4}, 'card');
         text(group, x, y - 5, 'title', label);
         text(group, x, y + 20, 'detail', detail);
+        if (scene.kind === 'pod' && i === 5) {
+          text(group, x, y + 31, 'detail', ['运行 Pod', 'Runs Pod']);
+          group.querySelectorAll('text')[1].setAttribute('y', y + 13);
+        }
         return group;
       });
 
@@ -153,7 +174,7 @@
     }
 
     function tick(now) {
-      elapsed = (elapsed + Math.max(0, now - last) / 1000) % loop;
+      elapsed = (elapsed + Math.max(0, now - last) / 1000) % loop();
       last = now;
       render(elapsed);
       frame = requestAnimationFrame(tick);
@@ -168,7 +189,7 @@
 
     function rebuild() {
       draw();
-      render(reduced.matches ? 3.8 : elapsed);
+      render(reduced.matches ? loop() - .1 : elapsed);
       play();
     }
 

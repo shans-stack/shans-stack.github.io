@@ -5,9 +5,9 @@
   const captions = [
     ['整块设备分给工作负载 A', 'Job A receives the whole GPU'],
     ['各 GPU 实例可并行执行', 'MIG instances can run in parallel'],
-    ['A 与 B 交替执行，共用显存容量', 'Alternating jobs, shared memory'],
+    ['执行时序示意，Pod 无固定份额', 'Example timeline · no fixed share per Pod'],
     ['示例故障发生于 A 的执行路径', 'Fault while job A runs'],
-    ['时间片副本共享其所在实例的边界', 'Replicas share one instance']
+    ['时间片副本共享实例，Pod 无固定份额', 'Shared instance · no fixed share per Pod']
   ];
 
   function mount(host, options = {}) {
@@ -53,15 +53,17 @@
       packets.push({path, length: path.getTotalLength(), packet, offset});
     }
 
-    function timeline(x, y, width, labels) {
+    function timeline(x, y, width) {
       const gap = 5;
-      const span = (width - (labels.length - 1) * gap) / labels.length;
-      labels.forEach((letter, i) => {
-        const left = x + i * (span + gap);
+      const usable = width - 3 * gap;
+      let left = x;
+      [['A', .32], ['B', .16], ['A', .16], ['B', .36]].forEach(([letter, portion]) => {
+        const span = usable * portion;
         const slot = box(left, y, span, 29, 'slot');
         slot.dataset.tone = letter;
         text(left + span / 2, y + 20, [letter, letter]);
-        slots.push(slot);
+        slots.push({slot, end: (left + span - x) / width});
+        left += span + gap;
       });
     }
 
@@ -93,8 +95,8 @@
       if (timeSliced) {
         box(x + 20, y + 43, w - 40, 63, 'box');
         text(x + w / 2, y + 79, ['共用显存容量', 'Shared Memory Capacity']);
-        text(x + w / 2, y + 134, ['执行时间 →', 'Execution Time →'], 'muted');
-        timeline(x + 20, y + 148, w - 40, ['A', 'B', 'A', 'B']);
+        text(x + w / 2, y + 134, ['示例：每个任务一个 GPU 进程', 'One GPU process per job'], 'muted');
+        timeline(x + 20, y + 148, w - 40);
       } else {
         const instances = narrow
           ? [[35, 201, 133, 121], [182, 201, 133, 121]]
@@ -149,8 +151,9 @@
       const [x, y, w, h] = narrow ? [18, 127, 302, 236] : [368, 27, 469, 249];
       device(x, y, w, h, ['物理 GPU · NVIDIA MIG', 'Physical GPU · NVIDIA MIG']);
       box(x + 14, y + 40, w - 28, 99, 'box');
-      text(x + w / 2, y + 68, ['实例 A · 内部轮转', 'Instance A · Time-Sliced']);
-      timeline(x + 29, y + 85, w - 58, ['A', 'B', 'A', 'B']);
+      text(x + w / 2, y + 59, ['实例 A', 'Instance A']);
+      text(x + w / 2, y + 81, ['每个任务一个 GPU 进程', 'One GPU process per job'], 'muted');
+      timeline(x + 29, y + 96, w - 58);
       box(x + 14, y + 153, w - 28, 60, 'box').dataset.tone = 'C';
       text(x + w / 2, y + 190, ['实例 B · 任务 C', 'Instance B · Job C']);
 
@@ -212,8 +215,9 @@
         packet.setAttribute('y', point.y - 4.5);
         packet.setAttribute('opacity', still ? 0 : Math.max(0, Math.min(1, p * 8, (1 - p) * 8)));
       }
-      slots.forEach((slot, index) => {
-        slot.dataset.active = String(still || index === Math.floor(time / .8) % slots.length);
+      const activeSlot = slots.findIndex(({end}) => time / 3.2 <= end);
+      slots.forEach(({slot}, index) => {
+        slot.dataset.active = String(still || index === activeSlot);
       });
       for (const {node, label, pair} of faults) {
         const active = still || time >= .8;

@@ -3,9 +3,9 @@
   const scenes = [
     {"nodes":[[["S3 客户端","S3 Client"],["对象请求","Object Request"],"",""],[["S3 服务","S3 Service"],["协议容器","Protocol Container"],"",""],[["文件系统","Filesystem"],["集群存储","Cluster Storage"],"store",""]],"routes":[[0,1,0,1,"control"],[1,2,1.04,1]]},
     {"nodes":[[["存储桶","Bucket"],["dataset","dataset"],"",""],[["S3 服务","S3 Service"],["协议容器","Protocol Container"],"",""],[["已有目录","Existing Directory"],["/datasets","/datasets"],"store","GG"]],"routes":[[0,1,0,1,"control"],[1,2,1,1,"control"]],"states":[[2,2,"已映射到存储桶|Mapped to Bucket","on","GG"]]},
-    {"nodes":[[["对象键","Object Key"],["run.json","run.json"],"",""],[["S3 服务","S3 Service"],["协议容器","Protocol Container"],"",""],[["文件","File"],["run.json","run.json"],"store",""]],"routes":[[0,1,0,0.82],[1,2,0.82,1],[2,1,2.2,0.9],[1,0,3.1,0.85]],"states":[[1,0,"PUT 写入|PUT Object","on"],[2,1.82,"对象已写入|Object Stored","on","G"],[1,2.2,"GET 读取|GET Object","on"],[0,3.95,"读取完成|GET Complete","on","G"]]},
+    {"nodes":[[["S3 客户端","S3 Client"],["PUT / GET","PUT / GET"],"",""],[["S3 服务","S3 Service"],["协议容器","Protocol Container"],"",""],[["文件","File"],["run.json","run.json"],"store",""]],"routes":[[0,1,0,0.82],[1,2,0.82,1],[0,1,2,0.6,"control"],[2,1,2.6,0.9],[1,0,3.5,0.85]],"states":[[1,0,"PUT 写入|PUT Object","on"],[2,1.82,"对象已写入|Object Stored","on","G"],[1,2,"GET 读取|GET Object","on"],[0,4.35,"已收到文件内容|Content Received","on","G"]],"labels":[["对象键 run.json","Key: run.json"],["文件内容","File Content"]]},
     {"layout":"side","nodes":[[["S3 客户端","S3 Client"],["HTTPS","HTTPS"],"",""],[["S3 服务","S3 Service"],["验证请求签名","Checks Signature"],"",""],[["目标对象","Target Object"],["run.json","run.json"],"store","G"],[["IAM 策略","IAM Policy"],["操作与资源","Action and Resource"],"",""]],"routes":[[0,1,0,0.8,"control"],[1,3,0.8,0.7,"control"],[3,1,1.5,0.7,"signal"],[1,2,2.4,1,"control"]],"states":[[1,2.2,"访问获准|Request Allowed","on"]]},
-    {"layout":"split","nodes":[[["S3 客户端","S3 Client"],["对象请求","Object Request"],"",""],[["文件客户端","File Client"],["路径读取","Path Lookup"],"",""],[["S3 服务","S3 Service"],["协议容器","Protocol Container"],"",""],[["POSIX 路径","POSIX Path"],["/datasets/run.json","/datasets/run.json"],"",""],[["同一文件","One File"],["run.json","run.json"],"store","G"]],"routes":[[4,2,0,1],[4,3,0.17,1],[2,0,1,1],[3,1,1.17,1]],"states":[[0,2,"对象内容|Object Content","on","G"],[1,2.17,"文件内容|File Content","on","G"]]}
+    {"layout":"split","nodes":[[["S3 客户端","S3 Client"],["对象请求","Object Request"],"",""],[["文件应用","File Application"],["路径读取","Path Lookup"],"",""],[["S3 服务","S3 Service"],["协议容器","Protocol Container"],"",""],[["POSIX 客户端","POSIX Client"],["文件访问","File Access"],"",""],[["同一文件","One File"],["/datasets/run.json","/datasets/run.json"],"store","G"]],"routes":[[4,2,0,1],[4,3,0.17,1],[2,0,1,1],[3,1,1.17,1]],"states":[[0,2,"对象内容|Object Content","on","G"],[1,2.17,"文件内容|File Content","on","G"]]}
   ];
 
   function layout(scene, mobile) {
@@ -63,7 +63,7 @@
       return prefix + '-' + name;
     }
 
-    function pathPoints(a, b, outer, paired, mobile, options) {
+    function pathPoints(a, b, outer, paired, mobile, options, requestAbove) {
       if (options) {
         const side = mobile ? -1 : 1;
         const rail = mobile ? 47 : 415;
@@ -75,7 +75,7 @@
           : [[a.x,a.y+a.h/2],[a.x,231],[b.x,231],[b.x,b.y+b.h/2]];
       }
       const dx = b.x-a.x, dy = b.y-a.y;
-      const shift = paired ? 8 : 0;
+      const shift = paired ? (requestAbove && !mobile ? -8 : 8) : 0;
       if (dx && (!mobile || !dy)) {
         const sx = a.x+Math.sign(dx)*a.w/2, ex = b.x-Math.sign(dx)*b.w/2;
         const sy = a.y+Math.sign(dx)*shift, ey = b.y+Math.sign(dx)*shift;
@@ -146,7 +146,7 @@
       const traffic = el('g', {});
       routes = scene.routes.map(([from,to,delay,duration,kind = 'data',outer]) => {
         const reverse = scene.routes.some(([a,b]) => a === to && b === from);
-        const points = pathPoints(boxes[from],boxes[to],outer,reverse,mobile,scene.layout === 'options');
+        const points = pathPoints(boxes[from],boxes[to],outer,reverse,mobile,scene.layout === 'options',scene.labels);
         const trace = el('path', {d: 'M' + points.map(p => p.join(' ')).join(' L'), class:cls('wire'), 'data-kind':kind}, wires);
         const length = trace.getTotalLength();
         const tip = trace.getPointAtLength(length - 2);
@@ -157,6 +157,14 @@
         return {trace,arrow,packet,length,start:delay,end:delay+duration};
       });
 
+      if (scene.labels) {
+        const x = (boxes[0].x + boxes[1].x) / 2;
+        const y = (boxes[0].y + boxes[1].y) / 2;
+        el('text', {x: mobile ? x+18 : x, y: mobile ? y-9 : y-55,
+          'text-anchor': mobile ? 'start' : 'middle', class:cls('route-label')}).textContent = scene.labels[0][lang];
+        el('text', {x: mobile ? x-18 : x, y: mobile ? y+13 : y+63,
+          'text-anchor': mobile ? 'end' : 'middle', class:cls('route-label')}).textContent = scene.labels[1][lang];
+      }
       cards = scene.nodes.map((node, i) => {
         if (!node) return null;
         const [label, detail, tone, blocks] = node;

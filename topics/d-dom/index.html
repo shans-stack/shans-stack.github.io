@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/d-dom.css?v=2c1b33bb">
+<link rel="stylesheet" href="../../assets/anim/d-dom.css?v=4f7aebee">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -44,7 +44,8 @@
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="Lustre Operations Manual (doc.lustre.org), chapter &quot;Data on MDT (DoM)&quot;.">Lustre Operations Manual（doc.lustre.org），「Data on MDT (DoM)」一章。</li>
-      <li data-en="Lustre Wiki (wiki.lustre.org), entries on Data on MDT and Progressive File Layouts.">Lustre Wiki（wiki.lustre.org），Data on MDT 与 Progressive File Layouts 条目。</li>
+      <li data-en="&lt;a href=&quot;https://wiki.lustre.org/Data_on_MDT_Solution_Architecture&quot;&gt;Lustre Wiki, Data on MDT Solution Architecture&lt;/a&gt;"><a href="https://wiki.lustre.org/Data_on_MDT_Solution_Architecture">Lustre Wiki，Data on MDT 设计</a></li>
+      <li data-en="&lt;a href=&quot;https://jira.whamcloud.com/browse/LU-10181&quot;&gt;Lustre LU-10181, Read-on-Open Optimization&lt;/a&gt;"><a href="https://jira.whamcloud.com/browse/LU-10181">Lustre LU-10181，read-on-open 优化</a></li>
       <li data-en="DDN EXAScaler product page (ddn.com).">DDN EXAScaler 产品页（ddn.com）。</li>
     </ul></div>
   </div>
@@ -72,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/d-dom.js?v=0e5a939f"></script>
+<script src="../../assets/anim/d-dom.js?v=ed90562a"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "d-dom",
@@ -84,21 +85,21 @@ window.SS_TOPIC_CFG={
     "Separate Metadata and Data Access Paths"
    ],
    "d": [
-    "客户端先问元数据服务器要属性和布局，再去数据服务器拿内容，一共两次来回。",
-    "The client first asks the metadata server for attributes and layout, then fetches the content from a data server: two round trips in all."
+    "普通 OST 布局的简化示例。客户端未命中缓存，先获取属性和布局，再从单个 OST 读取数据。",
+    "In this simplified example of a conventional OST layout, the client misses its cache, gets the attributes and layout, then reads data from a single OST."
    ],
    "s": [
-    "两次来回",
-    "Two round trips"
+    "普通 OST 布局",
+    "Conventional OST layout"
    ],
    "b": [
     [
-     "<p>如前所述，Lustre 把元数据和文件内容分开放：元数据服务器（MDS）管文件名、属性和布局，内容放在数据服务器的存储目标（OST）上。所以读任何一个文件，客户端都要先找元数据服务器，再找数据服务器。</p>",
-     "<p>这里说的「一次来回」，是客户端发出一个请求、收到对方回复的整个过程。大文件读取耗时长，开头多一次来回影响很小；文件很小时则不同。</p>"
+     "<p>常规 Lustre 布局把文件名、属性和布局存放在 MDT，把文件内容存放在 OST。图中客户端缺少已缓存的元数据和布局，先访问元数据服务，再向承载该文件数据的 OSS 发起读取。</p>",
+     "<p>一次往返是客户端发出请求并收到响应。图把打开文件和从单个 OST 读取数据各简化为一次往返。</p>"
     ],
     [
-     "<p>As described earlier, Lustre keeps metadata and file content apart: the metadata server (MDS) handles names, attributes and layout, while the content sits on object storage targets (OSTs) on the data servers. So to read any file, the client goes to the metadata server first and then to a data server.</p>",
-     "<p>A round trip here is the whole exchange of the client sending a request and getting the reply. A large file takes a long time to read, so one extra round trip at the start has little effect. For a very small file, the effect is different.</p>"
+     "<p>A conventional Lustre layout puts file names, attributes, and layouts on the MDT and file contents on OSTs. The client in the figure has no cached metadata or layout, so it contacts the metadata service before issuing a read to the OSS serving the file’s data.</p>",
+     "<p>A round trip is one request and its response. The diagram simplifies opening the file and reading from a single OST to one round trip each.</p>"
     ]
    ]
   },
@@ -108,8 +109,8 @@ window.SS_TOPIC_CFG={
     "Round-Trip Overhead for Small Files"
    ],
    "d": [
-    "文件很小时，真正传数据的时间很短，大部分时间花在来回通讯上；文件越多，来回越多。",
-    "When files are tiny, moving the data takes very little time and most of it goes on round trips; more files mean more round trips."
+    "小文件传输的数据很少，打开和读取时的请求往返可能占据较多时间。",
+    "Small files transfer little data, so request round trips can account for much of the time spent opening and reading them."
    ],
    "s": [
     "小文件多了",
@@ -117,12 +118,12 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>一个很小的文件，数据本身传输很快，花时间的是两次来回：每次都要经过网络、协议处理和服务器排队。读一万个小文件，就是两万次来回，而且要与两类不同的服务器交互。</p>",
-     "<p>这就是并行文件系统处理海量小文件时的老问题：大文件靠多台服务器叠带宽很占优势，小文件却受通讯延迟限制，甚至可能不如只与一台服务器交互的单机 NFS。基因组的小片段、代码仓库、日志、训练开始时成批的 <code>stat</code> / <code>open</code>，都是这类负载。</p>"
+     "<p>本例假设没有客户端缓存命中，每个文件先打开，再从单个 OST 读一次，因此每个文件画两次往返。实际次数取决于缓存、请求合并、锁和读取范围。</p>",
+     "<p>批量 <code>stat</code> 查的是文件属性。打开文件并读取内容会涉及文件数据，两类操作的请求路径和开销不同。</p>"
     ],
     [
-     "<p>For a very small file the data itself is sent almost at once; the time goes on the two round trips, each passing through the network, protocol processing and server queues. Reading ten thousand small files means twenty thousand round trips, with two different kinds of server.</p>",
-     "<p>This is the long-standing problem of parallel file systems with huge numbers of small files: large files gain a lot from stacking the bandwidth of many servers, but small files are held back by communication latency and may even do worse than a single-server NFS. Small genome fragments, code repositories, logs and the bursts of <code>stat</code> / <code>open</code> at the start of training are all this kind of workload.</p>"
+     "<p>The example assumes client cache misses and depicts two round trips per file: one to open it and one to read from a single OST. Actual counts depend on caching, request coalescing, locks, and the read range.</p>",
+     "<p>Batch <code>stat</code> queries file attributes. Opening a file and reading its contents also involves file data, so the two workloads have different request paths and costs.</p>"
     ]
    ]
   },
@@ -141,12 +142,12 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p><b>DoM</b>（Data on MDT）的做法是：既然每次访问都先经过元数据服务器，就把小文件的内容也存放在那里。元数据目标（MDT）通常是闪存，写入时小文件的数据和它的属性、布局存在同一处，数据服务器这次不用参与。</p>",
-     "<p>哪些文件这样放，是在文件布局里设定的：管理员可以给目录设一个布局，规定文件开头多大的一段放在 MDT 上。</p>"
+     "<p><b>DoM</b>（Data on MDT）将文件的起始数据放在元数据目标（MDT）上。访问完全落在 DoM 范围内时，由元数据服务提供文件内容。</p>",
+     "<p>文件布局可指定开头多少数据存放在 MDT，目录的默认布局可为新文件设置这个范围。</p>"
     ],
     [
-     "<p><b>DoM</b> (Data on MDT) takes this approach: since every access goes to the metadata server first, the small file's content is stored there too. The metadata target (MDT) is usually flash. On write, the small file's data is stored in the same place as its attributes and layout, and the data servers are not involved this time.</p>",
-     "<p>Which files are stored this way is set in the file layout: an administrator can give a directory a layout that says how large a leading part of each file goes on the MDT.</p>"
+     "<p><b>DoM</b> (Data on MDT) places the first part of a file on the metadata target (MDT). When the requested data falls entirely within the DoM range, the metadata service supplies the file contents.</p>",
+     "<p>The file layout can specify how much initial data sits on the MDT, and a directory’s default layout can set the range for newly created files.</p>"
     ]
    ]
   },
@@ -156,21 +157,21 @@ window.SS_TOPIC_CFG={
     "Combined Retrieval of Metadata and Small-File Contents"
    ],
    "d": [
-    "读这样的文件时，客户端只找元数据服务器一次，属性和内容一起回来，数据服务器不参与。",
-    "To read such a file the client goes to the metadata server once; attributes and content come back together, and the data servers stay out of it."
+    "小文件满足 read-on-open 条件时，元数据服务可在打开文件的响应中同时返回属性和内容。",
+    "For an eligible small file, read-on-open lets the metadata service return attributes and contents together in the open response."
    ],
    "s": [
-    "一次来回",
-    "One round trip"
+    "打开时联合返回",
+    "Read-on-open"
    ],
    "b": [
     [
-     "<p>读一个 DoM 文件，客户端发给元数据服务器的那一次请求，回来的就同时有属性和内容。原来两次来回、两类服务器，现在变成一次来回、一台服务器，小文件的访问延迟因此明显降低。</p>",
-     "<p>和第 1 步比，变的不是带宽，而是来回的次数：对小文件来说，这才是瓶颈所在。</p>"
+     "<p>DoM 定义数据的存放位置。对于满足 read-on-open 条件的小文件，一次打开请求可同时返回元数据和文件内容。图示采用这条优化路径，数据服务器本次不参与。</p>",
+     "<p>未走该优化时，客户端仍可通过元数据服务读取 DoM 范围，请求次数取决于实际访问路径。</p>"
     ],
     [
-     "<p>When the client reads a DoM file, the single request it sends to the metadata server returns both attributes and content. Two round trips to two kinds of server become one round trip to one server, so access latency for small files drops markedly.</p>",
-     "<p>Compared with step 1, what changes is not bandwidth but the number of round trips, and for small files that is where the bottleneck lies.</p>"
+     "<p>DoM defines where the data is stored. For a small file eligible for read-on-open, an open request can return both metadata and file contents. The diagram shows this optimized path, which needs no data server.</p>",
+     "<p>Without this optimization, the client can still read the DoM range through the metadata service. The number of requests depends on the access path.</p>"
     ]
    ]
   },
@@ -180,8 +181,8 @@ window.SS_TOPIC_CFG={
     "Comparison of Batched Small-File Access"
    ],
    "d": [
-    "同样一段时间，用 DoM 读完的小文件比普通布局多。",
-    "In the same time, DoM finishes more small files than the normal layout."
+    "两种布局都未命中客户端缓存。符合 read-on-open 条件的 DoM 示例减少了请求往返。",
+    "Both examples miss the client cache. The DoM example reduces request round trips by using read-on-open."
    ],
    "s": [
     "一批同时跑",
@@ -189,12 +190,12 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>把两种方式放在一起跑一批小文件：普通布局每个文件要两次来回，DoM 只要一次，同样时间内读完的文件数差距明显。画面是示意，不代表实测数字。</p>",
-     "<p>小文件都放到元数据服务器上，可能使它成为新的瓶颈。DNE3 解决的正是这一点：把元数据分散到多台元数据服务器上，加服务器就加处理能力。EXAScaler 把 DNE3 和 DoM 放在一起介绍，原因即在于此。</p>"
+     "<p>动画比较两种未命中客户端缓存的小文件读取。普通 OST 布局在本例中用一次请求打开文件、再用一次请求读取数据。DoM 示例满足 read-on-open 条件，在打开响应中返回数据。计数仅表示示意中的访问过程。</p>",
+     "<p>小文件数据放到元数据目标后，读取也会消耗该服务的处理与存储资源。分布式命名空间可将目录负载分布到多个元数据目标。</p>"
     ],
     [
-     "<p>Run a batch of small files both ways: the normal layout needs two round trips per file and DoM needs one, so the number of files finished in the same time differs markedly. The animation is schematic, not measured.</p>",
-     "<p>Putting small files on the metadata server can make it the new bottleneck. That is what DNE3 addresses: metadata is spread over several metadata servers, so adding servers adds capacity. That is why EXAScaler presents DNE3 and DoM together.</p>"
+     "<p>The animation compares two small-file reads that miss the client cache. In the conventional OST example, one request opens the file and another reads the data. The DoM file is eligible for read-on-open, so the open response returns the data. The counters describe the illustrated workload.</p>",
+     "<p>Storing small-file data on the metadata target also puts its read workload on the metadata service and storage. A distributed namespace can spread directory workloads across multiple metadata targets.</p>"
     ]
    ]
   },
@@ -225,6 +226,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

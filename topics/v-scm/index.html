@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/v-scm.css?v=5341bb91">
+<link rel="stylesheet" href="../../assets/anim/v-scm.css?v=949beaa3">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-scm.js?v=5191685f"></script>
+<script src="../../assets/anim/v-scm.js?v=aa31de06"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-scm",
@@ -109,8 +109,8 @@ window.SS_TOPIC_CFG={
     "SCM Buffering and Write Acknowledgment"
    ],
    "d": [
-    "写入先写进至少两块 SCM 盘（分在不同的 DBox），元数据也写好几份，然后马上回话。",
-    "A write goes to at least two SCM drives in different DBoxes, metadata is written in several copies, and the ACK goes out right away."
+    "图示为经典 SCM 双镜像。CNode 持久化写入数据并提交元数据后回确认。",
+    "This diagram shows classic SCM mirroring. The CNode acknowledges the write after persisting the data and committing metadata."
    ],
    "s": [
     "先落 SCM 就回话",
@@ -118,12 +118,12 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>SCM（Storage Class Memory，存储级内存）是介于内存和普通闪存之间的一类介质：掉电不丢、延迟低、耐擦写。CNode 收到写入后，把数据写进至少两块 SCM 盘，这两块盘特意分在不同的 DBox；元数据则写三份，放在不同机箱的 SCM 上。都写好，就给客户端回话。</p>",
-     "<p>这时数据已经有冗余保护，客户端不用等后面的任何重活。早期 SCM 用的是 Intel Optane，Optane 停产后换成了 SLC 闪存（每个单元只存 1 个比特，又快又耐写），官方文档里这一层有时也叫 NVRAM，层本身一直都在。写缓冲的保护也从早期的两路镜像，改成了跨多块 SCM 的双校验纠删码。</p>"
+     "<p>SCM（Storage Class Memory，存储级内存）是介于内存和普通闪存之间的一类介质：掉电不丢、延迟低、耐擦写。在图示的经典双镜像配置中，两份数据写入不同 SCM 盘。CNode 持久化数据并更新持久元数据后向客户端确认。配置机柜级保护等双故障域保护时，白皮书描述了跨故障域的元数据三副本。</p>",
+     "<p>这时数据已经有冗余保护，客户端不用等后面的任何重活。早期 SCM 用的是 Intel Optane，Optane 停产后换成了 SLC 闪存（每个单元只存 1 个比特，又快又耐写），官方文档里这一层有时也叫 NVRAM，层本身一直都在。白皮书还描述了跨多块 SCM 盘的双校验写缓冲模式。</p>"
     ],
     [
-     "<p>SCM (Storage Class Memory) is a class of media between memory and ordinary flash: it keeps data without power, has low latency and withstands many writes. When a CNode receives a write, it writes the data to at least two SCM drives, deliberately placed in different DBoxes, and writes metadata three times on SCM in different enclosures. Once all of that is written, it acknowledges the client.</p>",
-     "<p>At that point the data is already redundantly protected, and the client does not wait for any of the heavy work. Early SCM was Intel Optane; after Optane was discontinued it became SLC flash, which stores 1 bit per cell and is fast and durable. Official documentation sometimes calls this layer NVRAM; the layer itself has always been there. Protection of the write buffer has also moved from early two-way mirroring to dual-parity erasure coding across several SCM drives.</p>"
+     "<p>SCM (Storage Class Memory) is a class of media between memory and ordinary flash: it keeps data without power, has low latency and withstands many writes. In the illustrated classic mirror configuration, two data copies go to separate SCM drives. The CNode acknowledges the write after it persists the data and updates durable metadata. The white paper describes metadata triplication across failure domains for deployments configured to tolerate two such failures.</p>",
+     "<p>At that point the data is already redundantly protected, and the client does not wait for any of the heavy work. Early SCM was Intel Optane; after Optane was discontinued it became SLC flash, which stores 1 bit per cell and is fast and durable. Official documentation sometimes calls this layer NVRAM; the layer itself has always been there. The white paper also describes dual-parity write buffering across multiple SCM drives.</p>"
     ]
    ]
   },
@@ -181,20 +181,20 @@ window.SS_TOPIC_CFG={
     "Direct QLC Path for Large Writes"
    ],
    "d": [
-    "像 checkpoint 这样的大块写入（约 256 KB 以上）不进 SCM，直接写进 QLC 上专门留出的一块区域。",
-    "Large writes such as checkpoints (roughly 256 KB and up) skip SCM and go straight to a reserved area on QLC."
+    "启用 Write Buffer Bursting 时，符合配置的突发大块写入可直接写入 QLC 保留区的受保护条带。",
+    "With Write Buffer Bursting enabled, eligible large burst writes can go straight to protected stripes in a reserved QLC area."
    ],
    "s": [
-    "大块写直写 QLC",
-    "Large writes go straight to QLC"
+    "突发写入扩展缓冲",
+    "Burst write buffer"
    ],
    "b": [
     [
-     "<p>「写入一律先落 SCM」并不完全准确。VAST 有一个叫 Write Buffer Bursting 的机制：大块写入（约 256 KB 以上，典型的是训练时保存的 checkpoint）绕过 SCM，直接写进 QLC 上专门保留的一小块区域，这块区域用较窄的条带保护。</p>",
+     "<p>Write Buffer Bursting 使用预先配置的 QLC 保留区承接检查点等场景的突发写入。VAST 2026 年 4 月白皮书给出的例子中，约 256 KB 以下的 I/O 仍写入 SCM，较大 I/O 直接写入保留区的纠删码条带。</p>",
      "<p>原因是集群里 QLC 盘的数量比 SCM 盘多得多，大块顺序写直接分摊到更多盘上，整体写入带宽更高。小块写仍然先进 SCM，享受快速回话。</p>"
     ],
     [
-     "<p>\"Every write lands on SCM first\" is not entirely accurate. VAST has a mechanism called Write Buffer Bursting: large writes (roughly 256 KB and up, typically checkpoints saved during training) bypass SCM and go straight to a small reserved area on QLC, protected with narrower stripes.</p>",
+     "<p>Write Buffer Bursting uses a configured, reserved QLC area to absorb bursts such as checkpoint writes. In the April 2026 VAST white paper example, I/Os smaller than roughly 256 KB still land on SCM, while larger I/Os go to erasure-coded stripes in the reserved area.</p>",
      "<p>The reason is that a cluster has far more QLC drives than SCM drives, so large sequential writes spread across more drives and overall write bandwidth is higher. Small writes still go to SCM first and get a fast ACK.</p>"
     ]
    ]
@@ -202,6 +202,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

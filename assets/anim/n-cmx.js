@@ -70,17 +70,22 @@
     },
     {
       nodes: [
-        ["推理任务|Inference", [380, 75, 212], [176, 88, 218], "", ""],
-        ["CMX~可重建的 KV Cache|CMX~Rebuildable KV Cache", [187, 230, 222], [86, 270, 150], "accent", "data"],
-        ["持久共享存储~原始数据和结果|Durable Storage~Source Data & Results", [573, 230, 222], [266, 270, 150], "", "durable"]
+        ["推理任务|Inference", [377, 153, 148], [176, 187, 186], "", ""],
+        ["CMX~可重建的 KV Cache|CMX~Rebuildable KV Cache", [102, 153, 179], [176, 74, 214], "accent", "data"],
+        ["持久共享存储~原始数据和结果|Durable Storage~Source Data & Results", [648, 153, 198], [176, 322, 218], "", "durable"]
       ],
       edges: [
-        [1, 0, "tb", "tb", "data", 0.2],
-        [0, 2, "bt", "bt", "durable", 1.8]
+        [1, 0, "rl", "bt", "data", 0.2],
+        [2, 0, "lr", "tb", "durable", 1.65, [[-12, -12], [-50, -50]]],
+        [0, 2, "rl", "bt", "durable", 3.1, [[12, 12], [50, 50]]]
       ],
       frames: [],
       pulse: [],
-      legend: []
+      legend: [
+        ["取回 KV 块|Fetch KV Block", [248, 123], [115, 134]],
+        ["读原始数据|Read Source", [502, 113], [66, 247]],
+        ["写长期结果|Write Results", [502, 196], [287, 247]]
+      ]
     }
   ];
   const views = [[760, 320], [352, 400]];
@@ -119,11 +124,11 @@
       return el("rect", {x: x - 6, y: y - 4, width: 12, height: 8, rx: 2}, "chip " + tone, parent);
     }
 
-    function port(node, side) {
+    function port(node, side, offset = 0) {
       const [x, y, w, h] = node;
       return {
-        l: [x - w / 2, y], r: [x + w / 2, y],
-        t: [x, y - h / 2], b: [x, y + h / 2],
+        l: [x - w / 2, y + offset], r: [x + w / 2, y + offset],
+        t: [x + offset, y - h / 2], b: [x + offset, y + h / 2],
       }[side];
     }
 
@@ -200,9 +205,11 @@
         }
         return rect;
       });
-      edges.forEach(([from, to, desktop, phone, kind, start]) => {
+      edges.forEach(([from, to, desktop, phone, kind, start, offsets]) => {
         const sides = mobile ? phone : desktop;
-        drawLink(links, port(positions[from], sides[0]), port(positions[to], sides[1]), sides, kind, start);
+        const [fromOffset, toOffset] = (mobile ? offsets?.[1] : offsets?.[0]) ?? [];
+        drawLink(links, port(positions[from], sides[0], fromOffset),
+          port(positions[to], sides[1], toOffset), sides, kind, start);
       });
       pulse.forEach(([i, start]) => effects.push((time, still) => {
         panels[i].classList.toggle(id + "-active", still || (time >= start && time < start + 0.85));

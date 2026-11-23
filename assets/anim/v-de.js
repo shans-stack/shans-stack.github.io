@@ -8,7 +8,7 @@
    样式在 assets/anim/v-de.css，全部限定在 .ssa-v-de 容器之内。 */
 (function(){
 var ID='v-de',NSTEP=7;
-var EN={"    … return 结果":"    … return result","DataEngine 流水线":"DataEngine pipeline","触发器":"Trigger","监听事件":"Watches events","函数部署 A":"Function deployment A","函数部署 B":"Function deployment B","函数 A":"Function A","函数 B":"Function B","容器镜像仓库":"Container registry","函数资源引用镜像":"A function references a container image","事件":"Event","触发器 → 函数 → 函数：一条流水线":"Trigger → function → function: one pipeline",
+var EN={"已配置零次重试":"No retries configured","函数":"Functions","存储服务":"Storage","重试用尽，原事件发送至死信 topic":"Retries exhausted; original event goes to dead letter","    … return 结果":"    … return result","DataEngine 流水线":"DataEngine pipeline","触发器":"Trigger","监听事件":"Watches events","函数部署 A":"Function deployment A","函数部署 B":"Function deployment B","函数 A":"Function A","函数 B":"Function B","容器镜像仓库":"Container registry","函数资源引用镜像":"A function references a container image","事件":"Event","触发器 → 函数 → 函数：一条流水线":"Trigger → function → function: one pipeline",
 "客户端":"Client","源视图":"Source view","元素触发器":"Element trigger","后缀 .jpg":"Suffix .jpg","定时触发器":"Schedule trigger","按计划":"On a schedule","不匹配":"No match","按前缀、后缀过滤，事件写进 topic":"Filtered by prefix or suffix; events go to a topic",
 "分区 0":"Partition 0","分区 1":"Partition 1","函数实例 ":"Instance ","已处理 ":"Processed ","按序：每个分区一次只处理一个":"Ordered: one event per partition at a time","不按序：可以并发，不保证先后":"Unordered: concurrent, order not guaranteed","换成不按序":"Switch to unordered","换成按序":"Switch to ordered","切换投递方式，当前 ":"Switch delivery, now ","按序":"ordered","不按序":"unordered","示意，不代表实测数字":"Schematic, not measured",
 "vastde 构建":"vastde build","本地 Docker":"Local Docker","镜像仓库":"Container registry","代码":"Code","镜像 v2":"Image v2","函数资源 · 版本 2":"Function · revision 2","函数资源":"Function","流水线":"Pipeline","函数资源引用仓库中的镜像":"The function references a registry image",
@@ -153,13 +153,17 @@ const SCENE={
    s.fr=m?R(8,30,464,330):R(24,40,560,400);s.k8=m?R(8,400,464,166):R(640,90,296,250);
    s.cn=[0,1,2,3].map(k=>m?R(22+k*112,76,100,180):R(52+k*130,96,112,210));s.tp=m?R(90,288,300,52):R(150,350,300,60);
    s.kn=[0,1,2].map(k=>m?R(22+k*148,456,140,90):R(660,140+k*62,256,50));
-   s.cn.forEach((r,k)=>{line(P(C(r).x,r.y+r.h),P(C(r).x,s.tp.y),'thin',ln)});
+   s.fnPaths=s.cn.slice(0,3).map(r=>{
+    const x=r.x-7,y=r.y+88,bus=s.tp.y-14;
+    const route=[P(C(s.tp).x,s.tp.y),P(C(s.tp).x,bus),P(x,bus),P(x,y),P(r.x+18,y)];
+    poly(route,'thin',ln);return route;
+   });
    s.kp=m?[P(C(s.tp).x,s.tp.y+s.tp.h),P(C(s.tp).x,s.k8.y)]:[P(s.tp.x+s.tp.w,C(s.tp).y),P(612,C(s.tp).y),P(612,C(s.k8).y),P(s.k8.x,C(s.k8).y)];s.kl=poly(s.kp,'',ln);
    box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'集群',f.sm,'ttl','start',g);
    s.bars=s.cn.map((r,k)=>{box(r,g,'box',10);tx(C(r).x,r.y+20,'CNode',f.sm,'lbl b7','middle',g);
     const tr=R(r.x+18,r.y+38,r.w-36,r.h-(m?70:76));el('rect',{x:tr.x,y:tr.y,width:tr.w,height:tr.h,rx:6,class:'cell'},g);
     const st=el('rect',{x:tr.x,y:tr.y,width:tr.w,height:tr.h,rx:6,class:'box fills'},g);const cp=el('rect',{x:tr.x,y:tr.y,width:tr.w,height:0,rx:6,class:'box fillv'},g);
-    const stT=tx(C(tr).x,tr.y+tr.h-16,'存储',f.xs,'slate-t st','middle',g);const cpT=tx(C(tr).x,tr.y+18,'计算',f.xs,'violet-t st','middle',g);
+    const stT=tx(C(tr).x,tr.y+tr.h-16,'存储服务',f.xs,'slate-t st','middle',g);const cpT=tx(C(tr).x,tr.y+18,'函数',f.xs,'violet-t st','middle',g);
     const note=tx(C(r).x,r.y+r.h-14,'',f.xs,'ink3-t','middle',g);return {tr,st,cp,stT,cpT,note}});
    s.tpB=nb(s.tp,'Event Broker topic','',g,'box och');
    s.kg=el('g',{class:'vis'},g);box(s.k8,s.kg,'box',14);tx(s.k8.x+16,s.k8.y+22,'外部 Kubernetes',f.sm,'ttl','start',s.kg);
@@ -224,7 +228,7 @@ SCENE.modes[2]={enter(v){const s=E.s3;S.v.md=v;S.v.ev=sched(v);S.v.p=S.v.ev.map(
   ['ordered','unordered'].forEach(md=>{s.ig[md].g.style.display=md===v?'':'none';s.ig[md].lg.style.display=md===v?'':'none'});
   cap(v==='ordered'?'按序：每个分区一次只处理一个':'不按序：可以并发，不保证先后',v==='ordered'?'slate-t':'ochre-t')},
  frame(t){const s=E.s3,u=t%11,md=S.v.md;let n=0;const busy=[0,0,0,0];
-  S.v.ev.forEach((e,i)=>{const travel=0.45,ts=e.t0-travel;const q=s.q[e.l][e.k];q.style.opacity=u<ts?1:0;
+  S.v.ev.forEach((e,i)=>{const travel=0.45,ts=e.t0-travel;const q=s.q[e.l][e.k];q.style.opacity=u<ts?1:0.42;
    const ri=s.inst[md][e.inst],park=L.mobile?P(ri.x+20,C(ri).y):P(ri.x+28,C(ri).y);const pts=cat([P(s.slotX(e.k),s.ly[e.l]),P(s.le,s.ly[e.l])],s.pathTo(md,e.l,e.inst).slice(1),L.mobile?[P(park.x,ri.y),park]:[park]);
    const o=S.v.p[i];
    if(u<ts)put(o,-99,-99,0);else if(u<e.t0)put(o,at(pts,sm((u-ts)/travel)),1);else if(u<e.t0+e.d){put(o,park,1);busy[e.inst]=1}else{put(o,-99,-99,0);n++}});
@@ -244,9 +248,9 @@ SCENE.modes[4]={enter(v){const s=E.s5;S.v.v=v;const cn=v==='cnode';
   S.v.f=[0,1,2].map(()=>pk('ok',L.mobile?16:18,L.mobile?16:18));S.v.e=[0,1,2].map(()=>dot('och'))},
  frame(t){const s=E.s5,u=t%6,cn=S.v.v==='cnode';
   [0,1,2].forEach(k=>{let dest,p;
-   if(cn){const b=s.bars[k];dest=P(C(b.tr).x,b.tr.y+b.tr.h*0.25+6);p=[P(C(s.tp).x,s.tp.y),P(C(s.tp).x,s.tp.y-14),P(C(s.cn[k]).x,s.tp.y-14),P(C(s.cn[k]).x,s.cn[k].y+s.cn[k].h),dest]}
+   if(cn){const b=s.bars[k];dest=P(C(b.tr).x,b.tr.y+50);p=s.fnPaths[k]}
    else{const r=s.kn[k];dest=C(r);p=cat(s.kp,L.mobile?[P(C(s.k8).x,s.k8.y+20),P(C(r).x,s.k8.y+20),P(C(r).x,r.y)]:[P(s.k8.x+10,C(s.k8).y),P(s.k8.x+10,C(r).y),P(r.x,C(r).y)])}
-   run(S.v.e[k],p,u,0.3+k*0.5,1.1,0.1);if(u>1.4+k*0.5)put(S.v.f[k],cn?dest:P(dest.x+(L.mobile?40:90),dest.y),1);else put(S.v.f[k],-99,-99,0)});
+   run(S.v.e[k],p,u,0.3+k*0.5,1.1,0.1);if(u>1.4+k*0.5)put(S.v.f[k],cn?P(dest.x,dest.y-5):P(dest.x+(L.mobile?40:90),dest.y),1);else put(S.v.f[k],-99,-99,0)});
   s.knB.forEach((b,k)=>b.classList.toggle('on',!cn&&u>1.4+k*0.5))}};
 /* 6 */
 const LAB=[0,1,1,0,1,1,0];
@@ -270,8 +274,10 @@ SCENE.modes[6]={enter(){S.v.e=[0,1,2,3].map(()=>dot('vio'));S.v.r=[0,1,2,3].map(
   runs.forEach(([t0,f,k],i)=>{const ni=f==='A'?1:2;s.nB[ni].classList.toggle(k===3?'hot':'on',u>t0&&u<t0+0.9);
    const p=s.toT(ni,k);const d=dur(p)*0.7;run(S.v.r[i],p,u,t0+0.5,d,0.2);const on=u>t0+0.5+d&&u<10.6;s.trw[k].rr.style.opacity=on?1:0;s.trw[k].ts.forEach(x=>x.style.opacity=on?1:0);
    s.trw[k].rr.setAttribute('class','cell'+(k===3?' och':'')+(ph&&on?'':''))});
-  const dd=dur(s.toD)*0.7;run(S.v.d,s.toD,u,5.3,dd,0.2);const don=u>5.3+dd&&u<10.6;s.dlw[0].rr.style.opacity=don?1:0;s.dlw[0].ts.forEach(x=>x.style.opacity=don?1:0);s.dlw[0].rr.setAttribute('class','cell'+(don?' och':''));
-  cap(u<5.2?'追踪关联函数执行与结果':'失败事件进入配置的死信 topic',u<5.2?'ink2-t':'rose-t')}};
+  const failedAt=5.0+dur(s.toT(2,3))*0.7;
+  const sendAt=failedAt+1.35,dd=dur(s.toD)*0.7;
+  run(S.v.d,s.toD,u,sendAt,dd,0.2);const don=u>sendAt+dd&&u<10.6;s.dlw[0].rr.style.opacity=don?1:0;s.dlw[0].ts.forEach(x=>x.style.opacity=don?1:0);s.dlw[0].rr.setAttribute('class','cell'+(don?' och':''));
+  cap(u<failedAt?'追踪关联函数执行与结果':u<sendAt?'已配置零次重试':'重试用尽，原事件发送至死信 topic',u<failedAt?'ink2-t':'rose-t')}};
 /* ---------- 引擎 ---------- */
 const TG=SCENE.toggles||{};
 const tstate={};Object.keys(TG).forEach(k=>{const g=TG[k],v=qs.get(g.param);tstate[k]=g.values.indexOf(v)>-1?v:g.values[0]});

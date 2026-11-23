@@ -10,12 +10,12 @@
 var ID='v-sync',NSTEP=6;
 var EN={"对象存储":"Object store","NFS 文件系统":"NFS file system","协作平台":"Collaboration","S3 · GCS":"S3 · GCS","导出目录":"Export","Confluence 等":"Confluence etc.","SyncEngine":"SyncEngine","控制平面":"Control plane","调度 · 监控":"Schedules","标签 A":"Label A","VAST 集群":"VAST cluster","S3 bucket":"S3 bucket","NFS 导出目录":"NFS export","DataBase 表":"DataBase table","连接器":"Connector",
 "常见迁移目标：VAST S3 或 NFS":"Common migration targets: VAST S3 or NFS","worker 从控制平面领任务":"Workers take tasks from the control plane",
-"NFS 源端":"NFS source","目录 A":"Dir A","目录 B":"Dir B","目录 C":"Dir C","批":"Batch","逐层并行遍历，攒成批分给多个 worker":"Walk level by level in parallel, hand batches to several workers",
+"NFS 源端":"NFS source","目录 A":"Dir A","目录 B":"Dir B","目录 C":"Dir C","批":"Batch","遍历后分批复制，源文件保留":"Workers copy in batches; source files stay",
 "SQS 队列":"SQS queue","S3 事件通知":"S3 event notices","新对象":"New object","扫描":"Scan","定期：按间隔整体重扫一遍":"Scheduled: rescan the whole source at each interval","事件驱动：变更通知进 SQS，只同步变化的对象":"Event-driven: change notices go to SQS; only changed objects sync","换成事件驱动":"Switch to event-driven","换成定期重同步":"Switch to scheduled resync","切换同步方式，当前 ":"Switch sync mode, now ","定期重同步":"scheduled resync","事件驱动":"event-driven",
 "页面":"Page","页面.md":"Page.md","表格.xlsx":"Sheet.xlsx","表格.md":"Sheet.md","报告.pdf":"Report.pdf","A 组":"Group A","ACL：A 组":"ACL: Group A","格式转换与权限映射":"Format conversion and permission mapping",
 "路径":"Path","大小":"Size","修改时间":"Modified","元数据":"Metadata","POSIX 元数据写入 DataBase":"POSIX metadata goes to DataBase","SQL：找出多年没改过的大文件":"SQL: find large files untouched for years",
 "SyncEngine：迁移、重新同步与元数据索引":"SyncEngine: migration, resynchronization, and metadata indexing","迁移配置：源与目标连接器及路径":"Migration configuration: source and destination connectors and paths","POSIX 路径":"POSIX path","AWS S3 源":"AWS S3 source"};
-var ENM={"对象存储":"Objects","NFS 文件系统":"NFS","协作平台":"SaaS","Confluence 等":"Confluence…","控制平面":"Control","调度 · 监控":"plane","常见迁移目标：VAST S3 或 NFS":"Targets: VAST S3 or NFS","逐层并行遍历，攒成批分给多个 worker":"Parallel walk, batches to workers","定期：按间隔整体重扫一遍":"Scheduled: full rescan","事件驱动：变更通知进 SQS，只同步变化的对象":"Event-driven: sync changed objects","换成事件驱动":"Event-driven","换成定期重同步":"Scheduled","格式转换与权限映射":"Format and ACL mapping","POSIX 元数据写入 DataBase":"POSIX metadata to DataBase","SQL：找出多年没改过的大文件":"SQL: old large files","S3 事件通知":"S3 events","NFS 导出目录":"NFS export","DataBase 表":"DB table","ACL：A 组":"ACL: A","A 组":"Group A","迁移配置：源与目标连接器及路径":"Connectors and paths"};
+var ENM={"对象存储":"Objects","NFS 文件系统":"NFS","协作平台":"SaaS","Confluence 等":"Confluence…","控制平面":"Control","调度 · 监控":"plane","常见迁移目标：VAST S3 或 NFS":"Targets: VAST S3 or NFS","遍历后分批复制，源文件保留":"Batch copy; source files stay","定期：按间隔整体重扫一遍":"Scheduled: full rescan","事件驱动：变更通知进 SQS，只同步变化的对象":"Event-driven: sync changed objects","换成事件驱动":"Event-driven","换成定期重同步":"Scheduled","格式转换与权限映射":"Format and ACL mapping","POSIX 元数据写入 DataBase":"POSIX metadata to DataBase","SQL：找出多年没改过的大文件":"SQL: old large files","S3 事件通知":"S3 events","NFS 导出目录":"NFS export","DataBase 表":"DB table","ACL：A 组":"ACL: A","A 组":"Group A","迁移配置：源与目标连接器及路径":"Connectors and paths"};
 var ARIA="SyncEngine：迁移、重新同步与元数据索引";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -112,6 +112,10 @@ const SCENE={
    s.files=s.dir.map(d=>[0,1,2,3].map(k=>el('rect',{x:C(d.r).x-40+k*21,y:d.r.y+(m?34:38),width:16,height:m?14:18,rx:3,class:'cell'},g)));
    s.p3=s.dir.map((d,i)=>{const a=P(C(d.r).x,fr.y+fr.h);return cat([P(C(d.r).x,d.r.y+(m?44:50))],s.path(a,i,tt(L.tg[1])))});
    s.p3.forEach(p=>poly(p.slice(1),'',s.ln['3']));
+   const dst=L.tg[1];
+   s.copies=s.files.map((fs,i)=>fs.map((_,k)=>el('rect',{
+    x:C(dst).x-66+i*47+k*10,y:dst.y+dst.h-16,width:8,height:9,rx:2,class:'cell ok'
+   },g)));
   }
   /* 第 4 步：定期重扫 / 事件驱动 */
   {const g=grp('4');const q=L.src[1],qg=el('g',{class:'vis'},g);s.qg=qg;s.qB=box(q,qg,'box och');tx(q.x+(m?10:16),q.y+(m?22:24),'SQS 队列',f.sm,'ochre-t b7','start',qg);tx(q.x+(m?10:16),q.y+(m?46:50),'S3 事件通知',f.xs,'ink3-t','start',qg);
@@ -149,11 +153,11 @@ SCENE.modes[1]={enter(){cap('迁移配置：源与目标连接器及路径','ink
   s.p2.forEach((p,j)=>{const d=dur(p);run(S.v.b[j],p,u,1.6+j*0.15,d,0.3);s.wB[j].classList.toggle('on',u>1.6+j*0.15+d*0.4&&u<1.6+j*0.15+d*0.62)});
   s.tgB[0].classList.toggle('on',u>4.0&&u<5.4)}};
 /* 第 3 步 */
-SCENE.modes[2]={enter(){cap('逐层并行遍历，攒成批分给多个 worker','slate-t');S.v.b=[0,1,2].map(()=>pk('',L.mobile?40:48,L.mobile?18:20))},
+SCENE.modes[2]={enter(){cap('遍历后分批复制，源文件保留','slate-t');S.v.b=[0,1,2].map(()=>pk('',L.mobile?40:48,L.mobile?18:20))},
  frame(t){const s=E.s,u=t%8;
   s.root.classList.toggle('on',u>0.2&&u<7.6);s.dir.forEach((d,i)=>d.b.classList.toggle('on',u>0.8+i*0.15&&u<7.6));
-  s.files.forEach((fs,i)=>fs.forEach((c,k)=>{c.setAttribute('class','cell'+(u>1.4+i*0.15+k*0.08&&u<2.4?' on':''));c.style.opacity=u>=2.4&&u<7.6?0.25:1}));
-  s.p3.forEach((p,i)=>{const d=dur(p);run(S.v.b[i],p,u,2.4,d,0.3);s.wB[i].classList.toggle('on',u>2.4+d*0.4&&u<2.4+d*0.64)});
+  s.files.forEach((fs,i)=>fs.forEach((c,k)=>{c.setAttribute('class','cell'+(u>1.4+i*0.15+k*0.08?' on':''));c.style.opacity=1}));
+  s.p3.forEach((p,i)=>{const d=dur(p);run(S.v.b[i],p,u,2.4,d,0.3);s.copies[i].forEach(c=>c.style.opacity=u>=2.4+d?1:0);s.wB[i].classList.toggle('on',u>2.4+d*0.4&&u<2.4+d*0.64)});
   s.tgB[1].classList.toggle('on',u>2.4+dur(s.p3[1])-0.3&&u<7.4)}};
 /* 第 4 步：定期重扫或事件驱动（一个按钮切换） */
 SCENE.modes[3]={enter(v){S.v.ev=v==='event';cap(S.v.ev?'事件驱动：变更通知进 SQS，只同步变化的对象':'定期：按间隔整体重扫一遍',S.v.ev?'ochre-t':'slate-t');

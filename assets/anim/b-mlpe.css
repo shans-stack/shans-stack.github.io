@@ -13,3 +13,8 @@
 @media (640px < width <= 720px) {
   main[data-station="b-mlpe"] .mhost { aspect-ratio: var(--ar); }
 }
+
+@media (max-width: 440px) {
+  body.topic-b-mlpe .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-mlpe .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

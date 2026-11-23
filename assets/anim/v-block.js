@@ -13,12 +13,12 @@ var EN={"文件视图":"File view","块":"Block","主机":"Host","共享目录":
 "主机 A":"Host A","主机 B":"Host B","host NQN":"host NQN","子系统":"Subsystem","只开 Block 的 view · 带 NQN":"Block-only view · has an NQN","卷 1":"Volume 1","卷 2":"Volume 2","卷 3":"Volume 3","卷映射给主机：一对多、多对一都可以":"Volumes map to hosts: one-to-many and many-to-one",
 "发现 · 8009":"Discover · 8009","多条路径":"Multiple paths","路径示意":"Illustrative paths","发现后连接路径，示例采用轮询":"Discover paths and connect. This example uses round-robin I/O.",
 "一台 CNode 下线，I/O 走其余路径":"A CNode goes offline; I/O uses the other paths","剩余路径":"Surviving paths","下线":"Offline",
-"同一个集群 · 同一个租户":"One cluster · one tenant","NFS view":"NFS view","S3 view":"S3 view","Block 子系统":"Block subsystem","文件":"File","对象":"Object","快照":"Snapshot","同一集群的 CNode 与 DBox":"CNodes and DBoxes in the same cluster","快照当作卷，映射给主机":"The snapshot is mapped to a host as a volume",
-"块、文件、对象在同一套系统里；快照也能当作卷交给主机":"Block, file and object on one system; snapshots can be mapped as volumes",
+"同一个集群 · 同一个租户":"One cluster · one tenant","NFS view":"NFS view","S3 view":"S3 view","Block 子系统":"Block subsystem","文件":"File","对象":"Object","只读快照卷":"Read-only snapshot","同一集群的 CNode 与 DBox":"CNodes and DBoxes in the same cluster","快照当作卷，映射给主机":"The snapshot is mapped to a host as a volume",
+"快照作为只读卷映射给主机":"The host can read the mapped snapshot volume",
 "VAST 块存储：卷经 NVMe/TCP 交给主机，多条路径分到多台 CNode":"VAST block storage: volumes reach hosts over NVMe/TCP, with paths spread over several CNodes"};
-var ENM={"文件视图提供目录，块卷呈现为设备":"File directory and block device","NVMe/TCP 经以太网连接":"NVMe/TCP over standard Ethernet","只开 Block 的 view · 带 NQN":"Block-only view, NQN",
+var ENM={"只读快照卷":"Snapshot (RO)","文件视图提供目录，块卷呈现为设备":"File directory and block device","NVMe/TCP 经以太网连接":"NVMe/TCP over standard Ethernet","只开 Block 的 view · 带 NQN":"Block-only view, NQN",
 "卷映射给主机：一对多、多对一都可以":"Volumes map to hosts freely","发现后连接路径，示例采用轮询":"Discovery, connection, round-robin I/O","一台 CNode 下线，I/O 走其余路径":"CNode offline: other paths carry I/O",
-"块、文件、对象在同一套系统里；快照也能当作卷交给主机":"One system; snapshots map as volumes","同一集群的 CNode 与 DBox":"Cluster CNodes and DBoxes","路径示意":"Illustrative paths","映射到主机":"Mapped to host","Block 子系统":"Block"};
+"快照作为只读卷映射给主机":"Host reads the snapshot volume","同一集群的 CNode 与 DBox":"Cluster CNodes and DBoxes","路径示意":"Illustrative paths","映射到主机":"Mapped to host","Block 子系统":"Block"};
 var ARIA="VAST 块存储：卷经 NVMe/TCP 交给主机，多条路径分到多台 CNode";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -152,7 +152,7 @@ const SCENE={
    line(P(c.x,r.y+r.h),P(c.x,Z.strip.y),'',g6)});
   box(Z.strip,g6,'box soft',12);tx(C(Z.strip).x,C(Z.strip).y,'同一集群的 CNode 与 DBox',f.sm,'lbl','middle',g6);
   E.v6=box(Z.vol,g6,'box',8);tx(C(Z.vol).x,C(Z.vol).y,'卷 1',f.sm,'lbl','middle',g6);
-  E.snapG=el('g',{},g6);E.snapB=box(Z.vol,E.snapG,'box ok',8);E.snapT=tx(C(Z.vol).x,C(Z.vol).y,'快照',f.sm,'sage-t b7','middle',E.snapG);
+  E.snapG=el('g',{},g6);E.snapB=box(Z.vol,E.snapG,'box ok',8);E.snapT=tx(C(Z.vol).x,C(Z.vol).y,'只读快照卷',f.sm,'sage-t b7','middle',E.snapG);
   const sh=Z.host,shc=C(sh);E.h6=box(sh,g6);tx(shc.x,shc.y,'主机',f.lbl,'lbl b7','middle',g6);
   E.snapPath=M?[P(Z.snap.x+Z.snap.w,C(Z.snap).y),P(464,C(Z.snap).y),P(464,440),P(shc.x,440),P(shc.x,sh.y)]:[P(Z.snap.x+Z.snap.w,C(Z.snap).y),P(sh.x,C(Z.snap).y)];
   E.snapLn=poly(E.snapPath,'',g6);
@@ -215,7 +215,7 @@ SCENE.modes[2]={enter(){cap('卷映射给主机：一对多、多对一都可以
   E.vol3.forEach((b,i)=>b.classList.toggle('on',E.maps.some(([v],j)=>v===i&&u>0.4+j*1.2)));
   E.h3.forEach((b,i)=>b.classList.toggle('ok',E.maps.some(([v,h],j)=>h===i&&u>1.3+j*1.2)))}};
 /* 第 6 步：快照是分身，原卷留在原处，快照映射给主机 */
-SCENE.modes[5]={enter(){cap('块、文件、对象在同一套系统里；快照也能当作卷交给主机','slate-t');S.v.p=pk('ok')},
+SCENE.modes[5]={enter(){cap('快照作为只读卷映射给主机','slate-t');S.v.p=pk('ok')},
  frame(t){const per=5.2,u=t%per,Z=L.p6,dy=Z.snap.y-Z.vol.y,k=sm(fade(u,0.5,1.4));
   E.snapG.style.opacity=u<0.5?0:Math.min(1,(u-0.5)/0.3);E.snapG.setAttribute('transform',`translate(0 ${(dy*k).toFixed(1)})`);
   E.snapT.style.opacity = fade(dy*k, 22, 34);

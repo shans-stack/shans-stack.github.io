@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/v-cnode.css?v=3ab0a2c1">
+<link rel="stylesheet" href="../../assets/anim/v-cnode.css?v=24b87ece">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -80,7 +80,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-cnode.js?v=42eeb48e"></script>
+<script src="../../assets/anim/v-cnode.js?v=c3045799"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-cnode",
@@ -140,8 +140,8 @@ window.SS_TOPIC_CFG={
     "Shared SCM Persistence and Write Acknowledgment"
    ],
    "d": [
-    "常规写入路径上，一次写入至少落进两块分在不同 DBox 的 SCM 盘，都写好了 CNode 才向客户端确认。",
-    "On the normal write path, each write lands on at least two SCM drives in different DBoxes, and only when both are written does the CNode confirm to the client."
+    "CNode 在数据写入受保护的 SCM 缓冲区并提交元数据后向客户端确认。图示为 Classic 双镜像配置。",
+    "The CNode acknowledges the write after it persists data in protected SCM and commits metadata. The diagram shows Classic mirroring."
    ],
    "s": [
     "写入确认",
@@ -149,12 +149,12 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>SCM（存储级内存）是一种又快又耐写的盘，在 VAST 里用作写缓冲和元数据的存放处。在常规写入路径上，客户端写数据时，CNode 把数据写进至少两块 SCM 盘，这两块盘刻意分在不同的 DBox 或不同的 DNode 上；元数据也同时写下去。都写好之后，CNode 才回确认（ACK）。</p>",
-     "<p>CNode 自己不在内存里攒写入，所以确认之后它就算立刻断电，数据也不会丢。压缩、组条带这些重活放在确认之后再做，见 SCM 写缓冲那一站；那一站也讲了大块写入可以直接写进 QLC 的例外。</p>"
+     "<p>SCM（存储级内存）是一种又快又耐写的盘，在 VAST 里用作写缓冲和元数据的存放处。在图示的 Classic 双镜像配置中，CNode 持久化两份写入数据，再更新持久元数据，随后回确认（ACK）。白皮书也描述了 SCM 双校验模式，CNode 在写入受保护条带前短暂聚合数据并计算校验。</p>",
+     "<p>写入确认时数据已经持久化，因此可在处理请求的 CNode 失效后恢复。数据缩减和容量层的宽条带由后台迁移处理。</p>"
     ],
     [
-     "<p>SCM (storage-class memory) is a fast, high-endurance kind of drive; VAST uses it as the write buffer and the home of metadata. On the normal write path, when a client writes, the CNode writes the data to at least two SCM drives, deliberately placed in different DBoxes or on different DNodes, and writes the metadata at the same time. Only when all of that is written does the CNode send the acknowledgement (ACK).</p>",
-     "<p>The CNode does not collect writes in its own memory, so even if it lost power right after the ACK, no data would be lost. Heavy work such as compression and building stripes happens after the ACK; see the SCM write buffer stop.</p>"
+     "<p>SCM (storage-class memory) is a fast, high-endurance kind of drive; VAST uses it as the write buffer and the home of metadata. In the illustrated Classic mirroring configuration, the CNode persists two copies, then updates durable metadata before acknowledging the write (ACK). The white paper also describes dual-parity SCM, where the CNode briefly aggregates data and computes parity before persisting a protected stripe.</p>",
+     "<p>Acknowledged data is already durable and survives failure of the CNode that handled the write. Background migration performs data reduction and builds the wide stripes for the capacity tier.</p>"
     ]
    ]
   },
@@ -356,6 +356,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

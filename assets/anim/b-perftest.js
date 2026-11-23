@@ -4,7 +4,7 @@ const id = 'b-perftest';
 const scenes = [
   {"kind": "route", "ends": [["客户端内存", "Client Memory"], ["服务端内存", "Server Memory"]], "lanes": [["RDMA Write", "RDMA Write"]], "mode": "write", "limit": ["副本写入远端", "Copy Written to Remote Memory"]},
   {"kind": "rows", "head": [["配置", "Setup"], ["服务端", "Server"], ["客户端", "Client"]], "rows": [[["程序", "Binary"], ["ib_write_bw", "ib_write_bw"], ["ib_write_bw", "ib_write_bw"], "good"], [["设备与端口", "Device, Port"], ["本地接口", "Local Interface"], ["本地接口", "Local Interface"]], [["连接", "Connection"], ["等待连接", "Waits"], ["指定服务端", "Server Address"], "good"]]},
-  {"kind": "route", "ends": [["发送队列", "Send Queue"], ["对端缓冲区", "Remote Buffer"]], "lanes": [["消息大小 · 队列深度 · 测量窗口", "Size · Queue Depth · Run Window"]], "mode": "stream", "limit": null},
+  {"kind": "route", "ends": [["本地注册缓冲区", "Local Registered Buffer"], ["远端注册缓冲区", "Remote Registered Buffer"]], "lanes": [["RDMA Write · 多次写入在途", "RDMA Write · In Flight"]], "mode": "stream", "limit": null},
   {"kind": "route", "ends": [["客户端计量", "Client Measure"], ["服务端计量", "Server Measure"]], "lanes": [["客户端发起", "Client Traffic"], ["服务端发起", "Server Traffic"]], "mode": "parallel", "limit": ["双向结果合并两端计量", "Bidirectional Result Combines Both"]},
   {"kind": "route", "ends": [["计时端", "Timing Endpoint"], ["应答端", "Peer Endpoint"]], "lanes": [["去程", "Outbound"], ["回程", "Return"]], "mode": "return", "limit": ["报告时延 = RTT ÷ 2", "Reported Latency = RTT ÷ 2"]},
   {"kind": "chain", "cards": [[["端点 A", "Endpoint A"], ["合成负载", "Synthetic Traffic"], "good"], [["端点 B", "Endpoint B"], ["所选路径", "Selected Path"], "good"], [["生产作业", "Application Job"], ["独立验证多流竞争", "Separate Contention Test"], "muted"]], "mode": "partial"}
@@ -117,30 +117,47 @@ function mount(host, {onLayout, paused = false} = {}) {
   function route(scene) {
     const [a, b] = scene.ends;
     const x1 = mobile ? 60 : 104, x2 = w - x1;
-    const y1 = mobile ? 52 : 139, y2 = mobile ? 322 : y1;
-    const width = mobile ? w - 80 : 160;
-    rect(mobile ? 40 : x1 - width / 2, y1 - 25, width, 50, 'card');
-    rect(mobile ? 40 : x2 - width / 2, y2 - 25, width, 50, 'card');
-    label(mobile ? w / 2 : x1, y1, a, 'strong card-label');
-    label(mobile ? w / 2 : x2, y2, b, 'strong card-label');
+    const stream = scene.mode === 'stream';
+    const y1 = mobile ? (stream ? 169 : 52) : (stream ? 199 : 139), y2 = mobile ? 322 : y1;
+    const width = mobile ? w - 80 : (stream ? 221 : 160);
+    const left = stream && !mobile ? 126 : x1, right = stream && !mobile ? w - 126 : x2;
+    if (stream) {
+      const sy = mobile ? 61 : 55;
+      const requestX = mobile ? 70 : 261;
+      const queueX = mobile ? 290 : 500;
+      const card = mobile ? 126 : 179;
+      const points = [[requestX + card / 2, sy], [queueX - card / 2, sy]];
+      packet(arrow(points, 'secondary'), .2, 'secondary', .7);
+      [[requestX, ['提交工作请求', 'Post Request']], [queueX, ['发送队列', 'Send Queue']]].forEach(([x, text]) => {
+        rect(x - card / 2, sy - 25, card, 50, 'card');
+        label(x, sy, text, 'secondary-text card-label');
+      });
+      label(w / 2, mobile ? 110 : 105, ['队列保存请求描述', 'Queue holds work requests'], 'secondary-text');
+    }
+    rect(mobile ? 40 : left - width / 2, y1 - 25, width, 50, 'card');
+    rect(mobile ? 40 : right - width / 2, y2 - 25, width, 50, 'card');
+    label(mobile ? w / 2 : left, y1, a, 'strong card-label');
+    label(mobile ? w / 2 : right, y2, b, 'strong card-label');
     scene.lanes.forEach((title, i) => {
       const reverse = i === 1 && scene.mode !== 'methods';
       const offset = scene.lanes.length === 1 ? 0 : (i === 0 ? -21 : 21);
       const x = mobile ? (i === 0 ? 64 : 91) : w / 2;
-      const points = mobile ? [[x, y1 + 26], [x, y2 - 26]] : [[x1 + 82, y1 + offset], [x2 - 82, y2 + offset]];
+      const points = mobile ? [[x, y1 + 26], [x, y2 - 26]] : [[left + width / 2 + 2, y1 + offset], [right - width / 2 - 2, y2 + offset]];
       const load = i === 0 ? '' : 'secondary';
       const line = arrow(reverse ? points.reverse() : points, load);
-      const t = scene.mode === 'return' && i === 1 ? 2.65 : 0.55;
-      packet(line, t, load);
+      const t = scene.mode === 'return' && i === 1 ? 2.65 : stream ? 1.15 : 0.55;
+      if (scene.mode !== 'write' || !motionQuery.matches) packet(line, t, load);
       if (scene.mode === 'stream') {
-        packet(line, 1.1);
-        packet(line, 1.65);
+        packet(line, 1.7);
+        packet(line, 2.25);
       }
-      label(mobile ? 210 : x, mobile ? (scene.lanes.length === 1 ? 179 : 147 + i * 82) :
+      label(mobile ? 210 : x, mobile ? (scene.lanes.length === 1 ? (stream ? 247 : 179) : 147 + i * 82) :
         (i === 0 ? y1 + offset - 22 : y1 + offset + 22), title, 'strong');
     });
     if (scene.mode === 'write') {
       rect(mobile ? 58 : x1 + 58, mobile ? y1 + 10 : y1 - 4, 12, 8, 'packet', 2);
+      const copy = rect(mobile ? 58 : x2 - 69, mobile ? y2 - 14 : y2 - 4, 12, 8, 'packet', 2);
+      effects.push(time => copy.setAttribute('opacity', Number(motionQuery.matches || time >= 2.65)));
     }
     if (scene.limit) label(w / 2, mobile ? 367 : 240, scene.limit, 'secondary-text');
   }

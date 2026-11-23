@@ -6,7 +6,7 @@
    系统开了「减少动态效果」时每步只画一帧静态结果。文字有中英两套（EN 表 + T()），跟着 ss-lang 事件重画。
    样式在 assets/anim/ec.css，类名都在 .an-ec 之内。 */
 (function(){
-var EN={"数据": "Data", "数据块": "Data block", "校验块": "Parity block", "三副本": "3 copies", "纠删码 8+2": "EC 8+2", "复制三份": "Copy ×3", "算校验": "Compute parity", "算回来": "Recompute", "盘": "Drives", "已写入": "Written", "示意，不代表实测数字": "Schematic, not measured", "盘 1": "Drive 1", "盘 2": "Drive 2", "盘 3": "Drive 3", "盘 4": "Drive 4", "盘 5": "Drive 5", "盘 6": "Drive 6", "盘 7": "Drive 7", "盘 8": "Drive 8", "盘 9": "Drive 9", "盘 10": "Drive 10", "盘 11": "Drive 11", "盘 12": "Drive 12", "盘 13": "Drive 13", "盘 14": "Drive 14", "盘 15": "Drive 15", "盘 16": "Drive 16", "3 块盘装 1 份数据": "3 drives hold 1 drive of data", "10 块盘装 8 份数据": "10 drives hold 8 drives of data", "数据丢了": "Data lost", "还有一份": "A copy survives", "坏了": "Failed", "新盘": "New drive", "盘 · 占用较低": "Drives · light use", "盘 · 占用升高": "Drives · filling up", "盘 · 占用很高": "Drives · heavy use", "⇄ 换成 14+2": "⇄ Switch to 14+2", "⇄ 换成 8+2": "⇄ Switch to 8+2", "切换条带宽度，当前 8+2": "Switch stripe width, now 8+2", "切换条带宽度，当前 14+2": "Switch stripe width, now 14+2"};
+var EN={"盘占用含副本或校验块":"Drive use includes copies or parity","数据": "Data", "数据块": "Data block", "校验块": "Parity block", "三副本": "3 copies", "纠删码 8+2": "EC 8+2", "复制三份": "Copy ×3", "算校验": "Compute parity", "算回来": "Recompute", "盘": "Drives", "逻辑块": "Logical blocks", "示意，不代表实测数字": "Schematic, not measured", "盘 1": "Drive 1", "盘 2": "Drive 2", "盘 3": "Drive 3", "盘 4": "Drive 4", "盘 5": "Drive 5", "盘 6": "Drive 6", "盘 7": "Drive 7", "盘 8": "Drive 8", "盘 9": "Drive 9", "盘 10": "Drive 10", "盘 11": "Drive 11", "盘 12": "Drive 12", "盘 13": "Drive 13", "盘 14": "Drive 14", "盘 15": "Drive 15", "盘 16": "Drive 16", "3 块盘装 1 份数据": "3 drives hold 1 drive of data", "10 块盘装 8 份数据": "10 drives hold 8 drives of data", "数据丢了": "Data lost", "还有一份": "A copy survives", "坏了": "Failed", "新盘": "New drive", "盘 · 占用较低": "Drives · light use", "盘 · 占用升高": "Drives · filling up", "盘 · 占用很高": "Drives · heavy use", "⇄ 换成 14+2": "⇄ Switch to 14+2", "⇄ 换成 8+2": "⇄ Switch to 8+2", "切换条带宽度，当前 8+2": "Switch stripe width, now 8+2", "切换条带宽度，当前 14+2": "Switch stripe width, now 14+2"};
 var ARIA=["一排硬盘：副本与纠删码怎样扛住坏盘、各占多少空间", "A row of drives: what copies and erasure coding cost, and how lost blocks are recomputed"];
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&typeof s==='string'&&EN[s]!==undefined?EN[s]:s}
@@ -139,20 +139,20 @@ layout(mobile){
       busY:232,disk:{y:268,h:80},labY:370,stY:396,cap:{x:48,y:432},note:{x:912,y:432,a:'end'},
       legend:{x:760,y:36},
       row(n){const w=n>10?48:72,g=n>10?8:16,x0=(960-(n*w+(n-1)*g))/2;return [...Array(n)].map((_,i)=>({x:x0+i*(w+g),w,row:0}))},
-      race:{lab:{x:32},src:{x:170,w:64,h:48},st:{x:440,w:150,h:48},pool:{x:640,w:184,h:76},cnt:{x:892},lanes:[150,346],sep:248,note:{x:32,y:452}},
+      race:{lab:{x:32},src:{x:170,w:64,h:48},st:{x:440,w:150,h:48},pool:{x:640,w:184,h:76},cnt:{x:885},lanes:[150,346],sep:248,note:{x:32,y:452}},
       btn(n){return {x:480,y:440}}};
   }
   const W=480,H=540;
   return {mobile,W,H,pw:22,ph:16,dr:6,gap:24,f:{ttl:19,lbl:17,st:16,sm:16,note:16,big:26,lane:19},
     cx:240,src:{x:20,y:14,w:440,h:56},srcLab:{x:32,y:42,a:'start'},bx:30,
     mid:{x:110,y:110,w:260,h:52},midLab:{x:124},rb:{x:358,y:136,a:'end'},
-    busY:206,disk:{y:236,h:64},labY:318,stY:340,cap:{x:16,y:372},note:{x:16,y:396,a:'start'},
+    busY:206,disk:{y:236,h:64},labY:318,stY:340,cap:{x:16,y:360},note:{x:16,y:396,a:'start'},
     legend:null,
     row(n){if(n<=10){const w=40,g=6,x0=(480-(n*w+(n-1)*g))/2;return [...Array(n)].map((_,i)=>({x:x0+i*(w+g),w,row:0}))}
       const w=48,g=8,x0=(480-(8*w+7*g))/2;return [...Array(n)].map((_,i)=>({x:x0+(i%8)*(w+g),w,row:i<8?0:1}))},
     row2:{busY:344,diskY:374,labY:456,stY:476},
     race:{lab:{x:16},src:{x:16,w:52,h:40},st:{x:176,w:110,h:40},pool:{x:288,w:178,h:64},lanes:[150,394],sep:276,note:{x:16,y:510}},
-    btn(n){return n>10?{x:372,y:516}:{x:372,y:384}}};
+    btn(n){return n>10?{x:371,y:525}:{x:240,y:438}}};
 },
 build(){
   const f=L.f,cx=L.cx;
@@ -171,6 +171,7 @@ build(){
   E.note=tx(L.note.x,L.note.y,'示意，不代表实测数字',f.note,'ink3-t',L.note.a,grp('6'));
   /* 第 5 步：两条线 */
   const R=L.race,race=grp('5');E.race={};
+  tx(R.lab.x,L.mobile?33:37,'盘占用含副本或校验块',f.note,'ink3-t','start',race);
   [['R','三副本','复制三份'],['E','纠删码 8+2','算校验']].forEach(([k,name,stn],j)=>{
     const y=R.lanes[j],o={};E.race[k]=o;
     const labY=L.mobile?y-78:y;
@@ -183,8 +184,8 @@ build(){
     const pl={x:ex,y:y-R.pool.h/2,w:R.pool.w,h:R.pool.h};o.pool=rect(pl,'blk',race);
     o.word=tx(ex+12,y-R.pool.h/2+(L.mobile?16:20),'盘',f.sm,'st ink2-t','start',race);
     o.bar=bar(ex+12,y+R.pool.h/2-(L.mobile?18:22),R.pool.w-24,L.mobile?10:12,race,j?'sage':'');
-    if(!L.mobile){tx(R.cnt.x,y-18,'已写入',f.note,'ink3-t','middle',race);o.n=tx(R.cnt.x,y+20,'0',f.big,'num '+(j?'sage-t':'rose-t'),'middle',race)}
-    else{tx(ex+12,y+R.pool.h/2+22,'已写入',f.note,'ink3-t','start',race);o.n=tx(ex+76,y+R.pool.h/2+22,'0',f.big,'num '+(j?'sage-t':'rose-t'),'start',race)}
+    if(!L.mobile){tx(R.cnt.x,y-18,'逻辑块',f.note,'ink3-t','middle',race);o.n=tx(R.cnt.x,y+20,'0',f.big,'num '+(j?'sage-t':'rose-t'),'middle',race)}
+    else{tx(ex+12,y+R.pool.h/2+22,'逻辑块',f.note,'ink3-t','start',race);o.n=tx(ex+141,y+R.pool.h/2+22,'0',f.big,'num '+(j?'sage-t':'rose-t'),'start',race)}
     o.y=y;o.in={x:sx+R.src.w,y};o.stp={x:R.st.x,y};o.out={x:ex+R.pool.w*0.62,y};
     o.p1=[{x:sx+R.src.w-2,y},{x:R.st.x,y}];o.p2=[{x:R.st.x,y},{x:ex,y},{x:ex+R.pool.w*0.62,y}];
   });
@@ -286,8 +287,8 @@ SC.modes[4]={enter(){S.v.cyc=-1;S.tau.up=0.35;S.tau.dn=0.3},
       o.word.textContent=T('盘 · '+loadWord(x));o.word.setAttribute('class','st '+(x>0.42?'rose-t':'ink2-t'));
       o.pool.setAttribute('class','blk'+(x>0.75?' on':''))})}};
 /* 6：条带宽度 */
-SC.modes[5]={enter(){const n=wide?16:10,k=n-2;SC.makeRow(n);if(L.mobile&&wide){E.cap.setAttribute('y',500);E.note.setAttribute('y',524)}/* 手机上 14+2 换两排，说明文字挪到第二排下面，免得压住盘 */E.midT.textContent=T('算回来');
-    E.cap.textContent=F(n+' 块盘里 2 块是校验','2 of '+n+' drives are parity');const v=S.v;v.b=fill(n,k);v.k=k;
+SC.modes[5]={enter(){const n=wide?16:10,k=n-2;SC.makeRow(n);if(L.mobile&&wide){E.cap.setAttribute('y',497);E.note.setAttribute('y',524)}/* 手机上 14+2 换两排，说明文字挪到第二排下面，免得压住盘 */E.midT.textContent=T('算回来');
+    E.cap.textContent=F('此条带 '+n+' 个块中 2 个为校验','One stripe: 2 of '+n+' blocks are parity');const v=S.v;v.b=fill(n,k);v.k=k;
     const alive=[...Array(n).keys()].filter(j=>j!==2).slice(0,k);
     v.up=alive.map((j,m)=>({p:pk(j<k?'':'par'),j,t0:1.4+m*(wide?0.07:0.12),path:rev(midDown(j))}));
     v.nw={p:pk('nw'),t0:4.0,path:midDown(2)}},

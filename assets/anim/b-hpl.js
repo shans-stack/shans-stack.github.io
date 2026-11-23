@@ -5,8 +5,8 @@ const scenes = [
   {"kind": "chain", "cards": [[["稠密矩阵 A", "Dense Matrix A"], ["右端项 b", "Right-Hand Side b"], "matrix"], [["FP64 求解", "FP64 Solve"], ["Ax = b", "Ax = b"], ""], [["解向量 x", "Solution Vector x"], ["记录求解耗时", "Record Solve Time"], "good"]], "mode": "sequence"},
   {"kind": "grid", "mode": "blocks"},
   {"kind": "chain", "cards": [[["分解面板", "Factor the Panel"], ["主元与行交换", "Pivot and Swap"], "matrix"], [["沿进程行广播", "Broadcast to Row"], ["保留面板数据", "Retain Panel Data"], ""], [["更新子矩阵", "Update Local Tiles"], ["各进程本地计算", "Local Updates"], "good"]], "mode": "copy"},
-  {"kind": "chain", "cards": [[["HPL.dat", "HPL.dat"], ["N · NB · P × Q", "N · NB · P × Q"], ""], [["MPI", "MPI"], ["映射参与进程", "Place the Ranks"], ""], [["xhpl", "xhpl"], ["运行与校验", "Run and Validate"], "good"]], "mode": "sequence"},
-  {"kind": "rows", "head": [["输出项", "Field"], ["计算口径", "Basis"], ["用途", "Reading"]], "rows": [[["归一化残差", "Residual"], ["Ax − b", "Ax − b"], ["校验准确性", "Accuracy"], "good"], [["Rmax", "Rmax"], ["HPL 计时", "HPL Timing"], ["实测吞吐", "Measured"]], [["Rpeak", "Rpeak"], ["规格推算", "Theoretical"], ["理论峰值", "Peak"], "muted"]]},
+  {"kind": "launch"},
+  {"kind": "rows", "head": [["输出项", "Field"], ["计算口径", "Basis"], ["用途", "Reading"]], "rows": [[["归一化残差", "Residual"], ["范数 ÷ 尺度", "Scaled Norm"], ["校验准确性", "Accuracy"], "good"], [["Rmax", "Rmax"], ["HPL 计时", "HPL Timing"], ["实测吞吐", "Measured"]], [["Rpeak", "Rpeak"], ["规格推算", "Theoretical"], ["理论峰值", "Peak"], "muted"]]},
   {"kind": "chain", "cards": [[["HPL 覆盖", "HPL Coverage"], ["FP64 稠密求解", "FP64 Dense Solve"], "good"], [["AI 训练", "AI Training"], ["独立工作负载", "Separate Workload"], "muted"], [["存储", "Storage"], ["独立 I/O 测试", "Separate I/O Test"], "muted"]], "mode": "scope"}
 ];
 const titles = [
@@ -218,7 +218,32 @@ function mount(host, {onLayout, paused = false} = {}) {
     });
   }
 
-  const draw = {chain, grid, rows};
+  function launch() {
+    const source = mobile ? [[92, 82], [268, 82]] : [[168, 87], [168, 212]];
+    const target = mobile ? [180, 249] : [568, 150];
+    const width = mobile ? 158 : 228;
+    const descriptions = [
+      [['MPI 启动器', 'MPI Launcher'], ['指定进程总数', 'Sets rank count'], ['启动', 'Launches']],
+      [['HPL.dat', 'HPL.dat'], ['N · NB · P × Q', 'N · NB · P × Q'], ['xhpl 读取', 'xhpl reads']]
+    ];
+    descriptions.forEach(([title, detail, action], i) => {
+      const [x, y] = source[i];
+      const [tx, ty] = target;
+      const end = mobile ? [tx + (i ? 40 : -40), ty - 38] : [tx - width / 2, ty + (i ? 18 : -18)];
+      const points = mobile ? [[x, y + 38], [x, 139], [end[0], 139], end]
+        : [[x + width / 2, y], [365, y], [365, end[1]], end];
+      packet(arrow(points, i ? 'secondary' : ''), i ? 1.7 : .35, i ? 'secondary' : '', 1.15);
+      rect(x - width / 2, y - 38, width, 76, 'card');
+      label(x, y - 10, title, 'strong card-label');
+      label(x, y + 16, detail, 'secondary-text card-label');
+      label(mobile ? x : 318, mobile ? 160 : y - 20, action, 'secondary-text');
+    });
+    rect(target[0] - width / 2, target[1] - 38, width, 76, 'card good');
+    label(target[0], target[1] - 9, ['xhpl', 'xhpl'], 'strong card-label');
+    label(target[0], target[1] + 16, ['运行与校验', 'Run and Validate'], 'secondary-text card-label');
+  }
+
+  const draw = {chain, grid, rows, launch};
   const queries = [mobileQuery, motionQuery];
   for (const query of queries) query.addEventListener('change', rebuild);
   document.addEventListener('ss-lang', rebuild);

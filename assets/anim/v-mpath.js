@@ -7,7 +7,7 @@
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
    样式在 assets/anim/v-mpath.css，全部限定在 .ssa-v-mpath 容器之内。 */
 (function(){
-var EN={"客户端服务器": "Client server", "应用": "App", "NFS 客户端": "NFS client", "多路径组件": "Multipath", "VAST 提供，开源": "Open source", "网卡 0": "NIC 0", "网卡 1": "NIC 1", "地址 1": "IP 1", "地址 2": "IP 2", "地址 3": "IP 3", "地址 4": "IP 4", "占用很高": "High", "占用升高": "Rising", "占用较低": "Low", "挂载时多写两项：ClientIP=本机地址列表，ServerIP=各 CNode 地址列表": "Two extra mount options: ClientIP = local addresses, ServerIP = CNode addresses", "挂载多写两项：ClientIP、ServerIP 地址列表": "Two extra mount options: ClientIP, ServerIP", "一条连接": "One connection", "多路径": "Multipath", "客户端": "Client", "已送达": "Delivered", "示意，不代表实测数字": "Schematic, not measured", "一条连接：一个地址，一台 CNode": "One connection: one IP, one CNode", "nconnect：四条连接，还是同一台 CNode": "nconnect: four connections, still one CNode", "多路径：四条连接，四台 CNode": "Multipath: four connections, four CNodes", "两块网卡一起发，按 NUMA 走就近的网卡": "Both NICs send; each CPU uses its nearest NIC (NUMA)", "协议仍是标准 NFS": "Still standard NFS", "NFS 多路径：从一条连接、nconnect 多条连接到同一台 CNode，再到多路径摊到多块网卡和多台 CNode": "NFS multipath: from one connection, to nconnect's several connections to one CNode, to multipath spreading across several NICs and CNodes"};
+var EN={"客户端服务器": "Client server", "应用": "App", "NFS 客户端": "NFS client", "多路径组件": "Multipath", "VAST 提供，开源": "Open source", "网卡 0": "NIC 0", "网卡 1": "NIC 1", "地址 1": "IP 1", "地址 2": "IP 2", "地址 3": "IP 3", "地址 4": "IP 4", "占用很高": "High", "占用升高": "Rising", "占用较低": "Low", "remoteports：服务端地址；localports：客户端地址（仅 NFSv3）": "remoteports: server IPs · localports: client IPs (NFSv3)", "remoteports · localports（仅 NFSv3）": "remoteports · localports (NFSv3 only)", "一条连接": "One connection", "多路径": "Multipath", "客户端": "Client", "已送达": "Delivered", "示意，不代表实测数字": "Schematic, not measured", "一条连接：一个地址，一台 CNode": "One connection: one IP, one CNode", "nconnect：四条连接，还是同一台 CNode": "nconnect: four connections, still one CNode", "多路径：四条连接，四台 CNode": "Multipath: four connections, four CNodes", "两块网卡一起发，按 NUMA 走就近的网卡": "Both NICs send; each CPU uses its nearest NIC (NUMA)", "协议仍是标准 NFS": "Still standard NFS", "NFS 多路径：从一条连接、nconnect 多条连接到同一台 CNode，再到多路径摊到多块网卡和多台 CNode": "NFS multipath: from one connection, to nconnect's several connections to one CNode, to multipath spreading across several NICs and CNodes"};
 var ENM={"两块网卡一起发，按 NUMA 走就近的网卡": "Both NICs send; nearest NIC per CPU (NUMA)", "VAST 提供，开源": "VAST, open source"};
 var ARIA="NFS 多路径：从一条连接、nconnect 多条连接到同一台 CNode，再到多路径摊到多块网卡和多台 CNode";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
@@ -61,7 +61,7 @@ const SCENE={
    race:{T:{lbl:{x:40,y:82},cl:{x:40,y:110,w:120,h:70},ys:[145],cn:{x:700,w:130},cnH:60,cnt:{x:890,ly:120,ny:158}},
          R:{lbl:{x:40,y:262},cl:{x:40,y:290,w:120,h:140},ys:[312,344,376,408],cn:{x:700,w:130},cnH:26,cnt:{x:890,ly:330,ny:370}},
          gap:28,cap:4,sep:228,note:{x:40,y:474}}};
-  return {W:480,H:630,mobile:true,f:{lbl:17,sm:16,cap:17,big:30},pw:20,ph:15,dr:6,sp:200,
+  return {W:480,H:630,mobile:true,f:{lbl:17,sm:17,cap:17,big:30},pw:20,ph:15,dr:6,sp:200,
    host:{x:12,y:10,w:456,h:300},hostTtl:{x:26,y:30},
    nic:{y:240,w:110,h:48,cs:[130,350]},app:{x:180,y:120,w:120,h:48},cpu:{y:120,w:110,h:48,cs:[130,350]},
    stk:{x:150,w:180,spine:312,row:12,app:{y:40,h:38},nfs:{y:92,h:38},mp:{y:144,h:70},t1:36,t2:58},bendApp:204,
@@ -99,7 +99,7 @@ const SCENE={
   box(ra,gs);tx(tcx,ra.y+ra.h/2,'应用',f.lbl,'lbl','middle',gs);
   box(rn,gs);tx(tcx,rn.y+rn.h/2,'NFS 客户端',f.lbl,'lbl','middle',gs);
   E.mpB=box(rm,gs);E.mpB.classList.add('hl');tx(tcx,rm.y+K.t1,'多路径组件',f.lbl,'lbl b7','middle',gs);tx(tcx,rm.y+K.t2,'VAST 提供，开源',f.sm,'ochre-t st','middle',gs);
-  tx(L.note.x,L.note.y,M?'挂载多写两项：ClientIP、ServerIP 地址列表':'挂载时多写两项：ClientIP=本机地址列表，ServerIP=各 CNode 地址列表',f.sm,'ink2-t','middle',gs);
+  tx(L.note.x,L.note.y,M?'remoteports · localports（仅 NFSv3）':'remoteports：服务端地址；localports：客户端地址（仅 NFSv3）',f.sm,'ink2-t','middle',gs);
   /* 网卡 */
   E.nicB=E.nic.map((r,k)=>{const gg=el('g',{},g);if(k===1)gg.dataset.dim='1 2 3';const b=box(r,gg);
    if(M)tx(k===0?r.x-6:r.x+r.w+6,C(r).y,'网卡 '+k,f.lbl,'lbl',k===0?'end':'start',gg);else tx(C(r).x,r.y-14,'网卡 '+k,f.lbl,'lbl','middle',gg);return b});

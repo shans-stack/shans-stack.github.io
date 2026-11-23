@@ -4,6 +4,8 @@
 const STATION = 'kvoff';
 const PREFIX = 'an-kvoff';
 const EN = {
+  "GPU 注意力": "GPU Attention",
+  "C 使用 A/B 的 KV": "C uses A/B KV",
   "示意，不代表实测数字": "Schematic, not measured",
   "预填充生成 K 和 V，保存在显存": "Prefill creates keys and values and stores them in GPU memory",
   "低层保存可复用块后回收原显存槽位": "Reusable blocks are copied to a lower tier before GPU slots are reclaimed",
@@ -45,10 +47,10 @@ const scenes = [
   ({box, link, send, at}) => {
     const prompt = box([[150,190,208],[180,77,220]],"输入 token",{slots:[['A','blue'],['B','blue'],['C','blue']]});
     const gpu = box([[450,190,208],[180,227,220]],"GPU 预填充",{tone:'blue'});
-    const ram = box([[745,190,218],[180,379,226]],"显存中的 KV Cache",{slots:[['KV','violet'],['K','green',2200],['V','green',2500]],tone:'green'});
+    const ram = box([[745,190,218],[180,379,226]],"显存中的 KV Cache",{slots:[['A:KV','violet',2150],['B:KV','green',2430],['C:KV','green',2710]],tone:'green'});
     send(link(prompt,gpu),350,1390);
     const out = link(gpu,ram,{color:'green'});
-    send(out,1430,2170,'green');send(out,1730,2470,'green');
+    [2150,2430,2710].forEach((arrival,i)=>send(out,arrival-650,arrival,i?'green':'violet'));
     at([[450,285],[250,301]],"保存 K、V",'secondary');
     return 4480;
   },
@@ -75,16 +77,18 @@ const scenes = [
     at([[604,214],[247,354]],"命中后回读",'secondary');
     return 4600;
   },
-  ({box, link, send}) => {
+  ({mobile, box, link, send}) => {
     const req = box([[135,191,187],[180,53,219]],"请求 token",{slots:[['A','blue'],['B','blue'],['C','violet']]});
     const cache = box([[449,93,202],[94,233,158]],"低层缓存",{detail:"前缀 A、B",tone:'green'});
-    const compute = box([[449,284,202],[266,233,158]],"GPU 预填充",{detail:"后续 C",tone:'violet'});
-    const gpu = box([[761,191,197],[180,398,226]],"显存中的 KV",{slots:[['A','blue',2220],['B','blue',2500],['C','violet',3060]],tone:'green'});
+    const compute = box([[449,284,225],[266,233,158]],"GPU 注意力",{detail:"C 使用 A/B 的 KV",tone:'violet'});
+    const gpu = box([[761,191,197],[180,398,226]],"显存中的 KV",{slots:[['A','blue',2050],['B','blue',2320],['C','violet',3660]],tone:'green'});
     send(link(req,cache,{axis:['x','y'],offset:-13,bend:-12,color:'green'}),320,1220,'green');
     send(link(req,compute,{axis:['x','y'],offset:13,bend:12,color:'violet'}),320,1320,'violet');
-    const read = link(cache,gpu,{axis:['x','y'],offset:-14,bend:-13,color:'green'});
-    send(read,1260,2190,'green');send(read,1540,2470,'green');
-    send(link(compute,gpu,{axis:['x','y'],offset:14,bend:13,color:'violet'}),1820,3030,'violet');
+    const load = link(cache,gpu,{axis:['x','y'],offset:mobile?-43:-14,bend:-13,color:'green'});
+    send(load,1260,2050,'green');send(load,1530,2320,'green');
+    const read = link(gpu,compute,{axis:['x','y'],offset:mobile?32:18,bend:17,color:'green'});
+    send(read,2360,2840,'green');
+    send(link(compute,gpu,{axis:['x','y'],offset:mobile?-10:-16,bend:-15,color:'violet'}),2940,3660,'violet');
     return 4600;
   },
   ({box, link, send, at, elements}) => {
@@ -192,7 +196,7 @@ function mount(host, opts = {}) {
       text(group, x, detail || slots.length ? top + 21 : y, title, 'title');
       if (detail) text(group, x, top + 51, detail, 'secondary');
       const gap = 5;
-      const cellW = Math.min(35, (size - 14 - gap * (slots.length - 1)) / slots.length);
+      const cellW = Math.min(42, (size - 14 - gap * (slots.length - 1)) / slots.length);
       const cells = slots.map((slot, i) => {
         const [key, color = 'blue', start, end] = typeof slot === 'string' ? [slot] : slot;
         const cx = x + (i - (slots.length - 1) / 2) * (cellW + gap);

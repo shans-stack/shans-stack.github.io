@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/b-warp.css?v=1046f7ba">
+<link rel="stylesheet" href="../../assets/anim/b-warp.css?v=87ff0a57">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/b-warp.js?v=44f34519"></script>
+<script src="../../assets/anim/b-warp.js?v=a8343607"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "b-warp",
@@ -130,10 +130,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p><code>warp list</code> 单独运行列举负载。对象键是桶内对象的名称，前缀是名称开头的一段字符。测试可为并发线程准备不同前缀并按前缀列举。一个请求可返回多个对象，因此每秒列出的对象数与每秒 LIST 请求数应分别理解。准备阶段的 PUT 与列举分开统计。</p>"
+     "<p><code>warp list</code> 单独运行列举负载。对象键是桶内对象的名称，前缀是名称开头的一段字符。测试可为并发线程准备不同前缀并按前缀列举。一次 ListObjectsV2 请求返回一页，页内可有多个对象。若还有结果，客户端用响应给出的续传令牌发起下一次 LIST。每秒列出的对象数与每秒 LIST 请求数是不同的指标。准备阶段的 PUT 与列举分开统计。</p>"
     ],
     [
-     "<p><code>warp list</code> runs listing separately. An object key is its name within a bucket. A prefix is the opening part of that name. Warp can prepare distinct prefixes for concurrent workers and list one prefix at a time. A request can return multiple objects, so listed objects per second and LIST requests per second describe different rates. Preparation PUTs are reported separately from listing.</p>"
+     "<p><code>warp list</code> runs listing separately. An object key is its name within a bucket. A prefix is the opening part of that name. Warp can prepare distinct prefixes for concurrent workers and list one prefix at a time. A ListObjectsV2 request returns one page, which may contain multiple objects. If more results remain, the client uses the continuation token from the response to issue the next LIST request. Listed objects per second and LIST requests per second describe different rates. Preparation PUTs are reported separately from listing.</p>"
     ]
    ]
   },
@@ -190,6 +190,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

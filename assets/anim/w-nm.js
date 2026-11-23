@@ -30,13 +30,14 @@
       link(compute,drive,{delay:850,duration:760,bounce:true,backAt:1660});
     }
   },
-  ({node, link}) => {
+  ({node, link, text}) => {
     node('lost', [130,100], [100,85], ['故障域 A','Domain A'], {sub:['数据块不可用','Chunk unavailable'], tone:'off'});
     node('data', [130,190], [100,208], ['故障域 B','Domain B'], {sub:['原数据块','Data chunk']});
     node('parity', [130,280], [280,208], ['故障域 C','Domain C'], {sub:['原校验块','Parity chunk']});
-    node('result', [600,235], [190,388], ['重建节点','Rebuild node'], {sub:['恢复的数据块','Recovered chunk'], tone:'active', reveal:1550, wide:true});
+    node('result', [600,235], [190,388], ['重建出的数据块','Rebuilt chunk'], {sub:['写入健康故障域','In a healthy domain'], tone:'active', reveal:1550, wide:true});
     link('data','result',{port:-12,duration:1300});
     link('parity','result',{port:12,delay:250,duration:1300,tone:'control'});
+    text([440,348],[190,443],['仅显示部分故障域','Only selected domains are shown']);
   },
   ({node, link, panel}) => {
     panel([40,55,380,265],[20,23,340,210],['独立部署 · 两台主机','Dedicated · separate hosts']);
@@ -235,7 +236,7 @@
     run();
     document.fonts.ready.then(() => { if (!destroyed) rebuild(); });
 
-    return {
+    const control = {
       show,
       pause() { paused = true; cancelAnimationFrame(frame); },
       resume() { paused = false; run(); },
@@ -246,10 +247,13 @@
         reduce.removeEventListener('change', motionChanged);
         document.removeEventListener('ss-lang', rebuild);
         svg.remove();
+        if (host.__anim === control) delete host.__anim;
       },
       ratio,
       step: () => step,
     };
+    host.__anim = control;
+    return control;
   }
 
   window.SSAnim = window.SSAnim || {};

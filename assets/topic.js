@@ -1,7 +1,7 @@
 /* 知识点页共用脚本（所有 topics/<站>/index.html 引用）。
    页面先定义 window.SS_TOPIC_CFG = {anim:'动画模块名', steps:[...], ar:[桌面宽高比, 手机宽高比]}，再引用本文件。
    steps 每项：t 标题 [中, 英]；d 一句话说明 [中, 英]（演示模式也用）；b 正文段落 [[中段...], [英段...]]。
-   tabs 可覆盖本步 d、b，首项默认；动画可按 tab key 提供 figures 示意图，或用 show(i, key) 绘制。
+   tabs 可覆盖本步 d、b，首项是最新一代、默认打开，显示时排在最右；动画可按 tab key 提供 figures 示意图，或用 show(i, key) 绘制。
    文档模式：单栏，每一步依次是编号与标题、一句话说明、这一步的动画、正文；动画滚到才装上，看不见的停住。
    演示模式（?mode=present、按 P 或点「演示」）：一步一屏，← → 翻步，Esc 回到文档模式。
    ?step=N 两种模式都能用；从 present.html 连播进来时直接进演示模式。 */
@@ -70,7 +70,7 @@
     return '<div class="gen-tabs" role="tablist" aria-labelledby="'+title+'" data-step="'+i+'">'+STEPS[i].tabs.map(function(t,j){
       var active=t===selected[i];
       return '<button type="button" role="tab" id="'+tabId(panel,j)+'" data-tab="'+j+'" aria-selected="'+active+'" aria-controls="'+panel+'" tabindex="'+(active?0:-1)+'">'+SS.esc(T(t.t))+'</button>';
-    }).join('')+'</div>';
+    }).reverse().join('')+'</div>';   /* 数据里首项是最新一代（默认）；显示时最老在左、最新在右 */
   }
   function figure(v){
     var rows=MOD.figures&&MOD.figures[v.fig||v.key];
@@ -325,7 +325,7 @@
     document.addEventListener('click',function(e){var b=e.target.closest('.gen-tabs [role=tab]');if(b)selectTab(b,true)});
     document.addEventListener('keydown',function(e){
       var b=e.target.closest('.gen-tabs [role=tab]');if(!b||e.metaKey||e.ctrlKey||e.altKey)return;
-      var tabs=b.parentElement.children,n=tabs.length,i=+b.dataset.tab,k=e.key;
+      var tabs=b.parentElement.children,n=tabs.length,i=Array.prototype.indexOf.call(tabs,b),k=e.key;   /* 按显示顺序左右移动 */
       if(k==='ArrowLeft')i=(i+n-1)%n;else if(k==='ArrowRight')i=(i+1)%n;
       else if(k==='Home')i=0;else if(k==='End')i=n-1;
       else if(k!==' ')return;

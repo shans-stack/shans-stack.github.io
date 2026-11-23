@@ -2,6 +2,20 @@
   'use strict';
 
   const EN = {
+  "表元数据": "Table Metadata",
+  "选定快照": "Selected Snapshot",
+  "固定可见范围": "Fix visibility",
+  "清单列表与清单": "Manifest List + Manifests",
+  "解析文件引用": "Resolve file refs",
+  "引用的数据文件": "Referenced Files",
+  "对该快照可见": "Visible to this snapshot",
+  "目录指针": "Catalog Pointer",
+  "指向元数据 A": "Points to metadata A",
+  "指向元数据 B": "Points to metadata B",
+  "表元数据 A": "Metadata A",
+  "表元数据 B": "Metadata B",
+  "A 记录的当前快照": "Current in A",
+  "B 记录的当前快照": "Current in B",
     "示意，不代表实测数字": "Schematic, not measured",
     "表定义": "Table definition",
     "字段与位置": "Schema and location",
@@ -44,24 +58,25 @@
     "仍是当前版本": "Still current"
   };
   const scenes = [
-    ["context", [
-      ["表定义", "字段与位置", "list"],
-      ["文件清单", "记录有效文件", "list"],
-      ["登记文件", "属于当前表", "files", "good", "pending"],
-      ["新写入文件", "尚未登记", "files", "muted"]
-    ], [[0, 1, 0], [1, 2, 800]]],
+    ["snapshot", [
+      ["表元数据", "字段与位置", "list"],
+      ["选定快照", "固定可见范围", "pointer"],
+      ["清单列表与清单", "解析文件引用", "list"],
+      ["引用的数据文件", "对该快照可见", "files", "good", "pending"]
+    ], [[0, 1, 0], [1, 2, 720], [2, 3, 1440]]],
     ["context", [
       ["读取器", "打开当前表", "lines"],
       ["快照 A", "固定读取版本", "pointer", "good"],
       ["文件 A", "沿用同一集合", "files", "good", "pending"],
       ["快照 B", "写入器准备中", "pointer", "muted"]
     ], [[0, 1, 0], [1, 2, 780], [0, 3, 0, "off"]]],
-    ["branch", [
-      ["写入器", "备好 B 的元数据", "files"],
-      ["当前指针", "指向 B", "pointer", "good", "pending", "指向 A"],
-      ["快照 A", "历史版本", "list", "data", "", "当前版本"],
-      ["快照 B", "新当前版本", "list", "good", "pending", "待提交"]
-    ], [[0, 1, 0], [1, 2, 0, "old"], [1, 3, 850, "switch"]]],
+    ["commit", [
+      ["目录指针", "指向元数据 B", "pointer", "good", "pending", "指向元数据 A"],
+      ["表元数据 A", "历史版本", "list", "data", "", "当前版本"],
+      ["表元数据 B", "新当前版本", "list", "good", "pending", "待提交"],
+      ["快照 A", "A 记录的当前快照", "files"],
+      ["快照 B", "B 记录的当前快照", "files", "good"]
+    ], [[0, 1, 0, "old"], [0, 2, 1400, "switch"], [1, 3, 0, "ref"], [2, 4, 0, "ref"]]],
     ["branch", [
       ["周二事件查询", "筛选日期", "lines"],
       ["文件统计", "比较日期上下界", "list"],
@@ -77,6 +92,8 @@
   ];
 
   const desktop = {
+    snapshot: [[115, 153], [338, 153], [562, 153], [785, 153]],
+    commit: [[145, 153], [450, 84], [450, 222], [755, 84], [755, 222]],
     chain: [[145, 153], [450, 153], [755, 153]],
     merge: [[242, 84], [242, 222], [658, 153]],
     fork: [[242, 153], [658, 84], [658, 222]],
@@ -86,6 +103,8 @@
     lanes: [[240, 84], [660, 84], [240, 222], [660, 222]]
   };
   const mobile = {
+    snapshot: [[180, 52], [180, 146], [180, 240], [180, 334]],
+    commit: [[180, 62], [90, 194], [270, 194], [90, 325], [270, 325]],
     chain: [[180, 63], [180, 194], [180, 325]],
     merge: [[90, 102], [270, 102], [180, 276]],
     fork: [[180, 102], [90, 276], [270, 276]],
@@ -192,7 +211,7 @@
       const row = (small.matches ? mobile : desktop)[layout];
       const specs = nodes.map((node, i) => {
         const [x, y] = row[i];
-        return {x, y, w: small.matches ? (x === 180 ? 204 : 150) : 236, h: 86};
+        return {x, y, w: small.matches ? (x === 180 ? 204 : 150) : layout === "snapshot" ? 190 : 236, h: layout === "snapshot" ? 76 : 86};
       });
       const step = window.SS_TOPIC_CFG.steps[index];
       svg.setAttribute('aria-label', step.d[window.SS_LANG === 'en' ? 1 : 0]);
@@ -216,7 +235,7 @@
           : `M${x - 7 * sign},${y - 4} L${x},${y} L${x - 7 * sign},${y + 4}`;
         el('path', {d: arrow, class: name + '-arrow'}, group);
         const offsets = type === 'batch' ? [0, 90, 180] : type === 'stream' ? [0, 390, 780, 1170] : [0];
-        const moves = ['off', 'old', 'switch'].includes(type) ? [] : offsets.map(delay => ({
+        const moves = ['off', 'old', 'switch', 'ref'].includes(type) ? [] : offsets.map(delay => ({
           item: el('rect', {x: -5, y: -4, width: 10, height: 8, rx: 2, class: name + '-packet', 'data-tone': type}, packets),
           start: start + delay
         }));

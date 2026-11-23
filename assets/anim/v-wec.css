@@ -49,3 +49,11 @@
 .v-wec .v-wec-btn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
 .v-wec .v-wec-btn[hidden]{display:block;opacity:0;pointer-events:none}
 @media (max-width:640px){.v-wec .v-wec-btn{font-size:14px;padding:6px 12px}}
+
+@media(max-width:640px){
+  body.present .stage:has(#animPres.v-wec){padding:12px}
+  .stage:has(#animPres.v-wec) .figbox{margin-block:6px}
+  .stage:has(#animPres.v-wec) .cap{display:block;margin-top:6px}
+  .stage:has(#animPres.v-wec) h2{font-size:23px;line-height:1.2}
+  .stage:has(#animPres.v-wec) .desc{font-size:16px;line-height:1.35}
+}

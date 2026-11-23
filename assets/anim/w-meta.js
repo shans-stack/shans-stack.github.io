@@ -8,15 +8,17 @@
     link('call','attrs');
   },
   ({node, link, panel}) => {
-    panel([485,29,350,194],[20,136,340,165],['主机 A · 计算服务','Host A · Compute']);
-    panel([485,239,350,104],[20,328,340,135],['主机 B · 计算服务','Host B · Compute']);
-    node('fs',[160,168],[190,70],['文件系统对象','File system objects'],{wide:true});
-    node('a',[658,104],[102,231],['分片 A','Shard A'],{tone:'active'});
-    node('b',[658,174],[278,231],['分片 B','Shard B'],{tone:'active'});
-    node('c',[658,307],[190,405],['分片 C','Shard C'],{tone:'active'});
-    link('fs','a',{port:-15,delay:0,via:[390,126],mobilePath:[ [175,115],[188,115],[188,216]],mobileSides:['bottom','right']});
-    link('fs','b',{port:0,delay:360,via:[450,126],mobilePath:[ [190,125],[196,125],[196,231]],mobileSides:['bottom','left']});
-    link('fs','c',{port:15,delay:720,via:[427,320],mobilePath:[ [205,112],[369,112],[369,420]],mobileSides:['bottom','right']});
+    panel([485,23,350,202],[194,32,180,228],['主机 A · 计算服务','Host A · Compute']);
+    panel([485,239,350,112],[194,280,180,126],['主机 B · 计算服务','Host B · Compute']);
+    node('fa',[172,100],[88,106],['文件范围 A','File range A']);
+    node('fb',[172,176],[88,203],['文件范围 B','File range B']);
+    node('fc',[172,307],[88,358],['文件范围 C','File range C']);
+    node('a',[658,100],[284,106],['分片 A','Shard A'],{tone:'active'});
+    node('b',[658,176],[284,203],['分片 B','Shard B'],{tone:'active'});
+    node('c',[658,307],[284,358],['分片 C','Shard C'],{tone:'active'});
+    link('fa','a',{quiet:true});
+    link('fb','b',{quiet:true});
+    link('fc','c',{quiet:true});
   },
   ({node, link}) => {
     node('file',[115,182],[190,72],['文件范围 B','File range B']);
@@ -232,7 +234,7 @@
     run();
     document.fonts.ready.then(() => { if (!destroyed) rebuild(); });
 
-    return {
+    const control = {
       show,
       pause() { paused = true; cancelAnimationFrame(frame); },
       resume() { paused = false; run(); },
@@ -243,10 +245,13 @@
         reduce.removeEventListener('change', motionChanged);
         document.removeEventListener('ss-lang', rebuild);
         svg.remove();
+        if (host.__anim === control) delete host.__anim;
       },
       ratio,
       step: () => step,
     };
+    host.__anim = control;
+    return control;
   }
 
   window.SSAnim = window.SSAnim || {};

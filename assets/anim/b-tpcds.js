@@ -59,9 +59,9 @@
       layers.forEach((layer, i) => layer.forEach((pair, j) => {
         nodes.push({
           pair, layer: i,
-          x: mobile ? width / 2 + (j - (layer.length - 1) / 2) * 172 : width / 2 + (i - (count - 1) / 2) * (count === 4 ? 187 : 252),
-          y: mobile ? 44 + (count === 1 ? 98 : i * 265 / (count - 1)) : 145 + (j - (layer.length - 1) / 2) * 100,
-          w: mobile ? (layer.length === 1 ? 258 : 156) : (count === 4 ? 163 : 208),
+          x: mobile ? width / 2 + (j - (layer.length - 1) / 2) * (layer.length === 3 ? 116 : 172) : width / 2 + (i - (count - 1) / 2) * (count === 4 ? 187 : 252),
+          y: mobile ? 44 + (count === 1 ? 98 : i * 265 / (count - 1)) : 145 + (j - (layer.length - 1) / 2) * (layer.length === 3 ? 79 : 100),
+          w: mobile ? (layer.length === 1 ? 258 : layer.length === 3 ? 109 : 156) : (count === 4 ? 163 : 208),
           h: 65
         });
       }));
@@ -107,20 +107,41 @@
         [['dsdgen', 'dsdgen'], ['dsqgen', 'dsqgen']],
         [['基础与刷新数据', 'Base and\nRefresh Data'], ['各查询流 SQL', 'SQL Streams']]
       ], [[0, 2], [1, 3], [2, 4], [3, 5]]),
-      () => graph([
-        [['Power', 'Power'], ['Throughput', 'Throughput']],
-        [['一个查询流', 'One Stream'], ['多个查询流', 'Multiple Streams']],
-        [['数据库', 'Database'], ['数据库', 'Database']]
-      ], [[0, 2], [1, 3], [2, 4], [3, 5]], ['同一数据库，两个计时阶段', 'One Database, Separate Timings']),
+      () => {
+        const db = mobile ? [width / 2, 290] : [650, 144];
+        const origin = mobile ? [width / 2, 73] : [163, 144];
+        const boxWidth = mobile ? 280 : 234;
+        const boxHeight = 64;
+        const streams = (offsets, delay) => offsets.map((offset, i) => route(mobile
+          ? [[origin[0] + offset, origin[1] + boxHeight / 2], [db[0] + offset, db[1] - boxHeight / 2]]
+          : [[origin[0] + boxWidth / 2, origin[1] + offset], [db[0] - boxWidth / 2, db[1] + offset]],
+        delay + i * .06));
+        const power = streams([0], .25);
+        const throughput = streams([-26, 0, 26], 1.77);
+        [origin, db].forEach(([x, y]) => draw('rect', {
+          x: x - boxWidth / 2, y: y - boxHeight / 2, width: boxWidth, height: boxHeight, rx: 5, class: id + '-box'
+        }));
+        label(...db, ['受测数据库', 'Database Under Test']);
+        const phase = label(...origin, ['Power · 单查询流', 'Power · One Stream']);
+        label(width / 2, mobile ? 365 : 270, ['同一数据库：先 Power，后 Throughput', 'One Database: Power, Then Throughput'], 'note');
+        updates.push(t => {
+          const parallel = t >= 1.45;
+          phase.textContent = (parallel ? ['Throughput · 并发流', 'Throughput · Concurrent'] :
+            ['Power · 单查询流', 'Power · One Stream'])[window.SS_LANG === 'en' ? 1 : 0];
+          power[0].setAttribute('opacity', parallel ? 0 : 1);
+          throughput.forEach(path => path.setAttribute('opacity', parallel ? 1 : 0));
+        });
+      },
       () => flow([
         ['并发查询 1', 'Throughput 1'], ['数据维护 1', 'Maintenance 1'],
         ['并发查询 2', 'Throughput 2'], ['数据维护 2', 'Maintenance 2']
       ]),
       () => graph([
-        [['加载与单流', 'Load and Power'], ['并发与维护', 'Throughput and\nMaintenance']],
-        [['阶段耗时', 'Phase Timings'], ['比例因子', 'Scale Factor']],
+        [['阶段耗时', 'Phase\nTimings'], ['比例因子', 'Scale\nFactor'], ['并发流数 Sq', 'Stream\nCount Sq']],
         [['QphDS@SF', 'QphDS@SF']]
-      ], [[0, 2], [1, 2], [2, 4], [3, 4]]),
+      ], [[0, 3], [1, 3], [2, 3]], mobile
+        ? ['Sq 决定查询数与时间项权重', 'Sq sets counts and time weights']
+        : ['Sq 决定查询数及 Power、Load 时间项权重', 'Sq sets query count and weights Power and Load']),
       () => graph([
         [['TPC-DS', 'TPC-DS'], ['TPCx-AI', 'TPCx-AI']],
         [['零售数据', 'Retail Data'], ['加载与预处理', 'Load and\nPreprocess']],

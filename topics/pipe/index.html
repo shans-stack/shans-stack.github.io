@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/pipe.js?v=8656edb4"></script>
+<script src="../../assets/anim/pipe.js?v=5f0020fe"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "pipe",
@@ -180,16 +180,16 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>幂等写入指重复执行同一逻辑写入时，结果与执行一次相同。Delta Lake 可以用应用标识和事务版本识别重复写入。固定批次输入后，重试可复用同一个事务标识，防止重复追加。</p>"
+     "<p>幂等写入指重复执行同一逻辑写入时，结果与执行一次相同。Delta Lake 可以用应用标识和事务版本识别重复写入。固定批次输入后，重试复用同一个事务标识。首次未提交时，重试可以提交这一批。首次已提交但客户端未收到确认时，Delta Lake 识别该标识并跳过重复写入。</p>"
     ],
     [
-     "<p>An idempotent write leaves the same result after repeats as after one execution. Delta Lake can identify repeated writes by an application identifier and transaction version. With the batch inputs held constant, a retry can reuse that transaction identifier to prevent duplicate appends.</p>"
+     "<p>An idempotent write leaves the same result after repeats as after one execution. Delta Lake can identify repeated writes by an application identifier and transaction version. With the batch inputs held constant, the retry reuses the same transaction identifier. If the first attempt did not commit, the retry can commit the batch. If the first commit succeeded but the client missed the acknowledgment, Delta Lake recognizes the identifier and skips the duplicate write.</p>"
     ]
    ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

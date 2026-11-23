@@ -12,11 +12,11 @@
       [['准确率运行', 'Accuracy run'], [[0.09, 0.34, 'pass'], [0.38, 0.62, 'pass'], [0.66, 0.9, 'pass']]]
     ], ['记录请求时序和预测结果', 'Record query timings and predictions']),
     ({ timelines }) => timelines([
-      [['查询 A', 'Query A'], [[0.06, 0.35]]],
-      [['查询 B', 'Query B'], [[0.06, 0.52]]],
-      [['查询 C', 'Query C'], [[0.06, 0.73]]]
+      [['样本 A', 'Sample A'], [[0.06, 0.35]]],
+      [['样本 B', 'Sample B'], [[0.06, 0.52]]],
+      [['样本 C', 'Sample C'], [[0.06, 0.73]]]
     ], ['合计测量窗口内完成的样本', 'Count samples completed in the window'],
-    [[0.06, ['同时提交', 'Batch submitted'], 'start']]),
+    [[0.06, ['一次查询含全部样本', 'One query with all samples'], 'start']]),
     ({ timelines }) => timelines([
       [['查询 A', 'Query A'], [[0.05, 0.24, 'pass']]],
       [['查询 B', 'Query B'], [[0.12, 0.36, 'pass']]],

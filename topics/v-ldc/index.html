@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/v-ldc.css?v=879b8ad2">
+<link rel="stylesheet" href="../../assets/anim/v-ldc.css?v=f8b38a52">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-ldc.js?v=87225f26"></script>
+<script src="../../assets/anim/v-ldc.js?v=64d10b04"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-ldc",
@@ -117,11 +117,11 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>Reed-Solomon 是最常见的纠删码算法。它的规则是：一条带有多少份数据，补回任何一份就要读回同样多份。条带是 146+4，就要读 146 份，读取量相当于坏盘容量的 146 倍。</p>",
+     "<p>Reed-Solomon 是最常见的纠删码算法。它的规则是：一条带有多少份数据，补回任何一份就要读回同样多份。在 146+4 示例中，每补回一个有效数据块需读取等量的 146 个块。整盘读取量取决于坏盘上需要重建的有效数据量。</p>",
      "<p>坏一块盘时，这块盘上每一条带的份都要补，每一条都要这样读一遍。读取量这么大，会长时间占用整套系统。</p>"
     ],
     [
-     "<p>Reed-Solomon is the most common erasure coding algorithm. Its rule: to recover any one piece, read back as many pieces as the stripe has data pieces. For a 146+4 stripe that means 146 pieces, a read volume 146 times the capacity of the failed drive.</p>",
+     "<p>Reed-Solomon is the most common erasure coding algorithm. Its rule: to recover any one piece, read back as many pieces as the stripe has data pieces. In the 146+4 example, restoring one live data piece requires 146 equal-sized reads. Total rebuild reads depend on how much live data on the failed drive needs rebuilding.</p>",
      "<p>When a drive fails, every stripe with a piece on it needs that piece back, and each stripe is read this way. Reads on this scale keep the whole system busy for a long time.</p>"
     ]
    ]
@@ -225,6 +225,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

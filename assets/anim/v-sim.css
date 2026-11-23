@@ -58,3 +58,11 @@
 .v-sim .cel.dup{stroke:var(--rose);stroke-width:2.5}
 .v-sim .qdot{fill:var(--slate);stroke:var(--card);stroke-width:2}
 .v-sim .thr{stroke:var(--ink2);stroke-width:2}
+
+@media(max-width:640px){
+  body.present .stage:has(#animPres.v-sim){padding:12px}
+  .stage:has(#animPres.v-sim) .figbox{margin-block:6px}
+  .stage:has(#animPres.v-sim) .cap{display:block;margin-top:6px}
+  .stage:has(#animPres.v-sim) h2{font-size:23px;line-height:1.2}
+  .stage:has(#animPres.v-sim) .desc{font-size:16px;line-height:1.35}
+}

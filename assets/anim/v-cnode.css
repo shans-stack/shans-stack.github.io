@@ -57,3 +57,7 @@
 .ssa-v-cnode .chip.warn{stroke:var(--rose)}
 .ssa-v-cnode .scm{stroke:var(--ochre)}
 .ssa-v-cnode .tag{fill:var(--card);stroke:var(--slate);stroke-width:2}
+
+@media(max-width:440px){
+  .hd .wrap{flex-wrap:wrap;gap:0 8px}
+}

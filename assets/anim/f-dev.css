@@ -37,3 +37,8 @@
   .topic-f-dev .mhost { aspect-ratio: var(--arm); }
   .topic-f-dev .stage .figbox { margin-block: 4px; }
 }
+
+@media (max-width: 440px) {
+  body.topic-f-dev .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-f-dev .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

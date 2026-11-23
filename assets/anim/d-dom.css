@@ -4,7 +4,7 @@
 .an-d-dom .an-scene{display:block;width:100%;height:auto;font-family:var(--f)}
 .an-d-dom .an-scene text{dominant-baseline:central}
 .an-d-dom .an-scene .vis{transition:opacity .4s}
-.an-d-dom .an-scene .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.an-d-dom .an-scene .hid{opacity:0;visibility:hidden;transition:none}
 .an-d-dom .an-scene .dim{opacity:.22}
 .an-d-dom .frame{fill:none;stroke:var(--rule2);stroke-width:2}
 .an-d-dom .ttl{fill:var(--ink2);font-weight:700}
@@ -35,3 +35,10 @@
 .an-d-dom .ep{fill:var(--card);stroke:var(--slate);stroke-width:2}
 .an-d-dom .num{font-weight:700;font-variant-numeric:tabular-nums}
 .an-d-dom .sep{stroke:var(--rule);stroke-width:1.5}
+@media (max-width:640px){
+  body.present:has(main[data-station="d-dom"]) .stage{padding:12px}
+  body.present:has(main[data-station="d-dom"]) .stage .figbox{margin-block:0}
+  body.present:has(main[data-station="d-dom"]) .stage .cap{display:block;margin-top:8px}
+  body.present:has(main[data-station="d-dom"]) .stage h2{font-size:24px}
+  body.present:has(main[data-station="d-dom"]) .stage .desc{font-size:16px;line-height:1.4}
+}

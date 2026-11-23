@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/n-rapids.js?v=439e3fb3"></script>
+<script src="../../assets/anim/n-rapids.js?v=c4dd83e9"></script>
 <script>
 window.SS_TOPIC_CFG={
   "anim": "n-rapids",
@@ -129,10 +129,10 @@ window.SS_TOPIC_CFG={
       ],
       "b": [
         [
-          "\u003cp>代理在 pandas 接口与底层实现之间分派操作。需要回退时，对象可能在 GPU 与 CPU 格式之间转换，后续支持的操作仍可回到 GPU。一次工作流的执行位置随调用和数据而变化。\u003c/p>"
+          "\u003cp>代理先尝试在 GPU 上执行操作，必要时将对象转成 GPU 格式。GPU 路径成功时直接返回结果。失败时，代理改用 CPU 上的 pandas，并在需要时转换对象。后续支持的操作仍可回到 GPU。一次工作流的执行位置随调用和数据而变化。\u003c/p>"
         ],
         [
-          "\u003cp>The proxy dispatches calls from the pandas interface to the underlying implementation. On fallback, objects may need conversion between GPU and CPU representations, and later eligible operations can return to the GPU. Execution therefore depends on the calls and data in the workflow.\u003c/p>"
+          "\u003cp>The proxy tries the GPU implementation first, converting objects to the GPU representation when needed. A successful GPU attempt returns the result directly. On failure, the proxy tries pandas on the CPU and converts objects as needed. Later supported operations can return to the GPU. Execution therefore depends on the calls and data in the workflow.\u003c/p>"
         ]
       ]
     },
@@ -191,6 +191,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

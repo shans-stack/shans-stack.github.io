@@ -15,18 +15,18 @@ var EN={
  "拿到明文":"Gets plaintext","抓不到":"Blocked",
  "机密环境：同样的抓取被硬件挡回去，拿不到内容":"Confidential VM: the same grab is blocked by hardware",
  "普通容器：管理员能把内存里的明文复制出来":"Plain container: the admin copies plaintext out",
- "空手启动，没有钥匙":"Starts with no keys","主机改了策略":"Host changed the policy","改了策略":"Changed policy",
+ "空手启动，没有钥匙":"Starts with no keys","镜像或配置已改":"Image or config changed","修改镜像或配置":"Changed image or config",
  "与登记值不符，不放钥匙":"No match, no keys","核验通过，放钥匙":"Verified, keys released",
  "拿不到钥匙，起不来":"No keys, won't start","钥匙到了，等权重进来":"Keys in, loading weights","在受保护内存里解密":"Decrypted in protected memory",
  "只递 prompt，拿回回答":"Prompt in, answer out","模型只看到这段 prompt":"Model sees only the prompt","模型就绪":"Model ready",
- "策略被改：报告和登记的对不上，钥匙一把都不放":"Policy changed: no match, no keys released",
- "策略原样：核验通过，钥匙放进去":"Policy intact: verified, keys released",
+ "度量与参考值不符，KMS 不释放密钥":"Measurement mismatch; KMS withholds keys",
+ "度量通过核验，KMS 释放密钥":"Measurement verified; KMS releases keys",
  "企业看得到：自己的数据、prompt 和回答":"Enterprise sees its data, prompts, answers","看不到：模型权重":"Not the model weights",
  "模型厂商看得到：自己的模型权重":"Model vendor sees only its weights","看不到：企业的数据、prompt 和回答":"Not the enterprise's data, prompts, answers",
  "运营者两样都看不到":"The operator sees neither","只能决定跑不跑，随时可以停掉负载":"It only decides whether the workload runs",
  "看不到内容":"Sees no content",
  "⇄ 换回普通容器":"⇄ Back to plain container","⇄ 换成机密环境":"⇄ Switch to confidential VM",
- "⇄ 恢复原策略":"⇄ Restore the policy","⇄ 模拟策略被改":"⇄ Simulate a policy change",
+ "⇄ 恢复镜像或配置":"⇄ Restore image or config","⇄ 模拟镜像或配置变更":"⇄ Simulate an image or config change",
  "⇄ 换到模型厂商视角":"⇄ Switch to model vendor view","⇄ 换到运营者视角":"⇄ Switch to operator view","⇄ 换到企业视角":"⇄ Switch to enterprise view",
  "企业、运营者的服务器、模型厂商三方：机密环境如何先验证、后给钥匙":"Enterprise, operator servers and model vendor: how a confidential VM is verified before it gets keys"
 };
@@ -252,10 +252,10 @@ function attestScene(t,bad){const M=E.M,p=L.path;
   put(M.stoO,L.pt.stoBlk);M.stoO.a=1;put(M.kmsO,L.pt.kmsKey);M.kmsO.a=1;
   S.conSt=['空手启动，没有钥匙','ink3-t'];
   let t0=0;
-  if(bad){ // 管理员先改了策略
+  if(bad){ // 镜像或配置先发生变化
     const d=M.tam;if(t<0.3){put(d,L.pt.admC);d.a=0}else if(t<1.4){along(d,p.tamper,sm((t-0.3)/1.1));d.a=ramp(t,0.3,0.45)}else{put(d,p.tamper[2]);d.a=1-ramp(t,1.4,1.7)}
     S.wire.Plo=t>0.3&&t<1.5?'rose':'';
-    if(t>1.4){S.conCls='bad';S.conSt=['主机改了策略','rose-t'];S.adm=['改了策略','rose-t']}
+    if(t>1.4){S.conCls='bad';S.conSt=['镜像或配置已改','rose-t'];S.adm=['修改镜像或配置','rose-t']}
     t0=1.6;
   }
   const r=M.rep;r.cls.bad=bad?1:0;
@@ -304,8 +304,8 @@ const MODES={
   2:{pre(){if(enc){const t=cyc(8.4);bounceScene(t);S.cap=['机密环境：同样的抓取被硬件挡回去，拿不到内容','sage-t']}
       else{const t=cyc(7.4);copyScene(t);S.cap=['普通容器：管理员能把内存里的明文复制出来','rose-t']}}},
   3:{pre(){const t=cyc(10.6);attestScene(t,false)}},
-  4:{pre(){if(tamper){const t=cyc(8.4);attestScene(t,true);S.cap=['策略被改：报告和登记的对不上，钥匙一把都不放','rose-t']}
-      else{const t=cyc(10.6);attestScene(t,false);S.cap=['策略原样：核验通过，钥匙放进去','sage-t']}}},
+  4:{pre(){if(tamper){const t=cyc(8.4);attestScene(t,true);S.cap=['度量与参考值不符，KMS 不释放密钥','rose-t']}
+      else{const t=cyc(10.6);attestScene(t,false);S.cap=['度量通过核验，KMS 释放密钥','sage-t']}}},
   5:{pre(){const t=cyc(8.4);serveScene(t,8.4)}},
   6:{pre(){const T=11,t=cyc(T);serveScene(t,T);S.ent=['',''];
       if(!viewManual)view=Math.floor(Math.max(0,S.t)/3.8)%3;
@@ -361,7 +361,7 @@ function applyVis(){
 function setBtn(){
   let s='';
   if(step===2)s=enc?'⇄ 换回普通容器':'⇄ 换成机密环境';
-  else if(step===4)s=tamper?'⇄ 恢复原策略':'⇄ 模拟策略被改';
+  else if(step===4)s=tamper?'⇄ 恢复镜像或配置':'⇄ 模拟镜像或配置变更';
   else if(step===6)s='⇄ 换到'+{ent:'模型厂商',ven:'运营者',op:'企业'}[VIEWS[view]]+'视角';
   s=T(s);if(btn.textContent!==s){btn.textContent=s;btn.setAttribute('aria-label',s.replace('⇄ ',''))}
 }

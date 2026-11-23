@@ -6,7 +6,7 @@
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    文字有中英两套（EN 表 + T()），跟着页面的 ss-lang 事件重画。样式在 assets/anim/v-sim.css。 */
 (function(){
-var EN={"新写入": "New write", "切块": "Chunk", "算指纹": "Fingerprint", "压缩": "Compress", "已存数据": "Stored data", "指纹表": "Fingerprint table", "示意：一格代表一段字节": "Schematic: each cell is a run of bytes", "最近省下的空间": "Recent space saved", "示意，不代表实测数字": "Schematic, not measured", "内存里的表 1": "RAM table 1", "内存里的表 2": "RAM table 2", "SCM 上的共享表": "Shared SCM table", "内存表 2": "RAM table 2", "SCM 共享表": "Shared SCM table", "示意": "Schematic", "强指纹：没找到": "Strong: no match", "强指纹：找到": "Strong: match", "差一格，也要整块再存": "Differs: stored in full", "一样的块：只记一个指针": "Same block: pointer only", "相似指纹：找到 A": "Similar: match A", "这块就是 A": "This one is A", "示意：B 是一块全新的数据": "Schematic: B is brand-new data", "示意：A′ 和 A 只差一格": "Schematic: A′ differs from A by one cell", "用 A 的字典压": "Using A's dictionary", "A′ 只多存一小段差异": "A′ adds only a small delta", "相似指纹：没找到": "Similar: no match", "ZSTD 单独压缩": "ZSTD on its own", "B 压短一些后存下": "B stored a bit smaller", "整套系统一个缩减域": "One realm for the whole system", "去重域 1": "Dedupe domain 1", "去重域 2": "Dedupe domain 2", "找到：CNode 1 存过": "Found: stored by CNode 1", "没找到": "Not found", "CNode 2 的写入只记一个指针": "CNode 2's write: pointer only", "相似性压缩：": "Similarity: ", "开": "on", "关": "off", "收益低，自动关掉": "Low gain, switched off", "换成共享 SCM 上的表": "Switch to the shared SCM table", "换成全新块": "Switch to a new block", "换成各自内存里的表": "Switch to per-node RAM tables", "换成相似块": "Switch to a similar block", "相似性压缩：找到只差几个字节的块，用同一本字典只存差异": "Similarity reduction: find blocks that differ by a few bytes and store only the difference with a shared dictionary"};
+var EN={"新写入": "New write", "切块": "Chunk", "算指纹": "Fingerprint", "压缩": "Compress", "已存数据": "Stored data", "指纹表": "Fingerprint table", "示意：一格代表一段字节": "Schematic: each cell is a run of bytes", "最近省下的空间": "Recent space saved", "示意，不代表实测数字": "Schematic, not measured", "内存里的表 1": "RAM table 1", "内存里的表 2": "RAM table 2", "SCM 上的共享表": "Shared SCM table", "内存表 2": "RAM table 2", "SCM 共享表": "Shared SCM table", "示意": "Schematic", "强指纹：没找到": "Strong: no match", "强指纹：找到": "Strong: match", "差一格，也要整块再存": "Differs: stored in full", "一样的块：只记一个指针": "Same block: pointer only", "相似指纹：找到 A": "Similar: match A", "这块就是 A": "This one is A", "示意：B 是一块全新的数据": "Schematic: B is brand-new data", "示意：A′ 和 A 只差一格": "Schematic: A′ differs from A by one cell", "ZSTD 与字典比较 · 本例选字典": "ZSTD vs dictionary · dictionary wins", "A′ 只多存一小段差异": "A′ adds only a small delta", "相似指纹：没找到": "Similar: no match", "ZSTD 单独压缩": "ZSTD on its own", "B 压短一些后存下": "B stored a bit smaller", "同一加密组内共享": "One encryption group", "去重域 1": "Dedupe domain 1", "去重域 2": "Dedupe domain 2", "找到：CNode 1 存过": "Found: stored by CNode 1", "没找到": "Not found", "CNode 2 的写入只记一个指针": "CNode 2's write: pointer only", "相似性压缩：": "Similarity: ", "开": "on", "关": "off", "收益低，自动关掉": "Low gain, switched off", "换成共享 SCM 上的表": "Switch to the shared SCM table", "换成全新块": "Switch to a new block", "换成各自内存里的表": "Switch to per-node RAM tables", "换成相似块": "Switch to a similar block", "相似性压缩：找到只差几个字节的块，用同一本字典只存差异": "Similarity reduction: find blocks that differ by a few bytes and store only the difference with a shared dictionary"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function mount(host,opts){
@@ -58,7 +58,7 @@ layout(mobile){
       tbl:{x:320,y:64,w:200,h:86},tblRows:[110,134],tblT:84,look:[P(420,y),P(420,150)],
       ref:[P(800,170),P(800,160),P(590,160),P(590,228)],refFrom:(s)=>[s,P(800,s.y),P(800,160),P(590,160),P(590,y)],
       main:[P(120,y),P(720,y)],srcPt:P(70,y),
-      cmpNote:{x:590,y:316},
+      cmpNote:{x:535,y:316},
       sw:{x:590,y:190},gauge:{x:320,y:96,w:200,ly:72,sy:124},
       R:{c1:{x:240,y:110,w:140,h:50},c2:{x:240,y:300,w:140,h:50},t1:{x:40,y:110,w:150,h:50},t2:{x:40,y:300,w:150,h:50},ts:{x:40,y:205,w:150,h:50},
          store:{x:600,y:100,w:320,h:260},jx:215,dom:[P(760,150),P(760,325)],lineY:[135,325]},
@@ -72,7 +72,7 @@ layout(mobile){
     tbl:{x:316,y:206,w:154,h:88},tblRows:[254,278],tblT:228,look:[P(x,250),P(316,250)],
     ref:[P(400,450),P(400,360),P(290,360)],refFrom:(s)=>[s,P(400,450),P(400,360),P(x,360)],
     main:[P(x,56),P(x,450)],srcPt:P(x,36),
-    cmpNote:{x:180,y:396,a:'end'},
+    cmpNote:{x:240,y:414,a:'middle'},
     sw:{x:300,y:330,a:'start'},gauge:{x:316,y:250,w:150,ly:226,sy:276},
     R:{c1:{x:30,y:60,w:160,h:50},c2:{x:290,y:60,w:160,h:50},t1:{x:30,y:150,w:160,h:56},t2:{x:290,y:150,w:130,h:56},ts:{x:160,y:150,w:160,h:56},
        store:{x:30,y:300,w:420,h:200},mob:true},
@@ -205,7 +205,7 @@ modes:[
      const r0=a-H.plen(L.refFrom(L.slots[0]))/260;const ra=SCENE.mv(E.ref,L.refFrom(L.slots[0]),t,r0,260,{post:1});
      const tm=Math.max(a,ra)+0.5;if(t>=tm){E.b1.style.opacity=1-H.ramp(t,tm,tm+0.2);E.ref.style.opacity=1-H.ramp(t,tm,tm+0.2)}
      const da=t>=tm?SCENE.mv(E.dl,[cmp,L.entry,L.slots[1]],t,tm+0.1,v,{fadeIn:1}):(E.dl.style.opacity=0,0);
-     E.cNote.textContent=t>=a?T('用 A 的字典压'):'';E.cNote.setAttribute('class','st sage-t');
+     E.cNote.textContent=t>=a?T('ZSTD 与字典比较 · 本例选字典'):'';E.cNote.setAttribute('class','st sage-t');
      E.sNote.textContent=t>=tm+0.1+H.plen([cmp,L.entry,L.slots[1]])/v?T('A′ 只多存一小段差异'):'';E.sNote.setAttribute('class','st sage-t');
      SCENE.hl(E.A,t>=r0&&t<tm+0.5)}
    else{[E.b1,E.ref,E.dl].forEach(g=>g.style.opacity=0);SCENE.hl(E.A,false);
@@ -219,7 +219,7 @@ modes:[
  /* 5：一个缩减域（一个按钮切换） */
  {period:6,enter(){const R=L.R;E.rA=SCENE.blk(SCENE.K8,1);H.put(E.rA,R.dom[0]);E.rB=SCENE.blk(SCENE.K8,1);E.rd=SCENE.dot()},
   draw(t){const alt=H.alt(),R=L.R,r=E.r;r.gA.style.opacity=alt?0:1;r.gB.style.opacity=alt?1:0;r.div.style.opacity=alt?0:1;
-   r.d1.textContent=alt?T('整套系统一个缩减域'):T('去重域 1');r.d2.textContent=alt?'':T('去重域 2');
+   r.d1.textContent=alt?T('同一加密组内共享'):T('去重域 1');r.d2.textContent=alt?'':T('去重域 2');
    SCENE.ping(E.rd,alt?r.look.B:r.look.A,t,0.5,1.0);
    const res=t>=1.5;r.res1.setAttribute('x',alt?r.res.xB:r.res.x);r.res1.setAttribute('y',alt?r.res.yB:r.res.y);
    r.res1.textContent=res?(alt?T('找到：CNode 1 存过'):T('没找到')):'';r.res1.setAttribute('class','st '+(alt?'sage-t':'rose-t'));

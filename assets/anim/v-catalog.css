@@ -13,7 +13,7 @@
 .v-catalog-figure .v-catalog-removed .v-catalog-selection{fill:color-mix(in srgb,var(--l1) 25%,var(--surface))}
 .v-catalog-figure .v-catalog-scope text,.v-catalog-figure .v-catalog-match text,.v-catalog-figure .v-catalog-removed text{fill:var(--ink)}
 @media(max-width:639px){
-  .v-catalog-figure{font-size:14px}
+  .v-catalog-figure{font-size:16px}
   .v-catalog-figure .v-catalog-heading{font-size:16px}
 }
 @media (640px <= width <= 720px){

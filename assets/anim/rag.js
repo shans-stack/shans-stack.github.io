@@ -6,6 +6,7 @@
   const prefix = 'an-' + id;
   const namespace = 'http://www.w3.org/2000/svg';
   const EN = {
+  "本次未纳入上下文": "Faded: excluded",
     "原始文档": "Source document",
     "保留完整资料": "Full text stays here",
     "解析与切片": "Parse and split",
@@ -72,17 +73,15 @@
         [1, 2, 1.53, "good", 0.75, 4, null],
       ]
     ],
-    ["重排器筛选本次上下文", "fork",
+    ["重排器筛选本次上下文", "chain",
       [
         ["候选片段", "初次检索结果", "data", 4],
-        ["重排与筛选", "按相关性再评分", "control", 0],
+        ["重排与筛选", "按相关性再评分", "control", 4],
         ["入选片段", "加入上下文", "good", 2],
-        ["未入选片段", "保留在知识库", "idle", 0],
       ],
       [
         [0, 1, 0.36, "data", 0.66, 4, null],
         [1, 2, 1.95, "good", 0.67, 2, null],
-        [1, 3, 2.78, "idle", 0.7, 1, null],
       ]
     ],
     ["问题和片段进入同一份输入", "merge",
@@ -235,6 +234,15 @@
       });
       labels.forEach((data, i) => {
         tile(boxes[i], data);
+        if (current === 2 && i === 1) {
+          const discarded = [...content.querySelectorAll('.' + prefix + '-packet')].slice(-2);
+          const caption = label(mobile ? 94 : boxes[i].x, boxes[i].bottom + 22, "本次未纳入上下文", 'detail');
+          effects.push(time => {
+            const selected = time >= 1.95;
+            discarded.forEach(item => { item.style.opacity = selected ? .25 : 1; });
+            caption.style.opacity = selected ? 1 : 0;
+          });
+        }
         if (!arrivals[i].length) return;
         effects.push(time => {
           const active = arrivals[i].reduce((highlight, arrived) => {

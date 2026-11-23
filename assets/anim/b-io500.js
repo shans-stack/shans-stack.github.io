@@ -98,19 +98,30 @@
         [['数据读写带宽', 'Read and\nWrite BW'], ['元数据操作', 'Metadata Ops']],
         [['pfind', 'pfind']], [['命名空间搜索', 'Namespace\nSearch']]
       ], [[0, 2], [1, 3], [4, 5]]),
-      () => graph([
-        [['Easy', 'Easy'], ['Hard', 'Hard']],
-        [['进程独立文件', 'File per Rank'], ['进程共享文件', 'Shared File']],
-        [['独立工作目录', 'Separate Dirs'], ['共享工作目录', 'Shared Directory']]
-      ], [[0, 2], [1, 3], [2, 4, 'guide'], [3, 5, 'guide']], ['中间为 IOR，末端为 mdtest', 'IOR File Layouts, mdtest Directories']),
+      () => {
+        const x = mobile ? [98, 262] : [267, 572];
+        const y = mobile ? [131, 263] : [118, 217];
+        const boxWidth = mobile ? 151 : 263;
+        [['IOR', 'IOR'], ['mdtest', 'mdtest']].forEach((title, i) => label(x[i], 38, title));
+        [
+          [['每进程一个文件', 'File per rank'], ['每进程独立目录', 'Separate dirs']],
+          [['进程共享文件', 'Shared file'], ['文件位于共享目录', 'Shared directory']]
+        ].forEach((row, i) => {
+          label(width / 2, y[i] - 47, i ? ['Hard', 'Hard'] : ['Easy', 'Easy'], 'note');
+          row.forEach((pair, j) => {
+            draw('rect', { x: x[j] - boxWidth / 2, y: y[i] - 26, width: boxWidth, height: 52, rx: 5, class: id + '-box' });
+            label(x[j], y[i], pair);
+          });
+        });
+      },
       () => graph([
         [['MPI 作业', 'MPI Job'], ['INI 配置', 'INI\nConfiguration']],
-        [['各测试阶段', 'Test Phases']],
-        [['运行摘要', 'Run Summary']],
-        [['有效性校验', 'Validity Check']]
+        [['参数预检', 'Validate\nSettings']],
+        [['执行并检查阶段', 'Run and\nCheck Phases']],
+        [['摘要含有效状态', 'Summary\nWith Validity']]
       ], [[0, 2], [1, 2], [2, 3], [3, 4]]),
       () => graph([
-        [['IOR 阶段', 'IOR Phases'], ['元数据阶段', 'Metadata Phases']],
+        [['IOR 阶段', 'IOR Phases'], ['计分的 mdtest、\nfind（pfind）', 'mdtest + find\n(scored)']],
         [['BW · GiB/s', 'BW · GiB/s'], ['MD · kIOPS', 'MD · kIOPS']],
         [['综合分数', 'Composite Score']]
       ], [[0, 2], [1, 3], [2, 4], [3, 4]], ['分项与综合均取几何平均', 'Geometric Means at Both Levels']),

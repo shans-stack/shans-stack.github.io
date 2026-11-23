@@ -50,3 +50,11 @@
 .v-scm .v-scm-btn[hidden]{display:block;opacity:0;pointer-events:none}
 @media (max-width:640px){.v-scm .v-scm-btn{font-size:14px;padding:6px 12px}}
 .v-scm .ackdot{fill:var(--sage);stroke:var(--card);stroke-width:2}
+
+@media(max-width:640px){
+  body.present .stage:has(#animPres.v-scm){padding:12px}
+  .stage:has(#animPres.v-scm) .figbox{margin-block:6px}
+  .stage:has(#animPres.v-scm) .cap{display:block;margin-top:6px}
+  .stage:has(#animPres.v-scm) h2{font-size:23px;line-height:1.2}
+  .stage:has(#animPres.v-scm) .desc{font-size:16px;line-height:1.35}
+}

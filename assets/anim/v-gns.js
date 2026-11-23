@@ -8,7 +8,7 @@
    样式在 assets/anim/v-gns.css，全部限定在 .ssa-v-gns 容器之内。 */
 (function(){
 var ID='v-gns';
-var EN={"源站集群":"Origin cluster","一套集群":"One cluster","卫星站 1":"Satellite 1","卫星站 2":"Satellite 2","客户端":"Client","本地客户端":"Local client","远处客户端":"Remote client","广域网":"WAN","已读完":"Reads done","示意，不代表实测数字":"Schematic, not measured",
+var EN={"已缓存":"Cached","申请读租约":"Request read lease","源站集群":"Origin cluster","一套集群":"One cluster","卫星站 1":"Satellite 1","卫星站 2":"Satellite 2","客户端":"Client","本地客户端":"Local client","远处客户端":"Remote client","广域网":"WAN","已读完":"Reads done","示意，不代表实测数字":"Schematic, not measured",
 "保存全量":"Full copy","呈现全局文件夹，按需取数":"Global folder, fetched on demand","没缓存：去源站取":"Not cached: fetch from origin","缓存命中，本地返回":"Cache hit, served locally","本地命中":"Local hits","读租约 有效":"Read lease valid",
 "中心副本":"Central copy","站点 A":"Site A","站点 B":"Site B","同步时刻":"Sync","A 改了这个文件":"A edits the file","B 也改了这个文件":"B edits it too","B 成为当前版本":"B becomes the current version","A 留作历史版本":"A stays in version history",
 "读租约":"Read lease","写租约":"Write lease","已收回":"Revoked","源站处理写请求":"Origin handles the write request","源站收回卫星站的读租约":"Origin revokes satellite read leases","卫星站 2 再读：先核对，再交数据":"Satellite 2 reads again: check first, then serve",
@@ -20,7 +20,7 @@ function makeScene(H){
 const {el,tx,settx,grp,rect,line,C,P,clamp,sm,ramp,pk,dot,put,hide,run,loopFade}=H;
 const L_=()=>H.L(),E_=()=>H.E();
 const SCENE={
- still:[5,3,6,6.5,8.8,4],
+ still:[5,3,9.7,6.5,8.8,4],
  layout(m){
   if(!m){const O={x:190,y:170,w:220,h:120},S1={x:560,y:40,w:210,h:120},S2={x:560,y:300,w:210,h:120},bus=490;
    return {mobile:false,W:960,H:480,pw:18,ph:18,dr:7,f:{lbl:19,sm:17,note:16},O,S1,S2,
@@ -91,7 +91,7 @@ SCENE.modes[1]={frame(t){const E=E_();reset2();[E.S1,E.S2].forEach((s,i)=>{const
   settx(E.m2,'呈现全局文件夹，按需取数','st ink2-t');E.m2.style.opacity=ramp(t,1.6,2)}};
 /* 第 3 步：第一次读跨广域网到源站取，之后本地缓存命中 */
 SCENE.modes[2]={enter(S){S.v.p=pk();S.v.q=pk()},
- frame(t,S){const E=E_(),L=L_(),per=11,u=t%per,fa=loopFade(u,per);reset2();
+ frame(t,S){const E=E_(),L=L_(),per=13,u=t%per,fa=loopFade(u,per);reset2();
   const cl=H.rev(L.cl.S1),toS=cl.concat([C(L.S1)]),far=[C(L.S1)].concat(H.rev(wanTo('S1'))).concat([C(L.O)]);
   /* 第一次：客户端→卫星站（没缓存）→源站→卫星站（存进缓存）→客户端 */
   let hits=0;
@@ -99,12 +99,21 @@ SCENE.modes[2]={enter(S){S.v.p=pk();S.v.q=pk()},
   else if(u<2.6)put(S.v.p,H.along(far,sm((u-0.8)/1.8)),fa);
   else if(u<4.4)put(S.v.p,H.along(H.rev(far),sm((u-2.6)/1.8)),fa);
   else if(u<5.2)put(S.v.p,H.along(H.rev(toS),sm((u-4.4)/0.8)),fa);else hide(S.v.p);
-  if(u>4.4)cells(E.S1,3);
-  if(u>5.4)settx(E.S1.tag,'读租约 有效','st sage-t');
-  /* 之后：本地命中 */
-  if(u>5.4){const c=1.2,k=Math.floor((u-5.4)/c),w=u-5.4-k*c;hits=k+(w>1?1:0);put(S.v.q,w<0.5?H.along(toS,sm(w/0.5)):H.along(H.rev(toS),sm((w-0.5)/0.5)),fa)}else hide(S.v.q);
-  settx(E.m2,u<5.2?'没缓存：去源站取':'缓存命中，本地返回',u<5.2?'st slate-t':'st sage-t');E.m2.style.opacity=fa;
-  if(u>5.4){E.m2.textContent=H.T('缓存命中，本地返回')+' · '+H.T('本地命中')+' '+hits}}};
+  if(u>4.4){cells(E.S1,3);settx(E.S1.tag,u>=8.4?'读租约 有效':'已缓存','st sage-t')}
+  const leaseAt=8.4;
+  if(u>=5.5&&u<6.1)put(S.v.q,H.along(toS,sm((u-5.5)/0.6)),fa);
+  else if(u>=6.1&&u<leaseAt){
+   const route=u<7.25?far:H.rev(far);
+   put(S.v.q,H.along(route,sm((u-(u<7.25?6.1:7.25))/1.15)),fa);
+  }
+  else if(u>=leaseAt){
+   const c=1.2,k=Math.floor((u-leaseAt)/c),w=u-leaseAt-k*c;
+   hits=k+(w>1?1:0);
+   put(S.v.q,w<0.5?H.along(toS,sm(w/0.5)):H.along(H.rev(toS),sm((w-0.5)/0.5)),fa);
+  }else hide(S.v.q);
+  settx(E.m2,u<4.4?'没缓存：去源站取':u<6.1?'已缓存':u<leaseAt?'申请读租约':'缓存命中，本地返回',u<leaseAt?'st slate-t':'st sage-t');
+  E.m2.style.opacity=fa;
+  if(u>leaseAt)E.m2.textContent=H.T('本地命中')+' '+hits}};
 /* 第 4 步：同一个同步周期里两地都改，同步时时间戳晚的胜出 */
 SCENE.modes[3]={enter(S){S.v.a=pk('ochre',30,22);S.v.b=pk('violet',30,22)},
  frame(t,S){const E=E_(),per=9,u=t%per,fa=loopFade(u,per),tb=E.tb4;

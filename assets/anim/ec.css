@@ -63,3 +63,11 @@
 .an-ec .netbtn[hidden]{display:block;opacity:0;pointer-events:none}
 @media (max-width:640px){.an-ec .netbtn{font-size:14px;padding:6px 12px}}
 .an-ec .blk.par{stroke:var(--ochre);stroke-width:3}
+
+@media (max-width: 640px) {
+  body.present .stage { padding: 12px 14px; }
+  body.present .stage .figbox { margin-block: 8px; }
+  body.present .stage .cap { margin-top: 8px; }
+  body.present .stage h2 { font-size: 23px; }
+  body.present .stage .desc { font-size: 16px; }
+}

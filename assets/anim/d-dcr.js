@@ -15,6 +15,7 @@ var EN={
   "闲着":"Idle","存数据":"Data","坏了":"Failed","新盘":"New","不参与":"Not used","做完了":"Done","等待":"Waiting",
   "很高":"Very high","升高":"Rising","较低":"Low",
   "冗余已恢复":"Restored","回拷完成":"Done","回拷中":"Copying back","重建中":"Rebuilding",
+  "校验重建":"Parity rebuild","* = 校验":"* = parity",
   "坏盘上每一段属于不同条带，各找一块盘的备用格":"Each lost piece goes to a spare cell on another drive",
   "回拷比重建慢，但冗余已经恢复，不急":"Copyback is slower, but redundancy is already back",
   "传统 RAID 与分簇 RAID 坏盘重建：一块热备盘承担全部写入，与很多块盘一起重建":"Rebuilding a failed drive in traditional and declustered RAID: one hot spare takes every write, versus many drives sharing the work"
@@ -105,7 +106,11 @@ function build(){
    tx(x1,p.y,'= 备用空间',f.note,'ink2-t','start',lg);
    tx(x1+Math.max(L.m?92:100,tw(T('= 备用空间'),f.note)+14),p.y,'字母 = 条带',f.note,'ink2-t','start',lg)}
   E.hlT=tx(L.W/2,L.grpY,'',f.sm,'ochre-t st','middle',grp('3',host2));
+  tx(L.W-L.leg.x,L.leg.y,'* = 校验',f.note,'ink2-t','end',grp('3 4',host2));
   E.top4=tx(L.W/2,L.grpY,'',f.sm,'st','middle',grp('4 6',host2));
+  const compute=grp('2 4',host2),cx=L.W/2,cy=L.stubY;
+  el('rect',{x:cx-76,y:cy-15,width:152,height:30,rx:5,class:'disk'},compute);
+  tx(cx,cy,'校验重建',f.note,'ink2-t b7','middle',compute);
   // 额度（6 步）
   const qg=grp('6',host2);E.quota=[];
   {const p=L.quota,s=L.m?14:16;for(let i=0;i<2;i++)E.quota[i]=el('rect',{x:p.x-(2-i)*(s+6)+6,y:p.y-s/2,width:s,height:s,rx:3,class:'quota free'},qg);
@@ -181,18 +186,40 @@ function route(d1,y1,d2,y2,stId,lane){
 /* ---------- 盘面状态 ---------- */
 function setCell(d,r,cls,letter){const c=E.cell[d][r];c.c.setAttribute('class','cell '+cls);c.t.textContent=letter||''}
 function paintTrad(){for(let d=0;d<ND;d++)for(let r=0;r<NR;r++)setCell(d,r,d<4?'a':d<8?'b':'s')}
-function paintDcr(){for(let d=0;d<ND;d++){for(let r=0;r<NR-1;r++)setCell(d,r,'d',LET[S.cells[d][r]]);setCell(d,NR-1,'s')}}
+const members=s=>CELLS.flatMap((rows,d)=>rows.includes(s)?[d]:[]);
+const parityDrive=s=>members(s)[s%5];
+const piece=(s,d)=>LET[s]+(d===parityDrive(s)?'*':'');
+function paintDcr(){for(let d=0;d<ND;d++){for(let r=0;r<NR-1;r++)setCell(d,r,'d',piece(S.cells[d][r],d));setCell(d,NR-1,'s')}}
 function failDisk(d){for(let r=0;r<NR;r++)setCell(d,r,'dead');S.failed=d}
+function rebuildPieces(sources,target,row,stationId,speed,done){
+  const cy=L.stubY,cx=L.W/2,tx=L.dx(target);
+  let remaining=sources.length;
+  for(const [drive,r] of sources){
+    const x=L.dx(drive),input=cx+(x<cx?-76:76);
+    const path=[P(x,L.row(r)),P(x,L.dbot)];
+    if(Math.abs(x-cx)<76)path.push(P(x,cy-15));
+    else path.push(P(x,cy),P(input,cy));
+    spawn(path,speed,{fadeIn:true,pw:L.pw*.7,ph:L.ph*.7,done:p=>{
+      p.g.remove();p.dead=true;
+      if(--remaining) return;
+      const out=cx+(tx<cx?-76:76);
+      const write=Math.abs(tx-cx)<76?[P(tx,cy-15)]:[P(out,cy),P(tx,cy,stationId)];
+      write.push(P(tx,L.dbot),P(tx,L.row(row)));
+      spawn(write,speed,{fadeIn:true,done:packet=>{
+        packet.g.remove();packet.dead=true;done();S.prog++;
+      }});
+    }});
+  }
+}
 /* 坏盘上每一段：找来源盘（该条带的其他成员）和目标盘（没有该条带、有空备用格） */
 function planDcr(){
-  const used=new Set(),srcUse={},out=[];
+  const used=new Set(),out=[];
   for(let r=0;r<NR-1;r++){const s=S.cells[FAIL][r];
-    const has=d=>S.cells[d].includes(s);
-    const srcs=[...Array(ND).keys()].filter(d=>d!==FAIL&&has(d)).sort((a,b)=>(srcUse[a]||0)-(srcUse[b]||0));
-    const src=srcs[0];srcUse[src]=(srcUse[src]||0)+1;
-    const tgs=[...Array(ND).keys()].filter(d=>d!==FAIL&&!has(d)&&!used.has(d)&&d!==src);
+    const stripe=members(s);
+    const srcs=stripe.filter(d=>d!==FAIL).map(d=>[d,S.cells[d].indexOf(s)]);
+    const tgs=[...Array(ND).keys()].filter(d=>!stripe.includes(d)&&!used.has(d));
     const tg=tgs[(r*3)%tgs.length];used.add(tg);
-    out.push({r,s,src,srcRow:S.cells[src].indexOf(s),tg})}
+    out.push({r,s,srcs,tg})}
   return out}
 
 /* ---------- 每一步 ---------- */
@@ -201,24 +228,24 @@ const MODES=[
   {P:0,setup(){paintTrad();for(let d=0;d<ND;d++)S.role[d]=d>=SPARE?'idle':'data'}},
   /* 2 传统重建：一块热备盘承担全部写入 */
   {P:11,setup(){paintTrad();failDisk(FAIL);for(let r=0;r<NR;r++)setCell(SPARE,r,'s');
-     const x=L.dx(SPARE);station('spare',P(x,L.stubY),[1,0],1.05);S.total=NR;S.next=0;
+     const x=L.dx(SPARE);station('spare',P(x,L.stubY),[1,0],0.65);S.total=NR;S.next=0;
      for(let d=0;d<ND;d++)S.role[d]=d===FAIL?'fail':(d<4||d===SPARE)?'part':'no'},
-   tick(){if(S.ct>0.5&&S.next<NR&&load('spare')<4&&S.ct>0.5+S.next*0.45){const r=S.next++,src=[3,2,0][r%3];
-       spawn(route(src,L.row(r),SPARE,L.row(r),'spare'),L.sp.t,{fadeIn:true,cls:'',onSt:p=>{if(p.row===undefined){p.row=S.arr=(S.arr===undefined?0:S.arr+1);p.pts[p.pts.length-1]=P(L.dx(SPARE),L.row(p.row))}},done:p=>{p.keep=true;p.g.remove();p.dead=true;setCell(SPARE,p.row,'a');S.prog++}})}
+   tick(){if(S.next<NR&&S.ct>0.5+S.next*0.61){const r=S.next++;
+       rebuildPieces([[0,r],[2,r],[3,r]],SPARE,r,'spare',L.sp.t,()=>setCell(SPARE,r,'a'))}
      const qn=load('spare'),fly=d=>S.pk.some(p=>p.mode!=='done'&&p.pts[0].x===L.dx(d));S.tg=S.tg.map((v,d)=>d===SPARE?(qn>0?0.92:0):([0,2,3].includes(d)&&fly(d)?0.3:0))}},
   /* 3 分簇布局：依次高亮一个条带 */
   {P:0,setup(){paintDcr();for(let d=0;d<ND;d++)S.role[d]='data'},
    tick(){const k=Math.floor(S.ct/2.2)%4,s=[0,3,6,8][k];if(s!==S.hl){S.hl=s;
      for(let d=0;d<ND;d++)for(let r=0;r<NR-1;r++){const on=S.cells[d][r]===s;E.cell[d][r].c.setAttribute('class','cell d'+(on?' hl':' fade'))}
-     E.hlT.textContent=Lz('条带 '+LET[s]+' 的 5 段落在 5 块不同的盘上','Stripe '+LET[s]+': 5 pieces on 5 different drives')}}},
+     E.hlT.textContent=Lz('条带 '+LET[s]+' · RAID 5（4+1）示意','Stripe '+LET[s]+' · RAID 5 (4+1) example')}}},
   /* 4 分簇重建：很多盘一起 */
   {P:9,setup(){paintDcr();failDisk(FAIL);S.plan=planDcr();S.total=S.plan.length;
      for(let d=0;d<ND;d++)S.role[d]=d===FAIL?'fail':'no';
-     S.plan.forEach(u=>{S.role[u.src]='part';S.role[u.tg]='part';const x=L.dx(u.tg);station('t'+u.tg,P(x,L.stubY),[1,0],1.05)});
+     S.plan.forEach(u=>{u.srcs.forEach(([drive])=>S.role[drive]='part');S.role[u.tg]='part';const x=L.dx(u.tg);station('t'+u.tg,P(x,L.stubY),[1,0],0.65)});
      S.next=0},
    tick(){
-     while(S.next<S.plan.length&&S.ct>0.6+S.next*0.12){const u=S.plan[S.next++];
-       spawn(route(u.src,L.row(u.srcRow),u.tg,L.row(NR-1),'t'+u.tg),L.sp.d,{fadeIn:true,letter:LET[u.s],done:p=>{p.g.remove();p.dead=true;setCell(u.tg,NR-1,'d',LET[u.s]);S.prog++}})}
+     while(S.next<S.plan.length&&S.ct>0.6+S.next*0.38){const u=S.plan[S.next++],mark=piece(u.s,FAIL);
+       rebuildPieces(u.srcs,u.tg,NR-1,'t'+u.tg,L.sp.d,()=>setCell(u.tg,NR-1,'d',mark))}
      const busy=d=>S.pk.some(p=>p.mode!=='done'&&p.pts&&(p.pts[0].x===L.dx(d)||p.pts[p.pts.length-1].x===L.dx(d)));
      S.tg=S.tg.map((v,d)=>S.role[d]==='part'&&busy(d)?0.22:0)}},
   /* 5 同时跑 */
@@ -233,12 +260,12 @@ const MODES=[
        if(load('r'+tg)<3)spawn(route(src,R.top+R.h/2,tg,R.top+R.h/2,'r'+tg,R),L.sp.race,Object.assign({done:p=>S.cnt.R++},o))}}}},
   /* 6 换新盘、回拷 */
   {P:13,setup(){paintDcr();S.plan=planDcr();for(let r=0;r<NR;r++)setCell(FAIL,r,'s');
-     S.plan.forEach(u=>setCell(u.tg,NR-1,'d',LET[u.s]));S.newDisk=true;S.quota=[1,0];S.total=S.plan.length;
+     S.plan.forEach(u=>setCell(u.tg,NR-1,'d',piece(u.s,FAIL)));S.newDisk=true;S.quota=[1,0];S.total=S.plan.length;
      for(let d=0;d<ND;d++)S.role[d]='no';S.plan.forEach(u=>S.role[u.tg]='part');S.role[FAIL]='part';
      station('nd',P(L.dx(FAIL),L.stubY),[-1,0],1.4);S.next=0},
    tick(){
      while(S.next<S.plan.length&&S.ct>1.0+S.next*0.25){const u=S.plan[S.next++];
-       spawn(route(u.tg,L.row(NR-1),FAIL,L.row(u.r),'nd'),L.sp.c,{fadeIn:true,letter:LET[u.s],done:p=>{p.g.remove();p.dead=true;setCell(FAIL,u.r,'d',LET[u.s]);setCell(u.tg,NR-1,'s');S.prog++;
+       spawn(route(u.tg,L.row(NR-1),FAIL,L.row(u.r),'nd'),L.sp.c,{fadeIn:true,letter:piece(u.s,FAIL),done:p=>{p.g.remove();p.dead=true;setCell(FAIL,u.r,'d',piece(u.s,FAIL));setCell(u.tg,NR-1,'s');S.prog++;
          if(S.prog>=S.total)S.quota=[1,1]}})}
      const qn=load('nd');S.tg=S.tg.map((v,d)=>d===FAIL?(qn>0?0.6:0):(S.role[d]==='part'&&S.pk.some(p=>p.mode!=='done'&&p.pts[0].x===L.dx(d))?0.18:0))}}
 ];
@@ -306,7 +333,7 @@ function loop(now){const dt=Math.max(0,Math.min(0.05,(now-last)/1000||0));last=n
 function run(){cancelAnimationFrame(raf);if(paused||dead||reduce)return;last=performance.now();raf=requestAnimationFrame(loop)}
 function enter(i){
   step=i;cancelAnimationFrame(raf);clear();newSim();S.cells=CELLS;applyVis();MODES[i].setup();
-  if(reduce){const lim=[0.2,9,0.5,4,6,9][i];for(let t=0;t<lim;t+=1/60)tick(1/60);render();return}
+  if(reduce){const lim=[0.2,10.5,0.5,8.4,6,9][i];for(let t=0;t<lim;t+=1/60)tick(1/60);render();return}
   render();run();
 }
 function rebuild(){L=layout(mq.matches);build();if(opts.onLayout)opts.onLayout(L.W/L.H,L.m);enter(step)}

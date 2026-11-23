@@ -6,6 +6,13 @@
   const prefix = 'an-' + id;
   const namespace = 'http://www.w3.org/2000/svg';
   const EN = {
+  "调用提议 A / B": "Proposals A / B",
+  "两次独立请求": "Separate requests",
+  "A · 获准": "A · Allowed",
+  "B · 未获准": "B · Denied",
+  "提出读取调用": "Propose a read",
+  "校验并调用": "Check and dispatch",
+  "工具返回正文": "Tool returns text",
     "任务": "Task",
     "当前目标": "Current goal",
     "工具说明": "Tool definitions",
@@ -69,15 +76,16 @@
     ],
     ["执行权限由运行程序检查", "fork",
       [
-        ["调用提议", "工具名称与参数", "data", 0],
+        ["调用提议 A / B", "两次独立请求", "data", 0],
         ["执行前校验", "格式与权限", "control", 0],
-        ["运行工具", "查询获准", "good", 0],
-        ["阻止执行", "调用未获批准", "wait", 0],
+        ["运行工具", "A · 获准", "good", 0],
+        ["阻止执行", "B · 未获准", "wait", 0],
       ],
       [
-        [0, 1, 0.44, "data", 0.7, 1, null],
-        [1, 2, 1.54, "good", 0.7, 1, null],
-        [1, 3, 2.68, "wait", 0.7, 1, null],
+        [0, 1, 0.44, "data", 0.7, 1, null, "A"],
+        [1, 2, 1.29, "good", 0.7, 1, null, "A"],
+        [0, 1, 2.12, "data", 0.7, 1, null, "B"],
+        [1, 3, 2.97, "wait", 0.7, 1, null, "B"],
       ]
     ],
     ["工具返回结果供下一轮使用", "square",
@@ -96,9 +104,9 @@
     ["一次工具结果进入下一轮推理", "square",
       [
         ["任务上下文", "目标和已有观察", "data", 0],
-        ["下一轮推理", "选择读取原文", "control", 0],
-        ["读取工具", "按标识定位正文", "data", 0],
-        ["新观察", "返回正文", "good", 0],
+        ["下一轮推理", "提出读取调用", "control", 0],
+        ["运行程序", "校验并调用", "data", 0],
+        ["新观察", "工具返回正文", "good", 0],
       ],
       [
         [0, 1, 0.38, "data", 0.7, 1, null],
@@ -133,7 +141,7 @@
     let current = 0;
     let mobile, width, height, elapsed, last, content, effects;
     let frame = null;
-    const T = label => window.SS_LANG === 'en' ? EN[label] : label;
+    const T = label => window.SS_LANG === 'en' ? (EN[label] ?? label) : label;
     const clamp = x => Math.max(0, Math.min(1, x));
     const size = (large, small) => mobile ? small : large;
 
@@ -170,8 +178,11 @@
       return path;
     }
 
-    function packet(path, start, end, tone = 'data') {
-      const item = styled('rect', 'packet ' + tone, {width: 15, height: 10, x: -7.5, y: -5, rx: 2});
+    function packet(path, start, end, tone = 'data', name) {
+      const item = element('g', {});
+      const w = name ? 24 : 15, h = name ? 22 : 10;
+      styled('rect', 'packet ' + tone, {width: w, height: h, x: -w/2, y: -h/2, rx: 2}, item);
+      if (name) label(0, 0, name, 'label', 'middle', item);
       const length = path.getTotalLength();
       effects.push(time => {
         const progress = clamp((time - start) / (end - start));
@@ -235,11 +246,11 @@
       });
       const outlines = boxes.map((rect, i) => box(rect, labels[i][2]));
       const arrivals = boxes.map(() => []);
-      links.forEach(([, b, start, tone, duration, quantity], i) => {
+      links.forEach(([, b, start, tone, duration, quantity, , name], i) => {
         if (start === null) return;
         for (let block = 0; block < quantity; block++) {
           const departure = start + block*.19;
-          packet(paths[i], departure, departure + duration, tone);
+          packet(paths[i], departure, departure + duration, tone, name);
           arrivals[b].push(departure + duration);
         }
       });

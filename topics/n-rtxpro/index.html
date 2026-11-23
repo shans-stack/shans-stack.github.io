@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/n-rtxpro.js?v=1ea5edd5"></script>
+<script src="../../assets/anim/n-rtxpro.js?v=b9d56d4f"></script>
 <script>
 window.SS_TOPIC_CFG={
   "anim": "n-rtxpro",
@@ -141,15 +141,15 @@ window.SS_TOPIC_CFG={
         "Networking Connects Servers"
       ],
       "d": [
-        "服务器经网卡接入计算网络，参考架构可另设存储与服务访问路径。",
-        "Network adapters connect servers to the compute fabric. The reference architecture can provide separate paths for storage and service access."
+        "示例服务器用各自的适配器接入东西向计算网络与南北向存储和服务网络。",
+        "The example server uses separate adapters for east–west compute traffic and north–south traffic to storage and services."
       ],
       "b": [
         [
-          "<p>服务器内部的 PCIe 拓扑负责连接本机设备。RTX PRO AI Factory 参考设计使用 Spectrum-X 以太网连接不同节点，可配置计算节点间的东西向网络，以及面向存储和客户端服务等访问的南北向路径。网卡负责将两种范围的连接衔接起来。</p>"
+          "<p>服务器内部的 PCIe 拓扑负责连接本机设备。在 NVIDIA 的 RTX PRO AI Factory 参考设计示例中，BlueField-3 SuperNIC 接入东西向计算网络，单独的 BlueField-3 DPU 接入面向存储和客户端服务的南北向网络。这两条路径可在同一 Spectrum-X 物理以太网上做逻辑隔离。</p>"
         ],
         [
-          "<p>PCIe connects devices inside the server. The RTX PRO AI Factory reference design uses Spectrum-X Ethernet between nodes. It can configure an east-west fabric for compute traffic among nodes and a north-south path for access such as storage and client services. Network adapters connect the local device topology to these external paths.</p>"
+          "<p>PCIe connects devices inside the server. In the NVIDIA RTX PRO AI Factory reference design example, BlueField-3 SuperNICs connect to the east–west compute network. A separate BlueField-3 DPU connects to the north–south network for storage and client services. The two paths can be logically isolated on the same physical Spectrum-X Ethernet fabric.</p>"
         ]
       ]
     },
@@ -207,6 +207,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

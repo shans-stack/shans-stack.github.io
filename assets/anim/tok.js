@@ -2,6 +2,8 @@
 (() => {
 const ID = 'tok';
 const EN = {
+  "仅追踪位置 3": "Trace position 3 only",
+  "解码生成的后缀": "Decode the generated suffix",
   "示意，不代表实测数字": "Schematic, not measured",
   "文本切分为 Token": "Text split into tokens",
   "输入文字": "Input text",
@@ -68,13 +70,13 @@ const SCENES = [
     flow([
       ["位置向量", ["x₁", "x₂", "x₃"]],
       ["因果注意力", "x₁, x₂, x₃ → h₃", "汇总当前及先前位置"],
-      ["前馈网络", ["y₁", "y₂", "y₃"], "分别变换各位置"]
+      ["前馈网络", ["y₃"], "仅追踪位置 3"]
     ]);
     note("这组计算在多层中重复");
   }],
   ["最高分解码示例", ({ flow, note }) => {
     flow([
-      ["末位置向量", ["h₃"]],
+      ["末位置向量", ["y₃"]],
       ["词表候选分数", [["s  2.4", 66, "ready"], [".  0.9", 61, "idle"], ["!  0.1", 61, "idle"]]],
       ["选中 Token", [["s", 48, "ready"]]]
     ]);
@@ -92,7 +94,7 @@ const SCENES = [
     travel(output, 1.1, 2.25);
     card(a, "更新后的输入", ["AI", "▁", "lab", ["s", 48, "ready"]], "继续预测");
     card(b, "保留生成结果", [["s", 48, "ready"]]);
-    reveal(card(c, "反分词", "AI labs", "还原可读文字"), 2);
+    reveal(card(c, "反分词", "s", "解码生成的后缀"), 2);
   }]
 ];
 

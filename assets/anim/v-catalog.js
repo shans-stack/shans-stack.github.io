@@ -158,18 +158,24 @@
       },
 
       function tags() {
-        const object = box([86, 102, 248], [54, 45, 252], ['S3 对象', 'S3 object'], [
+        const object = box([20, 85, 236], [52, 16, 256], ['S3 对象', 'S3 object'], [
           'frame.jpg', 'processed = false'
         ]);
-        const catalog = box([546, 102, 248], [54, 224, 252], 'Catalog', [
+        const catalog = box([624, 85, 236], [52, 280, 256], 'Catalog', [
           'frame.jpg', 'tag_processed = —'
         ]);
-        const path = link(object, catalog, [['right', 93], ['left', 93]]);
+        const snapshot = box([322, 85, 236], [52, 153, 256], ['下次快照', 'Next snapshot'], [
+          ['等待快照', 'Awaiting snapshot']
+        ]);
         mark(object.lines[1], 'v-catalog-scope', 0.65);
-        flow(path, 0.65, 2.15);
-        change(catalog.lines[1], 'tag_processed = false', 2.15);
-        mark(catalog.lines[1], 'v-catalog-match', 2.15);
-        return 5.6;
+        flow(link(object, snapshot), 1.0, 1.9);
+        change(snapshot.lines[0], ['异步索引', 'Indexing asynchronously'], 1.9);
+        mark(snapshot.lines[0], 'v-catalog-scope', 1.9, 3.65);
+        flow(link(snapshot, catalog), 2.6, 3.65);
+        change(snapshot.lines[0], ['索引完成', 'Index ready'], 3.65);
+        change(catalog.lines[1], 'tag_processed = false', 3.65);
+        mark(catalog.lines[1], 'v-catalog-match', 3.65);
+        return 6.6;
       },
 
       function compare() {

@@ -58,12 +58,14 @@ const SCENES = [
     caption: ["评估决定部署与下一轮数据整理", "Evaluation informs deployment and the next round of curation"],
     bands: [
       [{"key": "curate", "name": ["数据整理", "Data Curation"], "sub": ["接收失败样本", "Receives failed cases"]}],
-      [{"key": "eval", "name": ["NeMo Evaluator", "NeMo Evaluator"], "sub": ["候选模型结果", "Candidate results"]}],
-      [{"key": "serve", "name": ["推理服务", "Inference Service"], "sub": ["接收合格候选", "Receives accepted model"]}]
+      [{"key": "eval", "name": ["NeMo Evaluator", "NeMo Evaluator"], "sub": ["失败样本与放行信号", "Cases and approval"]},
+       {"key": "model", "name": ["候选模型库", "Model Registry"], "sub": ["通过的权重或适配器", "Weights or adapter"], "tiles": ["file"]}],
+      [{"key": "serve", "name": ["推理服务", "Inference Service"], "sub": ["部署通过的候选模型", "Deploys approved model"]}]
     ],
     edges: [
       ["eval", "curate", 0.18, "review", 0],
-      ["eval", "serve", 0.18, "ok", 0]
+      ["eval", "serve", 0.18, "control", -15],
+      ["model", "serve", 1.15, "ok", 15]
     ]
   }
 ];

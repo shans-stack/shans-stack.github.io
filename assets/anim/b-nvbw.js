@@ -2,7 +2,7 @@
 'use strict';
 const id = 'b-nvbw';
 const scenes = [
-  {"kind": "chain", "cards": [[["主机内存", "Host Memory"], ["CPU 端点", "Host Endpoint"], ""], [["GPU A 显存", "GPU A Memory"], ["设备端点", "Device Endpoint"], ""], [["GPU B 显存", "GPU B Memory"], ["设备端点", "Device Endpoint"], ""]], "mode": "separate"},
+  {"kind": "pairs"},
   {"kind": "route", "ends": [["源显存", "Source GPU"], ["目标显存", "Destination GPU"]], "lanes": [["CE · 拷贝引擎", "CE · Copy Engine"], ["SM · GPU 内核", "SM · GPU Kernel"]], "mode": "methods", "limit": null},
   {"kind": "chain", "cards": [[["测试用例", "Test Case"], ["设备对与方向", "Pair and Direction"], ""], [["拷贝缓冲区", "Copy Buffer"], ["容量与采样次数", "Size and Sample Count"], ""], [["CUDA 事件", "CUDA Events"], ["开始 → 拷贝 → 结束", "Start → Copy → Stop"], "good"]], "mode": "sequence"},
   {"kind": "grid", "mode": "bandwidth"},
@@ -211,7 +211,7 @@ function mount(host, {onLayout, paused = false} = {}) {
     }
     const origin = mobile ? [55, 130] : [188, 113];
     const dx = mobile ? 83 : 158, dy = 57;
-    label(w / 2, mobile ? 47 : 43, ['行 → 列 · 按设备对单测','Row → Column · One Pair at a Time'], 'strong');
+    label(w / 2, mobile ? 47 : 43, ['传输方向以用例输出标题为准','Direction follows the test heading'], 'strong');
     ['GPU A', 'GPU B', 'GPU C'].forEach((gpu, i) => label(origin[0] + dx * (i + 1), origin[1] - 23, [gpu, gpu], 'column'));
     ['GPU A', 'GPU B', 'GPU C'].forEach((gpu, row) => {
       const y = origin[1] + row * dy;
@@ -248,7 +248,26 @@ function mount(host, {onLayout, paused = false} = {}) {
     });
   }
 
-  const draw = {chain, route, grid, rows};
+  function pairs() {
+    const cases = [
+      [['主机 → GPU', 'Host → GPU'], ['主机内存', 'Host Memory'], ['GPU A 显存', 'GPU A Memory']],
+      [['GPU → GPU', 'GPU → GPU'], ['GPU A 显存', 'GPU A Memory'], ['GPU B 显存', 'GPU B Memory']]
+    ];
+    const boxWidth = mobile ? 126 : 196;
+    const [left, right] = mobile ? [70, 290] : [181, 579];
+    cases.forEach(([title, from, to], i) => {
+      const y = (mobile ? 107 : 101) + i * (mobile ? 153 : 124);
+      label(w / 2, y - 42, title, 'strong');
+      packet(arrow([[left + boxWidth / 2, y], [right - boxWidth / 2, y]]), .45 + i * 2.15, '', 1.35);
+      [[left, from], [right, to]].forEach(([x, name]) => {
+        rect(x - boxWidth / 2, y - 25, boxWidth, 50, 'card');
+        label(x, y, name, 'strong card-label');
+      });
+    });
+    label(w / 2, mobile ? 345 : 274, ['两个独立用例', 'Separate Test Cases'], 'secondary-text');
+  }
+
+  const draw = {chain, route, grid, rows, pairs};
   const queries = [mobileQuery, motionQuery];
   for (const query of queries) query.addEventListener('change', rebuild);
   document.addEventListener('ss-lang', rebuild);

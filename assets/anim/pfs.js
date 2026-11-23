@@ -4,6 +4,10 @@
 const STATION = 'pfs';
 const PREFIX = 'an-pfs';
 const EN = {
+  "大文件读取缓冲区": "Large File Read Buffer",
+  "小文件读取缓冲区": "Small File Read Buffer",
+  "本次读 3 个 OST": "Read from 3 OSTs",
+  "本次读 1 个 OST": "Read from 1 OST",
   "示意，不代表实测数字": "Schematic, not measured",
   "两个计算节点访问同一个文件路径": "Two compute nodes access the same file path",
   "打开请求返回文件的数据布局": "A file open returns the data layout",
@@ -105,18 +109,22 @@ const scenes = [
     timed(at([[450,336],[180,425]],"到达顺序：B、C、A",'secondary'),2930);
     return 4550;
   },
-  ({box, link, send}) => {
-    const large = box([[240,82,216],[180,54,195]], "大文件", {slots:[['A','blue'],['B','green'],['C','violet']]});
-    const small = box([[691,82,216],[180,281,195]], "小文件", {slots:[['A','blue']]});
+  ({box, link, send, at}) => {
+    const large = box([[240,82,216],[180,54,195]], "大文件读取缓冲区", {slots:[['A','blue',2580],['B','green',2720],['C','violet',2860]]});
+    const small = box([[691,82,216],[180,281,195]], "小文件读取缓冲区", {slots:[['A','blue',2580]]});
     const a = box([[89,267,133],[60,194,104]], "目标 1", {tone:'blue'});
     const b = box([[240,267,133],[180,194,104]], "目标 2", {tone:'green'});
     const c = box([[391,267,133],[300,194,104]], "目标 3", {tone:'violet'});
     const only = box([[691,267,133],[180,406,148]], "目标 1", {tone:'blue'});
     [a,b,c].forEach((target,i) => {
       const color = ['blue','green','violet'][i];
-      send(link(large,target,{axis:'y',color,offset:(i-1)*16,bend:(i-1)*10}),430+i*100,2090+i*100,color);
+      send(link(large,target,{axis:'y',offset:(i-1)*24-7,bend:(i-1)*12-7,dashed:true}),350+i*90,1100+i*90);
+      send(link(target,large,{axis:'y',color,offset:(i-1)*24+7,bend:(i-1)*12+7}),1250+i*140,2580+i*140,color);
     });
-    send(link(small,only,{axis:'y'}),430,2090);
+    send(link(small,only,{axis:'y',offset:-12,dashed:true}),350,1100);
+    send(link(only,small,{axis:'y',color:'green',offset:12}),1250,2580,'green');
+    at([[240,322],[180,236]], "本次读 3 个 OST", 'secondary');
+    at([[691,322],[180,445]], "本次读 1 个 OST", 'secondary');
     return 4310;
   }
 ];

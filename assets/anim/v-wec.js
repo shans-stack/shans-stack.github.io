@@ -6,7 +6,7 @@
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    文字有中英两套（EN 表 + T()），跟着页面的 ss-lang 事件重画。样式在 assets/anim/v-wec.css。 */
 (function(){
-var EN={"示意：4 份数据（蓝）+ 2 份校验（黄）": "Schematic: 4 data (blue) + 2 parity (yellow)", "示意：4 份数据（蓝）+ 2 份校验（黄），每台服务器放一份": "Schematic: 4 data pieces (blue) + 2 parity (yellow), one per server", "所以一条带在一台服务器上只能放一份": "So a stripe can put only one piece on each server", "示意：只画 32 块盘，实际最宽 146+4": "Schematic: 32 drives shown; widest is 146+4", "示意：图中只画 32 块盘，黄色为校验份；实际条带最宽 146 份数据 + 4 份校验": "Schematic: only 32 drives shown, parity in yellow; the widest real stripe is 146 data + 4 parity", "示意：实际要读剩下的 146 份": "Schematic: a real stripe reads the other 146", "示意：图中读 31 份；实际 146+4 的条带要读剩下的 146 份": "Schematic: 31 pieces read here; a real 146+4 stripe reads the other 146", "已读 ": "Read ", " 份": " pieces", "服务器 ": "Server ", "4 块盘一起下线": "4 drives offline", "数据份": "Data", "校验份": "Parity", "约 2.7%": "~2.7%", "校验 ": "Parity ", "按份数比例画": "Drawn to scale by piece count", "客户端写入": "Client write", "DNode 掉线，盘仍在线": "DNode down, drives online", "改由另一个 DNode 接管": "Other DNode takes over", "只坏这一块盘": "Only this drive fails", "CNode 重建": "CNode rebuild", "读取量很高": "Reads: very high", "读取量升高": "Reads: rising", "读取量较低": "Reads: low", "宽条带纠删码：故障域缩到一块盘后，条带铺满所有盘，校验占比变小": "Wide-stripe erasure coding: once the failure domain is one drive, stripes span every drive and parity takes less space"};
+var EN={"示意：4 份数据（蓝）+ 2 份校验（黄）": "Schematic: 4 data (blue) + 2 parity (yellow)", "示意：4 份数据（蓝）+ 2 份校验（黄），每台服务器放一份": "Schematic: 4 data pieces (blue) + 2 parity (yellow), one per server", "图示：同一服务器上的两份数据同时不可用": "Two pieces on the failed server become unavailable", "示意：只画 32 块盘，实际最宽 146+4": "Schematic: 32 drives shown; widest is 146+4", "示意：图中只画 32 块盘，黄色为校验份；实际条带最宽 146 份数据 + 4 份校验": "Schematic: only 32 drives shown, parity in yellow; the widest real stripe is 146 data + 4 parity", "缩尺示例读 28 份 · 146+4 读 146 份": "Scaled: 28 reads · 146+4: 146 reads", "缩尺示例读取 27 份数据和 1 份校验；146+4 示例读取 146 份": "Scaled example: 27 data + 1 parity read · 146+4 example: 146 pieces read", "已读 ": "Read ", " 份": " pieces", "服务器 ": "Server ", "4 块盘一起下线": "4 drives offline", "数据份": "Data", "校验份": "Parity", "约 2.7%": "~2.7%", "校验 ": "Parity ", "按份数比例画": "Drawn to scale by piece count", "客户端写入": "Client write", "DNode 掉线，盘仍在线": "DNode down, drives online", "改由另一个 DNode 接管": "Other DNode takes over", "只坏这一块盘": "Only this drive fails", "CNode 重建": "CNode rebuild", "读取量很高": "Reads: very high", "读取量升高": "Reads: rising", "读取量较低": "Reads: low", "宽条带纠删码：故障域缩到一块盘后，条带铺满所有盘，校验占比变小": "Wide-stripe erasure coding: once the failure domain is one drive, stripes span every drive and parity takes less space"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function mount(host,opts){
@@ -81,9 +81,9 @@ build(){
   E.dbx=this.encl(L.dbx,'dbx',grp('3 4 6'));
   /* 第 1-2 步说明 */
   E.n1=tx(L.note.x,L.note.y,L.mobile?T('示意：4 份数据（蓝）+ 2 份校验（黄）'):T('示意：4 份数据（蓝）+ 2 份校验（黄），每台服务器放一份'),f.note,'ink3-t','start',grp('1'));
-  E.n2=tx(L.note.x,L.note.y,T('所以一条带在一台服务器上只能放一份'),f.note,'rose-t st','start',grp('2'));
+  E.n2=tx(L.note.x,L.note.y,T('图示：同一服务器上的两份数据同时不可用'),f.note,'rose-t st','start',grp('2'));
   tx(L.note.x,L.note.y,L.mobile?T('示意：只画 32 块盘，实际最宽 146+4'):T('示意：图中只画 32 块盘，黄色为校验份；实际条带最宽 146 份数据 + 4 份校验'),f.note,'ink3-t','start',grp('4'));
-  tx(L.note.x,L.note.y,L.mobile?T('示意：实际要读剩下的 146 份'):T('示意：图中读 31 份；实际 146+4 的条带要读剩下的 146 份'),f.note,'ink3-t','start',grp('6'));
+  tx(L.note.x,L.note.y,L.mobile?T('缩尺示例读 28 份 · 146+4 读 146 份'):T('缩尺示例读取 27 份数据和 1 份校验；146+4 示例读取 146 份'),f.note,'ink3-t','start',grp('6'));
   /* 第 6 步：已读计数和读取量 */
   const g6=grp('6');
   const c=L.cnt;const ct=tx(c.x,c.y,'',L.mobile?17:20,'ink2-t',c.a,g6);ct.appendChild(document.createTextNode(T('已读 ')));
@@ -170,11 +170,13 @@ modes:[
   draw(t){E.p.forEach((o,i)=>H.travel(o.p,o.d.path,t,0.5+i*0.45,420,{fadeIn:1}))}},
  /* 2：一台服务器挂掉 */
  {freeze:3,enter(){E.tbT.textContent=T('客户端写入');SCENE.resetDrives(E.srv);
-   E.p=E.srv.boxes.map((b,i)=>{const p=H.pk(i>=4?'par':'');H.put(p,b.drv[i%4]);return {p,d:b.drv[i%4],b}})},
+   const b=E.srv.boxes;
+   const placement=[b[0].drv[0],b[2].drv[0],b[2].drv[2],b[3].drv[3],b[4].drv[0],b[5].drv[1]];
+   E.p=placement.map((d,i)=>{const p=H.pk(i>=4?'par':'');H.put(p,d);return {p,d}})},
   draw(t){const a=H.ramp(t,0.8,1.3),bad=E.srv.boxes[2];
    bad.frame.setAttribute('class',a>0.5?'frame bad':'frame');bad.st.style.opacity=a;
    bad.drv.forEach(d=>d.r.classList.toggle('off',a>0.5));
-   SCENE.cross(E.p[2].d,a);E.p[2].p.style.opacity=1-0.7*a;E.n2.style.opacity=H.ramp(t,1.4,1.9)}},
+   E.p.slice(1,3).forEach(o=>{SCENE.cross(o.d,a);o.p.style.opacity=1-0.7*a});E.n2.style.opacity=H.ramp(t,1.4,1.9)}},
  /* 3：DNode 掉线，盘由另一个 DNode 接管；之后只坏一块盘 */
  {period:10,noFade:true,enter(){E.tbT.textContent='CNode';SCENE.resetDrives(E.dbx)},
   draw(t){const per=10,out=1-H.ramp(t,per-0.5,per),b=E.dbx.boxes[1],c=E.dbx.boxes[2];
@@ -202,6 +204,7 @@ modes:[
    E.p=[];E.cp=[];let j=0;
    E.dbx.drives.forEach((d,i)=>{const p=H.pk(i%8===7?'par':'');H.put(p,d);E.p.push(p);
      if(d===bad){p.style.opacity=0.3;return}
+     if(i%8===7&&i!==7)return;
      E.cp.push({p:H.pk((i%8===7?'par':'')+' cp'),d,t0:0.7+j*0.13});j++});},
   draw(t){SCENE.cross(E.bad,1);let n=0,lv=0;
    E.cp.forEach(o=>{const path=H.rev(o.d.path),arr=H.travel(o.p,path,t,o.t0,560,{post:0});

@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-op.js?v=e195ae1c"></script>
+<script src="../../assets/anim/w-op.js?v=a727640c"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "w-op",
@@ -128,16 +128,16 @@ window.SS_TOPIC_CFG={
     "Connect Application Nodes with WekaClient"
    ],
    "d": [
-    "WekaClient 在指定的 Kubernetes 节点启动客户端，客户端可以连接集群内外的 WEKA 后端。",
-    "WekaClient places clients on designated Kubernetes nodes, where they can reach a WEKA backend inside or outside Kubernetes."
+    "Operator 根据 WekaClient 在指定节点部署客户端。客户端可连接 Kubernetes 集群内外的 WEKA 后端。",
+    "The Operator deploys clients on nodes selected by WekaClient. The clients reach a WEKA backend inside or outside Kubernetes."
    ],
    "b": [
     [
-     "<p>WekaClient 可通过节点选择器匹配应用节点，每个匹配节点运行一个客户端 Pod。客户端负责建立到后端的数据连接。</p>",
+     "<p>WekaClient 自定义资源可通过节点选择器声明部署范围。Operator 在每个匹配节点部署一个客户端 Pod，由该 Pod 建立到后端的数据连接。</p>",
      "<p>完整部署由 Kubernetes 管理后端和客户端。仅客户端部署则保留外部的 WEKA 后端，由 Kubernetes 管理应用侧的客户端。</p>"
     ],
     [
-     "<p>WekaClient can use a node selector to match application nodes, with one client Pod on each selected node. The client establishes the data connection to the backend.</p>",
+     "<p>The WekaClient custom resource can specify a node selector. The Operator deploys one client Pod on each matching node. That Pod establishes the data connection to the backend.</p>",
      "<p>In a full deployment, Kubernetes manages both backend and client components. In a client-only deployment, the WEKA backend stays outside Kubernetes, which manages the clients on the application side.</p>"
     ]
    ]
@@ -200,6 +200,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/b-clickbench.css?v=0088e72a">
+<link rel="stylesheet" href="../../assets/anim/b-clickbench.css?v=3be06b88">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -71,7 +71,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/b-clickbench.js?v=5741fcff"></script>
+<script src="../../assets/anim/b-clickbench.js?v=c73a8bb7"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "b-clickbench",
@@ -151,11 +151,11 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>每条查询以适用比较集合内该查询的最快用时为基准。被比较条目的用时除以基准，得到该条查询的相对用时。几何平均是把这些比值相乘再取相应次数的方根，避免直接把耗时差异很大的查询时长相加。</p>",
+     "<p>冷跑取第一次用时。热跑要求第二次与第三次均成功，再取较短用时。每条查询以适用比较集合内的最快用时为基准，条目用时和基准各加 10 ms 后求比，再对各查询的比值取几何平均。</p>",
      "<p>失败或缺失的计时在汇总时按项目规则代入惩罚值。相对汇总分会随查询选择、基准集合和缓存条件而变化。</p>"
     ],
     [
-     "<p>Each query uses the fastest result for that query in the applicable comparison set as its baseline. Dividing the observed runtime by that baseline gives a relative time. The geometric mean multiplies the ratios and takes the root for the number of ratios, avoiding a sum of runtimes across very different queries.</p>",
+     "<p>Cold scoring uses the first run. Hot scoring uses the shorter of runs two and three if both succeed. For each query, the fastest time in the comparison set is the baseline. The ratio divides the measured time plus 10 ms by the baseline plus 10 ms. The query ratios are combined using a geometric mean.</p>",
      "<p>Failed or missing timings are subject to the project’s penalty rules. The relative summary can change with query selection, the reference set, and cache conditions.</p>"
     ]
    ]
@@ -171,10 +171,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>Combined 是按项目规定的权重组合冷跑、热跑、装载时间及数据大小的相对分数。解读时还需核对硬件、缓存模式、数据位置、调优标识和未完成查询。标准查询时长主要反映逐条运行的分析路径，单表结果无法覆盖多表数据仓库或生产环境的混合负载。</p>"
+     "<p>Combined 取四项相对分数的加权几何平均。冷跑权重为 20%，热跑为 60%，装载时间与数据大小各占 10%。解读时还需核对硬件、缓存模式、数据位置、调优标识和未完成查询。标准查询时长主要反映逐条运行的分析路径，单表结果无法覆盖多表数据仓库或生产环境的混合负载。</p>"
     ],
     [
-     "<p>Combined uses the project’s weights to combine relative cold time, hot time, load time, and data size. Hardware, cache mode, storage location, tuning status, and incomplete queries provide context. The standard query timings mainly describe one-at-a-time analytics, with scope limited to a single-table workload.</p>"
+     "<p>Combined takes the weighted geometric mean of four relative scores. Cold runs account for 20%, hot runs for 60%, and load time and data size for 10% each. Hardware, cache mode, storage location, tuning status, and incomplete queries provide context. The standard query timings mainly describe one-at-a-time analytics, with scope limited to a single-table workload.</p>"
     ]
    ]
   }
@@ -195,6 +195,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

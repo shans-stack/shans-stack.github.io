@@ -13,7 +13,7 @@
     "流 B": "Flow B",
     "下联并发使上联前的队列增长": "Concurrent downlink arrivals build a queue at the uplink",
     "共享上联": "Shared uplink",
-    "队列积压": "Queue builds",
+    "上联队列": "Uplink queue",
     "同轨道经过一台 Leaf，跨轨道经过 Spine": "Same-rail traffic uses one leaf and cross-rail traffic uses a spine",
     "GPU A 网卡": "GPU A NIC",
     "GPU B 网卡": "GPU B NIC",
@@ -154,10 +154,10 @@
     return controller;
   }
 
-  function queue(center, {depths, mobile}, tracks, block) {
+  function queue(center, {depths}, tracks, block) {
     const cells = Array.from({length: Math.max(...depths.map(([, n]) => n))}, (_, i) => {
       const [x, y] = center;
-      return block(mobile ? [x, y - i * 17] : [x - i * 17, y], 'rose');
+      return block([x - i * 17, y], 'rose', true);
     });
     tracks.push(time => {
       const [, depth] = depths.findLast(([at]) => time >= at);
@@ -208,13 +208,15 @@
     ['下联并发使上联前的队列增长', ({p, mobile, box, link, text, stream, still, reduced, queue}) => {
       const a = p(105, 120, 85, 105), b = p(105, 243, 275, 105);
       const leaf = p(450, 181, 180, 286), spine = p(774, 181, 180, 412);
-      const aPath = link([a, p(275, 120, 85, 178), p(275, 181, 180, 178), leaf], 'green');
-      const bPath = link([b, p(275, 243, 275, 178), p(275, 181, 180, 178), leaf], 'rail');
-      const uplink = link([leaf, spine], 'rose');
-      box(a, '服务器 A', 126); box(b, '服务器 B', 126); box(leaf, 'Leaf', 105); box(spine, 'Spine', 105);
-      text(p(610, 239, 260, 350), '共享上联');
-      text(p(410, 277, 180, 466), '队列积压');
-      queue(p(358, 181, 180, 247), {mobile, depths: reduced ? [[0, 4]] : [[0, 0], [1.5, 1], [1.85, 2], [2.3, 3], [3, 4], [4.2, 3], [5.2, 2]]});
+      const aPath = link([a, p(285, 120, 85, 181), p(285, 161, 141, 181), p(370, 161, 141, 246)], 'green');
+      const bPath = link([b, p(285, 243, 275, 181), p(285, 201, 219, 181), p(370, 201, 219, 246)], 'rail');
+      const uplink = link([p(530, 181, 180, 326), spine], 'rose');
+      box(a, '服务器 A', 126); box(b, '服务器 B', 126);
+      box(leaf, '', 160, '', 80); text(p(450, 157, 180, 264), 'Leaf');
+      box(spine, 'Spine', 105);
+      text(p(646, 209, 252, 355), '共享上联');
+      text(p(448, 202, 180, 285), '上联队列');
+      queue(p(510, 219, 218, 307), {depths: reduced ? [[0, 4]] : [[0, 0], [1.5, 1], [1.85, 2], [2.3, 3], [3, 4], [4.2, 3], [5.2, 2]]});
       if (reduced) still(uplink, .51);
       else {
         stream(aPath, {duration: 1.45}, 4, .48);

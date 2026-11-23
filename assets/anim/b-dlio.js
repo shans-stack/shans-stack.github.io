@@ -112,9 +112,11 @@
         [['训练状态', 'Training State'], ['检查点', 'Checkpoint'], ['恢复进程', 'Recovery']].forEach((name, i) => {
           const [px, py] = points[i];
           box(px, py, w, name, i === 1 ? 'accent' : 'box');
-          if (i < 2) {
-            const token = draw('rect', { x: px - w / 2 + 9, y: py - 4, width: 10, height: 8, rx: 2 }, 'signal');
-            if (i === 1) updates.push(t => token.setAttribute('opacity', t >= 1 ? 1 : 0));
+          const token = draw('rect', { x: px - w / 2 + 9, y: py - 4, width: 10, height: 8, rx: 2 }, 'signal');
+          if (i > 0) updates.push(t => token.setAttribute('opacity', t >= (i === 1 ? 1 : 2.45) ? 1 : 0));
+          if (i === 2) {
+            const loaded = label(px, py + 37, ['状态已载入', 'State Loaded'], 'note');
+            updates.push(t => loaded.setAttribute('opacity', t >= 2.45 ? 1 : 0));
           }
         });
       },

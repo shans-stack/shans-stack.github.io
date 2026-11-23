@@ -24,9 +24,9 @@
       ]},
     {name: ["分布式训练","Distributed Training"], layout: 'chain',
       nodes: [
-        {"title":["训练进程 A","Worker A"],"detail":["模型副本 · 分片 A","Replica · shard A"],"tone":"signal","parcel":true},
+        {"title":["训练进程 A","Worker A"],"detail":["完整模型 · 数据分片 A","Full copy · data shard A"],"tone":"signal","parcel":true},
         {"title":["梯度同步","Gradient Sync"],"detail":["进程间集合通信","Worker collective"],"tone":"policy"},
-        {"title":["训练进程 B","Worker B"],"detail":["模型副本 · 分片 B","Replica · shard B"],"tone":"signal","parcel":true}
+        {"title":["训练进程 B","Worker B"],"detail":["完整模型 · 数据分片 B","Full copy · data shard B"],"tone":"signal","parcel":true}
       ],
       links: [
         {"from":0,"to":1,"times":[0.4,3.55],"offset":-16},

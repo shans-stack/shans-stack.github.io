@@ -9,9 +9,8 @@
     {tabs: {
       "vllm": {nodes: [
         [["vLLM", "vLLM"], ["GPU 显存", "GPU Memory"]],
-        [["GPUDirect Storage", "GPUDirect Storage"], ["文件传输", "File Transfers"]],
         [["EXAScaler", "EXAScaler"], ["缓存文件", "Cache Files"]]
-      ], flow: "both"},
+      ], flow: "both", transport: "GDS", control: ["缓存组件 · 提交文件 I/O", "Cache Component · Submits File I/O"]},
       "dynamo": {nodes: [
         [["Dynamo worker", "Dynamo Worker"], ["推理引擎 · GPU", "Serving Engine · GPU"]],
         [["缓存组件", "Cache Component"], ["LMCache", "LMCache"]],
@@ -21,27 +20,23 @@
     }},
     {nodes: [
       [["GPU 显存", "GPU Memory"], ["KV 块", "KV Blocks"]],
-      [["NIXL 存储插件", "NIXL Storage Plugin"], ["客户端库 · RDMA", "Client SDK · RDMA"]],
       [["Infinia", "Infinia"], ["键值数据集", "Key-Value Dataset"]]
-    ], flow: "both"},
+    ], flow: "both", transport: "RDMA", control: ["NIXL 插件与客户端库 · 提交传输", "NIXL Plugin and Client SDK · Submit I/O"]},
     {tabs: {
       "dynamo-infinia": {nodes: [
         [["Dynamo worker", "Dynamo Worker"], ["GPU 显存", "GPU Memory"]],
-        [["NIXL 存储插件", "NIXL Storage Plugin"], ["客户端库 · RDMA", "Client SDK · RDMA"]],
         [["Infinia", "Infinia"], ["键值数据集", "Key-Value Dataset"]]
-      ], flow: "both"},
+      ], flow: "both", transport: "RDMA", control: ["NIXL 插件与客户端库 · 提交传输", "NIXL Plugin and Client SDK · Submit I/O"]},
       "vllm-infinia": {nodes: [
         [["vLLM", "vLLM"], ["GPU 显存", "GPU Memory"]],
         [["LMCache", "LMCache"], ["主机 DRAM", "Host DRAM"]],
-        [["NIXL 存储插件", "NIXL Storage Plugin"], ["客户端库", "Client SDK"]],
         [["Infinia", "Infinia"], ["键值数据集", "Key-Value Dataset"]]
-      ], flow: "both"}
+      ], flow: "both", control: ["NIXL 插件与客户端库 · 提交传输", "NIXL Plugin and Client SDK · Submit I/O"]}
     }},
     {nodes: [
       [["Infinia", "Infinia"], ["键值数据集", "Key-Value Dataset"]],
-      [["NIXL 存储插件", "NIXL Storage Plugin"], ["客户端库 · RDMA", "Client SDK · RDMA"]],
       [["目标 GPU", "Destination GPU"], ["命中前缀 · 新 KV", "Prefix Hit · New KV"]]
-    ], flow: "read", fresh: true},
+    ], flow: "read", fresh: true, transport: "RDMA", control: ["目标推理端 · NIXL 插件提交读回", "Destination Worker · NIXL Submits Read"]},
   ];
   const NS = 'http://www.w3.org/2000/svg';
   const layout = matchMedia('(max-width: 720px)');
@@ -77,14 +72,15 @@
     function build() {
       svg.replaceChildren();
       const scene = scenes[index];
-      const {nodes, flow, fresh, split} = scene.tabs ? (scene.tabs[key] || Object.values(scene.tabs)[0]) : scene;
+      const {nodes, flow, fresh, split, transport, control} = scene.tabs ? (scene.tabs[key] || Object.values(scene.tabs)[0]) : scene;
       const mobile = layout.matches;
       const W = mobile ? 420 : 960, H = mobile ? 466 : 337;
       svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       cycle = flow === 'both' || split ? 7.1 : 4.25;
       const direction = flow === 'both' ? ['写入与读回', 'Write and Reload']
         : flow === 'read' ? ['读回', 'Reload'] : ['写入', 'Write'];
-      svg.setAttribute('aria-label', t(direction) + ' · ' + nodes.map(([name, detail]) => t(name) + ' (' + t(detail) + ')').join(' / '));
+      svg.setAttribute('aria-label', [t(direction), transport, control && t(control),
+        nodes.map(([name, detail]) => t(name) + ' (' + t(detail) + ')').join(' / ')].filter(Boolean).join(' · '));
       const upright = mobile && !split;
       const xGap = W / nodes.length;
       const points = nodes.map((_, i) => {
@@ -118,6 +114,7 @@
       });
 
       const phase = add('text', 'phase', {x: W / 2, y: mobile ? 40 : 42});
+      if (control) text(W / 2, mobile ? 72 : 74, control, 'detail');
       text(W / 2, H - 18, ['示意，不代表实测数字', 'Schematic, no measured figures'], 'note');
       const arrowShape = reducedMotion.matches && flow === 'both'
         ? 'M-3 -4 L-8 0 L-3 4 M3 -4 L8 0 L3 4' : 'M-5 -5 L1 0 L-5 5';
@@ -130,18 +127,25 @@
       const back = flow === 'both' ? block('saved') : null;
       return (time, still) => {
         const isReturn = flow === 'both' && time >= 3.3;
-        const action = split ? ['存储后端', 'Storage Options'] : still ? direction : (isReturn || flow === 'read') ? ['读回', 'Reload'] : ['写入', 'Write'];
-        phase.textContent = t(action);
+        const active = split && !still && time >= 3.55 ? 1 : 0;
+        const action = split ? (still ? ['存储后端二选一', 'Alternative Storage Back Ends']
+          : active ? ['接法 2 · Infinia', 'Option 2 · Infinia'] : ['接法 1 · EXAScaler', 'Option 1 · EXAScaler'])
+          : still ? direction : (isReturn || flow === 'read') ? ['读回', 'Reload'] : ['写入', 'Write'];
+        phase.textContent = t(action) + (transport ? ' · ' + transport : '');
         const progressAt = offset => Math.max(0, Math.min(1, (time - offset - 0.45) / 2.15));
         const progress = progressAt(isReturn ? 3.3 : 0);
         const fade = still ? 1 : Math.min(1, (cycle - time) / 0.45);
         place(original, source, isReturn ? 0 : 1);
         routes.forEach(({path, length}, i) => {
-          const p = split ? progressAt(i * 3.3) : progress;
+          const connected = !split || i === active;
+          const p = split ? progressAt(active * 3.55) : progress;
           const eased = p * p * (3 - 2 * p);
           const distance = isReturn ? 1 - eased : eased;
-          place(packets[i], path.getPointAtLength(length * distance), !still && p > 0 && p < 1 ? 1 : 0);
-          place(saved[i], endpoints[i], still || isReturn || p === 1 ? fade : 0);
+          path.style.visibility = connected || still ? 'visible' : 'hidden';
+          if (split && still) path.setAttribute('stroke-dasharray', '7 5');
+          place(packets[i], path.getPointAtLength(length * distance), connected && !still && p > 0 && p < 1 ? 1 : 0);
+          const roundFade = split && !still ? Math.min(1, ((active + 1) * 3.55 - time) / 0.3) : fade;
+          place(saved[i], endpoints[i], connected && (still ? !split : isReturn || p === 1) ? roundFade : 0);
         });
         arrowPaths.forEach((arrow, i) => {
           const a = points[i], b = points[i + 1];

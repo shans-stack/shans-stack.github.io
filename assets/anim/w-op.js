@@ -19,7 +19,7 @@
     ], "Operator 创建 WekaContainer，再创建 Pod|The Operator creates a WekaContainer, then a Pod"],
     ["应用经节点上的客户端连接外部后端|An application uses a node-local client to reach an external backend", "chain", [
       ["应用 Pod|Application Pod",["Kubernetes 工作节点|Kubernetes worker"],"plain",0,""],
-      ["WekaClient",["节点上的客户端 Pod|Client Pod on the node"],"key",0,""],
+      ["WEKA 客户端|WEKA Client",["节点上运行的 Pod|Node-local Pod"],"key",0,""],
       ["存储后端|Storage backend",["位于 Kubernetes 之外|Outside Kubernetes"],"plain",0,"a"]
     ], [
       [0,1,"data",0.4,"",0],

@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/f-slice.js?v=899353db"></script>
+<script src="../../assets/anim/f-slice.js?v=dd1144fd"></script>
 <script>
 window.SS_TOPIC_CFG={
   "anim": "f-slice",
@@ -81,12 +81,12 @@ window.SS_TOPIC_CFG={
   "steps": [
     {"t": ["从整卡分配开始", "Start With a Whole GPU"], "d": ["支持的 GPU 可用硬件分区分配独立实例，也可按时间片共享，显存与故障隔离随方式而异。", "Supported GPUs can be split into isolated hardware partitions or shared by time-slicing; memory and fault isolation differ between the two."], "b": [["<p>整卡独占把物理 GPU 的计算单元和显存交给一个工作负载。分区和共享允许同一物理设备承载多个工作负载，区别在于分配的资源边界：是独立的硬件实例，还是访问同一设备的机会。</p>"], ["<p>An exclusive allocation gives one workload the compute resources and device memory of a physical GPU. Partitioning and sharing let several workloads use one physical device. The allocation boundary determines what each receives: an independent hardware instance or access to the same device.</p>"]]},
     {"t": ["MIG 划定硬件边界", "MIG Divides Hardware Resources"], "d": ["NVIDIA MIG 把支持的 GPU 划分为多个可并行运行的 GPU 实例，各自拥有分配好的计算与显存资源。", "NVIDIA MIG divides a supported GPU into instances that can run in parallel with assigned compute and memory resources."], "b": [["<p>MIG（Multi-Instance GPU）是 NVIDIA 的硬件分区机制。实例规格定义可用的计算和显存资源。GPU 实例之间有独立的显存路径和硬件级故障隔离，可分别交给不同工作负载。实例仍位于同一块物理 GPU 上，整卡失效会影响其上的实例。</p>"], ["<p>MIG (Multi-Instance GPU) is NVIDIA’s hardware partitioning mechanism. A profile defines the compute and memory allocated to an instance. GPU instances have separate memory paths and hardware fault isolation, so they can serve separate workloads. The instances still reside on one physical GPU and share its fate if the entire device fails.</p>"]]},
-    {"t": ["时间片共享执行机会", "Time-Slicing Shares Execution Time"], "d": ["多个工作负载在同一 GPU 上交替执行，继续共享设备的显存容量和故障域。", "Workloads interleave execution on one GPU and remain within a shared memory capacity and fault domain."], "b": [["<p>时间片是调度器分配的一段执行时间。以 NVIDIA GPU Operator 的 Kubernetes 时间片机制为例，系统可向不同 Pod 暴露同一块 GPU 的逻辑副本。副本没有 MIG 的显存与故障隔离，也不会为每个 Pod 划出固定的计算或显存份额。</p>"], ["<p>A time slice is an interval of execution granted by a scheduler. With NVIDIA GPU Operator time-slicing in Kubernetes, several Pods can receive logical replicas of one GPU. Replicas lack MIG’s memory and fault isolation and do not reserve a fixed share of compute or device memory per Pod.</p>"]]},
+    {"t": ["时间片共享执行机会", "Time-Slicing Shares Execution Time"], "d": ["多个工作负载在同一 GPU 上交替执行，继续共享设备的显存容量和故障域。", "Workloads interleave execution on one GPU and remain within a shared memory capacity and fault domain."], "b": [["<p>时间片是调度器分配的一段执行时间。以 NVIDIA GPU Operator 的 Kubernetes 时间片机制为例，系统可向不同 Pod 暴露同一块 GPU 的逻辑副本。副本共享显存容量和故障域。执行时间在 GPU 进程之间分配，各 Pod 可以运行不同数量的进程，因此没有固定的 Pod 份额。</p>"], ["<p>A time slice is an interval of execution granted by a scheduler. With NVIDIA GPU Operator time-slicing in Kubernetes, several Pods can receive logical replicas of one GPU. Replicas share memory capacity and a fault domain. Execution time is shared across GPU processes. Pods can run different numbers of processes, so a Pod has no fixed share.</p>"]]},
     {"t": ["从显存和故障判断边界", "Compare Memory and Fault Domains"], "d": ["MIG 按实例隔离显存与故障，时间片副本共用底层设备的边界。", "MIG isolates memory and faults per instance. Time-sliced replicas share the device boundary."], "b": [["<p>两个工作负载各占一个 MIG GPU 实例时，显存压力受各实例自己的容量与带宽约束。在时间片共享下，工作负载争用同一显存容量。影响整块共享 GPU 的故障也可能影响其上其他工作负载。共享显存容量本身并不意味着应用可以读取彼此的地址空间。</p>"], ["<p>With one MIG GPU instance per workload, memory demand is bounded by each instance’s own capacity and bandwidth. With time-slicing, workloads contend for the same device memory capacity. A fault that affects the shared GPU can also affect other workloads using it. Sharing memory capacity does not by itself allow applications to read each other’s address spaces.</p>"]]},
     {"t": ["把隔离方式写进资源规格", "Describe Isolation in the Resource Profile"], "d": ["整卡、MIG 实例和时间片副本代表不同的调度资源和隔离边界。", "Whole GPUs, MIG instances, and time-sliced replicas represent different scheduling resources and isolation boundaries."], "b": [["<p>平台可按这些边界提供不同资源规格。NVIDIA GPU Operator 也支持对一个 MIG 实例再做时间片共享。硬件隔离仍发生在不同 MIG 实例之间，同一实例内的多个副本继续共享该实例的显存与故障域。</p>"], ["<p>A platform can expose resource profiles based on these boundaries. NVIDIA GPU Operator also supports time-slicing a MIG instance. Hardware isolation remains between MIG instances, while multiple replicas within one instance still share that instance’s memory and fault domain.</p>"]]}
   ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

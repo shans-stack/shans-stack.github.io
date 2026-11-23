@@ -4,7 +4,7 @@
 .d-stripe .d-stripe-scene{display:block;width:100%;height:auto;font-family:var(--f)}
 .d-stripe .d-stripe-scene text{dominant-baseline:central}
 .d-stripe .vis{transition:opacity .4s}
-.d-stripe .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.d-stripe .hid{opacity:0;visibility:hidden;transition:none}
 .d-stripe .dim{opacity:.22}
 .d-stripe .frame{fill:none;stroke:var(--rule2);stroke-width:2}
 .d-stripe .ttl{fill:var(--ink2);font-weight:700}
@@ -49,3 +49,10 @@
 .d-stripe .d-stripe-tgl[hidden]{display:block;opacity:0;pointer-events:none}
 .d-stripe .d-stripe-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
 @media (max-width:640px){.d-stripe .d-stripe-tgl{font-size:14px;padding:6px 12px}}
+@media (max-width:640px){
+  body.present:has(main[data-station="d-stripe"]) .stage{padding:12px}
+  body.present:has(main[data-station="d-stripe"]) .stage .figbox{margin-block:0}
+  body.present:has(main[data-station="d-stripe"]) .stage .cap{display:block;margin-top:8px}
+  body.present:has(main[data-station="d-stripe"]) .stage h2{font-size:24px}
+  body.present:has(main[data-station="d-stripe"]) .stage .desc{font-size:16px;line-height:1.4}
+}

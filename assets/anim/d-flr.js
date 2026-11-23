@@ -4,83 +4,15 @@
   {
     "shape": "fork",
     "nodes": [
-      {
-        "title": [
-          "EXAScaler 客户端",
-          "EXAScaler Client"
-        ],
-        "detail": [
-          "同一个文件路径",
-          "One File Path"
-        ],
-        "blocks": "A B",
-        "tone": "data"
-      },
-      {
-        "title": [
-          "镜像 1",
-          "Mirror 1"
-        ],
-        "detail": [
-          "创建中",
-          "Creating"
-        ],
-        "blocks": "",
-        "tone": "idle"
-      },
-      {
-        "title": [
-          "镜像 2",
-          "Mirror 2"
-        ],
-        "detail": [
-          "创建中",
-          "Creating"
-        ],
-        "blocks": "",
-        "tone": "idle"
-      }
+      {"title": ["文件", "File"], "detail": ["同一个文件路径", "One File Path"], "blocks": "", "tone": "meta"},
+      {"title": ["镜像 1", "Mirror 1"], "detail": ["有效副本", "Current Copy"], "blocks": "A B", "tone": "data"},
+      {"title": ["镜像 2", "Mirror 2"], "detail": ["有效副本", "Current Copy"], "blocks": "A B", "tone": "data"}
     ],
     "edges": [
-      {
-        "from": 0,
-        "to": 1,
-        "blocks": "A B",
-        "tone": "data",
-        "start": 0.4,
-        "duration": 1.25
-      },
-      {
-        "from": 0,
-        "to": 2,
-        "blocks": "A B",
-        "tone": "data",
-        "start": 0.4,
-        "duration": 1.25
-      }
+      {"from": 0, "to": 1, "tone": "idle"},
+      {"from": 0, "to": 2, "tone": "idle"}
     ],
-    "updates": [
-      {
-        "node": 1,
-        "at": 1.65,
-        "detail": [
-          "有效副本",
-          "Current Copy"
-        ],
-        "blocks": "A B",
-        "tone": "data"
-      },
-      {
-        "node": 2,
-        "at": 1.65,
-        "detail": [
-          "有效副本",
-          "Current Copy"
-        ],
-        "blocks": "A B",
-        "tone": "data"
-      }
-    ]
+    "updates": []
   },
   {
     "shape": "fork",

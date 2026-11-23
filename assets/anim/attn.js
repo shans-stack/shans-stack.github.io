@@ -2,6 +2,8 @@
 (() => {
 const ID = 'attn';
 const EN = {
+  "注意力头 A": "Attention head A",
+  "注意力头 B": "Attention head B",
   "示意，不代表实测数字": "Schematic, not measured",
   "同一向量分别投影为 Q、K、V": "The same vector projects to Q, K, and V",
   "缩放点积为每个键打分": "Scaled dot products score individual keys",
@@ -36,14 +38,14 @@ const SCENES = [
   ["缩放点积为每个键打分", ({ mobile, flow, box, label, reveal, note }) => {
     const [, , result] = flow([
       ["当前位置查询", ["Q₂"]],
-      ["逐个比较键", [["Q₂ · K₁", 96], ["Q₂ · K₂", 96, "cool"]]],
+      ["逐个比较键", [["Q₂ · K₁", 74], ["Q₂ · K₂", 74, "cool"], ["Q₂ · K₃", 74]]],
       ["缩放分数"]
     ]);
     const [x, y] = mobile ? [200, 427] : [806, 166];
-    [2.0, 0.6].forEach((value, i) => {
-      const lineY = y - 1 + 27 * i;
+    [2.0, 0.6, 1.2].forEach((value, i) => {
+      const lineY = y - 9 + 23 * i;
       const tone = i ? 'cool' : 'active';
-      label(x - 80, lineY, i ? 'K₂' : 'K₁', '', result);
+      label(x - 80, lineY, ['K₁', 'K₂', 'K₃'][i], '', result);
       box(x - 56, lineY - 5, 117, 10, '', result);
       reveal(box(x - 56, lineY - 5, 58 * value, 10, tone, result), 1.9 + i * 0.21);
       label(x + 88, lineY, value.toFixed(1), '', result);
@@ -81,13 +83,25 @@ const SCENES = [
     ]);
     note("V₃ 权重为零 · 权重为四舍五入值");
   }],
-  ["两个查询头共享一组键值", ({ flow, note }) => {
-    flow([
-      ["独立查询", [["Qᴬ", 54], ["Qᴮ", 54, "cool"]]],
-      ["共享键值", [["K", 48, "ready"], ["V", 48, "ready"]], "GQA"],
-      ["各头输出拼接", [["hᴬ", 54], ["hᴮ", 54, "cool"]]]
-    ]);
-    note("各头用各自的 Q 计算注意力权重");
+  ["两个查询头共享一组键值", ({ mobile, card, wire, travel, reveal }) => {
+    const shared = mobile ? [200, 76] : [154, 166];
+    const result = mobile ? [200, 431] : [806, 166];
+    const heads = mobile ? [[107, 254], [293, 254]] : [[480, 84], [480, 248]];
+    heads.forEach(([x, y], i) => {
+      const tone = i ? 'cool' : 'active';
+      const input = mobile
+        ? [[x, 134], [x, 196]]
+        : [[290, 166 + (i ? 24 : -24)], [318, 166 + (i ? 24 : -24)], [318, y], [344, y]];
+      const output = mobile
+        ? [[x, 312], [x, 373]]
+        : [[616, y], [645, y], [645, 166 + (i ? 24 : -24)], [670, 166 + (i ? 24 : -24)]];
+      travel(wire(input, 'ready'), 0.45, 1.4, 'ready');
+      travel(wire(output, tone), 1.65, 2.65, tone);
+      reveal(card([x, y], i ? "注意力头 B" : "注意力头 A",
+        i ? "Qᴮ + K, V → hᴮ" : "Qᴬ + K, V → hᴬ", '', tone, mobile ? 166 : 272), 1.1);
+    });
+    card(shared, "共享键值", [["K", 48, "ready"], ["V", 48, "ready"]], "GQA");
+    reveal(card(result, "各头输出拼接", [["hᴬ", 54], ["hᴮ", 54, "cool"]]), 2.4);
   }],
   ["键值缓存保留历史并追加新位置", cacheFlow]
 ];

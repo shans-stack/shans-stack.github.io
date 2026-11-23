@@ -2,6 +2,13 @@
 (() => {
 const ID = 'ft';
 const EN = {
+  "按日期排序 · 3 May,": "Sort dates · 3 May,",
+  "指令与回答前缀": "Prompt + Answer Prefix",
+  "模型预测": "Model Prediction",
+  "下一个 token 的分布": "Next-token distribution",
+  "参考目标": "Reference Target",
+  "语料中的下一个 token": "Next token in the sample",
+  "比较预测与目标": "Compare prediction and target",
   "示意，不代表实测数字": "Schematic, not measured",
   "语料中的下一个 Token 提供训练目标": "The next token in the corpus supplies the training target",
   "已有前文": "Prefix from corpus",
@@ -70,13 +77,22 @@ const SCENES = [
       ["更新后权重", "领域模型"]
     ]);
   }],
-  ["监督微调使用指令和参考回答", ({ flow, note }) => {
-    flow([
-      ["指令", "按日期排序"],
-      ["参考回答", [["3 May, 7 May", 145, "ready"]]],
-      ["训练损失", "预测回答 Token"]
-    ]);
-    note("指令给上下文，回答提供目标");
+  ["监督微调使用指令和参考回答", ({ mobile, card, wire, travel, reveal }) => {
+    const prompt = mobile ? [200, 70] : [154, 78];
+    const model = mobile ? [200, 198] : [480, 78];
+    const target = mobile ? [200, 454] : [480, 248];
+    const loss = mobile ? [200, 326] : [806, 163];
+    const routes = mobile
+      ? [[[200, 128], [200, 140]], [[345, 198], [376, 198], [376, 316], [345, 316]],
+        [[55, 454], [24, 454], [24, 341], [55, 341]]]
+      : [[[290, 78], [344, 78]], [[616, 78], [639, 78], [639, 140], [670, 140]],
+        [[616, 248], [639, 248], [639, 186], [670, 186]]];
+    routes.forEach((path, i) => travel(wire(path, i === 2 ? 'ready' : 'active'), i ? 1.5 : 0.45, i ? 2.55 : 1.3, i === 2 ? 'ready' : 'active'));
+    const w = mobile ? 290 : 272;
+    card(prompt, "指令与回答前缀", "按日期排序 · 3 May,", '', '', w);
+    reveal(card(model, "模型预测", "下一个 token 的分布", '', '', w), 1.1);
+    card(target, "参考目标", "7", "语料中的下一个 token", 'ready', w);
+    reveal(card(loss, "训练损失", "比较预测与目标", '', '', w), 2.35);
   }],
   ["偏好对齐根据成对回答调整倾向", ({ flow, note }) => {
     flow([

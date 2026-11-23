@@ -127,7 +127,7 @@
       }
 
       const p = (x, y, mx, my) => mobile ? [mx, my] : [x, y];
-      scenes[step].draw({ p, mobile, box, outline, label, reveal, link, travel, chain });
+      scenes[step].draw({ p, mobile, box, outline, label, reveal, link, travel, chain, layers });
       labelAt(svg, width / 2, height - 15, '示意，不代表实测数字|Schematic, not measured', 'detail');
       elapsed = 0;
       paint(reduce.matches ? 5.7 : elapsed);
@@ -225,7 +225,7 @@
     },
     {
       caption: '多个发送端汇聚到同一出口，收到反馈后拉大发包间隔|Many senders share one egress, then increase packet spacing after feedback',
-      draw({ p, mobile, box, link, travel, reveal, label }) {
+      draw({ p, mobile, box, link, travel, reveal, label, layers }) {
         const a = box(p(153, 101, 87, 59), '发送端 A|Sender A', { w: 137 });
         const b = box(p(153, 230, 273, 59), '发送端 B|Sender B', { w: 137 });
         const sw = box(p(453, 165, 180, 214), 'Spectrum', { note: '共同出口|Shared Egress', w: 198, tone: 'warn' });
@@ -237,14 +237,29 @@
         const feedA = link(sw, a, { axis, fromOffset: mobile ? -44 : -22, toOffset: -14, bend: mobile ? 153 : 265, tone: 'control' });
         const feedB = link(sw, b, { axis, fromOffset: mobile ? 44 : 22, toOffset: 14, bend: mobile ? 153 : 265, tone: 'control' });
         label(p(305, 272, 180, 112), '拥塞反馈|Congestion Feedback', 'detail');
-        for (const start of [0.25, 0.53, 0.81, 1.09, 3.32, 4.39]) {
-          travel(lineA, start, 0.77);
-          travel(lineB, start + 0.08, 0.77);
-          travel(egress, start + 0.76, 0.77, 'warn');
-        }
-        travel(feedA, 2.26, 0.9, 'control');
-        travel(feedB, 2.26, 0.9, 'control');
-        reveal(p(755, 222, 180, 393), '发包间隔增大|Wider Packet Spacing', 3.16, 'detail');
+        const queue = label(p(453, 221, 99, 265), '出口队列|Egress Queue', 'detail');
+        const waiting = label(p(453, 246, 99, 287), '空|Empty', 'detail');
+        const arrivals = [[lineA, .25, 'A'], [lineB, .40, 'B'], [lineA, .58, 'A'],
+          [lineB, .72, 'B'], [lineA, 3.4, 'A'], [lineB, 4.45, 'B']];
+        const duration = .59;
+        const transmit = .58;
+        let nextFree = 0;
+        const packets = arrivals.map(([line, start, sender]) => {
+          const arrived = start + duration;
+          const departure = Math.max(arrived, nextFree);
+          nextFree = departure + transmit;
+          travel(line, start, duration, 'data', sender);
+          travel(egress, departure, transmit, 'data', sender);
+          return {arrived, departure, sender};
+        });
+        layers.push(time => {
+          const queued = packets.filter(({arrived, departure}) => time >= arrived && time < departure);
+          waiting.textContent = queued.map(({sender}) => sender).join(' · ') || tr('空|Empty');
+          queue.classList.toggle(cls('congested'), queued.length > 0);
+        });
+        travel(feedA, 1.42, 0.9, 'control');
+        travel(feedB, 1.42, 0.9, 'control');
+        reveal(p(755, 222, 180, 393), '发包间隔增大|Wider Packet Spacing', 2.32, 'detail');
       }
     }
   ];

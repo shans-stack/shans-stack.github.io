@@ -6,7 +6,7 @@
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    文字有中英两套（EN 表 + T()），跟着页面的 ss-lang 事件重画。样式在 assets/anim/v-ldc.css。 */
 (function(){
-var EN={"CNode 重建": "CNode rebuild", "重建": "Rebuild", "已读 ": "Read ", " 份": " pieces", "示意：146 份数据 + 4 份校验": "Schematic: 146 data + 4 parity", "示意：一格一块盘，146 份数据（蓝）+ 4 份校验（黄）": "Schematic: one cell per drive, 146 data (blue) + 4 parity (yellow)", "校验 ": "Parity ", " 顶替这一组": " covers this group", "要读的只剩这一组": "Only this group is read", "示意：分组只为帮助理解": "Schematic: groups only for illustration", "示意：3 份校验各顶替一组数据，合起来顶掉四分之三；分组只为帮助理解": "Schematic: 3 parity pieces each cover a group, three quarters in all; the groups are only illustrative", "黄框：3 份校验各顶替一组数据": "Yellow: each parity covers a group", "蓝框：要读的只剩这一组": "Blue: only this group is read", "示意：补回的份分散写入": "Schematic: rebuilt pieces spread out", "示意：补回的份分散写到许多盘的空闲处，坏盘留在原处不换": "Schematic: rebuilt pieces go to free space on many drives; the failed drive stays in place", "本地可解码": "Locally decodable", "传统算法": "Classic algorithm", "补回 ✓": "Rebuilt ✓", "示意，不代表实测速度": "Schematic, not measured speed", "校验占的空间": "Space taken by parity", "坏一块盘要读的份数": "Pieces read to rebuild one drive", "按比例画": "Drawn to scale", "换成宽条带 146+4": "Switch to wide 146+4", "换成窄条带 8+2": "Switch to narrow 8+2", "约 2.7%": "~2.7%", "读取量很高": "Reads: very high", "读取量升高": "Reads: rising", "读取量较低": "Reads: low", "本地可解码纠删码：坏一块盘时，重建只需读一小部分存活数据": "Locally decodable codes: rebuilding a failed drive reads only a small part of the surviving data"};
+var EN={"条带总空间：0–100%":"Total stripe space: 0–100%","重建读量：0–146 份":"Rebuild reads: 0–146 pieces","失效盘":"Failed drive","条带 ":"Stripe ","目标盘 ":"Target drive ","CNode 重建": "CNode rebuild", "重建": "Rebuild", "已读 ": "Read ", " 份": " pieces", "示意：146 份数据 + 4 份校验": "Schematic: 146 data + 4 parity", "示意：一格一块盘，146 份数据（蓝）+ 4 份校验（黄）": "Schematic: one cell per drive, 146 data (blue) + 4 parity (yellow)", "校验 ": "Parity ", " 顶替这一组": " covers this group", "要读的只剩这一组": "Only this group is read", "示意：分组只为帮助理解": "Schematic: groups only for illustration", "示意：3 份校验各顶替一组数据，合起来顶掉四分之三；分组只为帮助理解": "Schematic: 3 parity pieces each cover a group, three quarters in all; the groups are only illustrative", "黄框：3 份校验各顶替一组数据": "Yellow: each parity covers a group", "蓝框：要读的只剩这一组": "Blue: only this group is read", "示意：补回的份分散写入": "Schematic: rebuilt pieces spread out", "示意：补回的份分散写到许多盘的空闲处，坏盘留在原处不换": "Schematic: rebuilt pieces go to free space on many drives; the failed drive stays in place", "本地可解码": "Locally decodable", "传统算法": "Classic algorithm", "补回 ✓": "Rebuilt ✓", "示意，不代表实测速度": "Schematic, not measured speed", "校验占的空间": "Space taken by parity", "补一份要读取的块数": "Reads per rebuilt piece", "按比例画": "Drawn to scale", "换成宽条带 146+4": "Switch to wide 146+4", "换成窄条带 8+2": "Switch to narrow 8+2", "约 2.7%": "~2.7%", "读取量很高": "Reads: very high", "读取量升高": "Reads: rising", "读取量较低": "Reads: low", "本地可解码纠删码：坏一块盘时，重建只需读一小部分存活数据": "Locally decodable codes: rebuilding a failed drive reads only a small part of the surviving data"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function mount(host,opts){
@@ -103,11 +103,11 @@ counter(c,g,size){const {el,tx}=H;const t=tx(c.x,c.y,'',size,'ink2-t',c.a,g);t.a
 build(){
   const {el,tx,grp,rect,line,P}=H,f=L.f,G=L.big;
   /* 大图：第 1、2、4、6 步 */
-  const gb=grp('1 2 4 6');
+  const gb=grp('1 2 4');
   E.g=this.grid(G,gb,false);
   const g2=grp('2');E.c2=this.counter(G.cnt,g2,L.mobile?17:20);
-  const m=G.meter;el('rect',{x:m.x,y:m.y-7,width:m.w,height:14,rx:4,class:'track'},g2);
-  E.mf=el('rect',{x:m.x,y:m.y-7,width:0,height:14,rx:4,class:'fill'},g2);E.ms=tx(m.x,m.sy,'',f.sm,'st ink3-t','start',g2);
+  const meter=G.meter;el('rect',{x:meter.x,y:meter.y-7,width:meter.w,height:14,rx:4,class:'track'},g2);
+  E.mf=el('rect',{x:meter.x,y:meter.y-7,width:0,height:14,rx:4,class:'fill'},g2);E.ms=tx(meter.x,meter.sy,'',f.sm,'st ink3-t','start',g2);
   tx(L.note.x,L.note.y,L.mobile?T('示意：146 份数据 + 4 份校验'):T('示意：一格一块盘，146 份数据（蓝）+ 4 份校验（黄）'),f.note,'ink3-t','start',grp('1 2'));
   /* 第 4 步：分组框与说明 */
   const g4=grp('4');E.bands=[];
@@ -117,7 +117,21 @@ build(){
     if(TT)TT.style.opacity=0;E.bands.push({R,T:TT});}
   E.n4=tx(L.note.x,L.note.y,L.mobile?T('示意：分组只为帮助理解'):T('示意：3 份校验各顶替一组数据，合起来顶掉四分之三；分组只为帮助理解'),f.note,'ink3-t','start',g4);
   if(L.mobile){const lg=L.legend;E.m4=[tx(lg.x,lg.y,T('黄框：3 份校验各顶替一组数据'),f.sm,'st ochre-t','start',g4),tx(lg.x,lg.y+26,T('蓝框：要读的只剩这一组'),f.sm,'st slate-t','start',g4)];}
-  tx(L.note.x,L.note.y,L.mobile?T('示意：补回的份分散写入'):T('示意：补回的份分散写到许多盘的空闲处，坏盘留在原处不换'),f.note,'ink3-t','start',grp('6'));
+  const g6=grp('6'), m=L.mobile;
+  const x0=m?20:120, engine=m?193:446, dst=m?345:728;
+  tx(x0,m?73:89,'失效盘',f.lbl,'rose-t b7','start',g6);
+  rect({x:engine-12,y:m?106:118,w:m?115:148,h:244},'blk',g6,8);
+  tx(engine+(m?45:62),m?92:98,'CNode 重建',f.lbl,'lbl b7','middle',g6);
+  E.targets=[0,1,2].map(i=>{
+   const y=(m?147:161)+i*79;
+   rect({x:x0,y:y-22,w:m?123:180,h:44},'cell bad',g6,5);
+   tx(x0+(m?61:90),y,T('条带 ')+String.fromCharCode(65+i)+' ×',f.lbl,'rose-t','middle',g6);
+   const r=rect({x:dst,y:y-22,w:m?112:155,h:44},'ghost',g6,6);
+   tx(dst+(m?56:77),y-39,T('目标盘 ')+(i+1),f.lbl,'lbl','middle',g6);
+   const p=[P(engine+(m?103:136),y),P(dst+21,y)];
+   line(p,'base',g6);return {r,p};
+  });
+  tx(L.note.x,L.note.y,T('示意：补回的份分散写入'),f.note,'ink3-t','start',g6);
   /* 第 5 步：两条重建同时跑 */
   const g5=grp('5');E.ln=L.lanes.map((G2,j)=>{const o=this.grid(G2,g5,true);
     tx(G2.title.x,G2.title.y,j?T('本地可解码'):T('传统算法'),f.big,'lbl b7','start',g5);
@@ -128,16 +142,17 @@ build(){
   /* 第 3 步：两难 */
   const g3=grp('3'),B=L.bars;
   E.cfg=tx(B.tx,B.ty,'',f.hd,'lbl b7','middle',g3);
-  E.b3=[[T('校验占的空间'),'ochre'],[T('坏一块盘要读的份数'),'']].map(([s,c],k)=>{const r=B.rows[k];
+  E.b3=[[T('校验占的空间'),'ochre'],[T('补一份要读取的块数'),'']].map(([s,c],k)=>{const r=B.rows[k];
     tx(B.lx,r.ly,s,f.lbl,'ink2-t','start',g3);
     el('rect',{x:B.bx,y:r.y-B.bh/2,width:B.bw,height:B.bh,rx:6,class:'track'},g3);
     const fl=el('rect',{x:B.bx,y:r.y-B.bh/2,width:0,height:B.bh,rx:6,class:'fill '+c},g3);
     const v=L.mobile?tx(B.vx,r.ly,'',f.big,'b7 '+(c?'ochre-t':'rose-t'),'end',g3):tx(B.vx,r.y,'',f.big,'b7 '+(c?'ochre-t':'rose-t'),'start',g3);
     return {fl,v,cur:0,from:0,to:0}});
-  tx(L.note.x,L.note.y,T('按比例画'),f.note,'ink3-t','start',g3);
+  tx(B.bx,B.rows[0].y+42,'条带总空间：0–100%',f.note,'ink3-t','start',g3);
+  tx(B.bx,B.rows[1].y+42,'重建读量：0–146 份',f.note,'ink3-t','start',g3);
 },
 toggle:{steps:[2],on:T('换成宽条带 146+4'),off:T('换成窄条带 8+2'),
-  set(v){if(!E.b3)return;const vals=v?[4/150,146]:[2/10,8];E.b3.forEach((b,k)=>{b.from=b.cur;b.to=k?vals[1]/146:vals[0]/0.2});
+  set(v){if(!E.b3)return;const vals=v?[4/150,146]:[2/10,8];E.b3.forEach((b,k)=>{b.from=b.cur;b.to=k?vals[1]/146:vals[0]});
     E.cfg.textContent=v?'146+4':'8+2';E.b3[0].v.textContent=v?T('约 2.7%'):'20%';E.b3[1].v.textContent=(v?146:8)+T(' 份');}},
 reset(o){o.all.forEach(c=>{c.R.setAttribute('class',c.bad?'cell bad':(c.p?'cell p':'cell'))});o.ext&&o.ext.forEach(l=>l.style.opacity=0)},
 modes:[
@@ -171,12 +186,11 @@ modes:[
      const o=E.ln[j],done=t>=last;o.c.n.textContent=n;o.c.n.setAttribute('class','num '+(j?'sage-t':'rose-t'));
      o.box.setAttribute('class',done?'blk ok':'blk');const fd=H.loopFade(t,10.5);o.done.style.opacity=done?fd:0;o.c.t.style.opacity=fd})}},
  /* 6：补回的份分散写到许多盘 */
- {period:8,enter(){SCENE.reset(E.g);E.g.x.style.opacity=1;E.g.ghost.style.opacity=0;
-   const pick=[[0,4],[0,30],[1,11],[1,25],[2,2],[2,33],[3,8],[3,29],[0,17],[1,36],[2,19],[3,14]];
-   E.rb=pick.map(([k,i],j)=>({c:E.g.cells.find(c=>c.k===k&&c.i===i),p:H.pk('sage'),t0:0.4+j*0.4}))},
-  draw(t){E.rb.forEach(o=>{const a=H.travel(o.p,H.rev(E.g.path(o.c)),t,o.t0,420,{fadeIn:1,post:0});
-     if(t>=a)o.p.style.opacity=1-H.ramp(t,a,a+0.25);
-     o.c.R.setAttribute('class',t>=a&&t<7.6?'cell ok':'cell')})}}
+ {period:8,enter(){E.rb=E.targets.map(()=>H.pk('sage'))},
+  draw(t){E.targets.forEach((o,i)=>{
+    const a=H.travel(E.rb[i],o.p,t,1+i*1.1,85,{fadeIn:1,post:1});
+    o.r.setAttribute('class',t>=a?'ghost ok':'ghost');
+  })}}
 ]};
 
 return SCENE}

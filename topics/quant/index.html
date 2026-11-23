@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/quant.css?v=1d49b98b">
+<link rel="stylesheet" href="../../assets/anim/quant.css?v=ccb6b0d2">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -47,6 +47,7 @@
       <li data-en="&lt;a href=&quot;https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html&quot;&gt;ONNX Runtime: Quantize ONNX Models&lt;/a&gt;"><a href="https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html">ONNX Runtime：静态量化、动态量化与硬件支持</a></li>
       <li data-en="&lt;a href=&quot;https://huggingface.co/docs/transformers/kv_cache&quot;&gt;Hugging Face Transformers: KV Cache Strategies&lt;/a&gt;"><a href="https://huggingface.co/docs/transformers/kv_cache">Hugging Face Transformers：KV Cache 独立量化</a></li>
       <li data-en="&lt;a href=&quot;https://arxiv.org/pdf/1712.05877&quot;&gt;Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference&lt;/a&gt;"><a href="https://arxiv.org/pdf/1712.05877">整数量化与量化感知训练原论文</a></li>
+      <li data-en="&lt;a href=&quot;https://arxiv.org/abs/1903.05662&quot;&gt;Research on Straight-Through Estimators for Quantized Networks&lt;/a&gt;"><a href="https://arxiv.org/abs/1903.05662">量化网络中的直通估计研究</a></li>
     </ul></div>
   </div>
 </main>
@@ -70,7 +71,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/quant.js?v=826dce4c"></script>
+<script src="../../assets/anim/quant.js?v=851cc441"></script>
 <script>
 window.SS_TOPIC_CFG = {
  "anim": "quant",
@@ -159,10 +160,10 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>量化感知训练（QAT）在训练的前向计算中模拟目标量化的舍入和截断，优化器仍根据训练损失更新参数。训练后可按部署后端支持的格式导出，推理质量可在相同任务和评估集上与原模型比较。</p>"
+     "<p>量化感知训练（QAT）在训练的前向计算中模拟目标量化的舍入和截断，反向传播可在模拟量化节点使用直通估计（STE）近似梯度，优化器据此更新参数。训练后可按部署后端支持的格式导出，推理质量可在相同任务和评估集上与原模型比较。</p>"
     ],
     [
-     "<p>Quantization-aware training (QAT) simulates quantization rounding and clipping in the forward pass, while the optimizer updates parameters from the training loss. The trained model can be exported in a format supported by the deployment backend and evaluated against the original model on the same tasks and evaluation data.</p>"
+     "<p>Quantization-aware training (QAT) simulates quantization rounding and clipping in the forward pass. Backpropagation can use a straight-through estimator (STE) to approximate the gradient through the fake-quantization node. The optimizer uses the resulting gradients to update parameters. The trained model can be exported in a format supported by the deployment backend and evaluated against the original model on the same tasks and evaluation data.</p>"
     ]
    ]
   },
@@ -177,16 +178,16 @@ window.SS_TOPIC_CFG = {
    ],
    "b": [
     [
-     "<p>推理算子是运行具体计算的实现，例如矩阵乘法。某些算子直接使用低精度乘法，另一些先将权重解量化再执行计算。单次推理的耗时和吞吐还受格式转换、激活精度和工作负载影响。</p>"
+     "<p>推理算子是运行具体计算的实现，例如矩阵乘法。W8A8 算子可以执行整数权重与整数激活的乘法。仅权重量化的算子可以先还原权重，再用浮点权重和浮点激活执行乘法。单次推理的耗时和吞吐还受格式转换、激活精度和工作负载影响。</p>"
     ],
     [
-     "<p>An inference operator implements a computation such as matrix multiplication. Some operators multiply in a lower-precision format, while others dequantize weights before computing. Format conversion, activation precision, and workload shape also affect latency and throughput.</p>"
+     "<p>An inference operator implements a computation such as matrix multiplication. A W8A8 operator can multiply integer weights and integer activations. A weight-only operator can dequantize weights and multiply using floating-point weights and activations. Format conversion, activation precision, and workload shape also affect latency and throughput.</p>"
     ]
    ]
   }
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

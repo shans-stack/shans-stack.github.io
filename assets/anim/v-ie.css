@@ -82,3 +82,7 @@
   .topic-v-ie .stage .desc{font-size:16px;line-height:1.35}
 }
 .topic-v-ie .rel .src a{display:inline;padding:0;font-size:inherit;text-decoration:underline;text-underline-offset:3px}
+
+@media(max-width:440px){
+  .hd .wrap{flex-wrap:wrap;gap:0 8px}
+}

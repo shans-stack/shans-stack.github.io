@@ -74,7 +74,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/b-io500.js?v=3c12a2da"></script>
+<script src="../../assets/anim/b-io500.js?v=db587786"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "b-io500",
@@ -135,11 +135,11 @@ window.SS_TOPIC_CFG={
    "b": [
     [
      "<p>配置文件记录测试数据目录、结果目录和访问接口；MPI 作业确定客户端进程及分布。Easy 的数据量、Hard 的分段数和元数据条目数需足以支撑各写阶段规定的运行时间。</p>",
-     "<p>SC26 运行手册给出正式写阶段至少 300 秒的要求。运行摘要记录各阶段和综合分数的有效性，短时调试可用于验证流程。</p>"
+     "<p>SC26 运行手册给出正式写阶段至少 300 秒的要求。工具在运行各阶段前预检配置，执行过程中记录无效状态，最后将阶段和综合分数的有效性写入摘要。短时调试可用于验证流程。</p>"
     ],
     [
      "<p>The configuration file records the data directory, results directory, and interface. The MPI job sets client ranks and placement. Easy data volumes, Hard segment counts, and metadata item counts must support the required write-phase duration.</p>",
-     "<p>The SC26 guide specifies a 300-second minimum for official write phases. The summary marks the validity of individual phases and the composite score. A short debug run can verify the workflow.</p>"
+     "<p>The SC26 guide specifies a 300-second minimum for official write phases. IO500 validates the configuration before the phases run, records invalid results during execution, and reports phase and composite-score validity in the summary. A short debug run can verify the workflow.</p>"
     ]
    ]
   },
@@ -200,6 +200,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

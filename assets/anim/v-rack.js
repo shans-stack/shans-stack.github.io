@@ -8,7 +8,7 @@
    样式在 assets/anim/v-rack.css，全部限定在 .ssa-v-rack 容器之内。 */
 (function(){
 var EN={"交换机 1":"Switch 1","交换机 2":"Switch 2","CBox":"CBox","CNode":"CNode","DBox":"DBox","U1":"U1","CNode 1":"CNode 1","CNode 2":"CNode 2","DBox 1":"DBox 1","DBox 2":"DBox 2",
-"柜顶：一对交换机":"Top of rack: a switch pair","CBox：一个机箱 4 个 CNode":"CBox: one chassis, 4 CNodes","DBox：全闪存储箱":"DBox: all-flash enclosure","U1：最下面的位置":"U1: the lowest position",
+"柜顶：一对交换机":"Top of rack: a switch pair","示例 CBox：2U · 4 个 CNode":"Example CBox: 2U · 4 CNodes","DBox：全闪存储箱":"DBox: all-flash enclosure","U1：最下面的位置":"U1: the lowest position",
 "装机时每台设备登记机柜和 U 位":"At install, each box is assigned a rack and unit","示意，不代表实际 U 位和台数":"Schematic; not real positions or counts",
 "客户网络":"Customer network","另一套客户网络":"Another client network","MLAG":"MLAG","管理网络":"Management network","IPMI 网络":"IPMI network",
 "后端：CNode 与 DNode 之间的 NVMe 网络":"Back end: NVMe fabric, CNodes to DNodes","前端：客户端到 CNode":"Front end: clients to CNodes","管理网络：管理界面、DNS、认证":"Management: console, DNS, authentication","IPMI 网络：管硬件":"IPMI: hardware management",
@@ -16,9 +16,9 @@ var EN={"交换机 1":"Switch 1","交换机 2":"Switch 2","CBox":"CBox","CNode":
 "CNode 链路承载两个 VLAN":"Two VLANs on a CNode link","内部网默认用 VLAN 69 与数据网隔开":"The internal network uses VLAN 69 by default to stay apart from the data network",
 "CNode 加一张网卡，直连另一套网络":"Second NIC: a CNode joins another network","其余客户端仍经交换机":"Other clients still come in through the switches",
 "脊 1":"Spine 1","脊 2":"Spine 2","叶 1":"Leaf 1","叶 2":"Leaf 2","机柜 1":"Rack 1","机柜 2":"Rack 2","机柜 3":"Rack 3",
-"机柜级保护：一个机柜是一个故障域":"Rack resiliency: one failure domain per rack",
+"图示 3 柜；5.5 保护要求至少 7 个 DBox 机柜故障域":"3 shown · 5.5 requires ≥7 DBox rack domains",
 "VAST 集群的机柜摆放与四张网络：后端 NVMe 网络、前端客户端网络、管理网络和 IPMI 网络":"How a VAST cluster sits in racks and connects four networks: back-end NVMe fabric, front-end client network, management and IPMI"};
-var ENM={"后端：CNode 与 DNode 之间的 NVMe 网络":"Back end: NVMe fabric","前端：客户端到 CNode":"Front end: clients","管理网络：管理界面、DNS、认证":"Management network","IPMI 网络：管硬件":"IPMI: hardware","每台设备两条线，分别接两台交换机":"Two links per box, two switches","交换机 1 离线：后端经交换机 2":"Switch 1 offline: back end via switch 2","CNode 链路承载两个 VLAN":"Two VLANs on a CNode link","内部网默认用 VLAN 69 与数据网隔开":"Internal network: VLAN 69 by default","CNode 加一张网卡，直连另一套网络":"Second NIC: direct to another net","其余客户端仍经交换机":"Others still via the switches","机柜级保护：一个机柜是一个故障域":"Rack resiliency: one failure domain per rack","装机时每台设备登记机柜和 U 位":"Each box gets a rack and unit","另一套客户网络":"Other network","客户网络":"Customer","示意，不代表实际 U 位和台数":"Schematic positions and counts","交换机 1":"Switch 1","交换机 2":"Switch 2"};
+var ENM={"后端：CNode 与 DNode 之间的 NVMe 网络":"Back end: NVMe fabric","前端：客户端到 CNode":"Front end: clients","管理网络：管理界面、DNS、认证":"Management network","IPMI 网络：管硬件":"IPMI: hardware","每台设备两条线，分别接两台交换机":"Two links per box, two switches","交换机 1 离线：后端经交换机 2":"Switch 1 offline: back end via switch 2","CNode 链路承载两个 VLAN":"Two VLANs on a CNode link","内部网默认用 VLAN 69 与数据网隔开":"Internal network: VLAN 69 by default","CNode 加一张网卡，直连另一套网络":"Second NIC: direct to another net","其余客户端仍经交换机":"Others still via the switches","图示 3 柜；5.5 保护要求至少 7 个 DBox 机柜故障域":"3 shown · 5.5 requires ≥7 DBox rack domains","装机时每台设备登记机柜和 U 位":"Each box gets a rack and unit","另一套客户网络":"Other network","客户网络":"Customer","示意，不代表实际 U 位和台数":"Schematic positions and counts","交换机 1":"Switch 1","交换机 2":"Switch 2"};
 var ARIA="VAST 集群的机柜摆放与四张网络：后端 NVMe 网络、前端客户端网络、管理网络和 IPMI 网络";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -54,7 +54,7 @@ function layout(mobile){
     const rk=R(330,28,300,412);
     return {W:960,H:504,mobile:false,f:{lbl:20,sm:17,cap:18},pw:18,ph:14,dr:7,sp:280,cap:{x:480,y:455},bot:{x:480,y:484},
       A:{rack:rk,sw:[R(345,44,270,26),R(345,74,270,26)],cb:[R(345,116,270,54),R(345,176,270,54)],db:[R(345,250,270,44),R(345,302,270,44),R(345,354,270,44)],u1:{x:318,y:424},
-        call:[{y:72,s:'柜顶：一对交换机'},{y:173,s:'CBox：一个机箱 4 个 CNode'},{y:324,s:'DBox：全闪存储箱'}],callX:650},
+        call:[{y:72,s:'柜顶：一对交换机'},{y:173,s:'示例 CBox：2U · 4 个 CNode'},{y:324,s:'DBox：全闪存储箱'}],callX:650},
       B:{cust:R(315,16,200,40),extra:R(20,16,180,40),sw:[R(215,110,170,40),R(445,110,170,40)],upY:84,dev:[R(70,290,130,50),R(230,290,130,50),R(470,290,130,50),R(630,290,130,50)],
         port:30,att:[230,40,460],mg:384,ip:410,busX:[100,736],busLbl:780,extraX:40,legend:null},
       C:{cust:R(380,14,200,38),sp:[R(300,90,140,36),R(520,90,140,36)],racks:[60,350,640].map(x=>R(x,180,260,270)),leafY:212,leafH:28,leafW:110,leafDx:[15,135],
@@ -80,7 +80,8 @@ function build(){
     for(let k=0;k<n;k++){const c=R(r.x+pad+k*(w+pad),r.y+pad,w,r.h-2*pad);box(c,g,'box cell',4);tx(C(c).x,C(c).y,'CNode',f.sm,'lbl','middle',g)}return b});
   E.A.db=A.db.map(r=>{const b=box(r,gA,'box',6);tx(C(r).x,C(r).y,'DBox',f.lbl,'lbl b7','middle',gA);return b});
   tx(A.u1.x,A.u1.y,'U1',f.sm,'ink3-t','end',gA);
-  E.A.call=[];if(A.call)A.call.forEach(c=>{const g=el('g',{class:'call'},gA);poly([P(A.rack.x+A.rack.w,c.y),P(A.callX-8,c.y)],'thin',g);tx(A.callX,c.y,c.s,f.sm,'st slate-t','start',g);E.A.call.push(g)});
+  E.A.call=[];if(!A.call)tx(240,A.cb[1].y+A.cb[1].h+12,'示例 CBox：2U · 4 个 CNode',f.sm,'st slate-t','middle',grp('1',gA));
+  if(A.call)A.call.forEach(c=>{const g=el('g',{class:'call'},gA);poly([P(A.rack.x+A.rack.w,c.y),P(A.callX-8,c.y)],'thin',g);tx(A.callX,c.y,c.s,f.sm,'st slate-t','start',g);E.A.call.push(g)});
   /* 场景二：一组设备的四张网 */
   const B=L.B,gB=grp('2 3 4 5');E.B={};
   const dc=B.dev.map(C);
@@ -175,7 +176,7 @@ M[4]={enter(){cap('CNode 加一张网卡，直连另一套网络','sage-t');bot(
   S.v.x.forEach((o,i)=>run(o,rx,u,0.1+i*1.6,Math.min(dur(rx),1.8),0.2));
   const r=c2d(1,1);run(S.v.f,r,u,0.6,Math.min(dur(r),2.2),0.2);lit('sg',true,[E.B.lk[1][1]])}};
 /* 6：叶脊 */
-M[5]={enter(){bot('机柜级保护：一个机柜是一个故障域');S.v.p=pk();S.v.q=pk('sg')},
+M[5]={enter(){bot('图示 3 柜；5.5 保护要求至少 7 个 DBox 机柜故障域');S.v.p=pk();S.v.q=pk('sg')},
  frame(t){const u=t%5,Cc=L.C;
   /* 机柜 1 的 CNode 经叶 1、脊 1、机柜 3 的叶 1 到机柜 3 的第二台 DBox */
   const a=E.C.dev[0][0],b=E.C.dev[2][2],la=E.C.leaf[0][0],lb=E.C.leaf[2][0],sp=Cc.sp[0],rx0=Cc.racks[0].x+Cc.rail[0],rx2=Cc.racks[2].x+Cc.rail[0];

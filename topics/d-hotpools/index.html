@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/d-hotpools.css?v=ff7487dc">
+<link rel="stylesheet" href="../../assets/anim/d-hotpools.css?v=c9c60b76">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/d-hotpools.js?v=8ee3ca73"></script>
+<script src="../../assets/anim/d-hotpools.js?v=f02e8efb"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "d-hotpools",
@@ -153,12 +153,12 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "闪存快满，就删掉已有硬盘副本的旧文件",
-    "When Flash Fills up, Old Files That Have Disk Copies Leave Flash"
+    "按水位清理已有有效 HDD 镜像的闪存文件",
+    "Flash Cleanup After a Current HDD Mirror Exists"
    ],
    "d": [
-    "闪存用到水位线，后台从最老的文件开始，删掉它们在闪存上的那份，硬盘上那份还在。",
-    "When flash reaches the watermark, the background removes flash copies starting with the oldest files; their disk copies stay."
+    "闪存超过上水位时，后台可清理较老文件的闪存镜像，前提是 HDD 上有有效镜像。",
+    "Above the flash high-water mark, background cleanup can remove older flash mirrors when a current HDD mirror is available."
    ],
    "s": [
     "清理闪存",
@@ -166,12 +166,12 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>每台闪存数据服务器上还有一个清理程序（lpurge）。闪存池占用越过上水位，它就从较老的文件开始，删除闪存上的镜像，直到占用回落到下水位。它只删那些已经在硬盘池有副本的文件，所以删掉的只是一份拷贝，文件本身没丢，路径也不变。</p>",
-     "<p>上下两条水位线是上线前要定的另外两个参数。被清理出闪存的文件仍然可读，读取路径见下一步。</p>"
+     "<p>闪存池越过上水位时，后台清理符合条件的较老闪存镜像，使占用回落向下水位。被清理的文件仍保有有效 HDD 镜像，文件路径不变。</p>",
+     "<p>再次写入可能使 HDD 镜像中受影响的组件过期。该范围重新同步并具有有效 HDD 镜像后，才可清理对应的闪存镜像。</p>"
     ],
     [
-     "<p>Each flash data server also runs a cleanup program (lpurge). When flash pool usage crosses the high watermark, it deletes flash mirrors starting with older files until usage falls back to the low watermark. It only deletes files that already have a copy in the disk pool, so all that goes is one copy: the file itself is not lost and its path does not change.</p>",
-     "<p>The high and low watermarks are the other two parameters to settle before going live. A file cleaned from flash can still be read, by the path described in the next step.</p>"
+     "<p>When flash use crosses the high-water mark, background cleanup removes eligible older flash mirrors to bring usage toward the low-water mark. The file retains a current HDD mirror and keeps the same path.</p>",
+     "<p>Subsequent writes can mark affected components of the HDD mirror stale. That range must be resynchronized and have a current HDD mirror before the corresponding flash mirror is eligible for cleanup.</p>"
     ]
    ]
   },
@@ -250,6 +250,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

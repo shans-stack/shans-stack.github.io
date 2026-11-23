@@ -130,8 +130,11 @@
       box(...measure, 160, T('性能记录', 'Performance Log'));
       box(...quality, 160, T('质量验证', 'Quality Check'));
       box(...review, 192, T('配置披露与审阅', 'Disclosure & Review'));
-      const verified = box(...formal, 192, T('核验后的结果', 'Verified Result'), 'focus');
-      reveal(verified.previousElementSibling, 3.15);
+      const publishedLabel = box(...formal, 192, T('公开结果', 'Published Results'), 'focus');
+      reveal(publishedLabel.previousElementSibling, 3.15);
+      const [x, y] = formal;
+      label(x, y + 52, T('Provisional · 待审', 'Provisional · Review Pending'), 'label');
+      label(x, y + 83, T('Official · 已核验', 'Official · Verified'), 'label');
       pulse(metrics, 0.2, 1.45);
       pulse(accuracy, 0.65, 1.9, 'reply');
       pulse(published, 2.4, 3.14);

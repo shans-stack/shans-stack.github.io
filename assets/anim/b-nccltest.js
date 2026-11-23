@@ -115,37 +115,26 @@ function mount(host, {onLayout, paused = false} = {}) {
   }
 
   function collective() {
-    const a = mobile ? [92, 82] : [158, 151];
-    const b = mobile ? [268, 82] : [602, 151];
-    const center = mobile ? [180, 246] : [380, 151];
-    const ends = [a,b];
+    const ends = mobile ? [[180, 62], [180, 287]] : [[158, 151], [602, 151]];
+    const [a, b] = ends;
+    const forward = mobile ? [[158, a[1] + 36], [158, b[1] - 36]] : [[a[0] + 70, 130], [b[0] - 70, 130]];
+    const reverse = mobile ? [[202, b[1] - 36], [202, a[1] + 36]] : [[b[0] - 70, 172], [a[0] + 70, 172]];
+    packet(arrow(forward), 0.35, '', 1.55);
+    packet(arrow(reverse, 'secondary'), 0.35, 'secondary', 1.55);
+    label(mobile ? 91 : w / 2, mobile ? 179 : 100, ['贡献 a', 'Input a'], 'secondary-text');
+    label(mobile ? 264 : w / 2, mobile ? 179 : 203, ['贡献 b', 'Input b'], 'secondary-text');
     ends.forEach(([x, y], i) => {
-      const sign = i === 0 ? 1 : -1;
-      const points = mobile ? [[x, y + 36], [x, center[1]], [center[0] - sign * 58, center[1]]] :
-        [[x + sign * 70, y - 12], [center[0] - sign * 63, y - 12]];
-      const returns = mobile ? [[center[0] - sign * 58, center[1] + 16], [x - sign * 15, center[1] + 16], [x - sign * 15, y + 36]] :
-        [[center[0] - sign * 63, y + 12], [x + sign * 70, y + 12]];
-      packet(arrow(points), 0.25, '', 1.5);
-      packet(arrow(returns, 'secondary'), 2.3, 'secondary', 1.65);
+      rect(x - 70, y - 36, 140, 72, 'card');
+      label(x, y - 11, i ? ['GPU B', 'GPU B'] : ['GPU A', 'GPU A'], 'strong card-label');
+      const value = i ? ['b', 'b'] : ['a', 'a'];
+      const result = label(x, y + 14, value, 'secondary-text card-label');
+      effects.push(time => {
+        const complete = motionQuery.matches || time >= 1.9;
+        result.textContent = complete ? 'a + b' : local(value);
+        result.setAttribute('class', complete ? 'result-text card-label' : 'secondary-text card-label');
+      });
     });
-    [...ends, center].forEach(([x, y], i) => {
-      const width = i === 2 ? (mobile ? 112 : 126) : 140;
-      rect(x - width / 2, y - 36, width, 72, i === 2 ? 'card good' : 'card');
-      const title = [['GPU A','GPU A'], ['GPU B','GPU B'], ['归约 · 求和','Reduce · Sum']][i];
-      label(x, y - 11, title, 'strong card-label');
-      if (i === 2) {
-        label(x, y + 14, ['a + b','a + b'], 'secondary-text card-label');
-      } else {
-        const start = label(x, y + 14, [i === 0 ? 'a' : 'b', i === 0 ? 'a' : 'b'], 'secondary-text card-label');
-        const result = label(x, y + 14, ['a + b','a + b'], 'result-text card-label');
-        effects.push(time => {
-          const complete = motionQuery.matches || time >= 3.95;
-          start.setAttribute('opacity', complete ? 0 : 1);
-          result.setAttribute('opacity', complete ? 1 : 0);
-        });
-      }
-    });
-    label(w / 2, mobile ? 337 : 248, ['每块 GPU 得到同一结果', 'Each GPU Receives the Same Result'], 'secondary-text');
+    label(w / 2, mobile ? 351 : 245, ['求和：各 GPU 得到相同结果', 'Sum: same result on each GPU'], 'secondary-text');
   }
   function rows(scene) {
     const margin = mobile ? 12 : 40;

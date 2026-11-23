@@ -43,12 +43,12 @@ const SCENES = [
   {
     caption: ["两条序列引用同一组前缀块", "Both sequences reference the same cached prefix"],
     bands: [
-      [{"key": "a", "name": ["请求 A", "Request A"], "sub": ["独立后缀 A", "Separate suffix A"], "tiles": ["cache", "A"]}, {"key": "b", "name": ["请求 B", "Request B"], "sub": ["独立后缀 B", "Separate suffix B"], "tiles": ["cache", "B"]}],
-      [{"key": "cache", "name": ["共享前缀块", "Shared Prefix Blocks"], "sub": ["TensorRT-LLM KV Cache", "TensorRT-LLM KV cache"], "tiles": ["cache", "cache"]}]
+      [{"key": "a", "name": ["请求 A", "Request A"], "sub": ["独立后缀 A", "Separate suffix A"], "tiles": ["A"]}, {"key": "b", "name": ["请求 B", "Request B"], "sub": ["独立后缀 B", "Separate suffix B"], "tiles": ["B"]}],
+      [{"key": "cache", "name": ["共享前缀块", "Shared Prefix Blocks"], "sub": ["按块 ID 引用", "Referenced by block ID"], "tiles": ["cache", "cache"]}]
     ],
     edges: [
-      ["a", "cache", 0.17, "control", -15],
-      ["b", "cache", 0.39, "control", 15]
+      ["a", "cache", null, "control", -15],
+      ["b", "cache", null, "control", 15]
     ]
   },
   {

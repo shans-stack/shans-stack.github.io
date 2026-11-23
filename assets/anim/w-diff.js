@@ -12,9 +12,9 @@
       ["DiffList", [["修改 A|Modify A", "good", 1.45, 9, 0], ["删除 B|Delete B", "deleted", 1.65, 9, 1], ["新增 C|Create C", "good", 1.85, 9, 2]], "key", 0]
     ], [[0, 2, "", "signal", 0.4, 0], [1, 2, "", "signal", 0.4, 0]]],
     ["先提交比较端点，再收到处理令牌|Submit comparison endpoints, then receive processing tokens", "pair", [
-      ["调用方|Caller", ["端点 A、B|Endpoints A and B"], "plain", 0],
-      ["Data Services", ["运行 DiffList|Runs DiffList"], "key", 0]
-    ], [[0, 1, "prepare", "signal", 0.4, -50], [1, 0, "令牌|Tokens", "signal", 1.55, 50]]],
+      ["调用方|Caller", ["端点 A、B|Endpoints A and B", "请求并行度|Requested parallelism"], "plain", 0],
+      ["Data Services", ["按并行度划分任务|Splits work by parallelism"], "key", 0]
+    ], [[0, 1, "prepare", "signal", 0.4, -50], [1, 0, "令牌列表|Token list", "signal", 1.55, 50]]],
     ["使用令牌分批读取结果|Retrieve results in batches using processing tokens", "pair", [
       ["调用方|Caller", ["提交处理令牌|Sends processing tokens", ["已收到结果页|Result pages received", "good", 3.6, 9, 1]], "plain", 0],
       ["Data Services", ["结果页 A|Result page A", "结果页 B|Result page B"], "key", 0]

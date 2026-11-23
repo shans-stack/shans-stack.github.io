@@ -8,7 +8,7 @@
    样式在 assets/anim/v-db.css，全部限定在 .ssa-v-db 容器之内。 */
 (function(){
 var ID='v-db',NSTEP=6;
-var EN={"WHERE 金额 > 500":"WHERE amount > 500","块 1":"Chunk 1","块 2":"Chunk 2","块 3":"Chunk 3","块 4":"Chunk 4","块 5":"Chunk 5","块 6":"Chunk 6","NFS 客户端":"NFS client","S3 客户端":"S3 client","SQL 客户端":"SQL client","目录":"Directory","bucket":"Bucket","数据库视图":"Database view","schema · 表":"schema · table","快照":"Snapshots","数据缩减":"Data reduction","适用表复制":"Replication","配额":"Quotas",
+var EN={"经查询服务":"Via query service","后台 CNode 整理列块并写入闪存":"Background CNode builds column chunks and writes to flash","原生 SQL":"Native SQL","可经 Python SDK 使用":"Via Python SDK","P0 leader VIP":"P0 leader VIP","P1 leader VIP":"P1 leader VIP","查询服务":"Query service","WHERE 金额 > 500":"WHERE amount > 500","块 1":"Chunk 1","块 2":"Chunk 2","块 3":"Chunk 3","块 4":"Chunk 4","块 5":"Chunk 5","块 6":"Chunk 6","NFS 客户端":"NFS client","S3 客户端":"S3 client","SQL 客户端":"SQL client","目录":"Directory","bucket":"Bucket","数据库视图":"Database view","schema · 表":"schema · table","快照":"Snapshots","数据缩减":"Data reduction","适用表复制":"Replication","配额":"Quotas",
 "表和文件、对象用同一套存储与元数据":"Tables share one store and one set of metadata with files and objects",
 "应用":"App","持久写缓冲":"Persistent write buffer","容量闪存":"Capacity flash","分列暂存":"Column values","提交后可查":"Queryable at commit","列存：每列单独成块":"Columns: one per chunk","各列的值暂存于写缓冲":"Column values enter the write buffer","提交后由后台迁移到闪存":"After commit, data moves to flash","一个行组":"One row group",
 "列块统计：最小值–最大值":"Chunk stats: min–max","块 ":"Chunk ","跳过":"Skip","读取":"Read","读取 ":"Read ","块":"chunks","最大值小于或等于 500 的块可以跳过":"Skip chunks with a maximum of 500 or less",
@@ -17,7 +17,7 @@ var EN={"WHERE 金额 > 500":"WHERE amount > 500","块 1":"Chunk 1","块 2":"Chu
 "Kafka 生产者":"Kafka producer","P0 的 leader":"Leader for P0","P1 的 leader":"Leader for P1","分区":"Partition","Kafka 消费者":"Kafka consumer","按分区读":"By partition","SQL 查询":"SQL query","读取已提交消息":"Committed",
 "每个 topic 是一张表，消息作为行写入":"Each topic is a table; messages are written as rows","Kafka 消费者照常按分区读":"Kafka consumers read by partition as usual","SQL 读取符合条件的 topic 表":"SQL reads eligible topic tables",
 "表直接存在 VAST 的存储里：视图、行转列、页脚跳块、过滤下推、多引擎与 topic 表":"Tables stored in VAST: views, rows to columns, footer skipping, pushdown, multiple engines and topic tables"};
-var ENM={"查询引擎":"Engine","表和文件、对象用同一套存储与元数据":"Tables, files and objects share one store","数据缩减":"Reduction","适用表复制":"Replication","各列的值暂存于写缓冲":"Column values enter the buffer","提交后由后台迁移到闪存":"Committed data moves to flash","列存：每列单独成块":"Columnar","网络":"Net","最大值小于或等于 500 的块可以跳过":"Skip chunks with max ≤ 500","只把行读出":"Reads rows","先按条件过滤":"Filters first","经网络回传":"Sent back","下推之后，网络上只走命中的行":"Only matching rows cross the network","多个引擎查询同一张表":"Multiple engines, one table","每个 topic 是一张表，消息作为行写入":"Each topic is a table of messages","Kafka 消费者照常按分区读":"Kafka consumers read by partition","SQL 读取符合条件的 topic 表":"SQL reads eligible topics","读取已提交消息":"Committed","P0 的 leader":"P0 leader","P1 的 leader":"P1 leader","Kafka 生产者":"Producer","持久写缓冲":"Write buffer","列块统计：最小值–最大值":"Chunk stats: min–max"};
+var ENM={"后台 CNode 整理列块并写入闪存":"CNode builds and writes columns","查询引擎":"Engine","表和文件、对象用同一套存储与元数据":"Tables, files and objects share one store","数据缩减":"Reduction","适用表复制":"Replication","各列的值暂存于写缓冲":"Column values enter the buffer","提交后由后台迁移到闪存":"Committed data moves to flash","列存：每列单独成块":"Columnar","网络":"Net","最大值小于或等于 500 的块可以跳过":"Skip chunks with max ≤ 500","只把行读出":"Reads rows","先按条件过滤":"Filters first","经网络回传":"Sent back","下推之后，网络上只走命中的行":"Only matching rows cross the network","多个引擎查询同一张表":"Multiple engines, one table","每个 topic 是一张表，消息作为行写入":"Each topic is a table of messages","Kafka 消费者照常按分区读":"Kafka consumers read by partition","SQL 读取符合条件的 topic 表":"SQL reads eligible topics","读取已提交消息":"Committed","P0 的 leader":"P0 leader","P1 的 leader":"P1 leader","Kafka 生产者":"Producer","持久写缓冲":"Write buffer","列块统计：最小值–最大值":"Chunk stats: min–max"};
 var ARIA="表直接存在 VAST 的存储里：视图、行转列、页脚跳块、过滤下推、多引擎与 topic 表";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -68,7 +68,7 @@ function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.
 /* ---------- 场景 ---------- */
 const COLC=['slate','och','vio','ok'];
 const SCENE={
- still:[1.6,5.2,4.4,6.5,2.2,8.4],
+ still:[1.6,10.9,4.4,9.85,2.2,9.7],
  layout(m){
   if(!m)return {W:960,H:480,mobile:false,f:{lbl:20,sm:17,cap:18,xs:17,big:30},pw:22,ph:16,dr:7,sp:330,
    cap:{x:480,y:458},tgl:{x:480,y:458}};
@@ -125,17 +125,19 @@ const SCENE={
    // 连线
    const a1=out_(s.cl),b1=in_(s.cn);line(a1,b1,'',g);s.p1=[a1,b1];
    const a2=out_(s.cn),b2=in_(s.scm);line(a2,b2,'',g);s.p2=[a2,b2];
-   const a3=out_(s.scm),b3=in_(s.qlc);line(a3,b3,'',g);s.p3=[a3,b3];
+   const b3=in_(s.qlc);
+   const from=m?P(s.cn.x+s.cn.w,C(s.cn).y):P(C(s.cn).x,s.cn.y+s.cn.h);
+   s.p3=m?[from,P(465,from.y),P(465,s.qlc.y-19),P(b3.x,s.qlc.y-19),b3]:
+    [from,P(from.x,396),P(688,396),P(688,b3.y),b3];
+   poly(s.p3,'thin',g);
    // 写缓冲与闪存里的内部走线
-   if(!m){s.busS=s.scm.x+12;s.busQ=s.qlc.x+12;s.outS=s.scm.x+s.scm.w-12;
+   if(!m){s.busS=s.scm.x+12;s.busQ=s.qlc.x+12;
     line(P(s.scm.x,b2.y),P(s.busS,b2.y),'thin',g);poly([P(s.busS,s.rowY[0]),P(s.busS,s.rowY[3])],'thin',g);
     s.rowY.forEach(y=>line(P(s.busS,y),P(s.rowX0,y),'thin',g));
-    s.rowY.forEach(y=>line(P(s.rowX0+4*(cw+gap)-gap,y),P(s.outS,y),'thin',g));poly([P(s.outS,s.rowY[0]),P(s.outS,s.rowY[3])],'thin',g);line(P(s.outS,a3.y),P(s.scm.x+s.scm.w,a3.y),'thin',g);
     line(P(s.qlc.x,b3.y),P(s.busQ,b3.y),'thin',g);poly([P(s.busQ,s.colY[0]),P(s.busQ,s.colY[3])],'thin',g);s.colY.forEach(y=>line(P(s.busQ,y),P(s.colX[0],y),'thin',g));}
-   else{s.busS=b2.x;s.outS=s.scm.x+s.scm.w-16;
+   else{s.busS=b2.x;
     poly([P(b2.x,s.scm.y),P(b2.x,s.rowY[3])],'thin',g);
     s.rowY.forEach(y=>line(P(s.busS,y),P(s.rowX0,y),'thin',g));
-    s.rowY.forEach(y=>line(P(s.rowX0+4*(cw+gap)-gap,y),P(s.outS,y),'thin',g));poly([P(s.outS,s.rowY[0]),P(s.outS,s.scm.y+s.scm.h-8),P(a3.x,s.scm.y+s.scm.h-8),P(a3.x,s.scm.y+s.scm.h)],'thin',g);
     s.busQ=s.qlc.y+40;line(P(b3.x,s.qlc.y),P(b3.x,s.busQ),'thin',g);line(P(s.colX[0]+cw/2,s.busQ),P(s.colX[3]+cw/2,s.busQ),'thin',g);
     s.colX.forEach(x=>line(P(x+cw/2,s.busQ),P(x+cw/2,s.colY[0]-chh/2),'thin',g));}
   }
@@ -173,7 +175,7 @@ const SCENE={
    ly.forEach((y,i)=>{
     const tb=m?R(8,y-28,78,56):R(24,y-30,130,60),cn=m?R(112,y-28,130,56):R(210,y-30,180,60),en=m?R(300,y-28,96,56):R(610,y-30,160,60);
     tx(m?8:24,m?y-60:y-62,i?'下推':'不下推',f.lbl,'lbl b7','start',g);
-    line(out_(tb),in_(cn),'',g);line(P(cn.x+cn.w,y),P(en.x,y),'',g);
+    line(P(tb.x+tb.w,y),P(cn.x,y),'',g);line(P(cn.x+cn.w,y),P(en.x,y),'',g);
     tx((cn.x+cn.w+en.x)/2,y-16,'网络',f.xs,'ink3-t','middle',g);
     s.tb.push(box(tb,g));tx(C(tb).x,y,'表',f.sm,'lbl','middle',g);
     s.cn.push(box(cn,g));
@@ -189,15 +191,21 @@ const SCENE={
   {const g=grp('5');const s={};E.s5=s;
    s.fr=m?R(20,90,440,290):R(300,40,360,360);box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+24,'集群',f.sm,'ttl','start',g);
    const cxs=m?[130,240,350]:[380,480,580],cw=m?100:92;
-   s.cn=cxs.map(x=>{const r=R(x-cw/2,m?130:84,cw,m?44:50);box(r,g);tx(x,C(r).y,'CNode',f.sm,'lbl','middle',g);return r});
-   s.band=m?R(40,194,400,40):R(318,160,324,44);s.bandB=box(s.band,g,'box fillv',10);tx(C(s.band).x,C(s.band).y,'原生查询引擎',f.sm,'violet-t st','middle',g);
-   s.cn.forEach(r=>line(P(C(r).x,r.y+r.h),P(C(r).x,s.band.y),'thin',g));
+   const cy=m?130:96, h=78;
    s.tb=m?R(140,280,200,56):R(360,300,240,60);s.tbB=box(s.tb,g);tx(C(s.tb).x,C(s.tb).y,'DataBase 表',f.sm,'lbl','middle',g);
-   line(P(C(s.band).x,s.band.y+s.band.h),P(C(s.tb).x,s.tb.y),'',g);
-   s.cl=m?R(120,12,240,48):R(24,152,230,60);s.clB=box(s.cl,g);tx(C(s.cl).x,C(s.cl).y,'ADBC / Python SDK',f.sm,'lbl','middle',g);
-   s.p1=m?[P(240,60),P(240,s.band.y)]:[P(s.cl.x+s.cl.w,C(s.cl).y),P(s.band.x,C(s.band).y)];
-   if(m){s.p1=[P(240,60),P(240,s.cn[1].y)]}
-   poly(s.p1,'',g);
+   const by=m?245:236;
+   cxs.forEach(x=>poly([P(x,cy+h),P(x,by),P(480/(m?2:1),by),P(C(s.tb).x,s.tb.y)],'thin',g));
+   s.engines=cxs.map(x=>{
+    const r=R(x-cw/2,cy,cw,h);box(r,g);tx(x,cy+21,'CNode',f.sm,'lbl','middle',g);
+    const inner=R(r.x+4,cy+39,cw-8,32),b=box(inner,g,'box fillv',6);
+    tx(x,C(inner).y,'原生 SQL',f.xs,'violet-t st','middle',g);return b;
+   });
+   s.cl=m?R(120,12,240,52):R(24,105,230,62);s.clB=box(s.cl,g);
+   tx(C(s.cl).x,C(s.cl).y-9,'ADBC',f.sm,'lbl','middle',g);
+   tx(C(s.cl).x,C(s.cl).y+13,'可经 Python SDK 使用',f.xs,'ink3-t','middle',g);
+   s.p1=m?[P(240,64),P(240,cy),P(240,cy+h)]:[P(s.cl.x+s.cl.w,C(s.cl).y),P(cxs[0]-cw/2,C(s.cl).y),P(cxs[0],C(s.cl).y),P(cxs[0],cy+h)];
+   poly(s.p1.slice(0,2),'',g);
+   s.native=cat(s.p1,[P(m?240:cxs[0],by),P(C(s.tb).x,by),P(C(s.tb).x,s.tb.y)]);
    const en=['Trino','Spark'];
    s.en=en.map((t,i)=>{const r=m?R([146,334][i]-66,440,132,48):R(738,92+i*84,180,52);box(r,g);tx(C(r).x,C(r).y,t,f.sm,'lbl','middle',g);return r});
    s.pe=s.en.map(r=>m?[P(C(r).x,r.y),P(C(r).x,404),P(C(s.tb).x,404),P(C(s.tb).x,s.tb.y+s.tb.h)]:[P(r.x,C(r).y),P(700,C(r).y),P(700,C(s.tb).y),P(s.tb.x+s.tb.w,C(s.tb).y)]);
@@ -212,7 +220,7 @@ const SCENE={
     s.kc=R(26,528,200,58);s.sq=R(254,528,200,58)}
    box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+24,'Event Broker',f.sm,'ttl','start',g);
    box(s.pr,g);tx(C(s.pr).x,C(s.pr).y,'Kafka 生产者',f.sm,'lbl','middle',g);
-   const sub=['P0 的 leader','P1 的 leader',''];
+   const sub=['P0 leader VIP','P1 leader VIP','查询服务'];
    s.cnB=s.cn.map((r,i)=>{const b=box(r,g);tx(C(r).x,sub[i]?C(r).y-11:C(r).y,'CNode',f.sm,'lbl','middle',g);if(sub[i])tx(C(r).x,C(r).y+12,sub[i],f.xs,i?'ochre-t st':'slate-t st','middle',g);return b});
    // 表头与行
    const cols=m?[146,282]:[110,230],hh=m?30:32,rh=m?29:30;s.cols=cols;s.rh=rh;
@@ -222,23 +230,27 @@ const SCENE={
      let xx=s.tb.x;const ts=['k'+(k+1),'{"v":'+(k*7+3)+'}'].map((v,c)=>{const t=tx(xx+cols[c]/2,y,v,f.xs,'lbl mono','middle',g);xx+=cols[c];t.style.opacity=0;return t});
      return {r,ts}});
    box(s.kc,g);tx(C(s.kc).x,C(s.kc).y-11,'Kafka 消费者',f.sm,'lbl','middle',g);tx(C(s.kc).x,C(s.kc).y+12,'按分区读',f.xs,'ink3-t','middle',g);
-   box(s.sq,g);tx(C(s.sq).x,C(s.sq).y-11,'SQL 查询',f.sm,'lbl','middle',g);tx(C(s.sq).x,C(s.sq).y+12,'读取已提交消息',f.xs,'ink3-t','middle',g);
+   box(s.sq,g);tx(C(s.sq).x,C(s.sq).y-11,'SQL 查询',f.sm,'lbl','middle',g);tx(C(s.sq).x,C(s.sq).y+12,'经查询服务',f.xs,'ink3-t','middle',g);
    // 走线
    if(!m){const bx=215,ib=400;line(P(s.pr.x+s.pr.w,C(s.pr).y),P(bx,C(s.pr).y),'',g);poly([P(bx,C(s.cn[0]).y),P(bx,C(s.cn[1]).y)],'',g);
      [0,1].forEach(i=>line(P(bx,C(s.cn[i]).y),P(s.cn[i].x,C(s.cn[i]).y),'',g));
      [0,1,2].forEach(i=>line(P(s.cn[i].x+s.cn[i].w,C(s.cn[i]).y),P(ib,C(s.cn[i]).y),'thin',g));poly([P(ib,s.rowY[0]),P(ib,s.rowY[7])],'thin',g);
      s.toP=i=>[P(s.pr.x+s.pr.w,C(s.pr).y),P(bx,C(s.pr).y),P(bx,C(s.cn[i]).y),P(s.cn[i].x,C(s.cn[i]).y)];
      s.toR=(i,k)=>[C(s.cn[i]),P(s.cn[i].x+s.cn[i].w,C(s.cn[i]).y),P(ib,C(s.cn[i]).y),P(ib,s.rowY[k]),P(s.tb.x+20,s.rowY[k])];
-     s.toK=k=>[P(s.tb.x+s.tb.w-20,s.rowY[k]),P(798,s.rowY[k]),P(798,C(s.kc).y),P(s.kc.x,C(s.kc).y)];
-     s.toS=k=>[P(s.tb.x+s.tb.w-20,s.rowY[k]),P(798,s.rowY[k]),P(798,C(s.sq).y),P(s.sq.x,C(s.sq).y)];
-     poly([P(s.tb.x+s.tb.w,s.rowY[0]),P(798,s.rowY[0]),P(798,s.rowY[7]),P(s.tb.x+s.tb.w,s.rowY[7])],'thin',g);
-     line(P(798,C(s.kc).y),P(s.kc.x,C(s.kc).y),'',g);line(P(798,C(s.sq).y),P(s.sq.x,C(s.sq).y),'',g);}
+     const clientRoute=(i,r,y)=>[C(s.cn[i]),P(C(s.cn[i]).x,y),P(798,y),P(798,C(r).y),P(r.x,C(r).y)];
+     const kafka=clientRoute(0,s.kc,76),sql=clientRoute(2,s.sq,410);
+     [kafka,sql].forEach(([a,...p],i)=>poly([P(a.x,i?s.cn[2].y+s.cn[2].h:s.cn[0].y),...p],i?'thin vio':'thin',g));
+     s.toK=k=>cat(rev(s.toR(0,k)),kafka);
+     s.toS=k=>cat(rev(s.toR(2,k)),sql);}
    else{const by=72,ib=18;line(P(240,s.pr.y+s.pr.h),P(240,by),'',g);line(P(C(s.cn[0]).x,by),P(C(s.cn[1]).x,by),'',g);[0,1].forEach(i=>line(P(C(s.cn[i]).x,by),P(C(s.cn[i]).x,s.cn[i].y),'',g));
      const yb=s.cn[0].y+s.cn[0].h+20;[0,1,2].forEach(i=>line(P(C(s.cn[i]).x,s.cn[i].y+s.cn[i].h),P(C(s.cn[i]).x,yb),'thin',g));line(P(ib,yb),P(C(s.cn[2]).x,yb),'thin',g);poly([P(ib,yb),P(ib,s.rowY[7])],'thin',g);
      s.toP=i=>[P(240,s.pr.y+s.pr.h),P(240,by),P(C(s.cn[i]).x,by),P(C(s.cn[i]).x,s.cn[i].y)];
      s.toR=(i,k)=>[C(s.cn[i]),P(C(s.cn[i]).x,s.cn[i].y+s.cn[i].h),P(C(s.cn[i]).x,yb),P(ib,yb),P(ib,s.rowY[k]),P(s.tb.x+20,s.rowY[k])];
-     const ob=s.tb.y+s.tb.h;s.toK=k=>[P(C(s.kc).x,ob),P(C(s.kc).x,s.kc.y)];s.toS=k=>[P(C(s.sq).x,ob),P(C(s.sq).x,s.sq.y)];
-     line(P(C(s.kc).x,ob),P(C(s.kc).x,s.kc.y),'',g);line(P(C(s.sq).x,ob),P(C(s.sq).x,s.sq.y),'',g);}
+     const clientRoute=(i,r,x,top,bottom)=>[C(s.cn[i]),P(C(s.cn[i]).x,top),P(x,top),P(x,bottom),P(C(r).x,bottom),P(C(r).x,r.y)];
+     const kafka=clientRoute(0,s.kc,12,105,513),sql=clientRoute(2,s.sq,468,105,513);
+     [kafka,sql].forEach(([a,...p],i)=>poly([P(a.x,s.cn[i?2:0].y),...p],i?'thin vio':'thin',g));
+     s.toK=k=>cat(rev(s.toR(0,k)),kafka);
+     s.toS=k=>cat(rev(s.toR(2,k)),sql);}
   }
  },
  reset(){svg.querySelectorAll('.box').forEach(b=>b.classList.remove('on','ok','hot','vio','och','off'));
@@ -260,20 +272,21 @@ SCENE.modes[1]={enter(){const s=E.s2;S.v.rows=[0,1,2,3].map(()=>rowTile());S.v.a
   S.v.rp=s.rowY.map(y=>L.mobile?cat(s.p1,s.p2,[P(s.busS,y),P(s.rowX0+30,y)]):cat(s.p1,s.p2,[P(s.busS,s.p2[1].y),P(s.busS,y),P(s.rowX0+30,y)]));
  },
  frame(t){const s=E.s2,u=t%12,m=L.mobile;
-  const ph1=u<5.6;cap(ph1?'各列的值暂存于写缓冲':'提交后由后台迁移到闪存',ph1?'sage-t':'slate-t');
+  const ph1=u<5.6;cap(ph1?'各列的值暂存于写缓冲':'后台 CNode 整理列块并写入闪存',ph1?'sage-t':'slate-t');
   for(let r=0;r<4;r++){const t0=0.3+r*1.25,d=dur(S.v.rp[r])*0.8;const p=run(S.v.rows[r],S.v.rp[r],u,t0,d,0.15);
    const landed=u>t0+d,moved=u>6.2+0.0;
-   s.slot[r].forEach((c,ci)=>{c.setAttribute('class','cell'+(landed&&!(u>6.2+ci*0.3)?' '+COLC[ci].replace('slate','on'):''))});
+   s.slot[r].forEach((c,ci)=>{c.setAttribute('class','cell'+(landed&&u<6.2+ci*0.3+3.1?' '+COLC[ci].replace('slate','on'):''))});
   }
   const back=rev(cat(s.p1,s.p2));run(S.v.ack,back,u,5.35,dur(back)*0.7,0.12);
-  s.cnB.classList.toggle('on',u<5.4);
+  s.cnB.classList.toggle('on',u<5.4||(u>6.8&&u<8.6));
   s.grpLbl.style.opacity=u>5.35&&u<6.6?1:0;s.scmB.classList.toggle('on',u>5.35&&u<6.6);
   // 迁移：每格沿 SCM 内部走线出来，经连线进 QLC，再落到对应列
   for(let r=0;r<4;r++)for(let c=0;c<4;c++){const o=S.v.cells[r*4+c],y=s.rowY[r],x=s.rowX0+c*(s.cw+4)+s.cw/2,ty=s.colY[r],tx_=s.colX[c]+s.cw/2;
-   let pts;
-   if(!m)pts=[P(x,y),P(s.outS,y),P(s.outS,s.p3[0].y),s.p3[0],s.p3[1],P(s.busQ,s.p3[1].y),P(s.busQ,ty),P(tx_,ty)];
-   else pts=[P(x,y),P(s.outS,y),P(s.outS,s.scm.y+s.scm.h-8),P(s.p3[0].x,s.scm.y+s.scm.h-8),s.p3[0],s.p3[1],P(s.p3[1].x,s.busQ),P(tx_,s.busQ),P(tx_,ty)];
-   const t0=6.2+c*0.3,d=1.7;const p=run(o,pts,u,t0,d,0.05);
+   const src=m?[P(x,y),P(s.busS,y),s.p2[1],s.p2[0]]:[P(x,y),P(s.busS,y),P(s.busS,s.p2[1].y),s.p2[1],s.p2[0]];
+   const through=m?[P(C(s.cn).x,s.p2[0].y),C(s.cn)]:[C(s.cn),P(C(s.cn).x,s.p3[0].y)];
+   const end=s.p3.at(-1);
+   const dst=m?[P(end.x,s.busQ),P(tx_,s.busQ),P(tx_,ty)]:[P(s.busQ,end.y),P(s.busQ,ty),P(tx_,ty)];
+   const t0=6.2+c*0.3,d=3.1;run(o,cat(src,through,s.p3,dst),u,t0,d,0.05);
    s.qcell[c][r].setAttribute('class','cell'+(u>t0+d&&u<11.6?' '+COLC[c].replace('slate','on'):''));}
   s.qlcB.classList.toggle('on',u>8.6&&u<11.6)}};
 /* 第 3 步 */
@@ -287,13 +300,13 @@ SCENE.modes[2]={enter(){cap('最大值小于或等于 500 的块可以跳过','s
   s.cnt.textContent=u>2.4?T('读取 ')+'3 / 6 '+T('块'):''}};
 /* 第 4 步：两条路同时跑，计数经网络回传的行 */
 SCENE.modes[3]={enter(){cap('下推之后，网络上只走命中的行','sage-t');S.v.a=[];S.v.b=[];for(let k=0;k<22;k++){const hit=k%4===1;S.v.a.push(pk(hit?'ok':''));S.v.b.push(pk(hit?'ok':''))}},
- frame(t){const s=E.s4,cyc=10,u=t%cyc;let na=0,nb=0;
-  const fo=u>9.4?Math.max(0,(cyc-u)/0.6):u<0.3?u/0.3:1;
+ frame(t){const s=E.s4,cyc=10.8,u=t%cyc;let na=0,nb=0;
+  const fo=u>10.2?Math.max(0,(cyc-u)/0.6):u<0.3?u/0.3:1;
   for(let k=0;k<22;k++){const hit=k%4===1,t0=0.3+k*0.36;
    [0,1].forEach(i=>{const o=(i?S.v.b:S.v.a)[k],l=s.ln[i],y=s.ly[i];
     const a=P(l.tb.x+l.tb.w-12,y),c1=P(l.cn.x,y),c2=P(l.cn.x+l.cn.w,y),e=P(l.en.x+10,y);
     const d1=(c1.x-a.x)/L.sp,d2=(e.x-c1.x)/L.sp;
-    let p;if(i===0||hit){p=run(o,[a,c1,c2,e],u,t0,d1+d2,0.3);if(p>1){if(i)nb++;else na++}}
+    let p;if(i===0||hit){p=run(o,[a,c1,c2,e],u,t0,d1+d2,0.3);if(u>=t0+d1+d2){if(i)nb++;else na++}}
     else p=run(o,[a,c1],u,t0,d1,0.3);
     if(p>=0){const inside=o.x>c1.x+4&&o.x<c2.x-4;o.el.style.opacity=(inside?0:o.a)*fo}
    });}
@@ -301,9 +314,9 @@ SCENE.modes[3]={enter(){cap('下推之后，网络上只走命中的行','sage-t
 /* 第 5 步 */
 SCENE.modes[4]={enter(){cap('多个引擎查询同一张表','ink2-t');S.v.q=pk('vio');S.v.r=pk('ok');S.v.e=[0,1,2].map(()=>pk());S.v.er=[0,1,2].map(()=>pk('ok'))},
  frame(t){const s=E.s5,u=t%6.5,m=L.mobile;
-  const pq=m?cat(s.p1,[P(240,C(s.band).y),P(240,s.tb.y)]):cat(s.p1,[P(C(s.band).x,C(s.band).y),P(C(s.tb).x,s.tb.y)]);
+  const pq=s.native;
   run(S.v.q,pq,u,0.2,1.4,0.1);run(S.v.r,rev(pq),u,1.9,1.4);
-  s.bandB.classList.toggle('vio',u>0.9&&u<3.2);
+  s.engines[m?1:0].classList.toggle('vio',u>0.75&&u<3.2);
   s.pe.forEach((p,i)=>{run(S.v.e[i],p,u,0.5+i*0.4,1.2,0.1);run(S.v.er[i],rev(p),u,1.9+i*0.4,1.2)});
   s.tbB.classList.toggle('on',u>1.4&&u<4.2)}};
 /* 第 6 步 */
@@ -316,8 +329,9 @@ SCENE.modes[5]={enter(){S.v.m=[];for(let k=0;k<8;k++)S.v.m.push(pk(k%2?'och':'')
    const on=u>t0+d1+d2&&u<11.6;const row=s.rows[k];row.r.style.opacity=on?1:0;row.ts.forEach(x=>x.style.opacity=on?1:0);
    row.r.setAttribute('class','cell'+(ph===1&&i===0&&on?' on':ph===2&&on?' ok':''));
    s.cnB[i].classList.toggle(i?'och':'on',u>t0+d1-0.1&&u<t0+d1+0.4);}
-  [0,2,4,6].forEach((k,j)=>run(S.v.k[j],s.toK(k),u,5.9+j*0.4,0.9));
-  for(let k=0;k<8;k++)run(S.v.s[k],s.toS(k),u,8.5+k*0.08,1.0)}};
+  [0,2,4,6].forEach((k,j)=>run(S.v.k[j],s.toK(k),u,5.9+j*0.22,1.7));
+  s.cnB[0].classList.toggle('on',ph===1);s.cnB[2].classList.toggle('vio',ph===2);
+  for(let k=0;k<8;k++)run(S.v.s[k],s.toS(k),u,8.5+k*0.08,2.0)}};
 /* ---------- 引擎 ---------- */
 const TG=SCENE.toggles||{};
 const tstate={};Object.keys(TG).forEach(k=>{const g=TG[k],v=qs.get(g.param);tstate[k]=g.values.indexOf(v)>-1?v:g.values[0]});

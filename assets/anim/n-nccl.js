@@ -103,7 +103,7 @@
         const length = line.getTotalLength();
         const marker = element(tokens, 'g', { class: cls('token') + ' ' + cls(tone) });
         if (tone === 'control') element(marker, 'circle', { r: 4.5 });
-        else rect(marker, letter ? -11 : -6, letter ? -11 : -4, letter ? 22 : 12, letter ? 22 : 8, 'packet');
+        else rect(marker, letter ? -16 : -6, letter ? -11 : -4, letter ? 32 : 12, letter ? 22 : 8, 'packet');
         if (letter) labelAt(marker, 0, 0, letter, 'letter');
         layers.push(time => {
           const progress = (time - start) / duration;
@@ -172,36 +172,33 @@
       }
     },
     {
-      caption: '两个 rank 的值按位置相加，各自收到同一个结果|The ranks add corresponding values and each receive the same result',
-      draw({ p, box, link, reveal }) {
-        const a = box(p(177, 69, 89, 58), 'Rank 0', { note: '[1, 2]' });
-        const b = box(p(717, 69, 271, 58), 'Rank 1', { note: '[3, 4]' });
-        const sum = box(p(450, 163, 180, 179), 'NCCL', { note: '按位置求和|Elementwise Sum', w: 174, at: 1.35 });
-        link(a, sum, { at: 0.58, offset: -27 });
-        link(b, sum, { at: 0.58, offset: 27 });
-        const left = box(p(177, 268, 89, 324), 'Rank 0', { note: '结果|Result', at: 2.55 });
-        const right = box(p(717, 268, 271, 324), 'Rank 1', { note: '结果|Result', at: 2.55 });
-        link(sum, left, { at: 1.9, offset: -27 });
-        link(sum, right, { at: 1.9, offset: 27 });
-        reveal(p(177, 310, 89, 375), '[4, 6]', 2.55);
-        reveal(p(717, 310, 271, 375), '[4, 6]', 2.55);
+      caption: 'All-Reduce 按位置求和，两个 rank 得到相同结果|All-Reduce adds corresponding elements and gives each rank the same result',
+      draw({ p, box, label, reveal }) {
+        label(p(450, 61, 180, 66), 'All-Reduce · 按位置求和|All-Reduce · Elementwise Sum');
+        label(p(450, 103, 180, 118), '[1, 2] + [3, 4] = [4, 6]');
+        box(p(228, 183, 89, 213), 'Rank 0', { note: '输入 [1, 2]|Input [1, 2]' });
+        box(p(672, 183, 271, 213), 'Rank 1', { note: '输入 [3, 4]|Input [3, 4]' });
+        reveal(p(228, 241, 89, 279), '结果 [4, 6]|Output [4, 6]', 1.1);
+        reveal(p(672, 241, 271, 279), '结果 [4, 6]|Output [4, 6]', 1.1);
       }
     },
     {
-      caption: 'Reduce-Scatter 留下不同分片，All-Gather 在保留原分片的同时复制到对端|Reduce-Scatter leaves distinct shards, and All-Gather copies them while keeping each original',
+      caption: 'Reduce-Scatter 合并各 rank 的贡献，All-Gather 复制归约分片|Reduce-Scatter combines contributions from each rank, then All-Gather copies the reduced shards',
       draw({ p, box, link, reveal, label }) {
-        label(p(450, 38, 180, 46), 'Reduce-Scatter');
-        const a = box(p(210, 106, 89, 105), 'Rank 0', { note: '分片 A|Shard A' });
-        const b = box(p(690, 106, 271, 105), 'Rank 1', { note: '分片 B|Shard B' });
-        label(p(450, 171, 180, 206), 'All-Gather');
-        const aa = box(p(210, 267, 89, 314), 'Rank 0', { note: '保留 A|Keeps A' });
-        const bb = box(p(690, 267, 271, 314), 'Rank 1', { note: '保留 B|Keeps B' });
+        label(p(450, 33, 180, 39), 'Reduce-Scatter');
+        label(p(210, 70, 89, 84), 'Rank 0 · A₀, B₀');
+        label(p(690, 70, 271, 84), 'Rank 1 · A₁, B₁');
+        const a = box(p(210, 122, 89, 147), 'Rank 0', { note: 'AΣ = A₀ + A₁', at: 1.1 });
+        const b = box(p(690, 122, 271, 147), 'Rank 1', { note: 'BΣ = B₀ + B₁', at: 1.1 });
+        label(p(450, 183, 180, 228), 'All-Gather');
+        const aa = box(p(210, 267, 89, 337), 'Rank 0', { note: '保留 AΣ|Keeps AΣ' });
+        const bb = box(p(690, 267, 271, 337), 'Rank 1', { note: '保留 BΣ|Keeps BΣ' });
         link(a, aa, { tone: 'idle', offset: -40 });
         link(b, bb, { tone: 'idle', offset: 40 });
-        link(a, bb, { at: 0.72, duration: 1.4, offset: 18, bend: 147, letter: 'A' });
-        link(b, aa, { at: 0.72, duration: 1.4, offset: -18, bend: 233, letter: 'B' });
-        reveal(p(210, 308, 89, 365), '[A, B]', 2.12);
-        reveal(p(690, 308, 271, 365), '[A, B]', 2.12);
+        link(a, bb, { at: 1.45, duration: 1.3, offset: 18, bend: p(0, 166, 0, 197)[1], letter: 'AΣ' });
+        link(b, aa, { at: 1.45, duration: 1.3, offset: -18, bend: p(0, 216, 0, 259)[1], letter: 'BΣ' });
+        reveal(p(210, 312, 89, 389), '[AΣ, BΣ]', 2.75);
+        reveal(p(690, 312, 271, 389), '[AΣ, BΣ]', 2.75);
       }
     },
     {

@@ -58,3 +58,11 @@
 .v-ldc .bandbox{fill:none;stroke:var(--ochre);stroke-width:2.5;stroke-dasharray:6 4;transition:opacity .3s}
 .v-ldc .bandbox.read{stroke:var(--slate)}
 .v-ldc .ochreL{stroke:var(--ochre);stroke-width:3.5}
+
+@media(max-width:640px){
+  body.present .stage:has(#animPres.v-ldc){padding:12px}
+  .stage:has(#animPres.v-ldc) .figbox{margin-block:6px}
+  .stage:has(#animPres.v-ldc) .cap{display:block;margin-top:6px}
+  .stage:has(#animPres.v-ldc) h2{font-size:23px;line-height:1.2}
+  .stage:has(#animPres.v-ldc) .desc{font-size:16px;line-height:1.35}
+}

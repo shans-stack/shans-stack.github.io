@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/f-vllm.css?v=e66e29aa">
+<link rel="stylesheet" href="../../assets/anim/f-vllm.css?v=60ccbe67">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/f-vllm.js?v=a5067fce"></script>
+<script src="../../assets/anim/f-vllm.js?v=03d05650"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "f-vllm",
@@ -108,10 +108,10 @@ window.SS_TOPIC_CFG={
       ],
       "b": [
         [
-          "<p>逻辑块按 token 顺序排列，每块容纳固定数量 token 的键值。序列先填充已有块，写满后再申请物理块。不同序列可以从同一个显存池取得空闲块。</p>"
+          "<p>逻辑块按 token 顺序排列，每块容纳固定数量 token 的键值。分配器按本轮新增 token 需要的空间申请物理块，已有块的空位也可使用。逐 token 解码可能只追加一个块，预填充一轮可以分配多个块。不同序列可以从同一个显存池取得空闲块。</p>"
         ],
         [
-          "<p>Logical blocks follow token order, and each holds keys and values for a fixed number of tokens. A sequence fills its current block and requests another physical block when needed. Multiple sequences can draw free blocks from the same GPU memory pool.</p>"
+          "<p>Logical blocks follow token order, and each holds keys and values for a fixed number of tokens. The allocator requests physical blocks for the new tokens scheduled in the current iteration and can use open slots in existing blocks. Token-by-token decoding may add one block, while a prefill iteration can allocate several. Multiple sequences can draw free blocks from the same GPU memory pool.</p>"
         ]
       ]
     },
@@ -187,6 +187,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

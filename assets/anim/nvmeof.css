@@ -41,6 +41,7 @@
 .an-nvmeof .tcp{stroke:var(--rose);stroke-width:5}
 .an-nvmeof .rdma{stroke:var(--sage);stroke-width:5}
 .an-nvmeof .cmdl{stroke:var(--slate);stroke-width:3;stroke-dasharray:7 6;fill:none}
+.an-nvmeof .cmddot.backend{fill:var(--sage)}
 .an-nvmeof .cmddot{fill:var(--slate);stroke:var(--card);stroke-width:2}
 .an-nvmeof .pkt{fill:var(--slate);stroke:var(--card);stroke-width:2}
 .an-nvmeof .pkt.cp{stroke:var(--rose);stroke-width:3.5}
@@ -62,3 +63,11 @@
 .an-nvmeof .netbtn{position:absolute;transform:translate(-50%,-50%);font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule2);border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s}
 .an-nvmeof .netbtn[hidden]{display:block;opacity:0;pointer-events:none}
 @media (max-width:640px){.an-nvmeof .netbtn{font-size:14px;padding:6px 12px}}
+
+@media (max-width: 640px) {
+  body.present .stage { padding: 12px 14px; }
+  body.present .stage .figbox { margin-block: 8px; }
+  body.present .stage .cap { margin-top: 8px; }
+  body.present .stage h2 { font-size: 23px; }
+  body.present .stage .desc { font-size: 16px; }
+}

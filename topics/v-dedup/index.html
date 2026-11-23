@@ -70,7 +70,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-dedup.js?v=0dddd4fc"></script>
+<script src="../../assets/anim/v-dedup.js?v=bfc3391c"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-dedup",
@@ -152,8 +152,8 @@ window.SS_TOPIC_CFG={
     "Shared SCM Enables Cluster-Wide Deduplication"
    ],
    "d": [
-    "各 CNode 通过共享 SCM 访问指纹索引，整个集群构成一个数据缩减域。",
-    "CNodes access fingerprint indexes in shared SCM, making the cluster a single data reduction realm."
+    "各 CNode 通过共享 SCM 访问指纹索引，数据缩减在同一加密组内跨节点生效。",
+    "CNodes access fingerprint indexes in shared SCM. Data reduction spans CNodes within the same encryption group."
    ],
    "s": [
     "共享索引",
@@ -161,10 +161,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>白皮书以 DBox 配置说明这种布局：去重和相似性缩减的哈希表与其他 DataStore 元数据存于 SCM SSD，各 CNode 可经 NVMe-oF 访问这些共享介质。</p>"
+     "<p>白皮书以 DBox 配置说明这种布局：去重和相似性缩减的哈希表与其他 DataStore 元数据存于 SCM SSD，各 CNode 可经 NVMe-oF 访问这些共享介质。配置多个加密组时，精确去重和相似性缩减均以加密组为界。 <a href=\"https://docs.vastdata.com/docs/14-encryption-multi-tenancy-considerations\">VAST 加密组说明</a></p>"
     ],
     [
-     "<p>The white paper illustrates the layout with DBoxes: deduplication and similarity hashes live with other DataStore metadata on SCM SSDs that the CNodes can access over NVMe-oF.</p>"
+     "<p>The white paper illustrates the layout with DBoxes: deduplication and similarity hashes live with other DataStore metadata on SCM SSDs that the CNodes can access over NVMe-oF. With multiple encryption groups, exact deduplication and similarity reduction both operate within each group. <a href=\"https://docs.vastdata.com/docs/14-encryption-multi-tenancy-considerations\">VAST Encryption Groups</a></p>"
     ]
    ]
   },
@@ -217,6 +217,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

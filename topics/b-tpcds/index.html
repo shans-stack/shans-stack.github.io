@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/b-tpcds.js?v=65ec368e"></script>
+<script src="../../assets/anim/b-tpcds.js?v=37a82808"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "b-tpcds",
@@ -127,8 +127,8 @@ window.SS_TOPIC_CFG={
     "Single-Stream and Concurrent Queries"
    ],
    "d": [
-    "加载之后运行单查询流的 Power 测试，以及多查询流的 Throughput 测试。",
-    "The load is followed by a single-stream Power test and multi-stream Throughput tests."
+    "加载后在同一受测系统上先运行单流 Power 测试，再运行多流 Throughput 测试。",
+    "After loading, the same system runs the single-stream Power test, followed by a multi-stream Throughput test."
    ],
    "b": [
     [
@@ -172,11 +172,11 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>QphDS@SF 是特定比例因子下的综合查询性能指标。单条 SQL 耗时来自相应明细。只运行模板子集、跳过维护或采用别的数据比例，得到的是另一项测量。</p>",
+     "<p>QphDS@SF 是特定比例因子下的综合查询性能指标。并发查询流数 Sq 决定加权查询数（99 × Sq），也用于计算 Power 和加载的时间项。单条 SQL 耗时来自相应明细。只运行模板子集、跳过维护或采用别的数据比例，得到的是另一项测量。</p>",
      "<p>正式结果按审计与披露要求逐项发布。比较时需对齐规范版本和比例因子，并读出查询流与系统配置。</p>"
     ],
     [
-     "<p>QphDS@SF is a composite query performance metric at a specified scale factor. Individual SQL runtimes come from the underlying timings. A subset of the templates, a run without maintenance, or a different data scale yields a different measurement.</p>",
+     "<p>QphDS@SF is a composite query performance metric at a specified scale factor. The number of concurrent query streams, Sq, determines the weighted query count (99 × Sq) and enters the Power and load time terms. Individual SQL runtimes come from the underlying timings. A subset of the templates, a run without maintenance, or a different data scale yields a different measurement.</p>",
      "<p>Formal results are released individually under audit and disclosure requirements. Comparisons align the specification and scale factor and account for query streams and system configuration.</p>"
     ]
    ]
@@ -216,6 +216,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

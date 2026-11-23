@@ -35,3 +35,8 @@ body.topic-b-dlio .mhost { aspect-ratio: var(--ar); }
   body.topic-b-dlio.present .stage .figbox { margin-block: 0; }
   .b-dlio-scene text { font-size: 17px; }
 }
+
+@media (max-width: 440px) {
+  body.topic-b-dlio .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-b-dlio .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

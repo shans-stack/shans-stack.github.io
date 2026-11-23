@@ -5,7 +5,7 @@
     {
       title: ["网络监控的两种范围","Two Network Monitoring Scopes"],
       panels: [
-        [["NetQ","NetQ"],["监控范围","Monitoring Scope"],[184,178,246],[180,95,252],"primary"],
+        [["NetQ","NetQ"],["联合部署 · 5.3 Beta","Joint Deployment · 5.3 Beta"],[184,178,246],[180,95,252],"primary"],
         [["以太网","Ethernet"],["主机与交换机","Hosts & Switches"],[605,106,224],[88,265,158],"primary",false],
         [["NVLink","NVLink"],["GPU 互联","GPU Interconnect"],[605,250,224],[272,265,158],"primary",false]
       ],

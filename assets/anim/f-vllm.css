@@ -18,3 +18,9 @@
   .f-vllm-anim .name { font-size: 17px; }
   .f-vllm-anim .detail { font-size: 14px; }
 }
+.f-vllm-anim .selected .route { stroke: var(--l5); stroke-width: 3; }
+
+@media (max-width: 440px) {
+  body.topic-f-vllm .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-f-vllm .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

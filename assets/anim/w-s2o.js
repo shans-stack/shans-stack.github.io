@@ -9,10 +9,11 @@
       ["只读快照|Read-only snapshot", ["数据 A、B|Data A, B", "快照元数据|Snapshot metadata"], "plain", 0],
       ["对象桶|Bucket", ["已有 A|A already present", ["收到 B|B received", "good", 1.45, 9, 1], ["收到元数据|Metadata received", "good", 2.1, 9, 2]], "key", 0]
     ], [[0, 1, "数据 B|Data B", "file", 0.4, -50], [0, 1, "元数据|Metadata", "meta", 1.05, 50]]],
-    ["定位符标识桶中可恢复的快照|A locator identifies a recoverable snapshot in the bucket", "pair", [
-      ["对象桶|Bucket", ["快照 A 的对象|Snapshot A objects"], "plain", 0],
-      ["恢复端|Restore destination", ["定位符 → 快照 A|Locator → snapshot A"], "key", 1.45]
-    ], [[0, 1, "快照定位符|Snapshot locator", "signal", 0.4, 0]]],
+    ["调用方提交定位符，目标集群据此选择桶中的快照|The caller supplies the locator and the target cluster selects the snapshot", "chain", [
+      ["调用方|Caller", ["已保存的定位符|Saved locator"], "plain", 0],
+      ["目标集群|Target cluster", ["按定位符选择|Select by locator"], "key", 0],
+      ["对象桶|Object bucket", ["快照 A 的对象|Snapshot A objects"], "plain", 0]
+    ], [[0, 1, "提交|Submit", "signal", 0.4, 0], [1, 2, "查找|Look up", "signal", 1.55, 0]]],
     ["从对象桶恢复，继承的对象留在桶内|Recover from the bucket, with inherited objects retained there", "pair", [
       ["对象桶|Bucket", ["文件数据和元数据|Data and metadata", "保留继承的对象|Inherited objects stay"], "plain", 0],
       ["WEKA 恢复端|Restore destination", [["读取指定快照|Reads selected snapshot", "plain", 0, 1.45, 0], ["文件系统已重建|Filesystem recreated", "good", 1.45, 9, 0]], "key", 0]

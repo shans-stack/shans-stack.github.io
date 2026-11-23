@@ -34,3 +34,5 @@
   .topic-w-s3.present .stage h2{font-size:24px;line-height:1.25}
   .topic-w-s3.present .stage .desc{font-size:17px;line-height:1.45}
 }
+
+.ssa-w-s3-route-label{fill:var(--ink2);font-size:17px}

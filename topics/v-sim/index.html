@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>相似性压缩 · Shan's Stack</title>
-<meta name="description" content="分 6 步说明 VAST 的相似性压缩：给数据块算一组故意做粗的相似指纹，找到只差几个字节的块，用参考块的字典只存差异；指纹表放在共享 SCM 上，整套系统一个缩减域。">
+<meta name="description" content="分 6 步说明 VAST 的相似性压缩：给数据块算一组故意做粗的相似指纹，找到只差几个字节的块，用参考块的字典只存差异；共享 SCM 上的指纹表支持加密组内缩减。">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/v-sim.css?v=d776aa3a">
+<link rel="stylesheet" href="../../assets/anim/v-sim.css?v=3357a0f4">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -74,7 +74,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/v-sim.js?v=996f05eb"></script>
+<script src="../../assets/anim/v-sim.js?v=6ae4b73b"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "v-sim",
@@ -178,25 +178,25 @@ window.SS_TOPIC_CFG={
   },
   {
    "t": [
-    "指纹表放在共享 SCM 上，整套系统一个缩减域",
-    "The Fingerprint Table Sits on Shared SCM, so the Whole System Is One Reduction Realm"
+    "共享 SCM 上的指纹表支持加密组内缩减",
+    "Shared SCM Fingerprints Support Reduction Within an Encryption Group"
    ],
    "d": [
-    "传统去重设备的指纹表放在单台控制器的内存里，规模大了只能拆成几个互不相通的去重域；VAST 把表放在所有 CNode 共享的 SCM 上，整套系统只有一个缩减域。",
-    "Classic deduplication appliances keep the fingerprint table in one controller's memory, so at scale they split into separate deduplication domains that cannot see each other. VAST keeps the table on SCM shared by all CNodes, so the whole system is one reduction realm."
+    "各 CNode 通过共享 SCM 查指纹。同一加密组内的写入可跨节点比对。",
+    "CNodes share fingerprint indexes on SCM and match chunks within the same encryption group."
    ],
    "s": [
-    "一个缩减域",
-    "One reduction realm"
+    "共享指纹表",
+    "Shared Fingerprints"
    ],
    "b": [
     [
      "<p>去重要快，指纹表就得放在很快的地方。传统去重设备把它放在控制器的内存里，内存有上限，存储规模大到一定程度就得拆成多台、各成一个去重域。不同域之间互相看不到，同一块数据写进两个域，就会存两份。</p>",
-     "<p>VAST 的指纹表放在 SCM 上，所有 CNode 查的是同一张表，所以整个集群是一个缩减域（reduction realm）：不管数据从哪台 CNode 写进来，都能和全集群已存的数据比对。</p>"
+     "<p>VAST 的指纹表放在 SCM 上，所有 CNode 查的是同一张表，所以来自不同 CNode 的数据可与同一加密组内已存的数据比对。配置多个加密组时，精确去重和相似性压缩均以加密组为界。 <a href=\"https://docs.vastdata.com/docs/14-encryption-multi-tenancy-considerations\">VAST 加密组说明</a></p>"
     ],
     [
      "<p>For deduplication to be fast, the fingerprint table must live somewhere fast. Classic deduplication appliances keep it in controller memory, which has a limit, so beyond a certain scale they must be split into several systems, each its own deduplication domain. Domains cannot see each other, so the same data written into two domains is stored twice.</p>",
-     "<p>VAST keeps the fingerprint table on SCM, and every CNode looks up the same table, so the whole cluster is one reduction realm: whichever CNode the data arrives through, it is compared with everything already stored in the cluster.</p>"
+     "<p>VAST keeps the fingerprint table on SCM, and every CNode looks up the same table, so data arriving through any CNode can be compared with data already stored in the same encryption group. With multiple encryption groups, exact deduplication and similarity compression both operate within each group. <a href=\"https://docs.vastdata.com/docs/14-encryption-multi-tenancy-considerations\">VAST Encryption Groups</a></p>"
     ]
    ]
   },
@@ -227,6 +227,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

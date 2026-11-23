@@ -10,6 +10,7 @@
 .n-mc-diagram .node.blocked .panel { stroke: var(--l1); }
 .n-mc-diagram .route { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linejoin: round; }
 .n-mc-diagram .route.control:not(.arrow) { stroke-dasharray: 5 3; }
+.n-mc-diagram .route.idle { stroke: var(--rule2); stroke-dasharray: 4 4; }
 .n-mc-diagram .route.active { stroke: var(--l4); }
 .n-mc-diagram .route.ok, .n-mc-diagram .route.ok.active { stroke: var(--l5); }
 .n-mc-diagram .route.stop, .n-mc-diagram .route.stop.active { stroke: var(--l1); }

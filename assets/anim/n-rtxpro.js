@@ -148,14 +148,18 @@
         });
       },
       m => {
-        const [a, b, c] = m ? [[180, 101], [90, 289], [270, 289]]
-          : [[167, 160], [590, 99], [590, 222]];
-        [b, c].forEach(([x, y], i) => route(m
-          ? [[180, 132], [180, 185], [x, 185], [x, y - 31]]
-          : [[260, 160], [379, 160], [379, y], [x - 89, y]], .45 + i * 1.95, 1.3, i ? 'external' : ''));
-        box([...a, 186, 62], [gpu, nic]);
-        highlight(box([...b, m ? 158 : 178, 62], [['计算节点', 'Compute Nodes'], ['东西向', 'East–West']]), 1.35);
-        highlight(box([...c, m ? 158 : 178, 62], [['存储与服务', 'Storage & Services'], ['南北向', 'North–South']]), 3.3);
+        const [a, b, c, d, e] = m ? [[180, 111], [89, 199], [270, 199], [89, 312], [270, 312]]
+          : [[152, 119], [381, 119], [381, 223], [638, 119], [638, 223]];
+        rect(m ? 4 : 29, m ? 49 : 49, m ? 352 : 467, m ? 188 : 211, 'boundary');
+        text(m ? 180 : 153, 68, ['RTX PRO 服务器', 'RTX PRO Server'], 'secondary');
+        route(m ? [[151, 135], [151, 151], [89, 151], [89, 171]] : [[241, 119], [280, 119]], .4, .7);
+        route(m ? [[89, 227], [89, 282]] : [[482, 119], [544, 119]], 1.1, .85);
+        route(m ? [[270, 227], [270, 282]] : [[482, 223], [544, 223]], 2.65, 1, 'external');
+        box([...a, 178, 48], [gpu, ['服务器 GPU', 'Server GPU']]);
+        highlight(box([...b, m ? 162 : 202, 56], [['B3140H SuperNIC', 'B3140H SuperNIC'], ['东西向接口', 'East–West Adapter']]), .95);
+        highlight(box([...c, m ? 162 : 202, 56], [['BlueField-3 DPU', 'BlueField-3 DPU'], ['南北向接口', 'North–South Adapter']]), 2.4);
+        highlight(box([...d, m ? 165 : 188, 60], [['计算节点', 'Compute Nodes']]), 1.9);
+        highlight(box([...e, m ? 165 : 188, 60], [['存储与服务', 'Storage & Services']]), 3.55);
       },
       m => {
         const groups = [

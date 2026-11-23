@@ -2,6 +2,15 @@
 (() => {
 const ID = 'quant';
 const EN = {
+  "经 STE 回传": "Backprop via STE",
+  "INT8 激活": "INT8 input",
+  "BF16 激活": "BF16 input",
+  "还原权重": "Dequantize",
+  "示例：W8A8": "Example: W8A8",
+  "示例：仅权重量化": "Example: weight-only",
+  "整数算子": "Integer op",
+  "浮点算子": "Float op",
+  "权重 INT8": "INT8 weights",
   "示意，不代表实测数字": "Schematic, not measured",
   "相同数量权重使用更少位存储": "The same weight count uses fewer storage bits",
   "每项 8 位": "8 bits per weight",
@@ -103,34 +112,49 @@ function qat({ mobile, card, wire, travel, reveal }) {
   const a = mobile ? [200, 79] : [154, 150];
   const b = mobile ? [200, 253] : [480, 150];
   const c = mobile ? [200, 427] : [806, 150];
-  const routes = mobile
-    ? [[[200, 137], [200, 195]], [[200, 311], [200, 369]], [[39, 427], [21, 427], [21, 79], [39, 79]]]
-    : [[[290, 150], [344, 150]], [[616, 150], [670, 150]], [[806, 208], [806, 262], [154, 262], [154, 208]]];
-  routes.forEach((route, i) => travel(wire(route, i === 2 ? 'ready' : 'active'),
-    [0.45, 1.45, 2.65][i], [1.2, 2.2, 4.15][i], i === 2 ? 'ready' : 'active'));
+  [a, b].forEach(([x, y], i) => {
+    const [nx, ny] = [b, c][i];
+    const forward = mobile ? [[x - 46, y + 58], [nx - 46, ny - 58]] : [[x + 136, y - 23], [nx - 136, ny - 23]];
+    const backward = mobile ? [[nx + 46, ny - 58], [x + 46, y + 58]] : [[nx - 136, ny + 23], [x + 136, y + 23]];
+    travel(wire(forward, 'active'), 0.45 + i, 1.2 + i, 'active');
+    travel(wire(backward, 'ready'), 3.55 - i, 4.35 - i, 'ready');
+  });
   card(a, "可训练权重", ["W"], "接收梯度更新");
-  reveal(card(b, "模拟量化", "截断、舍入、还原"), 1.0);
+  reveal(card(b, "模拟量化", "截断、舍入、还原", "经 STE 回传"), 1.0);
   reveal(card(c, "计算训练损失", "反向传播梯度"), 1.9);
 }
 
 function deployment({ mobile, label, box, wire, travel }) {
-  const xs = mobile ? [76, 200, 324] : [184, 480, 776];
-  const ys = mobile ? [155, 376] : [111, 243];
-  const w = mobile ? 107 : 212;
-  const names = [
-    ["INT8 权重", "整数乘法", "计算结果"],
-    ["INT8 权重", "解量化", "浮点乘法"]
-  ];
+  const xs = mobile ? [75, 200, 325] : [180, 480, 780];
+  const ys = mobile ? [155, 390] : [99, 241];
+  const w = mobile ? 114 : 220;
   ys.forEach((y, row) => {
     const tone = row ? 'cool' : 'active';
-    label(xs[1], y - 54, row ? "解量化后计算" : "直接低精度计算", 'heading');
-    xs.slice(1).forEach((x, i) => {
-      const track = wire([[xs[i] + w / 2, y], [x - w / 2, y]], tone);
-      travel(track, 0.6 + i * 1.03, 1.4 + i * 1.03, tone);
+    label(xs[1], y - (mobile ? 91 : 67), row ? "示例：仅权重量化" : "示例：W8A8", 'heading');
+    const activationY = y + (mobile ? 62 : 44);
+    const items = row ? [
+      [xs[0], y, "权重 INT8"], [xs[1], y, "还原权重"], [xs[1], activationY, "BF16 激活"], [xs[2], y, "浮点算子"]
+    ] : [
+      [xs[0], y - 25, "权重 INT8"], [xs[0], y + 25, "INT8 激活"], [xs[1], y, "整数算子"], [xs[2], y, "计算结果"]
+    ];
+    const right = (x, yy) => [x + w / 2, yy];
+    const left = (x, yy) => [x - w / 2, yy];
+    const paths = row ? [
+      [right(xs[0], y), left(xs[1], y)],
+      [right(xs[1], y), left(xs[2], y)],
+      [right(xs[1], activationY), [xs[2], activationY], [xs[2], y + 18]]
+    ] : [
+      [right(xs[0], y - 25), [xs[1], y - 25], [xs[1], y - 18]],
+      [right(xs[0], y + 25), [xs[1], y + 25], [xs[1], y + 18]],
+      [right(xs[1], y), left(xs[2], y)]
+    ];
+    paths.forEach((path, i) => {
+      const start = (row ? i > 0 : i === 2) ? 1.55 : 0.55;
+      travel(wire(path, tone), start, start + 0.8, tone);
     });
-    xs.forEach((x, i) => {
-      box(x - w / 2, y - 26, w, 52, i === 1 ? tone : '');
-      label(x, y, names[row][i]);
+    items.forEach(([x, yy, value]) => {
+      box(x - w / 2, yy - 18, w, 36, value.endsWith("算子") ? tone : '');
+      label(x, yy, value);
     });
   });
 }

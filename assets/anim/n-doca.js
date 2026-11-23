@@ -194,7 +194,7 @@
       caption: '命中包走业务端口，未命中包走下一条管线|Matching packets take the service port and misses take the next pipe',
       draw({ box, connect }) {
         box('input', [135, 150, 180, 67], '入站数据包|Ingress Packet');
-        box('pipe', [430, 150, 180, 172], 'DOCA Flow', { note: '第一条管线|First Pipe' });
+        box('pipe', [430, 150, 180, 172], 'BlueField 硬件|BlueField Hardware', { note: '第一条管线|First Pipe', width: 206, mobileWidth: 200 });
         box('hit', [735, 85, 92, 305], '命中|Hit', { note: '业务端口|Service Port' });
         box('miss', [735, 216, 268, 305], '未命中|Miss', { note: '后续管线|Next Pipe', tone: 'miss' });
         connect('input', 'pipe', { start: 0.28, offset: -8 });

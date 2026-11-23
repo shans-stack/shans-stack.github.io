@@ -7,7 +7,7 @@
    数据块由精灵池逐帧绘制，位置一律由路线折线插值，只落在画出来的线上或方块里。
    文字有中英两套，跟着页面的 ss-lang 事件重画。样式在 assets/anim/d-exa.css。 */
 (function(){
-var EN={"服务器 ": "Server ", "客户端": "Client", "示意，不代表实测数字": "Schematic, not measured", "计算节点": "Compute nodes", "节点 ": "Node ", "一台文件服务器": "One file server", "门口一次只放一块": "Serves one block at a time", "排队": "Queue", "元数据服务器（MDS）": "Metadata server (MDS)", "目录 · 文件名 · 布局": "Directories · names · layouts", "文件 A 的布局": "Layout of file A", "这一步不参与": "Not involved here", "数据服务器（OSS）": "Data servers (OSS)", "总容量 = 各台容量之和": "Total capacity = sum of all servers", "文件 A 原地不动，新文件 B 用上了第 5 台": "File A stays put; new file B uses server 5", "文件 A 写在 4 台上；新文件 B 也分到 4 台": "File A is on 4 servers; new file B also uses 4", "只有一台": "One server", "四台一起": "Four servers", "服务器": "Server", "已送达": "Delivered", "EXAScaler 加的功能": "What EXAScaler adds", "开源 Lustre（前面几步讲的就是它）": "Open-source Lustre (the previous steps)", "存储硬件：预装、调好，上架就能用": "Storage hardware: preinstalled, tuned, ready to rack", "存储硬件：预装、调好": "Hardware: preinstalled", "DNE3 元数据扩展": "DNE3 metadata", "DoM 小文件": "DoM small files", "PFL 渐进布局": "PFL layouts", "Hot Pools 冷热分层": "Hot Pools tiering", "多租户隔离": "Multi-tenancy", "NFS / SMB 网关": "NFS / SMB gateway", "S3 数据服务": "S3 data service", "Insight 监控": "Insight monitoring", "＋ 加一台数据服务器": "+ Add a data server", "− 回到 4 台": "− Back to 4 servers", "计算节点、元数据服务器和数据服务器之间的数据怎么走": "How data moves between compute nodes, the metadata server and the data servers"};
+var EN={"服务器 ": "Server ", "客户端": "Client", "示意，不代表实测数字": "Schematic, not measured", "计算节点": "Compute nodes", "节点 ": "Node ", "一台文件服务器": "One file server", "门口一次只放一块": "Serves one block at a time", "排队": "Queue", "元数据服务器（MDS）": "Metadata server (MDS)", "MDT · 目录与布局": "MDT · Names and layouts", "常规 OST 布局": "Conventional OST layout", "文件 A 的布局": "Layout of file A", "这一步不参与": "Not involved here", "数据服务器（OSS）": "Data servers (OSS)", "总容量 = 各 OST 容量之和": "Total capacity = sum of OST capacities", "文件 A 仍用 4 个 OST，文件 B 示例选用 5 个 OST": "A keeps 4 OSTs; example B selects 5 OSTs", "文件 A 和 B 各使用 4 个 OST": "A and B each use 4 OSTs", "只有一台": "One server", "四台一起": "Four servers", "服务器": "Server", "已送达": "Delivered", "EXAScaler 数据与管理功能": "EXAScaler Data and Management Features", "开源 Lustre": "Open-Source Lustre", "硬件一体机示例": "Hardware appliance example", "一体机示例": "Appliance example", "目录自动分片": "Directory auto-split", "DoM 小文件": "DoM small files", "PFL 渐进布局": "PFL layouts", "Hot Pools 冷热分层": "Hot Pools tiering", "多租户隔离": "Multi-tenancy", "NFS / SMB 网关": "NFS / SMB gateway", "S3 数据服务": "S3 data service", "Insight 监控": "Insight monitoring", "＋ 加一台数据服务器": "+ Add a data server", "− 回到 4 台": "− Back to 4 servers", "计算节点、元数据服务器和数据服务器之间的数据怎么走": "How data moves between compute nodes, the metadata server and the data servers"};
 /* 画面里的切换按钮：第几步（0 起）有按钮，两种状态各写什么 */
 var TG={"5": ["＋ 加一台数据服务器", "− 回到 4 台"]};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
@@ -126,14 +126,14 @@ function raceM(){return {title:[{x:16,y:40},{x:16,y:290}],
   top:{src:{x:16,y:80,w:100,h:48},dst:{x:352,y:80,w:112,h:48}},
   bot:{src:[340,392,444,496].map(y=>({x:16,y:y-20,w:100,h:40})),dst:{x:352,y:318,w:112,h:200}},
   cnt:[{x:408,ly:160,ny:196},{x:408,ly:556,ny:592}],sep:{y:250,x1:16,x2:464},note:{x:16,y:660}}}
-const ADD=['DNE3 元数据扩展','DoM 小文件','PFL 渐进布局','Hot Pools 冷热分层','多租户隔离','NFS / SMB 网关','S3 数据服务','Insight 监控'];
-const BASE=['客户端','MGS','MDS','OSS','LNet'];
-function stackD(){return {top:{x:24,y:18,w:912,h:200,t:{x:44,y:44}},add:ADD.map((s,k)=>({x:44+(k%4)*222,y:70+Math.floor(k/4)*68,w:206,h:52})),
-  mid:{x:24,y:234,w:912,h:124,t:{x:44,y:260}},base:BASE.map((s,k)=>({x:44+k*178,y:284,w:160,h:52})),
-  hw:{x:24,y:376,w:912,h:60},hwT:'存储硬件：预装、调好，上架就能用',bay:{x0:662,n:10,w:16,gap:10,h:36}}}
-function stackM(){return {top:{x:16,y:16,w:448,h:300,t:{x:32,y:42}},add:ADD.map((s,k)=>({x:32+(k%2)*212,y:68+Math.floor(k/2)*58,w:204,h:48})),
-  mid:{x:16,y:334,w:448,h:182,t:{x:32,y:360}},base:BASE.map((s,k)=>({x:32+(k%3)*140,y:386+Math.floor(k/3)*58,w:132,h:48})),
-  hw:{x:16,y:536,w:448,h:64},hwT:'存储硬件：预装、调好',bay:{x0:333,n:6,w:12,gap:9,h:36}}}
+const ADD=['Hot Pools 冷热分层','多租户隔离','NFS / SMB 网关','S3 数据服务','Insight 监控'];
+const BASE=['客户端','MGS','MDS','OSS','LNet','目录自动分片','DoM 小文件','PFL 渐进布局'];
+function stackD(){return {top:{x:24,y:18,w:912,h:183,t:{x:44,y:44}},add:ADD.map((s,k)=>({x:44+(k%4)*222,y:70+Math.floor(k/4)*68,w:206,h:52})),
+  mid:{x:24,y:216,w:912,h:163,t:{x:44,y:242}},base:BASE.map((s,k)=>({x:44+(k%4)*222,y:260+Math.floor(k/4)*52,w:206,h:44})),
+  hw:{x:24,y:398,w:912,h:60},hwT:'硬件一体机示例',bay:{x0:662,n:10,w:16,gap:10,h:36}}}
+function stackM(){return {top:{x:16,y:16,w:448,h:232,t:{x:32,y:42}},add:ADD.map((s,k)=>({x:32+(k%2)*212,y:68+Math.floor(k/2)*58,w:204,h:48})),
+  mid:{x:16,y:266,w:448,h:290,t:{x:32,y:292}},base:BASE.map((s,k)=>({x:32+(k%2)*212,y:316+Math.floor(k/2)*58,w:204,h:48})),
+  hw:{x:16,y:576,w:448,h:64},hwT:'一体机示例',bay:{x0:333,n:6,w:12,gap:9,h:36}}}
 
 /* ================= 画面 ================= */
 function build(){
@@ -156,7 +156,7 @@ function build(){
   L.wire.mds.forEach(s=>wires(s,'meta',gM));
   E.mds=rect(L.mds,'blk',gM);
   tx(L.mdsLab.x,L.mdsLab.y,'元数据服务器（MDS）',f.lbl,'lblb','start',gM);
-  tx(L.mdsSub.x,L.mdsSub.y,'目录 · 文件名 · 布局',f.note,'ink2-t','start',gM);
+  tx(L.mdsSub.x,L.mdsSub.y,'MDT · 目录与布局',f.note,'ink2-t','start',gM);
   const k=L.card;tx(k.tx,k.ty,'文件 A 的布局',f.note,'violet-t','start',gM);
   E.cells=[0,1,2,3].map(j=>{const r=el('rect',{x:k.cx+j*k.dx,y:k.cy-k.ch/2,width:k.cw,height:k.ch,rx:4,class:'cell'},gM);
     tx(k.cx+j*k.dx+k.cw/2,k.cy+1,String(j+1),f.note,'celll',null,gM);return r});
@@ -166,16 +166,17 @@ function build(){
   tx(L.ossT.x,L.ossT.y,'数据服务器（OSS）',f.ttl,'ttl','start',gO);
   L.wire.trunk.forEach(s=>wires(s,'data',gO));
   E.oss=L.oss.slice(0,4).map((r,j)=>{wires([P(C(r).x,L.trunkY),P(C(r).x,r.y)],'data',gO);const b=rect(r,'blk',gO);
-    tx(C(r).x,r.y+r.h-20,T('服务器 ')+(j+1),f.note,'lbl','middle',gO);return b});
+    tx(C(r).x,r.y+r.h-20,'OST '+(j+1),f.note,'lbl','middle',gO);return b});
+  tx(L.capT.x,L.capT.y,'常规 OST 布局',f.note,'ink2-t','start',grp('2',net));
   // 第 5 台（第 6 步按钮加进来）
   const g5=grp('6',net);E.g5=el('g',{},g5);
   L.wire.ext.forEach(s=>wires(s,'data',E.g5));
-  {const r=L.oss[4];wires([P(C(r).x,L.trunkY),P(C(r).x,r.y)],'data',E.g5);E.oss5=rect(r,'blk new',E.g5);tx(C(r).x,r.y+r.h-20,T('服务器 ')+5,f.note,'lbl','middle',E.g5)}
+  {const r=L.oss[4];wires([P(C(r).x,L.trunkY),P(C(r).x,r.y)],'data',E.g5);E.oss5=rect(r,'blk new',E.g5);tx(C(r).x,r.y+r.h-20,'OST 5',f.note,'lbl','middle',E.g5)}
   // 总容量条（第 6 步）
   const g6=grp('6',net);
   L.oss.slice(0,4).forEach(r=>el('rect',{x:r.x,y:L.cap.y,width:r.w,height:L.cap.h,rx:3,class:'capseg'},g6));
   E.cap5=el('rect',{x:L.oss[4].x,y:L.cap.y,width:L.oss[4].w,height:L.cap.h,rx:3,class:'capseg new'},E.g5);
-  tx(L.capT.x,L.capT.y,'总容量 = 各台容量之和',f.sm,'ink2-t','start',g6);
+  tx(L.capT.x,L.capT.y,'总容量 = 各 OST 容量之和',f.sm,'ink2-t','start',g6);
   E.note6=tx(L.note6.x,L.note6.y,'',f.note,'ink3-t','start',g6);
   // 第 5 步：两条通道
   const R=L.race,g=grp('5');
@@ -192,9 +193,9 @@ function build(){
   tx(R.note.x,R.note.y,'示意，不代表实测数字',f.note,'ink3-t','start',g);
   // 第 7 步：三层
   const S=L.stack,g7=grp('7');
-  rect(S.top,'frame',g7,18);tx(S.top.t.x,S.top.t.y,'EXAScaler 加的功能',f.ttl,'slate-t','start',g7).style.fontWeight=700;
+  rect(S.top,'frame',g7,18);tx(S.top.t.x,S.top.t.y,'EXAScaler 数据与管理功能',f.ttl,'slate-t','start',g7).style.fontWeight=700;
   E.add=S.add.map((r,k)=>{const gg=el('g',{},g7);rect(r,'chip add',gg,10);tx(C(r).x,C(r).y,ADD[k],f.chip,'lbl','middle',gg);return gg});
-  rect(S.mid,'frame',g7,18);tx(S.mid.t.x,S.mid.t.y,'开源 Lustre（前面几步讲的就是它）',f.ttl,'ttl','start',g7);
+  rect(S.mid,'frame',g7,18);tx(S.mid.t.x,S.mid.t.y,'开源 Lustre',f.ttl,'ttl','start',g7);
   S.base.forEach((r,k)=>{rect(r,'chip',g7,10);tx(C(r).x,C(r).y,BASE[k],f.chip,'lbl','middle',g7)});
   rect(S.hw,'chip hw',g7,12);
   {const cy=C(S.hw).y,b=S.bay;
@@ -264,7 +265,7 @@ function modes(){
   5:{still:3.5,enter(){E.g5.style.opacity=0},
     frame(t,dt,tt){const n=tog?5:4;showA(1);
       E.g5.style.opacity=tog?fade(tt,0,0.4):0;
-      setTxt(E.note6,tog?'文件 A 原地不动，新文件 B 用上了第 5 台':'文件 A 写在 4 台上；新文件 B 也分到 4 台');
+      setTxt(E.note6,tog?'文件 A 仍用 4 个 OST，文件 B 示例选用 5 个 OST':'文件 A 和 B 各使用 4 个 OST');
       const tc=tt%6.4;
       for(let j=0;j<n;j++){const go=cat([L.r.hold(0)],L.r.oss(0,j),[pieceB(j)]),d=dur(go),t0=0.4+0.18*j;
         const p=run('B'+j,go,t0,d,tc,{lab:'B'+(j+1),cls:'b'});

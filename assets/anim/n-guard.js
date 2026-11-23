@@ -5,9 +5,9 @@ const SCENES = [
   {
     caption: ["放行或拒绝进入应用", "Accept or reject incoming input"],
     bands: [
-      [["input", ["用户消息", "User message"], ["", ""], "artifact", ["", ""]]],
+      [["input", ["用户消息", "User message"], ["示例 A · 检查通过", "A · Passes check"], "artifact", ["", ""]]],
       [["gate", ["输入护栏", "Input rail"], ["NeMo Guardrails", "NeMo Guardrails"], "component", ["", ""]]],
-      [["ready", ["继续处理", "Continue"], ["", ""], "good", ["", ""]], ["stop", ["拒绝消息", "Reject"], ["", ""], "blocked", ["", ""]]]
+      [["ready", ["继续处理", "Continue"], ["检查通过时", "If accepted"], "good", ["", ""]], ["stop", ["拒绝消息", "Reject"], ["终止处理", "Processing ends"], "blocked", ["", ""]]]
     ],
     edges: [
       ["input", "gate", 0, "data", 0],
@@ -18,9 +18,9 @@ const SCENES = [
   {
     caption: ["会话状态决定下一步", "Conversation state selects the next action"],
     bands: [
-      [["state", ["会话状态", "Dialog state"], ["已识别意图", "Recognized intent"], "artifact", ["", ""]]],
+      [["state", ["会话状态", "Dialog state"], ["示例 A · 命中预设", "A · Preset applies"], "artifact", ["", ""]]],
       [["rule", ["对话护栏", "Dialog rail"], ["Colang 规则", "Colang rules"], "component", ["", ""]]],
-      [["preset", ["预设回复", "Preset response"], ["", ""], "component", ["", ""]], ["model", ["模型调用", "Model call"], ["", ""], "component", ["", ""]]]
+      [["preset", ["预设回复", "Preset response"], ["命中预设时", "If preset applies"], "component", ["", ""]], ["model", ["模型调用", "Model call"], ["需要生成时", "If generation needed"], "component", ["", ""]]]
     ],
     edges: [
       ["state", "rule", 0, "data", 0],
@@ -58,9 +58,9 @@ const SCENES = [
   {
     caption: ["候选回复经过交付检查", "Check a candidate before returning it"],
     bands: [
-      [["draft", ["候选回复", "Candidate reply"], ["", ""], "artifact", ["", ""]]],
+      [["draft", ["候选回复", "Candidate reply"], ["示例 A · 检查通过", "A · Passes check"], "artifact", ["", ""]]],
       [["rail", ["输出护栏", "Output rail"], ["回复策略", "Response policy"], "component", ["", ""]]],
-      [["deliver", ["返回回复", "Return reply"], ["", ""], "good", ["", ""]], ["replace", ["拦截并替换", "Block and replace"], ["", ""], "blocked", ["", ""]]]
+      [["deliver", ["返回回复", "Return reply"], ["交付原回复", "Original reply"], "good", ["", ""]], ["replace", ["拦截并替换", "Block and replace"], ["只交付替代回复", "Replacement only"], "blocked", ["", ""]]]
     ],
     edges: [
       ["draft", "rail", 0, "data", 0],
@@ -89,6 +89,13 @@ function mount(host, options = {}) {
     parent.append(el);
     return el;
   }
+
+  const alternativeInputs = {
+    0: ["示例 B · 检查未通过", "B · Fails check"],
+    1: ["示例 B · 需要生成", "B · Needs generation"],
+    4: ["示例 B · 触发拦截", "B · Triggers block"]
+  };
+  const exampleTime = 2.7;
 
   function draw() {
     const mobile = compact.matches;
@@ -153,7 +160,7 @@ function mount(host, options = {}) {
       const label = T(sub) ? text(left + 12, y + titleY + 22, T(sub), small, "sub", group) : null;
       const incoming = routes.filter(route => route.target === key).map(route => route.start + .74);
       const outgoing = routes.filter(route => route.source === key).map(route => route.start + .74);
-      return {group, label, sub, end, incoming, outgoing};
+      return {key, group, label, sub, end, incoming, outgoing};
     });
 
     for (const route of routes) {
@@ -161,10 +168,22 @@ function mount(host, options = {}) {
     }
     text(16, height - 12, T(["示意，不代表实测数字", "Schematic. No measured data."]), small, "note");
 
-    finish = Math.max(...routes.map(route => route.start)) + 1.5;
+    const alternative = alternativeInputs[index];
+    const input = cards[0];
+    finish = alternative ? exampleTime * 2 : Math.max(...routes.map(route => route.start)) + 1.5;
     paint = time => {
+      const second = Boolean(alternative) && time >= exampleTime;
+      const chosen = alternative ? routes[second ? 2 : 1] : null;
+      if (alternative) {
+        const value = T(second ? alternative : input.sub);
+        if (input.label.textContent !== value) input.label.textContent = value;
+      }
       for (const edge of routes) {
-        const delay = time - edge.start;
+        const branch = alternative && edge !== routes[0];
+        const idle = branch && edge !== chosen;
+        const delay = idle ? -1 : (second ? time - exampleTime : time) - (branch ? .84 : edge.start);
+        edge.route.classList.toggle("idle", Boolean(idle));
+        edge.arrow.classList.toggle("idle", Boolean(idle));
         const active = delay >= 0 && delay < .96;
         const progress = Math.min(1, Math.max(0, delay / .74));
         const point = edge.route.getPointAtLength(4 + progress * (edge.length - 8));
@@ -174,7 +193,9 @@ function mount(host, options = {}) {
         edge.packet.setAttribute("opacity", Math.max(0, Math.min(1, delay * 14, (.96 - delay) * 10)));
       }
       for (const card of cards) {
-        const arrived = card.incoming.some(timeAt => time >= timeAt);
+        const arrived = alternative
+          ? card.key === chosen.target && (time % exampleTime >= 1.58 || time >= finish)
+          : card.incoming.some(timeAt => time >= timeAt);
         const changed = arrived || card.outgoing.some(timeAt => time >= timeAt);
         card.group.classList.toggle("arrived", arrived);
         if (T(card.end)) {

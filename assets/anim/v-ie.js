@@ -8,7 +8,7 @@
    样式在 assets/anim/v-ie.css，全部限定在 .ssa-v-ie 容器之内。 */
 (function(){
 var ID='v-ie',NSTEP=7;
-var EN={"合同.pdf":"Contract.pdf","会议.mp4":"Meeting.mp4","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","手册.pdf":"Manual.pdf","存储":"Storage","嵌入流水线":"Embedding pipeline","向量库":"Vector database","权限系统":"Permission system","应用":"App","复制数据":"Copy data","同步权限":"Sync permissions","定制代码":"Custom code","分置架构：通过接口连通":"Separate components connected through interfaces","InsightEngine：事件驱动的入库流水线":"InsightEngine: event-driven ingestion pipeline","换成 InsightEngine":"Switch to InsightEngine","切到分置架构":"Switch to separate components","切换对比，当前 ":"Switch comparison, now ","分置架构":"separate components","DataEngine 函数":"DataEngine functions","DataBase 表":"DataBase table","检索接口":"Search API",
+var EN={"对象事件":"Object events","按引用读取对象":"Fetch object by reference","重读 · 嵌入 · 更新":"Read · embed · update","刷新函数":"Refresh function","Catalog 找出过期项":"Catalog finds stale rows","刷新函数重读源文件并计算嵌入":"Refresh function rereads and embeds","合同.pdf":"Contract.pdf","会议.mp4":"Meeting.mp4","片段 1":"Chunk 1","片段 2":"Chunk 2","片段 3":"Chunk 3","片段 4":"Chunk 4","手册.pdf":"Manual.pdf","存储":"Storage","嵌入流水线":"Embedding pipeline","向量库":"Vector database","权限系统":"Permission system","应用":"App","复制数据":"Copy data","同步权限":"Sync permissions","定制代码":"Custom code","分置架构：通过接口连通":"Separate components connected through interfaces","InsightEngine：事件驱动的入库流水线":"InsightEngine: event-driven ingestion pipeline","换成 InsightEngine":"Switch to InsightEngine","切到分置架构":"Switch to separate components","切换对比，当前 ":"Switch comparison, now ","分置架构":"separate components","DataEngine 函数":"DataEngine functions","DataBase 表":"DataBase table","检索接口":"Search API",
 "客户端":"Client","DataStore bucket":"DataStore bucket","函数实例 ":"Instance ","事件":"Event","对象创建触发异步向量化":"Object creation triggers asynchronous embedding",
 "按内容类型分流":"Route by type","文本流水线":"Text pipeline","文字 · 表格 · 图":"Text · tables · figures","视频流水线":"Video pipeline","切段 · 视觉语言模型":"Segments · VLM","嵌入模型":"Embedding model","托管服务或 NVIDIA NIM":"Hosted or NVIDIA NIM","报告.pdf":"Report.pdf","按内容类型切块，再送进嵌入模型":"Chunked by content type, then sent to the embedding model",
 "切块 + 向量":"Chunks + vectors","片段":"Chunk","向量":"Vector","来源":"Source","元数据":"Metadata","正文":"Text","表格":"Table","视频片段 A":"Clip A","视频片段 B":"Clip B","页 3":"Page 3","页 4":"Page 4","向量列可配置索引":"The vector column can be indexed","写入片段、向量、来源和元数据":"Store chunks, vectors, sources, and metadata",
@@ -66,7 +66,7 @@ function cap(s,c){E.cap.textContent=T(s);E.cap.setAttribute('class','st '+(c||'i
 function lit(els,c,on){(Array.isArray(els)?els:[els]).forEach(e=>e&&e.classList.toggle(c,!!on))}
 /* ---------- 场景 ---------- */
 const SCENE={
- still:[2.4,3.6,4.6,5.4,6.0,4.4,6.4],
+ still:[3.8,4.5,4.6,5.4,6.0,4.4,7.4],
  toggles:{0:{param:'view',values:['split','native'],label:v=>v==='split'?'换成 InsightEngine':'切到分置架构',aria:'切换对比，当前 ',name:v=>v==='split'?'分置架构':'InsightEngine'},
           5:{param:'api',values:['rag','vec'],label:v=>v==='rag'?'换成向量检索接口':'换成 RAG 检索接口',aria:'切换接口，当前 ',name:v=>v==='rag'?'RAG 检索接口':'向量检索接口'},
           6:{param:'case',values:['del','mod'],label:v=>v==='del'?'换成就地修改':'换成删除',aria:'切换场景，当前 ',name:v=>v==='del'?'删除':'就地修改'}},
@@ -93,10 +93,16 @@ const SCENE={
    s.fr=m?R(8,16,464,346):R(24,40,912,240);
    s.c=m?[R(140,58,200,52),R(140,130,200,52),R(140,202,200,52),R(140,274,200,52)]:[R(50,120,190,64),R(285,120,190,64),R(520,120,190,64),R(755,120,160,64)];
    s.ap=m?R(140,410,200,56):R(380,350,200,64);
-   s.pb=[0,1,2].map(i=>[out_(s.c[i]),in_(s.c[i+1])]);s.pb.forEach(p=>poly(p,'',lb));
+   s.pb=[0,1,2].map(i=>[out_(s.c[i]),in_(s.c[i+1])]);s.pb.forEach((p,i)=>poly(p,i<2?'dash vio':'',lb));
+   const [ds,,fn]=s.c;
+   s.read=m?[P(fn.x,C(fn).y),P(30,C(fn).y),P(30,C(ds).y),P(ds.x,C(ds).y)]:
+    [P(C(fn).x,fn.y+fn.h),P(C(fn).x,230),P(C(ds).x,230),P(C(ds).x,ds.y+ds.h)];
+   poly(s.read,'thin',lb);
    s.pq=m?[P(C(s.ap).x,s.ap.y),P(C(s.c[3]).x,s.c[3].y+s.c[3].h)]:[P(s.ap.x+s.ap.w,C(s.ap).y),P(C(s.c[3]).x,C(s.ap).y),P(C(s.c[3]).x,s.c[3].y+s.c[3].h)];poly(s.pq,'',lb);
    box(s.fr,B,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'InsightEngine',f.sm,'ttl','start',B);
    s.bB=[nb(s.c[0],'DataStore','',B),nb(s.c[1],'Event Broker','',B),nb(s.c[2],'DataEngine 函数','',B),nb(s.c[3],'DataBase 表','',B)];
+   tx(m?33:365,m?132:251,'按引用读取对象',f.xs,'ink3-t',m?'start':'middle',B);
+   tx(m?350:264,m?119:100,'对象事件',f.xs,'violet-t',m?'start':'middle',B);
    nb(s.ap,'应用','',B);tx(m?C(s.ap).x+110:C(s.ap).x+ s.ap.w/2+30,m?s.ap.y-14:C(s.ap).y-16,'检索接口',f.xs,'ink3-t st',m?'start':'start',B);
   }
   /* ===== 2：写入即事件 ===== */
@@ -105,7 +111,14 @@ const SCENE={
    s.bk=m?R(130,124,220,110):R(240,170,200,120);s.tp=m?R(150,262,180,64):R(500,190,170,80);
    s.fn=[0,1,2].map(k=>m?R([84,240,396][k]-66,400,132,56):R(740,90+k*100,170,60));
    s.p1=[out_(s.cl),in_(s.bk)];poly(s.p1,'',ln);s.p2=[out_(s.bk),in_(s.tp)];poly(s.p2,'',ln);
-   s.p3=s.fn.map(r=>m?elbowV(P(C(s.tp).x,s.tp.y+s.tp.h),P(C(r).x,r.y),360):elbowH(P(s.tp.x+s.tp.w,C(s.tp).y),P(r.x,C(r).y),705));s.p3.forEach(p=>poly(p,'',ln));
+   s.p3=s.fn.map(r=>m?elbowV(P(C(s.tp).x,s.tp.y+s.tp.h),P(C(r).x,r.y),360):elbowH(P(s.tp.x+s.tp.w,C(s.tp).y),P(r.x,C(r).y),705));s.p3.forEach(p=>poly(p,'dash vio',ln));
+   s.read=s.fn.map((r,i)=>{
+    const x=m?18+i*8:451+i*10, y=m?484+i*18:403+i*9;
+    const path=m?[P(C(r).x,r.y+r.h),P(C(r).x,y),P(x,y),P(x,C(s.bk).y+i*14),P(s.bk.x,C(s.bk).y+i*14)]:
+      [P(r.x,C(r).y+12),P(720+i*4,C(r).y+12),P(720+i*4,y),P(x,y),P(x,C(s.bk).y+i*14),P(s.bk.x+s.bk.w,C(s.bk).y+i*14)];
+    poly(path,'thin',ln);return path;
+   });
+   tx(m?240:547,m?551:377,'按引用读取对象',f.xs,'ink3-t','middle',g);
    box(s.fr,g,'box frame',16);tx(s.fr.x+16,s.fr.y+22,'AI OS',f.sm,'ttl','start',g);
    nb(s.cl,'客户端','',g);s.bkB=nb(s.bk,'DataStore bucket','',g);s.bkB.t.setAttribute('y',s.bk.y+22);
    s.tpB=nb(s.tp,'Event Broker','topic',g,'box och');s.fnB=s.fn.map((r,k)=>nb(r,T('函数实例 ')+(k+1),'',g,'box'));
@@ -183,15 +196,19 @@ const SCENE={
    else{s.ds=R(12,10,456,96);s.eb=R(12,146,210,56);s.cf=R(258,146,210,56);s.tb=R(40,240,400,170);s.ti=R(12,450,210,56);s.ca=R(258,450,210,56)}
    s.fl=m?[R(40,52,180,36),R(260,52,180,36)]:[R(44,120,160,40),R(44,190,160,40)];
    s.pE=m?[P(C(s.fl[0]).x,s.ds.y+s.ds.h),P(C(s.fl[0]).x,s.eb.y)]:[P(s.ds.x+s.ds.w,C(s.fl[0]).y),P(252,C(s.fl[0]).y),P(252,C(s.eb).y),P(s.eb.x,C(s.eb).y)];
-   s.pEM=m?[P(C(s.fl[1]).x,s.ds.y+s.ds.h),P(C(s.fl[1]).x,124),P(C(s.eb).x+60,124),P(C(s.eb).x+60,s.eb.y)]:[P(s.ds.x+s.ds.w,C(s.fl[1]).y),P(252,C(s.fl[1]).y),P(252,C(s.eb).y+14),P(s.eb.x,C(s.eb).y+14)];
    s.pC=[out_(s.eb),in_(s.cf)];s.pT=m?[P(C(s.cf).x,s.cf.y+s.cf.h),P(C(s.cf).x,s.tb.y)]:[P(s.cf.x+s.cf.w,C(s.cf).y),P(s.tb.x,C(s.cf).y)];
-   s.pK=[out_(s.ti),in_(s.ca)];s.pR=m?[P(C(s.ca).x,s.ca.y),P(C(s.ca).x,s.tb.y+s.tb.h)]:[P(s.ca.x+s.ca.w,C(s.ca).y),P(C(s.tb).x,C(s.ca).y),P(C(s.tb).x,s.tb.y+s.tb.h)];
-   poly(s.pE,'',ln);s.lEM=poly(s.pEM,'dash',ln);[s.pC,s.pT,s.pK,s.pR].forEach(p=>poly(p,'',ln));
+   s.pK=[P(s.ti.x+s.ti.w,C(s.ti).y),P(s.ca.x,C(s.ca).y)];
+   s.pR=m?[P(s.ca.x+s.ca.w,C(s.ca).y),P(474,C(s.ca).y),P(474,C(s.cf).y),P(s.cf.x+s.cf.w,C(s.cf).y)]:
+    [P(C(s.ca).x,s.ca.y),P(C(s.cf).x,s.cf.y+s.cf.h)];
+   s.pRead=m?[P(C(s.cf).x,s.cf.y),P(C(s.fl[1]).x,s.cf.y),P(C(s.fl[1]).x,s.ds.y+s.ds.h)]:
+    [P(C(s.cf).x,s.cf.y),P(C(s.cf).x,53),P(C(s.ds).x,53),P(C(s.ds).x,s.ds.y)];
+   s.delLines=[poly(s.pE,'',ln),poly(s.pC,'',ln)];
+   s.modLines=[s.pK,s.pR,s.pRead].map(p=>poly(p,'thin',ln));poly(s.pT,'',ln);
    box(s.ds,g,'box',12);tx(s.ds.x+14,s.ds.y+20,'DataStore',f.sm,'ttl','start',g);
    s.flB=s.fl.map((r,k)=>{const b=box(r,g,'box',8);tx(C(r).x,C(r).y,k?'b.docx':'a.pdf',f.sm,'lbl mono','middle',g);return b});
    s.fst=s.fl.map(r=>tx(m?r.x+r.w-6:r.x+r.w-6,m?r.y-10:r.y-10,'',f.xs,'st','end',g));
    s.ebB=nb(s.eb,'Event Broker','',g,'box och');s.cfB=nb(s.cf,'清理函数','',g);s.tiB=nb(s.ti,'定时触发器','',g);s.caB=nb(s.ca,'Catalog 对比时间','',g);
-   s.nt=tx(m?C(s.eb).x+60+8:258,m?126:C(s.eb).y+38,'',f.xs,'ink3-t st','start',g);
+   s.nt=tx(C(s.cf).x,m?221:165,'',f.xs,'ink3-t st','middle',g);
    box(s.tb,g,'box',10);tx(s.tb.x+14,s.tb.y+20,'DataBase 表',f.sm,'ttl','start',g);
    const D=[['a.pdf','片段 1'],['a.pdf','片段 2'],['b.docx','片段 1']];const rh=m?40:46;
    s.rows=D.map((d,k)=>{const y=s.tb.y+(m?58:66)+k*rh;const r=el('rect',{x:s.tb.x+10,y:y-rh/2+4,width:s.tb.w-20,height:rh-8,rx:4,class:'cell'},g);
@@ -204,17 +221,27 @@ const SCENE={
 /* 1 */
 SCENE.modes[0]={enter(v){const s=E.s1;S.v.v=v;const sp=v==='split';s.A.style.display=sp?'':'none';s.B.style.display=sp?'none':'';
   cap(sp?'分置架构：通过接口连通':'InsightEngine：事件驱动的入库流水线',sp?'rose-t':'sage-t');
-  S.v.p=[0,1,2,3,4].map(i=>pk(i===2?'vio':''))},
+  S.v.p=[0,1,2,3,4].map(i=>pk(i===2?'vio':''));
+  if(!sp){S.v.ev=[dot('vio'),dot('vio')];S.v.ref=dot('och')}},
  frame(t){const s=E.s1,u=t%6;
   if(S.v.v==='split'){s.pa.forEach((p,i)=>{const t0=[0.2,1.2,0.6,2.4,3.0][i];run(S.v.p[i],i===3||i===4?p:p,u,t0,dur(p)*0.8,0.3)})}
-  else{s.pb.forEach((p,i)=>run(S.v.p[i],p,u,0.2+i*0.6,dur(p),0.2));run(S.v.p[3],s.pq,u,2.4,dur(s.pq)*0.8,0.2);put(S.v.p[4],-99,-99,0);
-   s.bB.forEach((b,i)=>b.classList.toggle('on',u>0.2+i*0.6&&u<0.8+i*0.6))}}};
+  else{
+   s.pb.slice(0,2).forEach((p,i)=>run(S.v.ev[i],p,u,0.3+i*0.65,0.6,0.1));
+   run(S.v.ref,s.read,u,1.7,0.9,0.1);
+   run(S.v.p[0],rev(s.read),u,2.65,0.9,0.1);
+   run(S.v.p[2],s.pb[2],u,3.8,0.8,0.2);
+   run(S.v.p[3],s.pq,u,4.8,0.8,0.2);
+   s.bB.forEach((b,i)=>b.classList.toggle('on',u>[2.45,0.9,3.3,4.5][i]&&u<[3.0,1.5,4.1,5.75][i]))}}};
 /* 2 */
 const FN=['报告.pdf','会议.mp4','手册.pdf'];
-SCENE.modes[1]={enter(){cap('对象创建触发异步向量化','ink2-t');S.v.f=FN.map(()=>pk('ok'));S.v.e=FN.map(()=>dot('vio'))},
+SCENE.modes[1]={enter(){cap('对象创建触发异步向量化','ink2-t');S.v.f=FN.map(()=>pk('ok'));S.v.e=FN.map(()=>dot('vio'));S.v.q=FN.map(()=>dot('och'));S.v.obj=FN.map(()=>pk('ok'))},
  frame(t){const s=E.s2,u=t%8;
   FN.forEach((n,k)=>{const t0=0.2+k*0.5,d=dur(s.p1)*0.8;run(S.v.f[k],s.p1,u,t0,d,0.1);s.files[k].style.opacity=u>t0+d&&u<7.7?1:0;
-   const te=t0+d+0.1,pe=cat(s.p2,s.p3[k]);const de=dur(pe)*0.8;const p=run(S.v.e[k],pe,u,te,de,0.2);s.fnB[k].classList.toggle('on',u>te+de&&u<te+de+2.4)});
+   const te=t0+d+0.1,pe=cat(s.p2,s.p3[k]);const de=dur(pe)*0.8;run(S.v.e[k],pe,u,te,de,0.2);
+   const readAt=te+de+0.18;
+   run(S.v.q[k],s.read[k],u,readAt,1.05,0.08);
+   run(S.v.obj[k],rev(s.read[k]),u,readAt+1.15,1.05,0.2);
+   s.fnB[k].classList.toggle('on',u>readAt+2.2&&u<7.7)});
   s.tpB.classList.toggle('on',u>1.4&&u<3.2)}};
 /* 3 */
 SCENE.modes[2]={enter(){cap('按内容类型切块，再送进嵌入模型','violet-t');const m=L.mobile;S.v.d=[pk(),pk('och')];
@@ -256,16 +283,26 @@ SCENE.modes[5]={enter(v){const s=E.s6,rag=v==='rag';S.v.rag=rag;s.apiB.t.textCon
 /* 7 */
 SCENE.modes[6]={enter(v){const s=E.s7;S.v.del=v==='del';
   cap(S.v.del?'处理删除事件后移除对应行':'就地修改：定期核对 Catalog 并刷新',S.v.del?'rose-t':'ochre-t');
-  s.lEM.classList.toggle('off',S.v.del);S.v.e=dot('vio');S.v.k=dot('och');S.v.x=dot('och')},
+  s.delLines.forEach(p=>p.style.display=S.v.del?'':'none');
+  s.modLines.forEach(p=>p.style.display=S.v.del?'none':'');
+  s.ebB.style.opacity=s.ebB.t.style.opacity=S.v.del?1:0.3;
+  s.cfB.t.textContent=T(S.v.del?'清理函数':'刷新函数');
+  S.v.e=dot('vio');S.v.k=dot('och');S.v.x=pk('ok');S.v.w=pk('vio')},
  frame(t){const s=E.s7,u=t%8;
   if(S.v.del){const del=u>0.5;s.flB[0].classList.toggle('hot',del);s.flB[0].style.opacity=del?0.4:1;s.fst[0].textContent=del?T('已删除'):'';s.fst[0].setAttribute('class','st rose-t');s.fst[1].textContent='';
    const p=cat(s.pE,s.pC,s.pT);const d=dur(p)*0.8;run(S.v.e,p,u,0.7,d,0.2);s.cfB.classList.toggle('on',u>0.7+d*0.55&&u<0.7+d+0.5);
    s.rows.forEach((r,k)=>{const gone=k<2&&u>0.9+d;r.r.style.opacity=gone?0.15:1;r.a.style.opacity=gone?0.15:1;r.b.style.opacity=gone?0.15:1;r.st.textContent=gone?T('已删除'):'';r.st.setAttribute('class','st rose-t');r.r.setAttribute('class','cell')});
    put(S.v.k,-99,-99,0);put(S.v.x,-99,-99,0);s.nt.textContent='';s.flB[1].classList.remove('och');s.flB[1].style.opacity=1}
   else{s.flB[0].style.opacity=1;s.fst[0].textContent='';const md=u>0.5;s.flB[1].classList.toggle('och',md);s.fst[1].textContent=md?T('已修改'):'';s.fst[1].setAttribute('class','st ochre-t');
-   s.nt.textContent=u>0.8&&u<3?T('等待刷新'):'';put(S.v.e,-99,-99,0);
-   const p=cat(s.pK,s.pR);const d=dur(p)*0.8;run(S.v.k,p,u,3.0,d,0.2);s.tiB.classList.toggle('och',u>2.6&&u<3.4);s.caB.classList.toggle('on',u>3+d*0.4&&u<3+d*0.7);
-   s.rows.forEach((r,k)=>{r.r.style.opacity=1;r.a.style.opacity=1;r.b.style.opacity=1;const st=k===2?(u>3+d?'已重算':u>0.8?'过期':''):'';r.st.textContent=st?T(st):'';r.st.setAttribute('class','st '+(st==='已重算'?'sage-t':'ochre-t'));r.r.setAttribute('class','cell'+(st==='过期'?' och':st==='已重算'?' ok':''))})}}};
+   s.nt.textContent=u<1.5?'':T(u<3.4?'Catalog 找出过期项':u<6.25?'重读 · 嵌入 · 更新':'已重算');
+   run(S.v.k,s.pK,u,1.45,0.7,0.1);
+   run(S.v.k,s.pR,u,2.35,0.95,0.12);
+   run(S.v.e,s.pRead,u,3.4,0.8,0.08);
+   run(S.v.x,rev(s.pRead),u,4.3,0.8,0.15);
+   run(S.v.w,s.pT,u,5.45,0.8,0.2);
+   s.tiB.classList.toggle('och',u>1.2&&u<2);s.caB.classList.toggle('on',u>2.15&&u<3.25);
+   s.cfB.classList.toggle('on',u>3.3&&u<6.25);
+   s.rows.forEach((r,k)=>{r.r.style.opacity=1;r.a.style.opacity=1;r.b.style.opacity=1;const st=k===2?(u>6.25?'已重算':u>0.8?'过期':''):'';r.st.textContent=st?T(st):'';r.st.setAttribute('class','st '+(st==='已重算'?'sage-t':'ochre-t'));r.r.setAttribute('class','cell'+(st==='过期'?' och':st==='已重算'?' ok':''))})}}};
 /* ---------- 引擎 ---------- */
 const TG=SCENE.toggles||{};
 const tstate={};Object.keys(TG).forEach(k=>{const g=TG[k],v=qs.get(g.param);tstate[k]=g.values.indexOf(v)>-1?v:g.values[0]});

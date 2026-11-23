@@ -5,8 +5,8 @@
     {
       title: ["整柜作为一个系统","The Rack as a System"],
       panels: [
-        [["GB200 NVL72","GB200 NVL72"],["液冷机柜","Liquid-Cooled Rack"],[400,66,240],[180,67,247],"primary"],
-        [["计算托盘","Compute Trays"],["36 CPU · 72 GPU","36 CPUs · 72 GPUs"],[135,228,211],[180,156,232],"primary",false],
+        [["GB200 NVL72","GB200 NVL72"],["整柜共 36 CPU · 72 GPU","Rack Total: 36 CPUs · 72 GPUs"],[400,66,278],[180,67,277],"primary"],
+        [["18 个计算托盘","18 Compute Trays"],["每托盘 2 CPU · 4 GPU","2 CPUs · 4 GPUs per Tray"],[135,228,230],[180,156,232],"primary",false],
         [["交换托盘","Switch Trays"],["第五代 NVLink","Fifth-Gen NVLink"],[400,228,211],[180,245,232],"primary",false],
         [["机柜基础设施","Rack Infrastructure"],["供电与液冷","Power & Cooling"],[665,228,211],[180,334,232],"primary",false]
       ],
@@ -16,11 +16,12 @@
     {
       title: ["Grace Blackwell Superchip 与计算托盘","Grace Blackwell Superchips and Compute Trays"],
       panels: [
-        [["Grace CPU","Grace CPU"],["GB200 Superchip","GB200 Superchip"],[184,178,246],[180,95,252],"primary"],
+        [["Grace CPU","Grace CPU"],null,[184,178,246],[180,95,252],"primary"],
         [["Blackwell GPU","Blackwell GPU"],["NVLink-C2C","NVLink-C2C"],[605,106,224],[88,265,158],"primary",false],
         [["Blackwell GPU","Blackwell GPU"],["NVLink-C2C","NVLink-C2C"],[605,250,224],[272,265,158],"primary",false]
       ],
-      links: [[0,1,"data",0.2],[0,2,"data",1.7]]
+      links: [[0,1,"data",0.2],[0,2,"data",1.7]],
+      boundary: ["GB200 Superchip","GB200 Superchip"]
     },
     {
       title: ["NVLink 交换结构","The Switched NVLink Fabric"],
@@ -125,7 +126,7 @@
     const markerIndex = ++mountCount;
     function draw() {
       const [width, height] = size();
-      const {title, panels, links, focus = [], caption} = scenes[index];
+      const {title, panels, links, focus = [], caption, boundary} = scenes[index];
       const nodes = panels.map(([name, detail, desktop, mobile, tone]) => {
         const [x, y, w] = narrow.matches ? mobile : desktop;
         return {name, detail, x, y, w, tone};
@@ -138,6 +139,11 @@
       const marker = element("marker", {id: id + "-arrow-" + markerIndex, viewBox: "0 0 8 8", refX: 7,
         refY: 4, markerWidth: 7, markerHeight: 7, markerUnits: "userSpaceOnUse", orient: "auto"}, defs);
       element("path", {d: "M1 1 7 4 1 7", fill: "none", stroke: "context-stroke", "stroke-width": 1.4}, marker);
+      if (boundary) {
+        const [x, y, w, h] = narrow.matches ? [3, 21, 354, 292] : [37, 27, 722, 272];
+        element("rect", {x, y, width: w, height: h, rx: 6, fill: "none", stroke: "var(--rule2)"});
+        label(width / 2, narrow.matches ? 47 : 55, boundary, "caption");
+      }
       const lines = element("g", {});
       const paths = links.map(([from, to, tone = "data"]) => link(nodes[from], nodes[to], tone, lines));
       boxes = nodes.map(panel);

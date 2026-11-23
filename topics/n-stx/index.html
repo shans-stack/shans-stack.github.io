@@ -51,6 +51,7 @@
       <li data-en="&lt;a href=&quot;https://nvidianews.nvidia.com/news/nvidia-launches-bluefield-4-stx-storage-architecture-with-broad-industry-adoption&quot;&gt;NVIDIA BlueField-4 STX Architecture Announcement&lt;/a&gt;"><a href="https://nvidianews.nvidia.com/news/nvidia-launches-bluefield-4-stx-storage-architecture-with-broad-industry-adoption">NVIDIA BlueField-4 STX 架构公告</a></li>
       <li data-en="&lt;a href=&quot;https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/&quot;&gt;NVIDIA CMX Technical Overview&lt;/a&gt;"><a href="https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/">NVIDIA CMX 技术说明</a></li>
       <li data-en="&lt;a href=&quot;https://www.nvidia.com/en-us/data-center/ai-data-platform/&quot;&gt;NVIDIA AI Data Platform&lt;/a&gt;"><a href="https://www.nvidia.com/en-us/data-center/ai-data-platform/">NVIDIA AI Data Platform</a></li>
+      <li data-en="&lt;a href=&quot;https://docs.nvidia.com/rag/latest/query-to-answer-pipeline.html#pipeline-overview-query--answer&quot;&gt;NVIDIA RAG Blueprint Query Pipeline&lt;/a&gt;"><a href="https://docs.nvidia.com/rag/latest/query-to-answer-pipeline.html#pipeline-overview-query--answer">NVIDIA RAG Blueprint 查询流程</a></li>
       <li data-en="Animations are schematic and show no measured figures.">动画为示意，不代表实测数字。</li>
     </ul></div>
   </div>
@@ -78,7 +79,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/n-stx.js?v=5981b6da"></script>
+<script src="../../assets/anim/n-stx.js?v=6b13fbc8"></script>
 <script>
 window.SS_TOPIC_CFG={
   "anim": "n-stx",
@@ -170,16 +171,16 @@ window.SS_TOPIC_CFG={
       ],
       "b": [
         [
-          "<p>NVIDIA 将 AI Data Platform 列为 STX 生态中的企业数据参考设计。它可把文档等企业数据转成可检索的索引，供检索增强生成（RAG，即将检索到的资料交给生成模型）等工作流使用。此处处理的是企业数据与索引，上一环节的 CMX 则保存模型生成的上下文缓存。</p>"
+          "<p>NVIDIA 将 AI Data Platform 列为 STX 生态中的企业数据参考设计。文档等企业数据经过准备后进入检索索引。检索增强生成（RAG）应用发起查询，检索服务根据请求返回相关内容，供生成模型使用。此处处理的是企业数据与索引，上一环节的 CMX 则保存模型生成的上下文缓存。</p>"
         ],
         [
-          "<p>NVIDIA lists AI Data Platform as an enterprise data reference design in its STX ecosystem. It can index enterprise data such as documents for workflows like retrieval-augmented generation (RAG), where retrieved material accompanies a prompt to the model. This path processes enterprise data and indexes. The CMX path deals with context cache produced by inference.</p>"
+          "<p>NVIDIA lists AI Data Platform as an enterprise data reference design in its STX ecosystem. Enterprise data such as documents is prepared and added to a search index. A retrieval-augmented generation (RAG) application sends a query and the retrieval service returns relevant material for the model to use. This path processes enterprise data and indexes. The CMX path deals with context cache produced by inference.</p>"
         ]
       ]
     }
   ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

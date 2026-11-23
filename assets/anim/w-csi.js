@@ -2,19 +2,27 @@
   const prefix = 'ssa-w-csi';
   const scenes = [
     {"nodes":[[["Kubernetes","Kubernetes"],["卷管理","Volume Management"],"",""],[["CSI 插件","CSI Plugin"],["存储接口","Storage Interface"],"",""],[["文件系统","Filesystem"],["集群存储","Cluster Storage"],"store",""]],"routes":[[0,1,0,1,"control"],[1,2,1.08,1,"control"]]},
-    {"nodes":[[["PVC","PVC"],["容量与访问模式","Size and Access Mode"],"",""],[["StorageClass","StorageClass"],["存储类型与参数","Type and Parameters"],"",""],[["CSI 控制器","CSI Controller"],["csi.weka.io","csi.weka.io"],"",""]],"routes":[[0,1,0,1,"control"],[1,2,1.08,1,"control"]],"states":[[2,2.08,"配置参数已送达|Parameters Received","on"]]},
-    {"nodes":[[["PVC","PVC"],["容量与访问模式","Size and Access Mode"],"",""],[["CSI 控制器","CSI Controller"],["csi.weka.io","csi.weka.io"],"",""],[["后端目录","Backing Directory"],["指定文件系统","Selected Filesystem"],"store",""],[["PV","PV"],["底层卷的引用","Backing Volume Reference"],"",""]],"routes":[[0,1,0,0.7,"control"],[1,2,0.7,0.9,"control"],[2,3,1.82,0.7,"signal"],[3,0,2.7,1.35,"signal","outer"]],"states":[[2,1.6,"目录已创建|Directory Created","on","G"],[3,2.52,"PV 已登记|PV Registered","on"],[0,4.05,"已绑定|Bound","on"]],"period":5.2},
+    {"nodes":[[["PVC","PVC"],["引用 StorageClass","References StorageClass"],"",""],[["CSI provisioner","CSI Provisioner"],["读取 PVC 与类别","Reads PVC and class"],"",""],[["WEKA CSI 驱动","WEKA CSI Driver"],["CreateVolume","CreateVolume"],"",""],[["StorageClass","StorageClass"],["驱动与卷参数","Driver and parameters"],"",""]],"routes":[[0,1,0,0.75,"control"],[1,2,0.8,1,"control"],[0,3,0,0,"reference","outside"]],"states":[[2,1.8,"收到创建卷请求|CreateVolume received","on"]],"layout":"claim"},
+    {"nodes":[[["CSI provisioner","CSI Provisioner"],["登记 PV","Registers PV"],"",""],[["WEKA CSI 驱动","WEKA CSI Driver"],["创建目录","Creates directory"],"",""],[["后端目录","Backing Directory"],["指定文件系统","Selected Filesystem"],"store",""],[["PV","PV"],["底层目录的引用","Directory reference"],"",""],[["PVC","PVC"],["等待绑定","Waiting for binding"],"",""]],"routes":[[0,1,0,0.65,"control"],[1,2,0.65,0.65,"control"],[2,1,1.3,0.65,"signal"],[1,0,1.95,0.65,"signal"],[0,3,2.6,0.85,"signal","register"],[3,2,3.45,0,"reference","backing"],[3,4,4,0,"reference"]],"states":[[2,1.3,"目录已创建|Directory Created","on","G"],[1,1.95,"返回卷信息|Returns volume info","on"],[3,3.45,"PV 已登记|PV Registered","on"],[4,4,"控制面已绑定|Bound by control plane","on"]],"period":5.7,"layout":"provision"},
     {"layout":"side","nodes":[[["Pod","Pod"],["应用文件读写","Application I/O"],"",""],[["工作节点客户端","Worker Client"],["已挂载路径","Mounted Path"],"",""],[["后端卷","Backing Volume"],["文件数据","File Data"],"store","G"],[["CSI 控制器","CSI Controller"],["配置卷","Provisions Volumes"],"",""]],"routes":[[0,1,0,1],[1,2,1,1]],"states":[[3,0,"卷配置 · 无文件流量|Provisioning Only","idle"]]},
     {"layout":"options","nodes":[[["StorageClass","StorageClass"],["从三种后端选其一","Selects One Backing Type"],"",""],[["目录","Directory"],["已有文件系统内","Within a Filesystem"],"store","G"],[["可写快照","Writable Snapshot"],["可写时间点副本","Writable Point in Time"],"store","G"],[["文件系统","Filesystem"],["整个文件系统","Whole Filesystem"],"","G"]],"routes":[[0,1,0,1.1,"control"],[0,2,1.55,1.1,"control"],[0,3,3.1,1.1,"control"]],"period":5.25}
   ];
 
   function layout(scene, mobile) {
     const width = mobile ? 360 : 880;
-    const height = mobile ? 410 : 310;
+    const height = mobile ? (scene.layout === 'provision' ? 502 : 410) : 310;
     const h = mobile ? 61 : 82;
     let positions;
     let widths;
-    if (scene.layout === 'split') {
+    if (scene.layout === 'claim') {
+      positions = mobile ? [[192,46],[192,143],[192,243],[192,341]]
+        : [[144,97],[440,97],[736,97],[144,225]];
+      widths = mobile ? [248,248,248,248] : [232,232,232,232];
+    } else if (scene.layout === 'provision') {
+      positions = mobile ? [[192,47],[192,142],[192,237],[192,332],[192,427]]
+        : [[144,83],[440,83],[736,83],[440,222],[144,222]];
+      widths = mobile ? [248,248,248,248,248] : [218,218,218,218,218];
+    } else if (scene.layout === 'split') {
       positions = mobile
         ? [[90,57],[270,57],[90,175],[270,175],[180,319]]
         : [[116,93],[116,217],[407,93],[407,217],[727,155]];
@@ -69,7 +77,16 @@
         const rail = mobile ? 47 : 415;
         return [[a.x + side * a.w/2,a.y],[rail,a.y],[rail,b.y],[b.x - b.w/2,b.y]];
       }
-      if (outer) {
+      if (mobile && (outer === 'outside' || outer === 'register')) {
+        return [[a.x-a.w/2,a.y],[36,a.y],[36,b.y],[b.x-b.w/2,b.y]];
+      }
+      if (!mobile && outer === 'register') {
+        return [[a.x,a.y+a.h/2],[a.x,153],[b.x,153],[b.x,b.y-b.h/2]];
+      }
+      if (!mobile && outer === 'backing') {
+        return [[a.x+a.w/2,a.y],[b.x,a.y],[b.x,b.y+b.h/2]];
+      }
+      if (outer === true) {
         return mobile
           ? [[a.x-a.w/2,a.y],[28,a.y],[28,b.y],[b.x-b.w/2,b.y]]
           : [[a.x,a.y+a.h/2],[a.x,231],[b.x,231],[b.x,b.y+b.h/2]];
@@ -92,6 +109,7 @@
         const done = time >= end && (!alternatives || motion.matches || time < end+.35);
         trace.classList.toggle(cls('done'), done || active);
         arrow.classList.toggle(cls('done'), done || active);
+        if (!packet) return;
         packet.style.opacity = active ? 1 : 0;
         if (active) {
           const p = trace.getPointAtLength(length * (time-start)/(end-start));
@@ -153,7 +171,7 @@
         const behind = trace.getPointAtLength(length - 9);
         const angle = Math.atan2(tip.y-behind.y,tip.x-behind.x)*180/Math.PI;
         const arrow = el('path', {d:'M-5 -3 L0 0 L-5 3 Z',transform:'translate(' + tip.x + ' ' + tip.y + ') rotate(' + angle + ')',class:cls('arrow'),'data-kind':kind}, traffic);
-        const packet = el('rect', {x:-6,y:-4,width:12,height:8,rx:2,class:cls('packet'),'data-kind':kind}, traffic);
+        const packet = kind === 'reference' ? null : el('rect', {x:-6,y:-4,width:12,height:8,rx:2,class:cls('packet'),'data-kind':kind}, traffic);
         return {trace,arrow,packet,length,start:delay,end:delay+duration};
       });
 

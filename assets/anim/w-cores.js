@@ -17,14 +17,16 @@
     link('sb','shared',{port:12,delay:1060,duration:920,tone:'control'});
   },
   ({node, link, panel}) => {
-    panel([32,28,816,145],[20,25,340,224],['独占核心 · 持续轮询','Dedicated core · continuous polling']);
+    panel([531,26,317,147],[20,146,340,103],['独占核心 · 持续轮询','Dedicated core · continuous polling']);
     panel([32,203,816,145],[20,269,340,198],['其他核心 · 应用调度','Other cores · app scheduling']);
-    node('nic',[180,112],[190,111],['网卡接收队列','NIC RX queue'],{wide:true});
-    node('poll',[696,112],[190,199],['DPDK 轮询线程','DPDK poll thread'],{tone:'active',wide:true});
+    node('nic',[180,112],[190,82],['网卡接收队列','NIC RX queue'],{wide:true});
+    node('poll',[696,112],[190,210],['DPDK 轮询线程','DPDK poll thread'],{tone:'active',wide:true});
     node('app',[180,287],[190,351],['应用任务','App task']);
     node('cpu',[696,287],[190,423],['应用核心','App core']);
-    link('nic','poll',{duration:1060,delay:700});
-    link('poll','nic',{tone:'signal',offset:16,duration:670,repeat:930,open:true});
+    link('nic','poll',{duration:1060,delay:700,
+      mobileSides:['right','right'],mobilePath:[[326,82],[326,210]]});
+    link('poll','nic',{tone:'signal',offset:16,duration:670,repeat:930,open:true,
+      mobileSides:['right','right'],mobilePath:[[345,226],[345,98]]});
     link('app','cpu',{tone:'control',delay:360});
   },
   ({node, link, text}) => {
@@ -242,7 +244,7 @@
     run();
     document.fonts.ready.then(() => { if (!destroyed) rebuild(); });
 
-    return {
+    const control = {
       show,
       pause() { paused = true; cancelAnimationFrame(frame); },
       resume() { paused = false; run(); },
@@ -253,10 +255,13 @@
         reduce.removeEventListener('change', motionChanged);
         document.removeEventListener('ss-lang', rebuild);
         svg.remove();
+        if (host.__anim === control) delete host.__anim;
       },
       ratio,
       step: () => step,
     };
+    host.__anim = control;
+    return control;
   }
 
   window.SSAnim = window.SSAnim || {};

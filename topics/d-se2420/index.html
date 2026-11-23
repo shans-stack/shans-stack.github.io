@@ -45,6 +45,7 @@
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/08/ddn-se2420-data-sheet-2024-1.pdf&quot;&gt;DDN SE2420 Datasheet, ES400NVX2, Back-End Link, and Hardware&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/08/ddn-se2420-data-sheet-2024-1.pdf">DDN SE2420 数据表，ES400NVX2、后端链路和硬件</a></li>
       <li data-en="&lt;a href=&quot;https://www.ddn.com/resources/brochures-and-datasheets/se2420-datasheet/&quot;&gt;DDN SE2420 Specifications and EXAScaler Configuration&lt;/a&gt;"><a href="https://www.ddn.com/resources/brochures-and-datasheets/se2420-datasheet/">DDN SE2420 技术规格与 EXAScaler 配套说明</a></li>
+      <li data-en="&lt;a href=&quot;https://srcc.stanford.edu/sites/g/files/sbiybj25536/files/media/file/lug_2025_emf-talk-final-v2.pdf#page=13&quot;&gt;DDN at LUG 2025, Client-Side Data Compression&lt;/a&gt;"><a href="https://srcc.stanford.edu/sites/g/files/sbiybj25536/files/media/file/lug_2025_emf-talk-final-v2.pdf#page=13">DDN 在 LUG 2025 的客户端压缩说明</a></li>
       <li data-en="&lt;a href=&quot;https://oss-tsukuba.org/wp-content/uploads/2023/02/GfarmWS2023_DDN-Update-2023.pdf#page=5&quot;&gt;DDN Japan Gfarm Workshop Product Presentation, SS9024 SAS-4 Attachment&lt;/a&gt;"><a href="https://oss-tsukuba.org/wp-content/uploads/2023/02/GfarmWS2023_DDN-Update-2023.pdf#page=5">DDN 日本 Gfarm Workshop 产品资料，SS9024 的 SAS-4 连接</a></li>
       <li data-en="Diagrams are schematic and show no measured numbers.">动画为示意，不代表实测数字。</li>
     </ul></div>
@@ -73,7 +74,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/d-se2420.js?v=ee32f451"></script>
+<script src="../../assets/anim/d-se2420.js?v=4be93f70"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "d-se2420",
@@ -142,15 +143,15 @@ window.SS_TOPIC_CFG={
     "EXAScaler Manages File Data"
    ],
    "d": [
-    "文件布局和压缩由 EXAScaler 管理，SE2420 提供后端闪存。",
-    "EXAScaler manages file layout and compression, and SE2420 provides the back-end flash."
+    "EXAScaler 在客户端压缩文件数据，SE2420 提供后端闪存。",
+    "EXAScaler compresses file data on the client, and the SE2420 provides back-end flash storage."
    ],
    "b": [
     [
-     "<p>DDN 将具备数据压缩功能的 EXAScaler 与 SE2420 闪存组合在同一方案中。压缩以更少的字节表示可压缩的数据。这项文件系统功能和介质容量属于不同层，应用继续使用 EXAScaler 文件路径。</p>"
+     "<p>EXAScaler 在客户端将可压缩的文件数据编码成更少的字节。压缩后的数据经存储网络发给存储控制器，再经 NVMe-oF 后端链路写入 SE2420。应用仍通过同一个文件路径访问数据。</p>"
     ],
     [
-     "<p>DDN combines EXAScaler’s data compression with SE2420 flash in the same solution. Compression represents compressible data with fewer bytes. The file system feature and physical media serve different roles, and applications continue to use EXAScaler file paths.</p>"
+     "<p>EXAScaler encodes compressible file data into fewer bytes on the client. The compressed data crosses the storage network to the storage controller, then reaches the SE2420 over the back-end NVMe-oF link. Applications continue to access the data through the same file path.</p>"
     ]
    ]
   },
@@ -175,6 +176,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

@@ -41,3 +41,5 @@
 @media (max-width: 640px) {
   .topic-n-spx .stage .figbox { margin-block: 10px; }
 }
+
+.n-spx-scene .n-spx-congested { fill: var(--warn); }

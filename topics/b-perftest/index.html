@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/b-perftest.css?v=3a2a9a4e">
+<link rel="stylesheet" href="../../assets/anim/b-perftest.css?v=3ebf0109">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -71,7 +71,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/b-perftest.js?v=9a80ac27"></script>
+<script src="../../assets/anim/b-perftest.js?v=3bd9e59f"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "b-perftest",
@@ -127,10 +127,10 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>-s 指定消息字节数，带宽测试可用 -t 设发送队列深度、-q 设队列对数量。队列对是 RDMA 提交与接收工作的端点对象。-D 用持续时间定义运行窗口，也可按迭代次数执行。测试配置改变时，应保留独立记录，避免混用曲线。</p>"
+     "<p>-s 指定消息字节数，带宽测试可用 -t 设发送队列深度、-q 设队列对数量。队列对是 RDMA 提交与接收工作的端点对象。以 RDMA Write 为例，发送队列接收工作请求，载荷从本地数据缓冲区写入远端注册缓冲区。-D 用持续时间定义运行窗口，也可按迭代次数执行。测试配置改变时，应保留独立记录，避免混用曲线。</p>"
     ],
     [
-     "<p>-s sets the message size in bytes. A bandwidth test can use -t for transmit queue depth and -q for the number of queue pairs. A queue pair is an endpoint object for submitting and receiving RDMA work. -D sets a duration window, and iteration-based mode is also available. Configuration changes belong in separate run records.</p>"
+     "<p>-s sets the message size in bytes. A bandwidth test can use -t for transmit queue depth and -q for the number of queue pairs. A queue pair is an endpoint object for submitting and receiving RDMA work. For RDMA Write, the send queue receives work requests while the payload travels from a local data buffer into a registered remote buffer. -D sets a duration window, and iteration-based mode is also available. Configuration changes belong in separate run records.</p>"
     ]
    ]
   },
@@ -206,6 +206,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

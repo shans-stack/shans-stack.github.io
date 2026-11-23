@@ -72,7 +72,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/otf.js?v=eab3b424"></script>
+<script src="../../assets/anim/otf.js?v=bdc391fe"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "otf",
@@ -84,15 +84,15 @@ window.SS_TOPIC_CFG={
     "Table Metadata and Active Data Files"
    ],
    "d": [
-    "以 Iceberg 为例，表元数据记录表结构与快照，快照通过清单引用数据文件。",
-    "In Iceberg, table metadata records the schema and snapshots. A snapshot references data files through manifests."
+    "以 Iceberg v2 为例，表元数据记录表结构与快照，快照通过清单引用数据文件。",
+    "In Iceberg v2, table metadata records the schema and snapshots. A snapshot references data files through manifests."
    ],
    "b": [
     [
-     "<p>开放表格式用公开规范定义表状态。Parquet 等数据文件保存记录内容。以 Iceberg 为例，表元数据记录表结构和快照，读取器沿选定快照的 manifest list 与 manifest 解析该快照的数据文件集合。</p>"
+     "<p>开放表格式用公开规范定义表状态。Parquet 等数据文件保存记录内容。以 Iceberg v2 为例，表元数据记录表结构和快照，读取器沿选定快照的 manifest list 与 manifest 解析该快照的数据文件集合。</p>"
     ],
     [
-     "<p>An open table format defines table state through a public specification. Data files such as Parquet store the records. In Iceberg, table metadata records schemas and snapshots. Readers resolve the data files in the selected snapshot through its manifest list and manifests.</p>"
+     "<p>An open table format defines table state through a public specification. Data files such as Parquet store the records. In Iceberg v2, table metadata records the schema and snapshots. Readers resolve the data files in the selected snapshot through its manifest list and manifests.</p>"
     ]
    ]
   },
@@ -171,6 +171,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

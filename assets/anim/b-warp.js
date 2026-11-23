@@ -101,24 +101,20 @@
       },
       () => {
         const cx = width / 2;
-        if (mobile) {
-          trace([[cx, 73], [cx, 127]], 0.1, 0.8);
-          [95, 265].forEach((x, i) => trace([[cx, 169], [cx, 201], [x, 201], [x, 223]], 1 + i, 0.8));
-          box(cx, 52, 198, ['LIST · 前缀 A', 'LIST · Prefix A']);
-          box(cx, 148, 198, ['匹配的对象键', 'Matching Keys'], 'accent');
-          box(95, 244, 130, ['第 1 页', 'Page 1']);
-          box(265, 244, 130, ['第 2 页', 'Page 2']);
-          label(cx, 288, ['对象数与请求数分别统计', 'Separate Object and Request Counts'], 'note');
-          return;
-        }
-        trace([[230, 130], [291, 130]], 0.1, 0.8);
-        trace([[469, 129], [506, 129], [506, 94], [550, 94]], 1, 0.8);
-        trace([[469, 150], [506, 150], [506, 190], [550, 190]], 2, 0.8);
-        box(132, 130, 196, ['LIST · 前缀 A', 'LIST · Prefix A']);
-        box(cx, 140, 178, ['匹配的对象键', 'Matching Keys'], 'accent', 62);
-        box(628, 94, 156, ['第 1 页', 'Page 1']);
-        box(628, 190, 156, ['第 2 页', 'Page 2']);
-        label(cx, 247, ['对象数与请求数分别统计', 'Object and Request Counts Are Separate'], 'note');
+        const w = mobile ? 256 : 169;
+        const nodes = [
+          ['LIST 1 · 前缀 A', 'LIST 1 · Prefix A'],
+          ['第 1 页 + 续传令牌', 'Page 1 + Token'],
+          ['LIST 2 · 带令牌', 'LIST 2 + Token'],
+          ['第 2 页', 'Page 2']
+        ];
+        const points = nodes.map((_, i) => mobile ? [cx, 44 + i * 71] : [98 + i * 188, 140]);
+        points.slice(1).forEach(([x, y], i) => {
+          const [px, py] = points[i];
+          trace(mobile ? [[px, py + 21], [x, y - 21]] : [[px + w / 2, py], [x - w / 2, y]], .28 + i * 1.03, .75);
+        });
+        nodes.forEach((name, i) => box(...points[i], w, name, i % 2 ? 'accent' : 'box'));
+        label(cx, mobile ? 300 : 247, ['一个请求返回一页', 'One Page per Request'], 'note');
       },
       () => {
         const cx = width / 2;

@@ -70,7 +70,7 @@
     "shape":"fan","change":3.65,"activate":2,"note":["服务端先等 A 释放锁，再授权 B","OSS Grants B the Lock After A Releases It"],"title":["分布式锁协调共享访问","Distributed Locks Coordinate Shared Access"],
     "nodes": [
       {"title":"OSS","detail":["协调同一范围","Coordinates One Range"],"tone":"meta"},
-      {"title":["客户端 A","Client A"],"detail":["持有写锁","Holds Write Lock"],"tone":"meta","after":["已释放","Lock Released"]},
+      {"title":["客户端 A","Client A"],"detail":["持有写锁","Holds Write Lock"],"tone":"meta","after":["已释放","Lock Released"],"at":2.8},
       {"title":["客户端 B","Client B"],"detail":["请求读锁","Requests Read Lock"],"tone":"idle","after":["获得读锁","Read Lock Granted"]}
     ],
     "edges": [
@@ -189,19 +189,18 @@
       });
       const status = label(width/2, mobile ? 270 : 219, note, mobile ? 14 : 19, 'status');
       label(width/2, mobile ? 292 : 240, ['示意，不代表实测数字','Schematic, not measured'], mobile ? 14 : 16, 'note');
-      let changed;
       paint = (time, still = false) => {
         const done = still || (change !== undefined && time >= change);
-        if (done !== changed) {
-          changed = done;
-          cards.forEach(({group, summary}, i) => {
-            const {detail, after, tone} = nodes[i];
-            summary.textContent = T(done && after ? after : detail);
-            group.dataset.tone = done && i === activate ? 'meta' : tone;
-          });
-          if (failedEdge !== undefined) paths[failedEdge].group.dataset.tone = done ? 'failed' : paths[failedEdge].tone;
-          status.textContent = T(done && afterNote ? afterNote : note);
-        }
+        cards.forEach(({group, summary}, i) => {
+          const {detail, after, tone, at = change} = nodes[i];
+          const ready = still || time >= at;
+          const value = T(ready && after ? after : detail);
+          if (summary.textContent !== value) summary.textContent = value;
+          group.dataset.tone = ready && i === activate ? 'meta' : tone;
+        });
+        if (failedEdge !== undefined) paths[failedEdge].group.dataset.tone = done ? 'failed' : paths[failedEdge].tone;
+        const message = T(done && afterNote ? afterNote : note);
+        if (status.textContent !== message) status.textContent = message;
         moves.forEach(({edge,start,end,reverse,stop}, i) => {
           const item = tokens[i], {path,length} = paths[edge];
           const u = still ? .85 : Math.max(0, Math.min(1, (time-start)/(end-start)));

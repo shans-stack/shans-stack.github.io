@@ -4,7 +4,7 @@
 .d-exa .d-exa-scene{display:block;width:100%;height:auto;font-family:var(--f)}
 .d-exa .d-exa-scene text{dominant-baseline:central}
 .d-exa .vis{transition:opacity .4s}
-.d-exa .hid{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.d-exa .hid{opacity:0;visibility:hidden;transition:none}
 .d-exa .dim{opacity:.22}
 .d-exa .frame{fill:none;stroke:var(--rule2);stroke-width:2}
 .d-exa .ttl{fill:var(--ink2);font-weight:700}
@@ -50,3 +50,10 @@
 .d-exa .d-exa-tgl[hidden]{display:block;opacity:0;pointer-events:none}
 .d-exa .d-exa-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
 @media (max-width:640px){.d-exa .d-exa-tgl{font-size:14px;padding:6px 12px}}
+@media (max-width:640px){
+  body.present:has(main[data-station="d-exa"]) .stage{padding:12px}
+  body.present:has(main[data-station="d-exa"]) .stage .figbox{margin-block:0}
+  body.present:has(main[data-station="d-exa"]) .stage .cap{display:block;margin-top:8px}
+  body.present:has(main[data-station="d-exa"]) .stage h2{font-size:24px}
+  body.present:has(main[data-station="d-exa"]) .stage .desc{font-size:16px;line-height:1.4}
+}

@@ -36,10 +36,10 @@
     [
       [
         [["节点 A", "Node A", "object", "片段 A", "Fragment A"], ["节点 B", "Node B", "file", "片段 B", "Fragment B"]],
-        [["并行收集", "Parallel fetch", "engine", "", ""]],
-        [["客户端", "Client", "engine", "", ""]]
+        [["客户端", "Client", "engine", "已汇集片段", "Fragments assembled"]]
       ],
-      [["a0", "b0", "object"], ["a1", "b0", "file", 190], ["b0", "c0", "cache", 790]],
+      [["a0", "b0", "object", 190], ["a1", "b0", "file", 190]],
+      ["b0", "并行取回片段", "Fetching fragments", 710],
     ],
   ];
   const title = [["键标识记录，值保存内容", "Keys Identify Records and Values Hold Content"], ["数据与元数据同处一个引擎", "Data and Metadata in One Engine"], ["日志结构组织写入", "Log-Structured Writes"], ["逻辑布局与物理位置", "Logical Layout and Physical Placement"], ["按片段发起并行读取", "Parallel Reads Across Fragments"]];
@@ -102,7 +102,8 @@
         const a = nodes.get(from), b = nodes.get(to);
         const idle = tone === 'idle';
         const start = mobile ? [a.x, a.y + cardHeight / 2] : [a.x + a.w / 2, a.y];
-        const end = mobile ? [b.x, b.y - cardHeight / 2] : [b.x - b.w / 2, b.y];
+        const parallel = index === 4 ? (from === 'a0' ? -1 : 1) : 0;
+        const end = mobile ? [b.x + parallel * 28, b.y - cardHeight / 2] : [b.x - b.w / 2, b.y + parallel * 22];
         const mid = mobile ? (start[1] + end[1]) / 2 : (start[0] + end[0]) / 2;
         const bend = mobile ? `V${mid} H${end[0]}` : `H${mid} V${end[1]}`;
         const tip = idle ? (mobile ? [end[0], end[1] - 13] : [end[0] - 13, end[1]]) : end;
@@ -186,7 +187,7 @@
     document.addEventListener('ss-lang', build);
     build();
     start();
-    return {
+    const controller = {
       show(i) {
         index = Math.max(0, Math.min(scenes.length - 1, i));
         elapsed = 0;
@@ -200,11 +201,14 @@
         narrow.removeEventListener('change', layoutChanged);
         reduced.removeEventListener('change', motionChanged);
         document.removeEventListener('ss-lang', build);
+        delete host.__anim;
         svg.remove();
       },
       ratio,
       step: () => index,
     };
+    host.__anim = controller;
+    return controller;
   }
 
   (window.SSAnim ||= {})['d-kvcore'] = {steps: 5, mount};

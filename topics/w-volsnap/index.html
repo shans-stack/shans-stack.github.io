@@ -44,6 +44,7 @@
     <div><h3 data-en="Read Next">接着看</h3><ul id="relnext"></ul></div>
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="&lt;a href=&quot;https://docs.weka.io/appendices/weka-csi-plugin&quot;&gt;WEKA Docs · CSI Plugin&lt;/a&gt;"><a href="https://docs.weka.io/appendices/weka-csi-plugin">WEKA 文档 · CSI 插件</a></li>
+      <li data-en="&lt;a href=&quot;https://kubernetes.io/docs/concepts/storage/volume-snapshots/#introduction&quot;&gt;Kubernetes Volume Snapshots&lt;/a&gt;"><a href="https://kubernetes.io/docs/concepts/storage/volume-snapshots/#introduction">Kubernetes 卷快照</a></li>
       <li data-en="&lt;a href=&quot;https://github.com/weka/csi-wekafs/blob/main/docs/usage.md&quot;&gt;WEKA CSI Project · Volume Types and Usage&lt;/a&gt;"><a href="https://github.com/weka/csi-wekafs/blob/main/docs/usage.md">WEKA CSI 项目 · 卷类型与使用说明</a></li>
       <li data-en="&lt;a href=&quot;https://github.com/weka/csi-wekafs/blob/main/examples/dynamic_filesystem/README.md&quot;&gt;WEKA CSI Project · Filesystem-Backed Volume Example&lt;/a&gt;"><a href="https://github.com/weka/csi-wekafs/blob/main/examples/dynamic_filesystem/README.md">WEKA CSI 项目 · 文件系统卷实例</a></li>
       <li data-en="Animations are illustrative and show no measured values.">动画为示意，不代表实测数字。</li>
@@ -73,7 +74,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-volsnap.js?v=b9af449c"></script>
+<script src="../../assets/anim/w-volsnap.js?v=7ff93e94"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "w-volsnap",
@@ -87,7 +88,7 @@ window.SS_TOPIC_CFG={
     {
       t: ["捕获卷的时间点", "Capture a Volume at a Point in Time"],
       d: ["文件系统卷的 VolumeSnapshot 对应只读的 WEKA 文件系统快照。", "A VolumeSnapshot of a filesystem-backed volume maps to a read-only WEKA filesystem snapshot."],
-      b: [["\u003cp>VolumeSnapshot 是 Kubernetes 表示卷在某个时间点状态的资源。以整个文件系统为底层时，WEKA CSI 创建该文件系统的只读快照。源卷继续服务，快照保留捕获时的状态。\u003c/p>"], ["\u003cp>A VolumeSnapshot is the Kubernetes resource that represents a volume at a point in time. For a filesystem-backed volume, WEKA CSI creates a read-only snapshot of that filesystem. The source volume continues serving its workload while the snapshot preserves the captured state.\u003c/p>"]]
+      b: [["\u003cp>VolumeSnapshot 是 Kubernetes 的卷快照请求，绑定到 VolumeSnapshotContent，由后者引用实际的存储快照。以整个文件系统为底层时，WEKA CSI 创建该文件系统的只读快照。源卷继续服务，快照保留捕获时的状态。\u003c/p>"], ["\u003cp>A VolumeSnapshot is the Kubernetes request for a volume snapshot. It binds to a VolumeSnapshotContent object that references the backing storage snapshot. For a filesystem-backed volume, WEKA CSI creates a read-only snapshot of that filesystem. The source volume continues serving its workload while the snapshot preserves the captured state.\u003c/p>"]]
     },
     {
       t: ["从快照创建可写卷", "Restore into a Writable Volume"],
@@ -122,6 +123,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

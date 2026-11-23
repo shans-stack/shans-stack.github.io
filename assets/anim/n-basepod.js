@@ -86,12 +86,14 @@
         const y = mobile ? 187 : 170;
         const spread = mobile ? 85 : 114;
         const top = mobile ? 74 : 60;
-        const bottom = mobile ? 321 : 279;
+        const bottom = mobile ? 321 : 290;
         const h = 46;
         const upper = line([[x, top + h / 2], [x, y - 54], [x - spread, y - 54], [x - spread, y - h / 2]], "dashed");
         line([[x, y - 54], [x + spread, y - 54], [x + spread, y - h / 2]], "dashed");
         line([[x - spread + 14, y + h / 2], [x - spread + 14, y + 53], [x + spread, y + 53], [x + spread, y + h / 2]], "network");
-        line([[x - spread - 23, y + h / 2], [x - spread - 23, y + 84], [x, y + 84], [x, bottom - h / 2]], "optical");
+        line([[x - spread - 23, y + h / 2], [x - spread - 23, y + 90], [x + spread + 23, y + 90], [x + spread + 23, y + h / 2]], "optical");
+        line([[x, y + 90], [x, bottom - h / 2]], "optical");
+        text(x, y + 72, ["存储以太网", "Storage Ethernet"], "secondary");
         const partner = box(x, bottom, 162, h, [storage]);
         const managed = box(x, top, mobile ? 198 : 218, h, [management]);
         const first = box(x - spread, y, 146, h, [["DGX", "DGX"]], "accent");
@@ -165,20 +167,27 @@
       mobile => {
         [0, 1].forEach(i => {
           const x = mobile ? 180 : 213 + i * 374;
-          const y = mobile ? 105 + i * 165 : 144;
-          text(x, y - 55, i ? ["增加节点", "Additional Nodes"] : ["初始集群", "Initial Cluster"], "heading");
+          const y = mobile ? 91 + i * 179 : 144;
+          text(x, y - 69, i ? ["增加节点", "Additional Nodes"] : ["初始集群", "Initial Cluster"], "heading");
           const count = i ? 4 : 2;
           const span = i ? 66 : 132;
           const xs = Array.from({length: count}, (_, j) => x + (j - (count - 1) / 2) * span);
-          line([[xs[0], y + 37], [xs[count - 1], y + 37]], "network");
+          line([[xs[0], y - 40], [xs[count - 1], y - 40]], "network");
+          line([[xs[0], y + 40], [xs[count - 1], y + 40]], "optical");
           xs.forEach((node, j) => {
-            line([[node, y + 18], [node, y + 37]], "network");
+            line([[node, y - 18], [node, y - 40]], "network");
+            line([[node, y + 18], [node, y + 40]], "optical");
             const panel = box(node, y, 58, 36, [["DGX", "DGX"]], "accent");
             if (i) emphasize(panel, j * 0.72);
           });
-          line([[xs[0] - 17, y + 18], [xs[0] - 17, y + 55], [x, y + 55], [x, y + 61]], "optical");
+          line([[x, y + 40], [x, y + 61]], "optical");
           box(x, y + 78, 150, 34, [storage]);
         });
+        const y = mobile ? 377 : 278;
+        line([[mobile ? 23 : 194, y], [mobile ? 49 : 231, y]], "network");
+        text(mobile ? 56 : 242, y, compute, "secondary start");
+        line([[mobile ? 169 : 433, y], [mobile ? 195 : 470, y]], "optical");
+        text(mobile ? 202 : 481, y, ["存储以太网", "Storage Ethernet"], "secondary start");
       }
     ];
 

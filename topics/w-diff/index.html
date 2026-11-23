@@ -71,7 +71,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-diff.js?v=35a42412"></script>
+<script src="../../assets/anim/w-diff.js?v=8180b5db"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "w-diff",
@@ -89,8 +89,8 @@ window.SS_TOPIC_CFG={
     },
     {
       t: ["准备查询并取得令牌", "Prepare the Query and Obtain Tokens"],
-      d: ["prepare 请求提交比较端点，由 Data Services 容器返回处理令牌。", "A prepare request sends the endpoints to a Data Services container, which returns processing tokens."],
-      b: [["\u003cp>DiffList 服务运行在已配置且正在运行的 Data Services 容器（dataserv）上。调用方先发送 POST /snapshots/diff/prepare。该请求返回处理令牌，供后续请求标识要读取的结果。\u003c/p>"], ["\u003cp>The DiffList service runs in a configured, active Data Services container (dataserv). The caller first sends POST /snapshots/diff/prepare. The request returns processing tokens that identify the work whose results later requests retrieve.\u003c/p>"]]
+      d: ["prepare 请求提交比较端点及并行度，Data Services 容器返回处理令牌列表。", "The prepare request supplies the endpoints and desired parallelism. The Data Services container returns a list of processing tokens."],
+      b: [["\u003cp>DiffList 服务运行在已配置且正在运行的 Data Services 容器（dataserv）上。调用方先发送 POST /snapshots/diff/prepare。请求中的 parallelism 指定要生成的处理令牌数。服务按该并行度划分比较任务，调用方使用对应令牌发出 getResults 请求，读取各分片的结果。\u003c/p>"], ["\u003cp>The DiffList service runs in a configured, active Data Services container (dataserv). The caller first sends POST /snapshots/diff/prepare. The parallelism parameter specifies how many processing tokens to generate. The service splits the comparison accordingly. The caller uses the corresponding token in getResults requests for each partition.\u003c/p>"]]
     },
     {
       t: ["分页读取结果", "Retrieve Results by Page"],
@@ -120,6 +120,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

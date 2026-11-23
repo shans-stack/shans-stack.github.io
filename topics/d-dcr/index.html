@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/d-dcr.css?v=c30ffd7b">
+<link rel="stylesheet" href="../../assets/anim/d-dcr.css?v=6e5b29bf">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -45,7 +45,7 @@
     <div class="src"><h3 data-en="Sources">出处</h3><ul>
       <li data-en="Mark Holland and Garth A. Gibson, Parity Declustering for Continuous Operation in Redundant Disk Arrays, ASPLOS V, 1992 (the general principle of declustering).">Mark Holland、Garth A. Gibson，Parity Declustering for Continuous Operation in Redundant Disk Arrays，ASPLOS V，1992（分簇的一般原理）。</li>
       <li data-en="IBM documentation, Declustered RAID (IBM Spectrum Scale RAID): data, redundancy and spare space spread across all disks; rebuild uses all operational disks.">IBM 文档，Declustered RAID（IBM Spectrum Scale RAID）：数据、冗余和备用空间打散到所有盘上，重建由所有在线盘一起完成。</li>
-      <li data-en="DDN SFA200X2 / SFA400X2 data sheet: lists DeClustered RAID (DCR) as a system feature.">DDN SFA200X2 / SFA400X2 数据表：系统功能里列有 DeClustered RAID（DCR）。</li>
+      <li data-en="&lt;a href=&quot;https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf#page=2&quot;&gt;DDN SFA200X2 / SFA400X2 Data Sheet, DCR Layouts&lt;/a&gt;"><a href="https://www.ddn.com/wp-content/uploads/2024/08/ddn-sfa400nvx2-sfa200nvx2-data-sheet-2023.pdf#page=2">DDN SFA200X2 / SFA400X2 数据表，DCR 布局</a></li>
       <li data-en="DDN SFA18KX data sheet: DCR supports RAID 6 8+2 and 4+2, with pools from 2 to 900 drives.">DDN SFA18KX 数据表：DCR 支持 RAID 6 8+2 和 4+2，池可以从 2 块盘到 900 块盘。</li>
       <li data-en="Animations are schematic. Drive counts, stripe widths and speeds are illustrative, not measured.">动画为示意，盘数、条带宽度和速度都不代表实测。</li>
     </ul></div>
@@ -74,7 +74,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/d-dcr.js?v=cdbb4f6a"></script>
+<script src="../../assets/anim/d-dcr.js?v=f28f6cb3"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "d-dcr",
@@ -143,12 +143,12 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>分簇 RAID（Declustered RAID）不再按「一组固定几块盘」来组织。它把池里每块物理盘切成大量固定大小的小段，再从不同的盘上各取一段，拼成一个 RAID 条带（条带：一组数据段加上保护它们的校验段）。每个条带的成员落在哪几块盘上是打散的，不同条带用到的盘组合各不相同。DDN SFA 的 DCR 支持 RAID 6 的 8+2 和 4+2 条带（8+2 即 8 段数据加 2 段校验），一个 DCR 池可以从 2 块盘到 900 块盘。</p>",
-     "<p>备用空间可以分布在各成员盘上，使这些盘同时承载常规数据与重建预留空间。动画中的盘数和条带宽度仅作示意。</p>"
+     "<p>分簇 RAID 将物理盘划分成固定大小的段，每个 RAID 条带的数据段和校验段分布在一组不同的盘上。不同条带可使用不同的盘组合。图中高亮的是 RAID 5 4+1 布局示例，包含四段数据和一段校验。DDN 2024 年公开数据表还列出了 RAID 6 的 8+2 和 4+2 布局。</p>",
+     "<p>备用空间可分布在各成员盘上。图中的盘数和条带布局仅用于说明放置方式。</p>"
     ],
     [
-     "<p>Declustered RAID no longer organises drives into fixed groups. It cuts every physical drive in the pool into a large number of fixed-size pieces, then takes one piece from each of several different drives to form a RAID stripe (stripe: a set of data pieces plus the parity pieces that protect them). Which drives a stripe's members land on is scattered, and different stripes use different combinations of drives. DDN SFA DCR supports RAID 6 8+2 and 4+2 stripes (8+2 means eight data segments and two parity segments), and a DCR pool can hold from 2 to 900 drives.</p>",
-     "<p>Spare capacity can be distributed across member drives so they carry both regular data and rebuild reserves. The animation uses illustrative drive counts and stripe widths.</p>"
+     "<p>Declustered RAID divides physical drives into fixed-size pieces. Each RAID stripe places its data and parity on a set of different drives, and different stripes can use different sets. The highlighted RAID 5 4+1 example contains four data pieces and one parity piece. DDN’s 2024 public data sheet also lists RAID 6 layouts of 8+2 and 4+2.</p>",
+     "<p>Spare space can be spread across member drives. The drive count and stripe layout in the figure illustrate placement.</p>"
     ]
    ]
   },
@@ -227,6 +227,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@
    宽度 640px 以下换成上下排布；系统开了「减少动态效果」时每步只画一帧静态结果。
    文字有中英两套（EN 表 + T()），跟着页面的 ss-lang 事件重画。样式在 assets/anim/v-scm.css。 */
 (function(){
-var EN={"客户端": "Client", "SCM 盘 ": "SCM drive ", "两块盘在不同 DBox": "In two DBoxes", "切块 · 缩减": "Reduce", "组宽条带": "Wide stripe", "对齐闪存": "Flash align", "相似性压缩": "Similarity reduction", "攒超宽条带": "Very wide stripes", "按页对齐": "Page-aligned", "做相似性压缩": "Similarity", "攒成超宽条带": "Very wide EC", "按闪存页对齐": "Page-aligned", "回话之后，CNode 在后台做": "After the ACK, CNodes do it in the background", "QLC 闪存": "QLC flash", "保留区": "Reserved", "示意：假如重活在回话之前做": "Schematic: if the heavy work came before the ACK", "示意：假如重活都在回话之前做": "Schematic: if all the heavy work came before the ACK", "示意，不代表实测速度": "Schematic, not measured speed", "换成大块写": "Switch to large writes", "换成小块写": "Switch to small writes", "等待回话": "Waiting for ACK", "已回话": "ACK received", "SCM 占用很高": "SCM usage very high", "SCM 占用升高": "SCM usage rising", "SCM 占用较低": "SCM usage low", "SCM 写缓冲：写入先落 SCM 就回话，重活放到回话之后": "SCM write buffer: a write is acknowledged once it lands on SCM, and the heavy work happens after the ACK"};
+var EN={"经典双镜像示例":"Classic mirroring example","提交持久元数据":"Commit durable metadata","写入 QLC 后更新引用，再释放 SCM":"Update references after QLC write, then free SCM","迁移中 · SCM 内容保留":"Migrating · SCM stays occupied","写入排队 · 等待缓冲回收":"Writes queued · waiting for space","迁移跟上写入":"Migration keeps up","写入快于迁移":"Writes outpace migration","启用 Write Buffer Bursting 的突发写入":"Burst with Write Buffer Bursting enabled","受保护的 QLC 条带":"Protected stripe","块数为示意 · 实际布局见白皮书":"Schematic stripe · see white paper for layout","客户端": "Client", "SCM 盘 ": "SCM drive ", "两块盘在不同 DBox": "In two DBoxes", "切块 · 缩减": "Reduce", "组宽条带": "Wide stripe", "对齐闪存": "Flash align", "相似性压缩": "Similarity reduction", "攒超宽条带": "Very wide stripes", "按页对齐": "Page-aligned", "做相似性压缩": "Similarity", "攒成超宽条带": "Very wide EC", "按闪存页对齐": "Page-aligned", "回话之后，CNode 在后台做": "After the ACK, CNodes do it in the background", "QLC 闪存": "QLC flash", "保留区": "Reserved", "示意：假如重活在回话之前做": "Schematic: if the heavy work came before the ACK", "示意：假如重活都在回话之前做": "Schematic: if all the heavy work came before the ACK", "示意，不代表实测速度": "Schematic, not measured speed", "换成大块写": "Switch to large writes", "换成小块写": "Switch to small writes", "等待回话": "Waiting for ACK", "已回话": "ACK received", "SCM 占用很高": "SCM usage very high", "SCM 占用升高": "SCM usage rising", "SCM 占用较低": "SCM usage low", "SCM 写缓冲：写入先落 SCM 就回话，重活放到回话之后": "SCM write buffer: a write is acknowledged once it lands on SCM, and the heavy work happens after the ACK"};
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 function T(s){return lang()==='en'&&EN[s]!==undefined?EN[s]:s}
 function mount(host,opts){
@@ -62,6 +62,7 @@ layout(mobile){
       sync:[cout,n,P(280,300),P(560,300),P(690,300),...tail],
       drain:[s1,P(520,88),J1,P(440,300),P(560,300),P(690,300),...tail],
       big:[cout,n,P(280,406)],
+      syncAck:[P(870,406),P(870,352),P(280,352),n,cout],
       lines:[[cout,n,J],[J1,J2],[J1,P(520,88)],[J2,P(520,152)],[P(280,148),P(280,380)],[P(280,300),P(920,300),P(920,406),P(900,406)],[J2,P(440,300)]],
       dwell:[3,4,5],dwellD:[4,5,6],
       wait:{x:30,y:166,w:120,sy:192},cap:{dy:46},capT:{x:690,y:250},
@@ -80,6 +81,7 @@ layout(mobile){
     sync:[cout,n,P(200,200),P(430,200),P(430,248),P(430,318),...tail],
     drain:[s1,P(316,70),J1,P(290,200),P(430,200),P(430,248),P(430,318),...tail],
     big:[cout,n,P(200,495)],
+    syncAck:[P(430,495),P(430,445),P(200,445),n,cout],
     lines:[[cout,n,J],[J1,J2],[J1,P(316,70)],[J2,P(316,130)],[P(200,124),P(200,470)],[P(200,200),P(430,200),P(430,470)],[J2,P(290,200)]],
     dwell:[4,5,6],dwellD:[5,6,7],
     wait:{x:16,y:140,w:110,sy:164},cap:{dx:-82},capT:null,
@@ -115,6 +117,15 @@ build(){
   E.n1=tx(L.note.x,L.note.y,L.mobile?T('示意：假如重活在回话之前做'):T('示意：假如重活都在回话之前做'),f.note,'ink3-t','start',grp('1'));
   tx(L.note.x,L.note.y,T('示意，不代表实测速度'),f.note,'ink3-t','start',grp('2 3 4'));
   E.lvS=tx(L.mobile?16:L.S2.x,L.mobile?204:L.S2.y+L.S2.h+22,'',f.sm,'st','start',grp('4'));
+  line(L.syncAck.slice(0,-1),'base thin dash',grp('1'));
+  tx(L.W/2,26,'经典双镜像示例',f.lbl,'lbl b7','middle',grp('2 3 4'));
+  E.meta=tx(L.W/2,L.mobile?603:440,'',f.sm,'st slate-t','middle',grp('2 3 4'));
+  E.burst=tx(L.W/2,26,'',f.lbl,'lbl b7','middle',grp('5'));
+  const stripe=grp('5');
+  E.stripLabel=tx(L.mobile?348:L.W/2,L.mobile?L.Q.y+L.Q.h/2:349,'',f.sm,'st slate-t','middle',stripe);
+  E.strip=Array.from({length:5},(_,i)=>rect({x:L.res.x+9+i*17,y:L.Q.y+L.Q.h/2-5,w:12,h:10},
+   'fill '+(i<3?'slate':'ochre'),stripe,2));
+  tx(L.mobile?L.note.x:L.W-440,L.note.y,'块数为示意 · 实际布局见白皮书',f.note,'ink3-t','start',stripe);
 },
 toggle:{steps:[4],on:T('换成大块写'),off:T('换成小块写'),set(){}},
 /* 关键帧：沿 pts 走，速度 v，在 dw 列出的点停 d 秒 */
@@ -124,7 +135,7 @@ at(k,t){if(t<k.t0)return null;if(t>=k.t1){const s=k.seg[k.seg.length-1];return {
   for(const s of k.seg)if(t<s.t1){const u=(t-s.t0)/(s.t1-s.t0||1);return {x:s.a.x+(s.b.x-s.a.x)*u,y:s.a.y+(s.b.y-s.a.y)*u,st:s.st}}},
 /* 一次小块写：块到 SCM1，分身到 SCM2，回话点回客户端 */
 smallWrite(t0){const v=L.mobile?260:340;const a=this.kf(L.wr,t0,v),jt=t0+H.plen(L.wr.slice(0,3))/v;const c=this.kf(L.cp,jt,v);
-  const tAck=Math.max(a.t1,c.t1)+0.1,k=this.kf(L.ack,tAck,v*1.6);return {a,c,k,p:H.pk(''),q:H.pk('cp'),d:this.dot(),t0,tAck,end:k.t1}},
+  const persist=Math.max(a.t1,c.t1),tAck=persist+0.45,k=this.kf(L.ack,tAck,v*1.6);return {a,c,k,p:H.pk(''),q:H.pk('cp'),d:this.dot(),t0,persist,tAck,end:k.t1}},
 dot(){const d=H.el('circle',{r:L.mobile?6:7,class:'ackdot'},E.pk);d.style.opacity=0;return d},
 putDot(d,q,a){if(!q){d.style.opacity=0;return}d.setAttribute('cx',q.x.toFixed(1));d.setAttribute('cy',q.y.toFixed(1));d.style.opacity=a==null?1:a},
 drawSmall(o,t){const pa=this.at(o.a,t),pc=this.at(o.c,t),pd=this.at(o.k,t);
@@ -141,7 +152,7 @@ resetAll(){E.wf.setAttribute('width',0);E.ws.textContent='';this.level(0,0);this
 modes:[
  /* 1：同步做重活 */
  {period:10,enter(){SCENE.resetAll();const v=L.mobile?240:300;
-   E.s=SCENE.kf(L.sync,0.5,v,L.dwell,0.9);E.k=SCENE.kf(H.rev(L.sync),E.s.t1+0.15,v*1.8);E.p=H.pk('');E.d=SCENE.dot()},
+   E.s=SCENE.kf(L.sync,0.5,v,L.dwell,0.9);E.k=SCENE.kf(L.syncAck,E.s.t1+0.15,v*1.8);E.p=H.pk('');E.d=SCENE.dot()},
   draw(t){const q=SCENE.at(E.s,t);if(q){H.put(E.p,q,q.done?1-H.ramp(t,E.s.t1+0.4,E.s.t1+0.8):1);E.p.classList.toggle('cp',q.st!=null)}else E.p.style.opacity=0;
    const on=[0,0,0];if(q&&q.st!=null)on[q.st]=1;SCENE.stOn(on);
    const d=SCENE.at(E.k,t);SCENE.putDot(E.d,d&&!d.done?d:null);
@@ -150,37 +161,68 @@ modes:[
  {period:7,enter(){SCENE.resetAll();E.w=[0.5,2.5,4.5].map(t0=>SCENE.smallWrite(t0))},
   draw(t){let cur=E.w[0],n=0;E.w.forEach(o=>{SCENE.drawSmall(o,t);if(t>=o.t0)cur=o;if(t>=o.a.t1)n++});
    SCENE.level(0,n/12+0.04);SCENE.level(1,n/12+0.04);
+   E.meta.textContent=t>=cur.persist&&t<cur.tAck?T('提交持久元数据'):'';
    SCENE.waitBar(t,cur.t0,cur.k.t1,9,true)}},
  /* 3：回话之后在后台做 */
  {period:10,enter(){SCENE.resetAll();const v=L.mobile?250:320;
    E.dr=[0,1,2,3,4,5].map(i=>{const k=SCENE.kf(L.drain,0.6+i*1.05,v,L.dwellD,0.4);return {k,p:H.pk('')}})},
-  draw(t){const on=[0,0,0];let left=6;E.dr.forEach((o,i)=>{const q=SCENE.at(o.k,t);if(q){left--;H.put(o.p,q,q.done?1-H.ramp(t,o.k.t1+0.3,o.k.t1+0.7):H.ramp(t,o.k.t0,o.k.t0+0.12));
+  draw(t){const on=[0,0,0];let left=6;E.dr.forEach((o,i)=>{const q=SCENE.at(o.k,t);if(t>=o.k.t1+0.45)left--;if(q){H.put(o.p,q,q.done?1-H.ramp(t,o.k.t1+0.3,o.k.t1+0.7):H.ramp(t,o.k.t0,o.k.t0+0.12));
        o.p.classList.toggle('cp',q.st!=null);if(q.st!=null)on[q.st]=1}else o.p.style.opacity=0});
    SCENE.stOn(on);SCENE.level(0,left/12+0.02);SCENE.level(1,left/12+0.02);
+   E.meta.textContent=T(left===6?'迁移中 · SCM 内容保留':'写入 QLC 后更新引用，再释放 SCM');
    const first=E.dr[0].k;E.st.forEach((s,i)=>{const ts=first.seg.find(x=>x.st===i).t0;s.c.style.opacity=H.ramp(t,ts,ts+0.4)});
    if(E.capT)E.capT.style.opacity=H.ramp(t,0.2,0.6);E.ws.textContent=T('已回话');E.ws.setAttribute('class','st ink3-t');
    E.wf.setAttribute('width',(L.wait.w*0.12).toFixed(1));E.wf.setAttribute('class','fill sage')}},
  /* 4：写入与排空同时进行 */
- {period:11,enter(){SCENE.resetAll();const v=L.mobile?250:320;
-   E.w=[];for(let t0=0.4;t0<9.6;t0+=0.75)E.w.push(SCENE.smallWrite(t0));
-   // 排空：缓冲里至少有 2 份、离上次排空超过 0.6 秒就排一份
-   let lv=3,last=-9,wi=0;E.dr=[];E.lvT=[];
-   for(let t=0;t<11;t+=0.05){while(wi<E.w.length&&E.w[wi].a.t1<=t){lv++;wi++}
-     if(lv>=2&&t-last>=0.6&&t>0.6&&t<9.8){lv--;last=t;E.dr.push({k:SCENE.kf(L.drain,t,v,L.dwellD,0.25),p:H.pk('')})}
-     E.lvT.push(lv)}},
-  draw(t){let cur=E.w[0];E.w.forEach(o=>{SCENE.drawSmall(o,t);if(t>=o.t0)cur=o});
-   const on=[0,0,0];E.dr.forEach(o=>{const q=SCENE.at(o.k,t);if(q){H.put(o.p,q,q.done?1-H.ramp(t,o.k.t1+0.2,o.k.t1+0.5):H.ramp(t,o.k.t0,o.k.t0+0.12));if(q.st!=null)on[q.st]=1}else o.p.style.opacity=0});
-   SCENE.stOn(on);const lv=E.lvT[Math.min(E.lvT.length-1,Math.floor(t/0.05))];SCENE.level(0,lv/12);SCENE.level(1,lv/12);
-   E.lvS.textContent=lv/12>0.6?T('SCM 占用很高'):lv/12>0.35?T('SCM 占用升高'):T('SCM 占用较低');E.lvS.setAttribute('class','st '+(lv/12>0.35?'rose-t':'sage-t'));
-   SCENE.waitBar(t,cur.t0,cur.k.t1,9,true)}},
+ {period:14,enter(){
+   SCENE.resetAll();
+   const capacity=7, velocity=L.mobile?250:320;
+   const issued=[0.4,2.45,...Array.from({length:22},(_,i)=>4.5+i*0.23)];
+   const slots=Array(capacity).fill(0);
+   let lastDrain=-1;
+   E.w=issued.map(issue=>{
+    const slot=slots.indexOf(Math.min(...slots));
+    const o=SCENE.smallWrite(Math.max(issue,slots[slot]));
+    const start=Math.max(lastDrain+0.75,o.tAck);
+    const k=SCENE.kf(L.drain,start,velocity,L.dwellD,0.25);
+    const release=k.t1+0.45;
+    slots[slot]=release;lastDrain=start;
+    return {...o,issue,k,release,migration:H.pk('')};
+   });
+   E.capacity=capacity;
+  },
+  draw(t){
+   let current=E.w[0], occupied=0, waiting=false;
+   const processing=[false,false,false];
+   E.w.forEach(o=>{
+    SCENE.drawSmall(o,t);
+    if(t>=o.t0&&t<o.release)occupied++;
+    if(t>=o.issue)current=o;
+    if(t>=o.issue&&t<o.t0)waiting=true;
+    const q=SCENE.at(o.k,t);
+    if(q&&!q.done){
+     H.put(o.migration,q,1);
+     if(q.st!=null)processing[q.st]=true;
+    }else o.migration.style.opacity=0;
+   });
+   const load=occupied/E.capacity;
+   SCENE.stOn(processing);SCENE.level(0,load);SCENE.level(1,load);
+   E.lvS.textContent=T(load>0.7?'SCM 占用很高':load>0.35?'SCM 占用升高':'SCM 占用较低');
+   E.lvS.setAttribute('class','st '+(load>0.35?'rose-t':'sage-t'));
+   E.meta.textContent=T(waiting?'写入排队 · 等待缓冲回收':t<4.5?'迁移跟上写入':'写入快于迁移');
+   SCENE.waitBar(t,current.issue,current.end,9,!waiting);
+  }},
  /* 5：大块写直接进 QLC 保留区（一个按钮切换） */
  {period:5,enter(){SCENE.resetAll();E.resT.style.opacity=1;const v=L.mobile?260:340;
-   E.sw=SCENE.smallWrite(0.5);E.bg=SCENE.kf(L.big,0.5,v);E.bk=SCENE.kf(H.rev(L.big),E.bg.t1+0.15,v*1.6);
+   E.sw=SCENE.smallWrite(0.5);E.bg=SCENE.kf(L.big,0.5,v);E.bk=SCENE.kf(H.rev(L.big),E.bg.t1+1.05,v*1.6);
    E.bp=H.pk('big',L.pw*2.4,L.ph+4);E.bd=SCENE.dot()},
-  draw(t,tt){const big=H.alt();
+  draw(t){const big=H.alt();
+   E.burst.textContent=T(big?'启用 Write Buffer Bursting 的突发写入':'经典双镜像示例');
+   E.stripLabel.textContent=big?T('受保护的 QLC 条带'):'';
+   E.strip.forEach((r,i)=>{r.style.opacity=big&&t>=E.bg.t1+0.16*i?1:0});
    if(!big){SCENE.drawSmall(E.sw,t);E.bp.style.opacity=0;SCENE.putDot(E.bd,null);SCENE.level(0,0.12);SCENE.level(1,0.12);SCENE.waitBar(t,0.5,E.sw.k.t1,9,true)}
    else{[E.sw.p,E.sw.q].forEach(p=>p.style.opacity=0);SCENE.putDot(E.sw.d,null);SCENE.level(0,0.04);SCENE.level(1,0.04);
-     const q=SCENE.at(E.bg,t);if(q)H.put(E.bp,q,q.done?1-H.ramp(t,E.bg.t1+0.5,E.bg.t1+0.9):1);else E.bp.style.opacity=0;
+     const q=SCENE.at(E.bg,t);if(q&&!q.done)H.put(E.bp,q,1);else E.bp.style.opacity=0;
      const d=SCENE.at(E.bk,t);SCENE.putDot(E.bd,d&&!d.done?d:null);SCENE.waitBar(t,0.5,E.bk.t1,9,true)}}}
 ]};
 

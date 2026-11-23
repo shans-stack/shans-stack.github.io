@@ -12,4 +12,6 @@
 .w-wsnap-file { fill: var(--bg); stroke: var(--ink3); stroke-width: 1.4; }
 .w-wsnap-empty .w-wsnap-file { fill: none; stroke: var(--rule2); stroke-dasharray: 3 3; }
 .w-wsnap-path { fill: none; stroke: var(--ink3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.w-wsnap-blocked { stroke: var(--l1); stroke-width: 2.2; }
+.w-wsnap-scene .w-wsnap-denied { fill: var(--l1); font-size: 18px; }
+.w-wsnap-control { stroke-dasharray: 4 4; }
+.w-wsnap-signal { fill: var(--l4); }

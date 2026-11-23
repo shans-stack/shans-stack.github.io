@@ -138,16 +138,16 @@ function mount(host,{paused=false,onLayout}={}){
       });
     }],
     [['Hot Pools 先复制到硬盘池，再清理闪存副本','Hot Pools copies the file to the disk pool before removing the flash copy'],()=>{
-      const flash=node(xy([140,152],[220,63]),['闪存池','Flash Pool'],{sub:['访问热度较低','Lower Activity'],w:xy(212,254)});
-      const policy=node(xy([450,152],[220,215]),'Hot Pools',{sub:['EXAScaler 策略','EXAScaler Policy'],w:xy(221,254),tone:'focus'});
-      const disk=node(xy([758,152],[220,367]),['SAS 硬盘池','SAS Disk Pool'],{sub:'SS9024',w:xy(213,254),tone:'accent'});
-      link(flash,policy,{delay:.55,duration:1.2,rest:false});
-      link(policy,disk,{delay:1.75,duration:1.2,rest:false});
+      const flash=node(xy([180,214],[168,107]),['闪存池','Flash Pool'],{sub:['访问热度较低','Lower Activity'],w:xy(223,230)});
+      const policy=node(xy([450,76],[317,219]),'Hot Pools',{sub:['EXAScaler 策略','EXAScaler Policy'],w:xy(230,196),tone:'focus'});
+      const disk=node(xy([720,214],[168,337]),['SAS 硬盘池','SAS Disk Pool'],{sub:'SS9024',w:xy(223,230),tone:'accent'});
+      link(policy,{x:xy(450,168),y:xy(214,221),w:0,h:0},{axis:xy('y','x'),tone:'signal',packet:0});
+      link(flash,disk,{delay:.65,duration:1.9,rest:false});
       const copy=n=>rect(overlay,n.x+n.w/2-35,n.y-7,17,12,'packet',2);
       const original=copy(flash),replica=copy(disk);
       effects.push(t=>{
         original.setAttribute('visibility',t<3.8?'visible':'hidden');
-        replica.setAttribute('visibility',t>=2.95?'visible':'hidden');
+        replica.setAttribute('visibility',t>=2.55?'visible':'hidden');
       });
     }],
     [['SS9024 与 SS9012 各接适配的 SAS 控制器','SS9024 and SS9012 attach to compatible SAS controllers'],()=>{

@@ -16,12 +16,12 @@ const scenes = [
     columns: [
       [[['集群模板', 'Cluster Template'], ['节点规格', 'Node configuration']]],
       [
-        [['控制平面', 'Control Plane'], ['管理集群', 'Manages cluster']],
+        [['控制平面', 'Control Plane'], ['kube-apiserver', 'kube-apiserver']],
         [['工作节点', 'Workers'], ['运行容器', 'Run containers']]
       ],
-      [[['Kubernetes 集群', 'Kubernetes Cluster'], ['Kubernetes API 入口', 'Kubernetes API access'], 'allowed']]
+      [[['租户入口', 'Tenant Access'], ['Kubernetes API', 'Kubernetes API'], 'allowed']]
     ],
-    links: [[0, 1, 0.1, 'normal'], [0, 2, 0.1, 'normal'], [1, 3, 0.95, 'allowed'], [2, 3, 0.95, 'allowed']]
+    links: [[0, 1, 0.1, 'normal'], [0, 2, 0.1, 'normal'], [1, 3, 0.95, 'allowed']]
   },
   {
     columns: [
@@ -99,6 +99,18 @@ function mount(host, {onLayout} = {}) {
       };
     }));
 
+    if (step === 1) {
+      const [template, control, workers, access] = positions;
+      template.y = mobile ? 54 : 137;
+      access.y = mobile ? 313 : control.y;
+      const x = mobile ? 2 : 331;
+      const y = mobile ? 131 : 16;
+      const width = mobile ? 352 : 258;
+      const height = mobile ? 122 : 221;
+      draw(svg, 'rect', {x, y, width, height, rx: 6}, 'boundary');
+      draw(svg, 'text', {x: x + width / 2, y: y + 24}, 'title', ['Kubernetes 集群', 'Kubernetes Cluster']);
+      if (mobile) control.y = workers.y = 209;
+    }
     const edges = links.map(([from, to, start, tone]) => {
       const a = positions[from], b = positions[to];
       const sideA = links.filter(link => link[0] === from).length > 1 ? Math.sign(b.laneOffset) * 18 : 0;

@@ -62,35 +62,43 @@
     },
     {
       nodes: [
-        ["计算节点 A|Compute A", [157, 84, 212], [85, 100, 146], "", "result"],
-        ["计算节点 B|Compute B", [157, 232, 212], [267, 100, 146], "", "result"],
-        ["Spectrum-X", [388, 158, 178], [176, 202, 228], "accent", ""],
-        ["CMX 闪存~共享 KV Cache|CMX Flash~Shared KV Cache", [620, 158, 218], [176, 324, 228], "accent", "data"]
+        ["计算节点 A|Compute A", [133, 130, 168], [86, 73, 146], "", ""],
+        ["计算节点 B~本次未读取|Compute B~No Read Here", [133, 243, 214], [266, 73, 157], "muted", ""],
+        ["Spectrum-X", [380, 130, 154], [176, 178, 234], "accent", ""],
+        ["CMX 闪存~共享 KV Cache|CMX Flash~Shared KV Cache", [629, 130, 208], [176, 312, 226], "accent", "data"]
       ],
       edges: [
-        [3, 2, "lr", "tb", "data", 0.2],
-        [2, 0, "lr", "tb", "data", 1.25],
-        [2, 1, "lr", "tb", "data", 1.25]
+        [0, 2, "rl", "bt", "ref", 0.2, [[-10, -10], [-14, -104]]],
+        [2, 3, "rl", "bt", "ref", 1.1, [[-10, -10], [-50, -50]]],
+        [3, 2, "lr", "tb", "data", 2.05, [[10, 10], [50, 50]]],
+        [2, 0, "lr", "tb", "data", 2.95, [[10, 10], [-76, 14]]]
       ],
       frames: [],
-      pulse: [],
-      legend: []
+      pulse: [[0, 3.72]],
+      legend: [
+        ["读请求 → CMX|Read Request → CMX", [360, 64], [123, 360]],
+        ["KV 块 → 节点 A|KV Block → A", [360, 202], [266, 360]]
+      ]
     },
     {
       nodes: [
         ["企业文档|Documents", [97, 156, 152], [176, 78, 222], "", "durable"],
         ["AI Data Platform~准备与索引|AI Data Platform~Preparation & Indexing", [292, 156, 192], [176, 159, 222], "accent", ""],
         ["检索索引|Search Index", [492, 156, 151], [176, 241, 222], "accent", "durable"],
-        ["RAG 应用|RAG Application", [666, 156, 145], [176, 324, 222], "", ""]
+        ["RAG 应用|RAG Application", [666, 156, 145], [176, 333, 222], "", ""]
       ],
       edges: [
         [0, 1, "rl", "bt", "durable", 0.15],
         [1, 2, "rl", "bt", "durable", 1.1],
-        [2, 3, "rl", "bt", "durable", 2.05]
+        [3, 2, "lr", "tb", "ref", 2.05, [[-10, -10], [-25, -25]]],
+        [2, 3, "rl", "bt", "data", 3.0, [[10, 10], [25, 25]]]
       ],
       frames: [],
-      pulse: [],
-      legend: []
+      pulse: [[3, 3.78]],
+      legend: [
+        ["查询 → 索引|Query → Index", [593, 99], [70, 274]],
+        ["相关内容 → RAG|Results → RAG", [606, 225], [282, 274]]
+      ]
     }
   ];
   const views = [[760, 320], [352, 400]];
@@ -129,11 +137,11 @@
       return el("rect", {x: x - 6, y: y - 4, width: 12, height: 8, rx: 2}, "chip " + tone, parent);
     }
 
-    function port(node, side) {
+    function port(node, side, offset = 0) {
       const [x, y, w, h] = node;
       return {
-        l: [x - w / 2, y], r: [x + w / 2, y],
-        t: [x, y - h / 2], b: [x, y + h / 2],
+        l: [x - w / 2, y + offset], r: [x + w / 2, y + offset],
+        t: [x + offset, y - h / 2], b: [x + offset, y + h / 2],
       }[side];
     }
 
@@ -210,9 +218,11 @@
         }
         return rect;
       });
-      edges.forEach(([from, to, desktop, phone, kind, start]) => {
+      edges.forEach(([from, to, desktop, phone, kind, start, offsets]) => {
         const sides = mobile ? phone : desktop;
-        drawLink(links, port(positions[from], sides[0]), port(positions[to], sides[1]), sides, kind, start);
+        const [fromOffset, toOffset] = (mobile ? offsets?.[1] : offsets?.[0]) ?? [];
+        drawLink(links, port(positions[from], sides[0], fromOffset),
+          port(positions[to], sides[1], toOffset), sides, kind, start);
       });
       pulse.forEach(([i, start]) => effects.push((time, still) => {
         panels[i].classList.toggle(id + "-active", still || (time >= start && time < start + 0.85));

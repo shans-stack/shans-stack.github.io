@@ -4,6 +4,7 @@
 const STATION = 'nvme';
 const PREFIX = 'an-nvme';
 const EN = {
+  "空": "Empty",
   "示意，不代表实测数字": "Schematic, not measured",
   "NVMe 命令经 PCIe 送到固态盘": "NVMe commands reach the SSD over PCIe",
   "块命令指定一个命名空间和逻辑块范围": "A block command addresses one namespace and a logical block range",
@@ -83,13 +84,16 @@ const scenes = [
     send(fetch,2280,3270,'green'); send(fetch,2640,3580,'green');
     return 5000;
   },
-  ({box, link, send}) => {
+  ({box, link, send, at, timed, elements}) => {
     const ctrl = box([[140,185],[180,63]], "设备控制器");
     const buf = box([[450,95],[95,228,154]], "读取缓冲区", {slots:[['','green',1760],['','green',1920]],tone:'green'});
-    const cq = box([[450,275],[262,228,158]], "完成队列", {detail: "A · 成功",tone:'blue'});
-    const driver = box([[743,275],[262,373,158]], "主机驱动", {detail:"匹配命令 A"});
+    const cq = box([[450,275],[262,228,158]], "完成队列", {h:76, detail:"",tone:'blue'});
+    const driver = box([[743,275],[262,373,158]], "主机驱动", {h:76, detail:""});
     send(link(ctrl,buf,{axis:['x','y'],color:'green',bend:-9}),380,1760,'green');
-    send(link(ctrl,cq,{axis:['x','y'],bend:9}),1870,2600);
+    const entry = at([[450,288],[262,241]], "空", 'secondary');
+    elements.push(t => { entry.textContent = T(t >= 2600 && t < 3530 ? "A · 成功" : "空"); });
+    timed(at([[743,288],[262,386]], "匹配命令 A", 'secondary'), 3530);
+    send(link(ctrl,cq,{axis:['x','y'],bend:9}),2000,2600);
     send(link(cq,driver,{color:'violet'}),2670,3530,'violet');
     return 4800;
   },
@@ -192,7 +196,7 @@ function mount(host, opts = {}) {
       const left = x - size / 2, top = y - tall / 2;
       const group = glyph(nodes, 'g', {}, 'node');
       glyph(group, 'rect', {x: left, y: top, width: size, height: tall, rx: 5}, 'box ' + tone);
-      text(group, x, detail || slots.length ? top + 21 : y, title, 'title');
+      text(group, x, detail !== undefined || slots.length ? top + 21 : y, title, 'title');
       if (detail) text(group, x, top + 51, detail, 'secondary');
       const gap = 5;
       const cellW = Math.min(35, (size - 14 - gap * (slots.length - 1)) / slots.length);

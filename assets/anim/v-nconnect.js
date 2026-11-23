@@ -66,11 +66,11 @@
         } else if (mobile) {
           const endX = vipX + (spread ? lane : offset);
           const bendY = second ? 162 - lane : 188 + (spread ? lane : offset);
-          points = [[180 + offset, 106], [180 + offset, bendY], [endX, bendY], [endX, 238]];
+          points = [[180 + offset, 106], [180 + offset, bendY], [endX, bendY], [endX, 266]];
         } else {
           const endY = vipY + (spread ? lane : offset);
           const bendX = 417 + (second ? -lane : offset);
-          points = [[210, 167 + offset], [bendX, 167 + offset], [bendX, endY], [550, endY]];
+          points = [[210, 167 + offset], [bendX, 167 + offset], [bendX, endY], [667, endY]];
         }
         const path = wire(points);
         if (current === 0) [0, 0.62, 1.24].forEach((delay, i) => request(path, delay, 0.24 + i * 0.25));
@@ -81,19 +81,9 @@
         [0, 1].forEach(index => {
           const x = index ? 260 : 100;
           const y = index ? 223 : 111;
-          const inactive = index === 1 && !spread;
-          const path = wire(mobile ? [[x, 286], [x, 334]] : [[650, y], [707, y]], inactive);
-          if (!inactive) {
-            const group = spread ? [index * 2, index * 2 + 1] : [0, 1, 2, 3];
-            group.forEach((lane, k) => request(path, 2.05 + lane * 0.19, 0.15 + k * 0.23, 0.56));
-          }
-          if (mobile) {
-            node(x, 262, 115, 48, 'VIP ' + 'AB'[index]);
-            node(x, 359, 115, 50, 'CNode ' + 'AB'[index]);
-          } else {
-            node(600, y, 100, 64, 'VIP ' + 'AB'[index]);
-            node(772, y, 130, 64, 'CNode ' + 'AB'[index]);
-          }
+          const name = 'AB'[index];
+          if (mobile) node(x, 301, 138, 70, 'CNode ' + name, 'VIP ' + name);
+          else node(747, y, 160, 74, 'CNode ' + name, 'VIP ' + name);
         });
       } else if (mobile) {
         node(180, 346, 184, 60, server);

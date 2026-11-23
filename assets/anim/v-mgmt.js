@@ -7,8 +7,8 @@
    画面文字有中英两套（EN 表，手机版放不下时用 ENM 表的短写法），跟着页面的 ss-lang 事件重画。
    样式在 assets/anim/v-mgmt.css，全部限定在 .ssa-v-mgmt 容器之内。 */
 (function(){
-var EN={"VAST 管理服务 VMS：独立容器，网页、CLI 与脚本共用 REST API，收集指标、送出告警，宿主故障时换一台 CNode 接着运行": "VAST Management Service: a separate container whose REST API serves the web UI, CLI and scripts, collects metrics, sends alarms and moves to another CNode if its host fails", "网页控制台": "Web UI", "VAST CLI": "VAST CLI", "脚本 / 自动化": "Scripts", "客户端 1": "Client 1", "客户端 2": "Client 2", "客户端 3": "Client 3", "邮件": "Email", "Webhook": "Webhook", "Syslog": "Syslog", "Prometheus": "Prometheus", "CNode": "CNode", "数据服务": "Data service", "VMS": "VMS", "NVMe-oF 网络": "NVMe-oF network", "DBox": "DBox", "三个入口，同一套 REST API": "Three entry points, one REST API", "示意，不代表实测数字": "Schematic, not measured", "配置告警通知，Prometheus 定时抓取指标": "Configured alarm notifications and Prometheus scraping", "告警通知与 Prometheus 抓取": "Alarm notifications and metrics", "管理容器": "Management", "REST API": "REST API", "指标数据库": "Metrics DB", "无流量": "No traffic", "严重告警": "Critical alarm", "确认失联 · 选举": "Confirm down · elect", "新宿主": "New host", "10 秒一点": "Every 10 s", "留 24 小时": "24 hours", "5 分钟一点": "5 min", "留 1 周": "1 week", "1 小时一点": "Hourly", "留 1 个月": "1 month", "1 天一点": "Daily", "留 1 年": "1 year", "VMS 管理集群，协议服务处理读写": "VMS manages the cluster. Protocol services handle I/O.", "历史指标按时间粒度分级保留": "Historical metrics are retained at several resolutions", "历史指标分级保留": "Metrics retention tiers", "Data Flow：客户端经 VIP 访问 CNode": "Data Flow: client access to CNodes through VIPs", "客户端经 VIP 访问 CNode": "Clients reach CNodes through VIPs", "VIP A · 较低": "VIP A · Light", "VIP B · 很高": "VIP B · High", "VMS 切换宿主，存活节点继续提供数据服务": "VMS moves. Surviving nodes continue serving I/O.", "VMS 恢复 · 存活节点继续提供数据服务": "VMS moves. Surviving nodes serve I/O."};
-var ENM={"管理容器": "Mgmt", "确认失联 · 选举": "Electing", "VMS 管理集群，协议服务处理读写": "VMS management and client I/O"};
+var EN={"共享 SCM":"Shared SCM","恢复状态":"Restoring state","管理入口已恢复":"Management ready","VAST 管理服务 VMS：独立容器，网页、CLI 与脚本共用 REST API，收集指标、送出告警，宿主故障时换一台 CNode 接着运行": "VAST Management Service: a separate container whose REST API serves the web UI, CLI and scripts, collects metrics, sends alarms and moves to another CNode if its host fails", "网页控制台": "Web UI", "VAST CLI": "VAST CLI", "脚本 / 自动化": "Scripts", "客户端 1": "Client 1", "客户端 2": "Client 2", "客户端 3": "Client 3", "邮件": "Email", "Webhook": "Webhook", "Syslog": "Syslog", "Prometheus": "Prometheus", "CNode": "CNode", "数据服务": "Data service", "VMS": "VMS", "NVMe-oF 网络": "NVMe-oF network", "DBox": "DBox", "三个入口，同一套 REST API": "Three entry points, one REST API", "示意，不代表实测数字": "Schematic, not measured", "配置告警通知，Prometheus 定时抓取指标": "Configured alarm notifications and Prometheus scraping", "告警通知与 Prometheus 抓取": "Alarm notifications and metrics", "管理容器": "Management", "REST API": "REST API", "指标数据库": "Metrics DB", "无流量": "No traffic", "严重告警": "Critical alarm", "确认失联 · 选举": "Confirm down · elect", "新宿主": "New host", "10 秒一点": "Every 10 s", "留 24 小时": "24 hours", "5 分钟一点": "5 min", "留 1 周": "1 week", "1 小时一点": "Hourly", "留 1 个月": "1 month", "1 天一点": "Daily", "留 1 年": "1 year", "VMS 管理集群，协议服务处理读写": "VMS manages the cluster. Protocol services handle I/O.", "历史指标按时间粒度分级保留": "Historical metrics are retained at several resolutions", "历史指标分级保留": "Metrics retention tiers", "Data Flow：客户端经 VIP 访问 CNode": "Data Flow: client access to CNodes through VIPs", "客户端经 VIP 访问 CNode": "Clients reach CNodes through VIPs", "VIP A · 较低": "VIP A · Light", "VIP B · 很高": "VIP B · High", "VMS 切换宿主，存活节点继续提供数据服务": "VMS moves. Surviving nodes continue serving I/O.", "VMS 恢复 · 存活节点继续提供数据服务": "VMS moves. Surviving nodes serve I/O."};
+var ENM={"恢复状态":"Restoring","管理入口已恢复":"Ready","管理容器": "Mgmt", "确认失联 · 选举": "Electing", "VMS 管理集群，协议服务处理读写": "VMS management and client I/O"};
 var ARIA="VAST 管理服务 VMS：独立容器，网页、CLI 与脚本共用 REST API，收集指标、送出告警，宿主故障时换一台 CNode 接着运行";
 function lang(){return window.SS_LANG==='en'?'en':'zh'}
 var NS='http://www.w3.org/2000/svg';
@@ -48,7 +48,7 @@ function run(o,pts,t,t0,dur,fo){fo=fo==null?0.3:fo;if(t<t0||t>t0+dur+fo){put(o,-
 const dur=pts=>plen(pts)/L.sp;
 /* ---------- 场景：左侧操作方（3 或 4 个），右侧 3 台 CNode（数据服务容器 + VMS 位），下方 NVMe-oF 网络与 2 台 DBox ---------- */
 const SCENE={
- still:[2.6,4.2,2.4,3.4,3.2,5.2],
+ still:[2.6,4.2,2.4,3.4,3.2,6.9],
  layout(mobile){
   if(!mobile){
    const cn={xs:[262,488,714],w:214,h:160,y:40};
@@ -115,6 +115,10 @@ const SCENE={
   tx(L.fabLbl.x,L.fabLbl.y,'NVMe-oF 网络',f.sm,'ink3-t','middle');
   E.db=L.db.xs.map(cx=>{const r={x:cx-L.db.w/2,y:L.db.y,w:L.db.w,h:L.db.h};line(P(cx,L.FY),P(cx,r.y),'');const b=box(r,null,'box soft',12);
    tx(cx,r.y+r.h/2,'DBox',f.lbl,'lbl b7','middle');return {r,b,cx}});
+  const recovery=grp('6'), v=E.cn[1], d=E.db[0], edge=d.r.x+12;
+  tx(edge,d.r.y+d.r.h+19,'共享 SCM',f.sm,'violet-t st','start',recovery);
+  E.stateRoute=[P(edge,d.r.y+d.r.h),P(edge,L.FY),P(v.chx,L.FY),P(v.chx,E.vc),P(v.vms.x+v.vms.w,E.vc)];
+  E.stateLine=poly(E.stateRoute,'thin',recovery);E.stateLine.style.strokeDasharray='4 4';
   /* 第 3 步：保留阶梯 */
   const gL=grp('3');const lad=[['10 秒一点','留 24 小时'],['5 分钟一点','留 1 周'],['1 小时一点','留 1 个月'],['1 天一点','留 1 年']];
   E.lad=lad.map((s,i)=>{const r={x:L.lad.xs[i],y:L.lad.ys[i],w:L.lad.w,h:L.lad.h};const b=box(r,gL,'cell',10);
@@ -191,16 +195,17 @@ SCENE.modes[4]={enter(){labels(4,['邮件','Webhook','Syslog','Prometheus']);vsu
   E.act[4][3].b.classList.toggle('ok',pa>1&&u<per-0.3)}};
 /* 第 6 步：VMS 宿主坏了，换一台接着跑 */
 SCENE.modes[5]={enter(){labels(3,ADMIN);cap('VMS 切换宿主，存活节点继续提供数据服务','sage-t','VMS 恢复 · 存活节点继续提供数据服务');
-  S.v.d=[[1,1],[2,0],[1,0],[2,1]].map(([k,d])=>[k,d,pk()]);S.v.m=dot('v')},
+  S.v.d=[[1,1],[2,0],[1,0],[2,1]].map(([k,d])=>[k,d,pk()]);S.v.m=dot('v');S.v.s=dot('v')},
  frame(t){const per=10,u=t%per,o1=E.cn[0];
   dataLoop(t,S.v.d,2.6);
   o1.x.style.opacity=fade(u,0.4,0.7);const dead=u>0.4;o1.b.classList.toggle('dead',dead);o1.dataB.classList.toggle('dead',dead);o1.ch.forEach(l=>l.classList.toggle('dead',dead));E.admLn.classList.toggle('dead',dead);
   E.vms[0].g.style.opacity=1-fade(u,0.5,1.1);
   setT(E.cn[1].st,u>1.1&&u<2.6?'确认失联 · 选举':'',u<2.6?'st ink2-t':'st');
-  E.vms[1].g.style.opacity=fade(u,2.6,3.1);vsub(1,u>2.6?'新宿主':'','sage-t');
-  const k=Math.floor(Math.max(0,u-3.2)/2.2)%3,uu=Math.max(0,u-3.2)%2.2,r=toVms(3,k,1);
-  const p=u>3.2?run(S.v.m,r,uu,0,Math.min(dur(r),1.5),0.25):(put(S.v.m,-99,-99,0),-1);
-  E.vms[1].b.classList.toggle('on',p>1);E.act[3].forEach((a,i)=>a.b.classList.toggle('on',u>3.2&&i===k&&uu<0.8))}};
+  E.vms[1].g.style.opacity=fade(u,2.6,3.1);vsub(1,u<2.6?'':u<3.2?'新宿主':u<5.1?'恢复状态':'管理入口已恢复','sage-t');
+  run(S.v.s,E.stateRoute,u,3.2,1.8,0.1);
+  const k=Math.floor(Math.max(0,u-5.25)/2.2)%3,uu=Math.max(0,u-5.25)%2.2,r=toVms(3,k,1);
+  const p=u>5.25?run(S.v.m,r,uu,0,Math.min(dur(r),1.5),0.25):(put(S.v.m,-99,-99,0),-1);
+  E.vms[1].b.classList.toggle('on',p>1);E.act[3].forEach((a,i)=>a.b.classList.toggle('on',u>5.25&&i===k&&uu<0.8))}};
 
 /* ---------- 引擎 ---------- */
 function applyVis(){

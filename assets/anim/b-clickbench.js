@@ -101,23 +101,28 @@
         });
       },
       () => {
-        flow([['逐查询用时', 'Per-Query Time'], ['除以各自基准', 'Divide by Baseline'], ['几何平均', 'Geometric Mean']]);
-        label(width / 2, mobile ? 297 : 256, ['冷跑与热跑分别汇总', 'Cold and Hot Scored Separately'], 'muted');
+        flow([['逐查询用时', 'Per-Query Time'], ['加 10 ms 后求比', 'Shifted Ratio'], ['几何平均', 'Geometric Mean']]);
+        const captionY = mobile ? 301 : 259;
+        label(width / 2, captionY, ['(用时 + 10 ms) ÷ (基准 + 10 ms)', '(Time + 10 ms) ÷ (Baseline + 10 ms)'], 'muted');
+        label(width / 2, captionY + 28, ['冷跑与热跑分别汇总', 'Cold and Hot Scored Separately'], 'muted');
       },
       () => {
-        const items = [['冷跑用时', 'Cold Time'], ['热跑用时', 'Hot Time'], ['装载时间', 'Load Time'], ['存储大小', 'Stored Size']];
-        const cx = width / 2, end = mobile ? 235 : 233;
+        const items = [['冷跑相对分', 'Cold Score'], ['热跑相对分', 'Hot Score'], ['装载相对分', 'Load Score'], ['存储相对分', 'Size Score']];
+        const weights = ['20%', '60%', '10%', '10%'];
+        const cx = width / 2, end = mobile ? 259 : 227;
         items.forEach((name, i) => {
-          const x = mobile ? (i % 2 ? 266 : 94) : 112 + i * 192;
-          const y = mobile ? 58 + Math.floor(i / 2) * 62 : 82;
-          const side = mobile ? (i % 2 ? 266 : 94) : x;
-          const via = mobile ? (i < 2 ? 92 : 158) : 143;
-          const out = mobile ? (i < 2 ? (i % 2 ? 341 : 19) : side) : x;
-          route([[x, y + 20], [side, via], [out, via], [out, end - 42], [cx, end - 42], [cx, end - 23]], i * 0.27);
-          box(x, y, mobile ? 144 : 167, 40, name);
+          const x = mobile ? (i % 2 ? 265 : 95) : 112 + i * 192;
+          const y = mobile ? 52 + Math.floor(i / 2) * 86 : 81;
+          const via = y + 34;
+          const out = mobile && i < 2 ? (i % 2 ? 345 : 15) : x;
+          const dest = cx + (i - 1.5) * 41;
+          route([[x, y + 26], [x, via], [out, via], [out, end - 46], [dest, end - 46], [dest, end - 24]], i * 0.27);
+          box(x, y, mobile ? 141 : 167, 52);
+          label(x, y - 9, name);
+          label(x, y + 14, [weights[i], weights[i]], 'muted');
         });
-        box(cx, end, 202, 46, ['加权综合分', 'Weighted Combined'], 'accent');
-        label(cx, end + 50, ['机器 · 数据条件', 'Machine · Data Conditions'], 'muted');
+        box(cx, end, 250, 47, ['加权几何平均', 'Weighted Geometric Mean'], 'accent');
+        label(cx, end + 48, ['机器 · 数据条件', 'Machine · Data Conditions'], 'muted');
       }
     ];
 

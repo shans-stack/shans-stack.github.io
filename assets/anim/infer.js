@@ -90,7 +90,7 @@
         [0, 1, 0.42, "data", 0.7, 1, null],
         [1, 2, 1.43, "data", 0.7, 1, null],
         [2, 0, 2.72, "data", 0.67, 1, "y"],
-        [1, 3, 2.15, "good", 0.66, 1, "x"],
+        [1, 3, 2.15, "good", 0.66, 1, "x", 24],
       ]
     ],
     ["只在迭代边界换入请求", "batchGrid",
@@ -191,14 +191,14 @@
       }
     }
 
-    function route(from, to, side) {
+    function route(from, to, side, offset = 0) {
       const horizontal = side === 'x' || (side !== 'y' && (from.y === to.y || (!mobile && from.x !== to.x)));
       if (horizontal) {
         const a = from.x < to.x ? from.right : from.left;
         const b = from.x < to.x ? to.left : to.right;
         const mid = (a+b)/2;
         return from.y === to.y ? [[a, from.y], [b, to.y]] :
-          [[a, from.y], [mid, from.y], [mid, to.y], [b, to.y]];
+          [[a, from.y + offset], [mid, from.y + offset], [mid, to.y], [b, to.y]];
       }
       const a = from.y < to.y ? from.bottom : from.top;
       const b = from.y < to.y ? to.top : to.bottom;
@@ -221,9 +221,9 @@
       label(width/2, 26, heading, 'heading');
       const boxes = positions[layout]().map(position => bounds(position));
       const tracks = new Map();
-      const paths = links.map(([a, b, , tone, , , side]) => {
+      const paths = links.map(([a, b, , tone, , , side, offset]) => {
         const key = [a, b, tone, side].join('/');
-        if (!tracks.has(key)) tracks.set(key, track(route(boxes[a], boxes[b], side), tone));
+        if (!tracks.has(key)) tracks.set(key, track(route(boxes[a], boxes[b], side, offset), tone));
         return tracks.get(key);
       });
       const outlines = boxes.map((rect, i) => box(rect, labels[i][2]));

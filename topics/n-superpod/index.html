@@ -73,7 +73,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/n-superpod.js?v=cab8ce26"></script>
+<script src="../../assets/anim/n-superpod.js?v=395c6c45"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "n-superpod",
@@ -142,15 +142,15 @@ window.SS_TOPIC_CFG={
     "Shared Storage and Management Paths"
    ],
    "d": [
-    "在 GB200 参考设计里，共享存储与带内管理使用以太网承载，设备控制器另接带外管理网。",
-    "In the GB200 design, Ethernet carries shared storage and in-band management, and device controllers use a separate out-of-band network."
+    "GB200 参考设计在同一物理以太网上划分存储与带内管理网段，设备控制器通过带外管理接入。",
+    "In the GB200 design, storage and in-band management use separate logical segments on shared Ethernet. Device controllers use out-of-band management access."
    ],
    "b": [
     [
-     "<p>存储网负责共享数据访问。带内管理承载节点部署等操作系统可达的服务，两者在这一设计中可共用物理以太网。带外管理网独立连接基板管理控制器（BMC）和其他管理接口，提供独立于主机操作系统的管理路径。</p>"
+     "<p>存储网负责共享数据访问。带内管理承载节点部署等操作系统可达的服务，两者在这一设计中使用同一物理以太网，并划分为不同网段。带外管理网通过专用接入交换机连接基板管理控制器（BMC）等管理端口，并通过专用 VXLAN 汇聚到物理以太网。带外管理独立于主机操作系统。</p>"
     ],
     [
-     "<p>The storage network serves shared data access. In-band management supports services reachable through the operating system, such as node provisioning. In this design the two can share physical Ethernet infrastructure. The separate out-of-band network connects baseboard management controllers (BMCs) and other management interfaces for access independent of the host operating system.</p>"
+     "<p>The storage network serves shared data access. In-band management supports services reachable through the operating system, such as node provisioning. The two use separate logical segments on shared physical Ethernet in this design. The out-of-band management network connects baseboard management controllers (BMCs) and other management ports through dedicated access switches and uses a dedicated VXLAN at the Ethernet aggregation layer. This management path works independently of the host operating system.</p>"
     ]
    ]
   },
@@ -190,6 +190,6 @@ document.addEventListener('ss-lang', ({detail}) => {
   });
 });
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

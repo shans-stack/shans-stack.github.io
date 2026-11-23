@@ -46,13 +46,13 @@ const SCENES = [
     caption: ["节点健康决定是否恢复调度", "Node health gates return to scheduling"],
     bands: [
       [["issue", ["异常节点", "Suspect node"], ["暂停调度", "No new jobs"], "blocked", ["", ""]]],
-      [["ahr", ["硬件恢复", "Hardware recovery"], ["诊断与验证", "Diagnose and verify"], "component", ["", ""]]],
-      [["ready", ["恢复调度", "Return to pool"], ["", ""], "good", ["", ""]], ["hold", ["保留待查", "Hold for review"], ["", ""], "blocked", ["", ""]]]
+      [["ahr", ["硬件恢复", "Hardware recovery"], ["验证通过？", "Verification passed?"], "component", ["", ""]]],
+      [["ready", ["恢复调度", "Return to pool"], ["通过 · 本次示例", "Passed in this example"], "good", ["", ""]], ["hold", ["保留待查", "Hold for review"], ["未通过时", "If verification fails"], "idle", ["", ""]]]
     ],
     edges: [
       ["issue", "ahr", 0, "stop", 0],
       ["ahr", "ready", 0.84, "ok", -12],
-      ["ahr", "hold", 0.84, "stop", 12]
+      ["ahr", "hold", null, "idle", 12]
     ]
   },
   {
@@ -168,12 +168,13 @@ function mount(host, options = {}) {
       text(left + 12, y + titleY, T(name), size, "name", group);
       const label = T(sub) ? text(left + 12, y + titleY + 22, T(sub), small, "sub", group) : null;
       const detail = drawDetail(kind, left + w - 26, y + 9, group);
-      const incoming = routes.filter(route => route.target === key).map(route => route.start + .74);
-      const outgoing = routes.filter(route => route.source === key).map(route => route.start + .74);
+      const incoming = routes.filter(route => route.target === key && route.start !== null).map(route => route.start + .74);
+      const outgoing = routes.filter(route => route.source === key && route.start !== null).map(route => route.start + .74);
       return {group, detail, label, sub, end, kind, incoming, outgoing};
     });
 
     for (const route of routes) {
+      if (route.start === null) continue;
       route.packet = add("rect", {width: 9, height: 9, rx: 1.5, class: "packet " + route.kind});
     }
     text(16, height - 12, T(["示意，不代表实测数字", "Schematic. No measured data."]), small, "note");
@@ -181,6 +182,7 @@ function mount(host, options = {}) {
     finish = Math.max(...routes.map(route => route.start)) + 1.5;
     paint = time => {
       for (const edge of routes) {
+        if (!edge.packet) continue;
         const delay = time - edge.start;
         const active = delay >= 0 && delay < .96;
         const progress = Math.min(1, Math.max(0, delay / .74));

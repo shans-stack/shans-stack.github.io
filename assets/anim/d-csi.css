@@ -15,6 +15,7 @@
 .d-csi-route[data-state=active] {color:var(--route-tone)}
 .d-csi-wire,.d-csi-arrow {fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
 .d-csi-route[data-state=idle] .d-csi-wire {stroke-dasharray:4 5}
+.d-csi-diagram[data-step="3"] .d-csi-wire {stroke-dasharray:4 5}
 .d-csi-data {--route-tone:var(--diagram-data)}
 .d-csi-native {--route-tone:var(--diagram-native)}
 .d-csi-key {--route-tone:var(--diagram-key)}

@@ -13,16 +13,16 @@
       routes: [[0, 1, "data"], [1, 2, "data"]]
     },
     {
-      note: ["当前块写满后再分配", "Allocate when the current block fills"],
+      note: ["逐 token 解码示例：追加一个块", "One more block in this decode example"],
       nodes: [
-        [0, 0, ["逻辑块 A", "Logical Block A"], ["当前块已满", "Current block is full"], "active"],
+        [0, 0, ["解码请求", "Decode Request"], ["下一 token 需要空间", "Next token needs space"], "active"],
         [1, 0, ["显存池", "GPU Memory Pool"], ["提供空闲块", "Supplies a free block"], ""],
         [2, 0, ["物理块 B", "Physical Block B"], ["按需分配", "Allocated on demand"], "active"]
       ],
-      routes: [[0, 1, "ref"], [1, 2, "data"]]
+      routes: [[0, 1, "ref"], [1, 2, "ref"]]
     },
     {
-      note: ["虚线表示块表映射", "Dashed lines show block mappings"],
+      note: ["块表定位显存中的 KV", "The block table locates KV in memory"],
       nodes: [
         [0, 0, ["逻辑块 A", "Logical Block A"], ["序列中的第一块", "First in sequence"], ""],
         [0, 1, ["逻辑块 B", "Logical Block B"], ["序列中的第二块", "Second in sequence"], ""],
@@ -131,7 +131,8 @@
           points.splice(1, 0, alongX ? [middle, start[1]] : [start[0], middle],
             alongX ? [middle, end[1]] : [end[0], middle]);
         }
-        const path = element(rail, 'path', {
+        const group = element(rail, 'g', {});
+        const path = element(group, 'path', {
           d: points.map((point, i) => (i === 0 ? 'M' : 'L') + point.join(' ')).join(' '), class: 'route ' + kind
         });
         if (kind !== 'link') {
@@ -140,7 +141,7 @@
           const [dx, dy] = pathDirection.map(value => value / magnitude);
           const arrow = [[x - 6 * dx + 4 * dy, y - 6 * dy - 4 * dx], end,
             [x - 6 * dx - 4 * dy, y - 6 * dy + 4 * dx]];
-          element(rail, 'polyline', { points: arrow.map(point => point.join(',')).join(' '), class: 'route arrow ' + kind });
+          element(group, 'polyline', { points: arrow.map(point => point.join(',')).join(' '), class: 'route arrow ' + kind });
         }
         return path;
       });
@@ -156,6 +157,10 @@
 
       const arrivals = new Map();
       const flows = routes.flatMap(([from, to, kind], i) => {
+        if (kind === 'ref-map') {
+          duration = 3.6;
+          return [];
+        }
         if (kind === 'link') return [];
         const path = railPaths[i];
         const length = path.getTotalLength();
@@ -184,10 +189,13 @@
 
       paint = (seconds) => {
         if (step === 1) {
-          details[0].textContent = seconds < 0.4
-            ? ['当前块写入中', 'Filling the current block'][language] : nodes[0][3][language];
           details[2].textContent = seconds < arrivals.get(2)
             ? ['等待分配', 'Awaiting allocation'][language] : nodes[2][3][language];
+        }
+        if (step === 2) {
+          railPaths.forEach((path, i) => {
+            path.parentNode.classList.toggle('selected', motion.matches || i === (seconds < 1.4 ? 0 : 1));
+          });
         }
         const fade = Math.max(0, Math.min(1, (duration - seconds) / 0.43));
         flows.forEach(({ path, length, start, travel, offsets, arrive, packets, copies, kind }) => {

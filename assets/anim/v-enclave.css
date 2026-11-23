@@ -51,3 +51,12 @@
 .v-enclave .v-enclave-tgl[hidden]{display:block;opacity:0;pointer-events:none}
 .v-enclave .v-enclave-tgl:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
 @media (max-width:640px){.v-enclave .v-enclave-tgl{font-size:14px;padding:6px 12px}}
+
+@media(max-width:640px){
+  body.present:has(#animPres.v-enclave){overflow-y:auto}
+  body.present .stage:has(#animPres.v-enclave){height:auto;min-height:100dvh;grid-template-rows:auto auto auto;padding:12px}
+  .stage:has(#animPres.v-enclave) .figbox{height:calc((100vw - 24px)*944/480);margin-block:6px}
+  .stage:has(#animPres.v-enclave) .cap{display:block;margin-top:6px}
+  .stage:has(#animPres.v-enclave) h2{font-size:23px;line-height:1.2}
+  .stage:has(#animPres.v-enclave) .desc{font-size:16px;line-height:1.35}
+}

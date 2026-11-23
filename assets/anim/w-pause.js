@@ -1,11 +1,12 @@
 (function () {
   const id = 'w-pause';
   const scenes = [
-    ["活动文件系统保留，快照固定一个时间点|The live filesystem remains and the snapshot captures a point in time", "pair", [
-      ["活动文件系统|Live filesystem",["文件数据与元数据|File data and metadata"],"key",0,"ab"],
-      ["只读快照|Read-only snapshot",["已固定的恢复点|Captured recovery point"],"plain",1.35,"ab"]
+    ["活动文件系统与只读快照引用相同的数据块|The live filesystem and snapshot reference the same blocks", "references", [
+      ["活动文件系统|Live filesystem",["当前视图|Live view"],"key",0,""],
+      ["只读快照|Read-only snapshot",["固定的恢复点|Fixed recovery point"],"plain",1.35,""],
+      ["共享数据块|Shared blocks",["两种视图的底层数据|Backing data for both views"],"plain",0,"ab"]
     ], [
-      [0,1,"data",0.4,"生成快照|Capture",0]
+      [0,1,"signal",0.4,"固定时间点|Capture point",0]
     ], "按文件系统生成恢复点|A recovery point is scoped to a filesystem"],
     ["数据和元数据写入对象存储，形成可恢复快照|File data and metadata establish a recoverable object snapshot", "pair", [
       ["只读快照|Read-only snapshot",["文件数据|File data","快照元数据|Snapshot metadata"],"key",0,"ab"],
@@ -39,6 +40,10 @@
   const NS = 'http://www.w3.org/2000/svg';
   let serial = 0;
   const layouts = {
+    references: [
+      [[205, 95, 254], [695, 95, 254], [450, 223, 278]],
+      [[180, 57, 248], [180, 175, 248], [180, 318, 248]]
+    ],
     pair: [
       [[205, 151, 254], [695, 151, 254]],
       [[180, 96, 264], [180, 330, 264]]
@@ -90,6 +95,19 @@
         const [x, y, w] = layouts[layout][mobile][i];
         return {x, y, w, h: rows.length < 2 ? 67 : 91};
       });
+
+      if (layout === 'references') {
+        const [live, snap, blocks] = boxes;
+        const paths = mobile
+          ? [`M${live.x+live.w/2} ${live.y} H334 V${blocks.y} H${blocks.x+blocks.w/2}`,
+             `M${snap.x} ${snap.y+snap.h/2} V${blocks.y-blocks.h/2}`]
+          : [`M${live.x} ${live.y+live.h/2} V${blocks.y} H${blocks.x-blocks.w/2}`,
+             `M${snap.x} ${snap.y+snap.h/2} V${blocks.y} H${blocks.x+blocks.w/2}`];
+        for (const [i, d] of paths.entries()) {
+          const path = add('path', {d, class: id + '-route ' + id + '-idle'});
+          layers.push([path, cards[i][3], Infinity]);
+        }
+      }
 
       routes.forEach(([from, to, type, start, name, offset = 0, until = Infinity]) => {
         const a = boxes[from], b = boxes[to];

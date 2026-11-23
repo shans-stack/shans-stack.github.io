@@ -15,20 +15,20 @@
     {
       note: ["选择命中且负载较低的节点", "The cache hit with lighter load is chosen"],
       nodes: [
-        [0, 0, ["Conductor", "Conductor"], ["评估首 token 时延", "Estimates first-token delay"], ""],
+        [0, 0, ["Conductor", "Conductor"], ["评估首 token 时延", "Estimates TTFT"], ""],
         [2, 0, ["预填充 A", "Prefill A"], ["命中 · 负载较低", "Hit · light load"], "active"],
         [2, 1, ["预填充 B", "Prefill B"], ["命中 · 负载升高", "Hit · rising load"], "waiting"]
       ],
       routes: [[0, 2, "link"], [0, 1, "ref"]]
     },
     {
-      note: ["前缀复用后补算未命中的输入", "Prefill computes the uncached suffix"],
+      note: ["每层交接前缀 KV 与新算的 KV", "Each layer sends cached and new KV"],
       nodes: [
         [0, 0, ["缓存池", "Cache Pool"], ["已存前缀 KV", "Cached prefix KV"], ""],
-        [1, 0, ["预填充节点", "Prefill Node"], ["补算后缀", "Computes the suffix"], "active"],
-        [2, 0, ["解码节点", "Decode Node"], ["接收键值", "Receives KV data"], "active"]
+        [1, 0, ["预填充节点", "Prefill Node"], ["补算第一层", "Computes first layer"], "active"],
+        [2, 0, ["解码节点", "Decode Node"], ["等待各层 KV", "Awaits layer KV"], ""]
       ],
-      routes: [[0, 1, "copy"], [1, 2, "copy"]]
+      routes: [[0, 1, "copy"], [1, 2, "layer"]]
     },
     {
       note: ["位置查询与键值传输各走一路", "Lookup and KV data take separate paths"],
@@ -40,10 +40,10 @@
       routes: [[2, 1, "ref"], [0, 1, "copy"]]
     },
     {
-      note: ["一批数据写入已注册的目标内存", "A batch lands in registered destination memory"],
+      note: ["虚线：控制信息；实线：数据写入", "Dashed: control · solid: data write"],
       nodes: [
         [0, 0, ["源缓冲区", "Source Buffer"], ["已注册内存", "Registered memory"], ""],
-        [1, 1, ["Transfer Engine", "Transfer Engine"], ["批量传输", "Batched transfer"], ""],
+        [0, 1, ["Transfer Engine", "Transfer Engine"], ["提交批量 WRITE", "Submits WRITE batch"], ""],
         [2, 0, ["目标缓冲区", "Destination Buffer"], ["接收数据副本", "Receives data copies"], "active"]
       ],
       routes: [[1, 0, "ref"], [0, 2, "batch"]]
@@ -84,11 +84,11 @@
       const { note, nodes, routes } = scenes[step];
       const [w, h] = mobile ? size.mobile : size.desktop;
       const paired = nodes.some(([, row]) => row === 1);
-      const boxW = mobile ? (paired ? 174 : 252) : 232;
+      const boxW = mobile ? (step === 4 ? 162 : paired ? 174 : 252) : 232;
       const boxH = 90;
       const centers = nodes.map(([col, row]) => ({
         x: mobile ? (paired ? 97 + row * 186 : w / 2) : 151 + col * 299,
-        y: mobile ? 54 + col * 135 : (paired ? 91 + row * 136 : 154)
+        y: mobile ? (step === 2 ? 48 + col * 121 : 54 + col * 135) : (paired ? 91 + row * 136 : 154)
       }));
 
       function label(x, y, value, className, anchor = 'middle') {
@@ -112,11 +112,19 @@
       const railPaths = routes.map(([from, to, kind]) => {
         const a = centers[from];
         const b = centers[to];
+        const control = step === 4 && kind === 'ref';
         const alongX = mobile ? a.y === b.y : a.x !== b.x;
         const direction = Math.sign(alongX ? b.x - a.x : b.y - a.y);
         const points = alongX
           ? [[a.x + direction * boxW / 2, a.y], [b.x - direction * boxW / 2, b.y]]
           : [[a.x, a.y + direction * boxH / 2], [b.x, b.y - direction * boxH / 2]];
+        if (control && mobile) {
+          points[1][0] += 4;
+          element(rail, 'circle', {cx: points[1][0] - 2, cy: a.y, r: 3, class: 'chip ref'});
+        } else if (control) {
+          points[1][0] -= boxW / 2 - 19;
+          element(rail, 'circle', {cx: points[1][0], cy: points[1][1] + 3, r: 3, class: 'chip ref'});
+        }
         const [start, end] = points;
         let pathDirection = alongX ? [direction, 0] : [0, direction];
         if (kind === 'ref-map') {
@@ -142,11 +150,11 @@
         return path;
       });
 
-      nodes.forEach(([, , title, detail, state], i) => {
+      const details = nodes.map(([, , title, detail, state], i) => {
         const { x, y } = centers[i];
         element(svg, 'rect', { x: x - boxW / 2, y: y - boxH / 2, width: boxW, height: boxH, rx: 5, class: 'node ' + state });
         label(x, y - 22, title, 'name');
-        label(x, y + 10, detail, 'detail');
+        return label(x, y + 10, detail, 'detail');
       });
       label(mobile ? 12 : 35, mobile ? 381 : 302, note, 'note', 'start');
       label(mobile ? 12 : 35, mobile ? 405 : 326, schematic, 'detail', 'start');
@@ -158,7 +166,7 @@
         const length = path.getTotalLength();
         const start = Math.max(0.42 + i * 0.42, arrivals.get(from) || 0);
         const travel = Math.max(0.64, length / (mobile ? 155 : 310));
-        const offsets = kind === 'batch' ? [0, 0.19, 0.38] : [0];
+        const offsets = kind === 'batch' ? [0, 0.19, 0.38] : kind === 'layer' ? [0, 0.14, 0.85, 0.99] : [0];
         const arrive = start + travel + offsets.at(-1);
         arrivals.set(to, arrive);
         const copying = kind === 'copy' || kind === 'batch';
@@ -174,12 +182,37 @@
           };
           copies.push([pins(origin), previous], [pins(target), arrive]);
         }
-        const packets = kind === 'evict' ? [] : offsets.map(() => chip(svg, kind));
+        const packets = kind === 'evict' ? [] : offsets.map((_, index) =>
+          kind === 'layer' ? chip(svg, index % 2 ? 'new-kv' : 'copy') : chip(svg, kind));
         duration = Math.max(duration, arrive + 1.45);
         return [{ path, length, start, travel, offsets, arrive, packets, copies, kind }];
       });
 
+      const layer = flows.find(flow => flow.kind === 'layer');
+      if (layer) {
+        const legendY = mobile ? 361 : 265;
+        const prefix = chip(svg, 'copy');
+        const suffix = chip(svg, 'new-kv');
+        prefix.setAttribute('transform', `translate(${mobile ? 19 : 42} ${legendY})`);
+        suffix.setAttribute('transform', `translate(${mobile ? 164 : 210} ${legendY})`);
+        label(mobile ? 31 : 54, legendY, ['前缀 KV', 'Cached KV'], 'detail', 'start');
+        label(mobile ? 176 : 222, legendY, ['新算 KV', 'New KV'], 'detail', 'start');
+      }
+      const delivered = layer && [0, 1, 2, 3].map(i => {
+        const {x, y} = centers[2];
+        const pin = chip(svg, i % 2 ? 'new-kv' : 'copy');
+        pin.setAttribute('transform', `translate(${x - 28 + i * 17} ${y + 35})`);
+        return pin;
+      });
+
       paint = (seconds) => {
+        if (layer) {
+          details[1].textContent = (seconds < layer.start ? nodes[1][3]
+            : seconds < layer.start + layer.offsets[2] ? ['补算后续层', 'Computes later layers'] : ['补算完成', 'Prefill complete'])[language];
+          details[2].textContent = (seconds < layer.start + layer.travel + layer.offsets[1] ? nodes[2][3]
+            : seconds < layer.arrive ? ['收到第一层 KV', 'First layer received'] : ['完整 KV 已就绪', 'Full KV ready'])[language];
+          delivered.forEach((pin, i) => pin.setAttribute('opacity', Number(seconds >= layer.start + layer.travel + layer.offsets[i])));
+        }
         const fade = Math.max(0, Math.min(1, (duration - seconds) / 0.43));
         flows.forEach(({ path, length, start, travel, offsets, arrive, packets, copies, kind }) => {
           path.style.opacity = kind === 'evict' && seconds >= start ? '0.32' : '1';
@@ -190,7 +223,7 @@
             const point = path.getPointAtLength(length * Math.max(0, Math.min(1, progress)));
             packet.setAttribute('transform', `translate(${point.x} ${point.y})`);
             const opacity = arrived ? Math.max(0, 1 - (seconds - arrive) / 0.38) : Math.min(1, progress * 9);
-            packet.setAttribute('opacity', progress < 0 || (arrived && copies.length) ? 0 : Math.min(fade, opacity));
+            packet.setAttribute('opacity', progress < 0 || (arrived && (copies.length || kind === 'layer')) ? 0 : Math.min(fade, opacity));
           });
         });
       };

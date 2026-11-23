@@ -66,9 +66,9 @@
       ],
       [
         [0, 1, 0.35, "data", 0.7, 1, null],
-        [1, 2, 1.39, "data", 0.7, 1, null],
-        [2, 1, 2.44, "good", 0.7, 1, null],
-        [1, 3, 3.26, "good", 0.57, 1, "y"],
+        [1, 2, 1.39, "data", 0.7, 1, null, 24],
+        [2, 1, 2.44, "good", 0.7, 1, null, -24],
+        [1, 3, 3.26, "good", 0.57, 1, "x", 24],
       ]
     ],
     ["缓存索引记录位置，KV 留在原处", "merge",
@@ -216,19 +216,19 @@
       }
     }
 
-    function route(from, to, side) {
+    function route(from, to, side, offset = 0) {
       const horizontal = side === 'x' || (side !== 'y' && (from.y === to.y || (!mobile && from.x !== to.x)));
       if (horizontal) {
         const a = from.x < to.x ? from.right : from.left;
         const b = from.x < to.x ? to.left : to.right;
         const mid = (a+b)/2;
         return from.y === to.y ? [[a, from.y], [b, to.y]] :
-          [[a, from.y], [mid, from.y], [mid, to.y], [b, to.y]];
+          [[a, from.y + offset], [mid, from.y + offset], [mid, to.y], [b, to.y]];
       }
       const a = from.y < to.y ? from.bottom : from.top;
       const b = from.y < to.y ? to.top : to.bottom;
       const mid = (a+b)/2;
-      return from.x === to.x ? [[from.x, a], [to.x, b]] :
+      return from.x === to.x ? [[from.x + offset, a], [to.x + offset, b]] :
         [[from.x, a], [from.x, mid], [to.x, mid], [to.x, b]];
     }
 
@@ -247,9 +247,9 @@
       label(width/2, 26, heading, 'heading');
       const boxes = positions[layout]().map(position => bounds(position));
       const tracks = new Map();
-      const paths = links.map(([a, b, , tone, , , side]) => {
+      const paths = links.map(([a, b, , tone, , , side, offset]) => {
         const key = [a, b, tone, side].join('/');
-        if (!tracks.has(key)) tracks.set(key, track(route(boxes[a], boxes[b], side), tone));
+        if (!tracks.has(key)) tracks.set(key, track(route(boxes[a], boxes[b], side, offset), tone));
         return tracks.get(key);
       });
       const outlines = boxes.map((rect, i) => box(rect, labels[i][2]));

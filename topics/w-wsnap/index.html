@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/w-wsnap.css?v=6662fcd3">
+<link rel="stylesheet" href="../../assets/anim/w-wsnap.css?v=f7b94356">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -78,7 +78,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/w-wsnap.js?v=b09f6659"></script>
+<script src="../../assets/anim/w-wsnap.js?v=53ab1f1f"></script>
 <script>
 window.SS_TOPIC_CFG={
   anim: "w-wsnap",
@@ -87,11 +87,11 @@ window.SS_TOPIC_CFG={
     {
       t: ["从只读时间点开始", "Start with a Read-Only Point in Time"],
       d: ["WEKA 文件系统快照默认只读，保留创建时的文件系统状态。", "A WEKA filesystem snapshot is read-only by default and preserves the filesystem state at capture time."],
-      b: [["<p>文件系统快照是某一时间点的文件系统视图。活动文件系统可以继续接收写入，只读快照仍保留捕获时的内容。这份固定状态可以作为克隆的起点。</p>"], ["<p>A filesystem snapshot is a view of the filesystem at a particular time. The live filesystem can continue receiving writes while the read-only snapshot preserves the captured contents. That fixed state can serve as the starting point for a clone.</p>"]]
+      b: [["<p>文件系统快照是某一时间点的文件系统视图。活动文件系统可以继续接收写入，只读快照仍保留捕获时的内容。捕获时两个视图引用已有数据块。这份固定状态可以作为克隆的起点。</p>"], ["<p>A filesystem snapshot is a view of the filesystem at a particular time. The live filesystem can continue receiving writes while the read-only snapshot preserves the captured contents. At capture time both views reference the existing data blocks. That fixed state can serve as the starting point for a clone.</p>"]]
     },
     {
       t: ["从只读源创建可写克隆", "Create a Writable Clone from the Read-Only Source"],
-      d: ["复制只读快照并将新快照设为可写，原快照仍保持只读。", "Duplicating a read-only snapshot with writability enabled leaves the source read-only."],
+      d: ["从只读快照派生可写分支，两个视图起初共享已有数据块。", "A writable clone branches from the read-only snapshot. Both views initially share the existing data blocks."],
       b: [["<p>可写克隆是在同一文件系统中从指定源快照派生的另一份快照，创建时看到的内容与源快照一致。WEKA 图形界面的 Duplicate Snapshot 操作预填源文件系统和源快照，并为新快照提供可写设置。</p>"], ["<p>A writable clone is a separate snapshot derived from a specified source snapshot in the same filesystem. Its initial contents match the source. In the WEKA GUI, Duplicate Snapshot preselects the source filesystem and snapshot and offers a writable setting for the new snapshot.</p>"]]
     },
     {
@@ -112,6 +112,6 @@ window.SS_TOPIC_CFG={
   ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

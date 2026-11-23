@@ -19,16 +19,13 @@
       [1,2,"signal",1.35,"",0],
       [2,3,"data",2.3,"",0]
     ], ""],
-    ["作业从所在节点访问一个跨主机文件系统|Jobs use a node-local client to reach a filesystem spanning hosts", "chain", [
+    ["节点 A 的客户端跨网络读取节点 B 后端的数据|The client on node A reads from the backend on node B across the network", "pair", [
       ["GPU 节点 A|GPU node A",["本机客户端|Node-local client"],"plain",0,""],
-      ["共享命名空间|Shared namespace",["/datasets/input"],"key",0,""],
-      ["GPU 节点 B|GPU node B",["所需块位于本地盘|Chunk on local SSD"],"plain",0,"a"]
+      ["GPU 节点 B|GPU node B",["后端服务 · 本地盘|Backend · local SSD"],"plain",0,"a"]
     ], [
-      [0,1,"signal",0.4,"",-12],
-      [1,2,"signal",1.35,"",-12],
-      [2,1,"data",2.3,"",12],
-      [1,0,"data",3.25,"",12]
-    ], "同一文件路径可跨节点读取|One file path can reach another node"],
+      [0,1,"signal",0.4,"跨节点请求|Remote Request",-24],
+      [1,0,"data",1.65,"数据返回|Data Return",24]
+    ], "共享路径 /datasets/input|Shared path /datasets/input"],
     ["同一条带的块分布在不同故障域|Fragments of one stripe go to different failure domains", "fork", [
       ["纠删码条带|EC stripe",["数据块和校验块|Data and parity fragments"],"key",0,"ap"],
       ["故障域 A|Failure domain A",[["一块数据|Data fragment",1.3]],"a",0,""],
@@ -49,6 +46,10 @@
   const NS = 'http://www.w3.org/2000/svg';
   let serial = 0;
   const layouts = {
+    pair: [
+      [[205, 151, 254], [695, 151, 254]],
+      [[180, 96, 264], [180, 330, 264]]
+    ],
     chain: [
       [[126, 151, 222], [450, 151, 222], [774, 151, 222]],
       [[180, 63, 258], [180, 202, 258], [180, 340, 258]]

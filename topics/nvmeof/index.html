@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/palette.css?v=a78969f6">
 <link rel="stylesheet" href="../../assets/brand/brand.css?v=bf9d99d8">
-<link rel="stylesheet" href="../../assets/anim/nvmeof.css?v=ae662a12">
+<link rel="stylesheet" href="../../assets/anim/nvmeof.css?v=ddd97d59">
 <script>window.SS_ROOT='../../';</script>
 <link rel="stylesheet" href="../../assets/topic.css?v=402bf34c">
 </head>
@@ -46,6 +46,9 @@
       <li data-en="NVM Express specification: NVMe over Fabrics (RDMA and TCP transports).">NVM Express 官方规范：NVMe over Fabrics（含 RDMA、TCP 两种传输）。</li>
       <li data-en="VAST Data public white paper, The VAST AI Operating System.">VAST Data 公开白皮书《The VAST AI Operating System》。</li>
       <li data-en="Protocol Forest (WeChat account): an article on the core features of high-performance RDMA networking (in Chinese).">公众号文章《RDMA 高性能网络技术核心功能梳理》（协议森林）。</li>
+      <li data-en="&lt;a href=&quot;https://nvmexpress.org/wp-content/uploads/NVM-Express-PCIe-Transport-Specification-1.0d-2023.12.27-Ratified.pdf&quot;&gt;NVM Express PCIe Transport Specification&lt;/a&gt;"><a href="https://nvmexpress.org/wp-content/uploads/NVM-Express-PCIe-Transport-Specification-1.0d-2023.12.27-Ratified.pdf">NVM Express PCIe 传输规范</a></li>
+      <li data-en="&lt;a href=&quot;https://www.nvmexpress.org/wp-content/uploads/A12-Part-B-NVMe-over-Fabrics-V01.2.pdf&quot;&gt;NVM Express: NVMe-oF Architecture and Data Flow&lt;/a&gt;"><a href="https://www.nvmexpress.org/wp-content/uploads/A12-Part-B-NVMe-over-Fabrics-V01.2.pdf">NVM Express：NVMe-oF 结构与数据流</a></li>
+      <li data-en="&lt;a href=&quot;https://nvmexpress.org/specification/tcp-transport-specification/&quot;&gt;NVM Express TCP Transport Specification&lt;/a&gt;"><a href="https://nvmexpress.org/specification/tcp-transport-specification/">NVM Express TCP 传输规范</a></li>
     </ul></div>
   </div>
 </main>
@@ -72,7 +75,7 @@
 <script src="../../data/talks.js?v=1f9fd966"></script>
 <script src="../../data/vendors.js?v=0be6555a"></script>
 <script src="../../assets/core.js?v=6073ae82"></script>
-<script src="../../assets/anim/nvmeof.js?v=383b8f91"></script>
+<script src="../../assets/anim/nvmeof.js?v=89620666"></script>
 <script>
 window.SS_TOPIC_CFG={
  "anim": "nvmeof",
@@ -84,8 +87,8 @@ window.SS_TOPIC_CFG={
     "Local PCIe NVMe Connectivity"
    ],
    "d": [
-    "CPU 经 PCIe 给本机的 NVMe 盘下命令，盘把数据直接放进内存。",
-    "The CPU sends a command over PCIe to the local NVMe drive, and the drive puts the data straight into memory."
+    "主机向本地 NVMe 控制器提交读命令，SSD 经 PCIe 根端口与内存控制器把数据 DMA 到主机内存。",
+    "The host submits a read to the local NVMe controller. The SSD transfers data into host memory by DMA through the PCIe root and memory controller."
    ],
    "s": [
     "本地 NVMe",
@@ -93,11 +96,11 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>NVMe 是专为固态盘设计的协议，盘通过 PCIe 直接连到 CPU，不经过老式的磁盘控制器。PCIe 是服务器主板上连接 CPU、显卡、固态盘的高速通道。NVMe 支持很多条并行的命令队列，每条队列都可以排很深，所以协议本身不会限制固态盘的速度。</p>",
+     "<p>本地 PCIe NVMe SSD 经点到点链路接入主机的 PCIe 根复合体。主机内存接在内存控制器上。读命令提交后，SSD 控制器沿这条主机路径把读出的数据 DMA 到读缓冲区。</p>",
      "<p>这一步只看一台服务器：CPU 往队列里放一条读命令，盘把数据写进内存，读完通知 CPU。后面所有步骤要做的事，都是想让「别处的盘」也能这样用。</p>"
     ],
     [
-     "<p>NVMe is a protocol designed for solid-state drives. The drive connects to the CPU directly over PCIe, without an old-style disk controller in between. PCIe is the high-speed channel on a server board that links the CPU, graphics cards and solid-state drives. NVMe supports many command queues in parallel, and each queue can hold many commands, so the protocol itself does not hold the drive back.</p>",
+     "<p>A local PCIe NVMe SSD attaches to the host’s PCIe root complex over a point-to-point link. Host memory attaches to the memory controller. After submission, the SSD controller transfers the read data over that host path into the read buffer by DMA.</p>",
      "<p>This step looks at a single server: the CPU puts a read command in a queue, the drive writes the data into memory and tells the CPU when it is done. Every step that follows is about letting a drive somewhere else be used the same way.</p>"
     ]
    ]
@@ -132,8 +135,8 @@ window.SS_TOPIC_CFG={
     "NVMe Commands over a Network Fabric"
    ],
    "d": [
-    "盘放进网络上的存储箱，服务器 B 直接把 NVMe 命令发过去，在 B 看来它就是一块本地盘。",
-    "The drives move into a storage box on the network. Server B sends NVMe commands to it directly, and to B it looks like a local drive."
+    "服务器 B 通过网络向 NVMe-oF 目标控制器提交命令，对目标提供的命名空间按块读写。",
+    "Server B sends commands over the network to an NVMe-oF target controller and accesses its namespace as block storage."
    ],
    "s": [
     "NVMe-oF",
@@ -141,11 +144,11 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>NVMe-oF（NVMe over Fabrics）是建在 NVMe 之上的块存储协议：同样的读写命令，不再走机箱里的 PCIe，而是经网络送到远端的盘。服务器这一端叫发起端（initiator），常用操作系统自带；盘那一端叫目标端（target）。对服务器来说，远端盘挂上来以后和本地盘一样，按块读写。</p>",
+     "<p>NVMe-oF（NVMe over Fabrics）把 NVMe 命令经网络送到目标端。主机是发起端（initiator）。图中的目标控制器终止 fabric 传输，提供命名空间，并将块访问映射成后端 I/O。命名空间是主机可寻址的逻辑块空间。</p>",
      "<p>NVMe-oF 主机将命令提交给远端控制器，并经所选传输接收数据与完成状态。</p>"
     ],
     [
-     "<p>NVMe-oF (NVMe over Fabrics) is a block storage protocol built on NVMe: the same read and write commands no longer travel over PCIe inside the chassis but over the network to a remote drive. The server side is called the initiator and usually comes with the operating system; the drive side is called the target. Once a remote drive is attached, the server reads and writes it in blocks just like a local drive.</p>",
+     "<p>NVMe-oF (NVMe over Fabrics) transports NVMe commands over a network. The host acts as the initiator. The target controller shown terminates the fabric transport, exposes a namespace, and maps block accesses to back-end I/O. A namespace is a logical block address space visible to the host.</p>",
      "<p>An NVMe-oF host sends commands to a remote controller and receives data and completion status over the selected transport.</p>"
     ]
    ]
@@ -165,11 +168,11 @@ window.SS_TOPIC_CFG={
    ],
    "b": [
     [
-     "<p>NVMe-oF 只规定命令怎么走网络，底下用什么传输可以选。跑在 RDMA 上（InfiniBand 或以太网上的 RoCE）时，网卡把数据直接放进应用内存，CPU 只发起，不搬数据。RDMA 是让网卡直接读写对方内存的技术，见「RDMA 为什么快」。跑在 TCP 上（NVMe/TCP）时，数据要经过操作系统内核，由 CPU 复制一次；好处是任何以太网都能用，不需要专门调网络。</p>",
+     "<p>在图示的 NVMe/RDMA 路径上，网卡经 DMA 把数据放进主机已注册的 I/O 缓冲区。缓冲式文件 I/O 的应用还可能经过页缓存。NVMe/TCP 使用 TCP 封装传输，图中展示由主机软件栈处理的一个例子。实际路径、复制次数和卸载能力取决于实现。</p>",
      "<p>「支持 NVMe-oF」需要明确是哪种传输：两者部署难度、CPU 开销和适用场景都不一样。</p>"
     ],
     [
-     "<p>NVMe-oF only defines how commands travel over the network; the transport underneath is a choice. Over RDMA (InfiniBand, or RoCE on Ethernet), the network card puts data straight into application memory, and the CPU only starts the transfer without moving data. RDMA lets a network card read and write the other side's memory directly; see \"Why RDMA is fast\". Over TCP (NVMe/TCP), data passes through the operating system kernel and the CPU copies it once; the upside is that any Ethernet works, with no special network tuning.</p>",
+     "<p>In the NVMe/RDMA path shown, the NIC transfers data by DMA into a registered host I/O buffer. An application using buffered file I/O may also go via the page cache. NVMe/TCP encapsulates traffic over TCP. The diagram gives an example with host software processing. The actual path, number of copies, and available offloads depend on the implementation.</p>",
      "<p>NVMe-oF support should be qualified by transport: the two differ in how hard they are to deploy, in CPU overhead and in where they fit.</p>"
     ]
    ]
@@ -184,17 +187,15 @@ window.SS_TOPIC_CFG={
     "In this deployment example, a storage enclosure exposes NVMe namespaces, and separate compute nodes run the file system and erasure coding."
    ],
    "s": [
-    "存储箱只转发",
-    "The box only forwards"
+    "目标控制器与命名空间",
+    "Target Controller and Namespace"
    ],
    "b": [
     [
-     "<p>有了 NVMe-oF，存储箱可以做成「一箱盘 + 转发」的形态，业内叫 JBOF（Just a Bunch of Flash）。箱子里的控制器只负责把每块盘暴露到网络上，文件系统、数据保护这些逻辑都放在前面的服务器上。</p>",
-     "<p>控制器只做转发，所以不需要大算力，有的产品直接用 DPU（网卡上带处理器的智能网卡）来当控制器，箱子更小、更省电。加新功能时，箱子里的 CPU 也不会成为瓶颈，因为功能本来就不在这里。</p>"
+     "<p>图示机箱中的目标控制器提供 NVMe 命名空间，经后端接口访问 SSD。这个部署示例由独立的计算节点运行文件系统与纠删码。</p>"
     ],
     [
-     "<p>With NVMe-oF, a storage box can be just \"a box of drives plus forwarding\", known in the industry as JBOF (Just a Bunch of Flash). The controller in the box only exposes each drive to the network; logic such as the file system and data protection lives on the servers in front.</p>",
-     "<p>Because the controller only forwards, it needs little computing power. Some products use a DPU (a smart network card with its own processor) as the controller, which makes the box smaller and more power-efficient. Adding features does not turn the CPU in the box into a bottleneck either, because the features were never there.</p>"
+     "<p>The target controller in this enclosure exposes NVMe namespaces and accesses the SSDs over its back-end interface. Separate compute nodes run the file system and erasure coding in this deployment example.</p>"
     ]
    ]
   },
@@ -225,6 +226,6 @@ window.SS_TOPIC_CFG={
  ]
 };
 </script>
-<script src="../../assets/topic.js?v=a5f330c1"></script>
+<script src="../../assets/topic.js?v=fba883cb"></script>
 </body>
 </html>

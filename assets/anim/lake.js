@@ -2,6 +2,9 @@
   'use strict';
 
   const EN = {
+  "返回表定义与位置": "Return schema and path",
+  "查目录，再读文件": "Look up, then read",
+  "引擎按位置读取": "Read by path",
     "示意，不代表实测数字": "Schematic, not measured",
     "日志文件": "Log file",
     "保留文本格式": "Original text",
@@ -52,10 +55,10 @@
       ["时间和载荷列", "跳过读取", "cols", "muted"]
     ], [[0, 1, 0], [1, 2, 770], [0, 3, 0, "off"]]],
     ["chain", [
-      ["查询引擎", "按表名查找", "lines"],
-      ["数据目录", "字段定义与位置", "list"],
-      ["数据文件", "按位置打开", "files", "good", "pending"]
-    ], [[0, 1, 0], [1, 2, 780]]],
+      ["数据目录", "返回表定义与位置", "list"],
+      ["查询引擎", "查目录，再读文件", "lines"],
+      ["数据文件", "引擎按位置读取", "files", "good"]
+    ], [[1, 0, 0, "data", -17], [0, 1, 780, "good", 17], [1, 2, 1560], [2, 1, 2340, "good", 17]]],
     ["fork", [
       ["整理表", "共用数据", "rows"],
       ["分析", "按设备统计", "cols", "good", "pending"],
@@ -160,7 +163,7 @@
       if (kind.endsWith('A') || kind.endsWith('B')) parent.dataset.group = kind.slice(-1);
     }
 
-    function route(a, b, vertical) {
+    function route(a, b, vertical, offset) {
       const axis = vertical ? 'y' : 'x', across = vertical ? 'x' : 'y';
       const extent = vertical ? 'h' : 'w';
       const direction = Math.sign(b[axis] - a[axis]);
@@ -169,8 +172,8 @@
       const mid = (start + end) / 2;
       const point = (along, cross) => vertical ? [cross, along] : [along, cross];
       return [
-        point(start, a[across]), point(mid, a[across]),
-        point(mid, b[across]), point(end, b[across])
+        point(start, a[across] + offset), point(mid, a[across] + offset),
+        point(mid, b[across] + offset), point(end, b[across] + offset)
       ];
     }
 
@@ -189,11 +192,11 @@
       const wires = el('g', {'aria-hidden': 'true'});
       const bodies = el('g', {'aria-hidden': 'true'});
       const packets = el('g', {'aria-hidden': 'true'});
-      links = edges.map(([from, to, start, type = 'data']) => {
+      links = edges.map(([from, to, start, type = 'data', offset = 0]) => {
         const a = specs[from], b = specs[to];
         const vertical = (small.matches || (layout === 'context' && (from === 3 || to === 3)))
           ? a.y !== b.y : a.x === b.x;
-        const points = route(a, b, vertical);
+        const points = route(a, b, vertical, offset);
         const group = el('g', {class: name + '-wire'}, wires);
         const path = el('path', {d: 'M' + points.map(p => p.join(',')).join(' L')}, group);
         const [x, y] = points[3];

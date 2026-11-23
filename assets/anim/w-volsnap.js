@@ -6,10 +6,12 @@
       ["CSI 插件|CSI plugin", ["供应持久卷|Provisions the PV"], "plain", 0],
       ["卷的底层|Volume backing", ["目录|Directory", "可写快照|Writable snapshot", "整个文件系统|Entire filesystem"], "key", 0]
     ], [[0, 1, "", "signal", 0.4, 0], [1, 2, "", "signal", 1.45, 0]]],
-    ["文件系统卷到只读快照|Filesystem-backed volume to read-only snapshot", "pair", [
-      ["源文件系统卷|Source volume", ["数据 A|Data A", ["数据 B|Data B", "plain", 0, 2.1, 1], ["数据 B′|Data B′", "good", 2.1, 9, 1]], "plain", 0],
-      ["VolumeSnapshot", ["只读 · A、B|Read-only · A, B"], "key", 1.45]
-    ], [[0, 1, "捕获状态|Capture state", "signal", 0.4, 0]]],
+    ["Kubernetes 对象引用 WEKA 只读文件系统快照|Kubernetes objects reference the read-only WEKA filesystem snapshot", "snapshot", [
+      ["源文件系统卷|Source volume", [["数据 A、B|Data A, B", "plain", 0, 2.1, 0], ["数据 A、B′|Data A, B′", "good", 2.1, 9, 0]], "plain", 0],
+      ["WEKA 文件系统快照|WEKA Filesystem Snapshot", ["只读 · A、B|Read-only · A, B"], "key", 1.45],
+      ["VolumeSnapshotContent", ["引用 WEKA 快照|References WEKA snapshot"], "plain", 1.45],
+      ["VolumeSnapshot", ["Kubernetes 快照请求|Kubernetes snapshot request"], "plain", 0]
+    ], [[0, 1, "固定版本|Capture point", "signal", 0.4, 0], [3, 2, "绑定|Binds", "idle"], [2, 1, "引用|References", "idle"]]],
     ["从保留的快照派生新卷|Derive a new volume from the saved snapshot", "pair", [
       ["只读快照|Read-only snapshot", ["数据 A|Data A", "数据 B|Data B"], "plain", 0],
       ["新卷|New volume", ["数据 A|Data A", ["数据 B|Data B", "plain", 0, 2.5, 1], ["写入 B′|Write B′", "good", 2.5, 9, 1]], "key", 1.45]
@@ -62,6 +64,9 @@
 
       const pair = (a, b) => mobile ? [[185, a, 234], [185, b, 234]] : [[199, 148, 240], [649, 148, 240]];
       const plan = {
+        snapshot: mobile
+          ? [[185,46,272],[185,151,272],[185,256,272],[185,361,272]]
+          : [[199,86,278],[649,86,286],[649,237,286],[199,237,278]],
         pair: pair(100, 305),
         chain: mobile ? [[185, 63, 234], [185, 202, 234], [185, 333, 234]] : [[140, 148, 218], [424, 148, 218], [708, 148, 218]],
         join: mobile ? [[96, 87, 164], [274, 87, 164], [185, 303, 244]] : [[159, 84, 230], [159, 225, 230], [683, 154, 250]],
@@ -75,7 +80,7 @@
       });
 
       links.forEach(([a, b, label, kind = 'signal', delay = 0.4, shift = 0]) => {
-        const from = boxes[a], to = boxes[b], vertical = mobile;
+        const from = boxes[a], to = boxes[b], vertical = mobile || from.x === to.x;
         const axis = vertical ? 'y' : 'x', cross = vertical ? 'x' : 'y', extent = vertical ? 'h' : 'w';
         const sign = Math.sign(to[axis] - from[axis]);
         const start = from[axis] + sign * (from[extent] / 2 + 5);
@@ -90,13 +95,15 @@
         const pt = (along, across) => vertical ? across + ' ' + along : along + ' ' + across;
         const d = 'M' + pt(start, u) + ' L' + pt(mid, u) + ' L' + pt(mid, v) + ' L' + pt(end, v);
         const path = add('path', {d, class: id + '-path ' + id + '-' + kind, 'marker-end': 'url(#' + marker + ')'});
+        if (layout === 'snapshot' && kind === 'idle') layers.push([path, 1.45, 9]);
         if (label) {
           const x = mobile && shift ? (shift < 0 ? -10 : 10) : 0;
           const pos = vertical
-            ? {x: fanIn ? u : (u + v) / 2 + x, y: mid - (fanIn ? 20 : 3)}
+            ? {x: fanIn ? u : (u + v) / 2 + x + (layout === 'snapshot' ? 14 : 0), y: mid - (fanIn ? 20 : 3)}
             : {x: fanIn ? (start + mid) / 2 : mid, y: (fanIn ? u : (u + v) / 2) - 13};
-          const text = add('text', {...pos, 'text-anchor': mobile && shift ? (shift < 0 ? 'end' : 'start') : 'middle', class: id + '-link'});
+          const text = add('text', {...pos, 'text-anchor': vertical && layout === 'snapshot' ? 'start' : mobile && shift ? (shift < 0 ? 'end' : 'start') : 'middle', class: id + '-link'});
           text.textContent = t(label);
+          if (layout === 'snapshot' && kind === 'idle') layers.push([text, 1.45, 9]);
         }
         if (kind === 'idle') return;
         for (const when of [].concat(delay)) {

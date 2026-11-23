@@ -43,12 +43,11 @@
     {
       title: ["Telemetry 与 Enterprise 的分工","Roles of Telemetry and Enterprise"],
       panels: [
-        [["UFM","UFM"],["InfiniBand 运维","InfiniBand Operations"],[140,178,202],[180,78,236],"primary"],
-        [["Telemetry","Telemetry"],["观测与校验","Observe & Validate"],[400,178,202],[180,194,236],"primary"],
-        [["Enterprise","Enterprise"],["增加网络管理","Fabric Management"],[660,178,202],[180,310,236],"primary"]
+        [["UFM Telemetry","UFM Telemetry"],["遥测与校验","Telemetry & Validation"],[201,178,306],[180,126,274],"primary"],
+        [["UFM Enterprise","UFM Enterprise"],["遥测与校验 + 网络管理","Telemetry, Validation & Management"],[599,178,350],[180,268,330],"primary"]
       ],
-      links: [[0,1,"signal"],[1,2,"control"]],
-      focus: [1,2]
+      links: [],
+      focus: [0,1]
     }
   ];
 

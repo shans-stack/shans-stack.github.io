@@ -16,5 +16,10 @@
 @media (max-width: 640px) {
   .f-hicache-anim text { font-size: 15px; }
   .f-hicache-anim .name { font-size: 17px; }
-  .f-hicache-anim .detail { font-size: 14px; }
+  .f-hicache-anim .detail { font-size: 15px; }
+}
+
+@media (max-width: 440px) {
+  body.topic-f-hicache .hd .wrap { flex-wrap: wrap; gap: 0 12px; padding-block: 8px; }
+  body.topic-f-hicache .nav { flex-wrap: wrap; min-width: 0; max-width: 100%; }
 }
